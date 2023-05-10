@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import persuader.persuadermodule
+import generators.huggingface
 import probes.blank
 import detectors.toxicity
 from transformers import set_seed
@@ -11,7 +11,7 @@ MODEL_NAME = "gpt2"
 
 set_seed(SEED)
 
-model = persuader.persuadermodule.HFBaseModel("gpt2")
+model = generators.huggingface.HFBaseGenerator("gpt2")
 
 b = probes.blank.BlankPrompt()
 

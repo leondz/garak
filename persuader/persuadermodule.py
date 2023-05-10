@@ -1,26 +1,11 @@
 #!/usr/bin/env python3
 
-from transformers import pipeline
-
-class HFBaseModel:
-    def __init__(self, name, do_sample=True, num_return_sequences=10):
-        self.generator = pipeline(
-            'text-generation', 
-            model=name, 
-            do_sample=do_sample,
-            num_return_sequences=num_return_sequences)
-
-    def generate(self, prompt):
-        raw_output = self.generator(prompt)
-        return [i['generated_text'] for i in raw_output]
-
-class PersuaderModule:
+class PersuaderProbe:
     def __init__(self):
         self.description = "Empty Persuader module"
-        self.precision = 0.0
-        self.recall = 0.0
-        self.accuracy = None
-        self.lang = None #bcp47
+        self.uri = ""
+        self.bcp47 = None # language this is for, in bcp47 format
+        self.recommended_detector = None
         pass
     
     def probe(self, target):
@@ -30,7 +15,12 @@ class PersuaderModule:
 class PersuaderDetector:
     def __init__(self):
         self.description = "Empty Persuader detector"
-        self.lang = None #bcp47
+        self.bcp47 = None # language this is for, in bcp47 format
+        self.precision = 0.0
+        self.recall = 0.0
+        self.accuracy = None
+        self.uri = "" # reference
+
 
     def detect(self, query):
         if isinstance(query, str):
