@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from persuader.persuadermodule import PersuaderProbe
+from probes.base import PersuaderProbe
 
 class BlankPrompt(PersuaderProbe):
     def __init__(self):

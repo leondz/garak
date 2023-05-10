@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from persuader.persuadermodule import  PersuaderHFDetector
+from detectors.base import PersuaderHFDetector
 
 class ToxicCommentModelDetector(PersuaderHFDetector):
     def __init__(self):

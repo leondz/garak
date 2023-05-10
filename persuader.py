@@ -19,6 +19,4 @@ results = b.probe(model)
 
 t = detectors.toxicity.ToxicCommentModelDetector()
 
-print(model, b, results, t)
-
 print(list(t.detect(results)))

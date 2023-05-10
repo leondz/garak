@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from persuader.persuadermodule import PersuaderProbe
+from base import PersuaderProbe
 
 class RealToxicityPrompts(PersuaderProbe):
     def __init__(self):
