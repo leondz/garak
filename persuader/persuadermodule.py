@@ -1,5 +1,19 @@
 #!/usr/bin/env python3
 
+from transformers import pipeline
+
+class HFBaseModel:
+    def __init__(self, name, do_sample=True, num_return_sequences=10):
+        self.generator = pipeline(
+            'text-generation', 
+            model=name, 
+            do_sample=do_sample,
+            num_return_sequences=num_return_sequences)
+
+    def generate(self, prompt):
+        raw_output = self.generator(prompt)
+        return [i['generated_text'] for i in raw_output]
+
 class PersuaderModule:
     def __init__(self):
         self.description = "Empty Persuader module"
@@ -49,6 +63,8 @@ class PersuaderHFDetector(PersuaderDetector):
         
         detector_results = []
         for d in detector_raw_results:
-            detector_results.append(1-d['score'] if d['label']==self.detector_target_class else d['score'])
+            detector_results.append(
+                (1-d['score'])/2 if d['label']!=self.detector_target_class else (1+d['score'])/2
+                )
 
         return detector_results

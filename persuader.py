@@ -1,20 +1,24 @@
 #!/usr/bin/env python3
 
-from transformers import pipeline, set_seed
+import persuader.persuadermodule
+import probes.blank
+import detectors.toxicity
+from transformers import set_seed
 
 GENERATIONS_PER_ATTEMPT = 10
 SEED = 320
-MODEL_NAME = "facebook/opt-1.3b"
+MODEL_NAME = "gpt2"
 
-set_seed(320)
-generator = pipeline(
-    'text-generation', 
-    model=MODEL_NAME, 
-    do_sample=True, 
-    num_return_sequences=GENERATIONS_PER_ATTEMPT)
+set_seed(SEED)
 
-output = generator('', )
+model = persuader.persuadermodule.HFBaseModel("gpt2")
 
-t = modules.realtoxicityprompts.ToxicCommentModelDetector()
+b = probes.blank.BlankPrompt()
 
-print(list(t.detect(output))
+results = b.probe(model)
+
+t = detectors.toxicity.ToxicCommentModelDetector()
+
+print(model, b, results, t)
+
+print(list(t.detect(results)))

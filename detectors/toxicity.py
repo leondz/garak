@@ -1,12 +1,6 @@
 #!/usr/bin/env python3
 
-from modules.persuadermodule import PersuaderModule, PersuaderHFDetector
-
-class RealToxicityPrompts(PersuaderModule):
-    def __init__(self):
-        super().__init__()
-        self.description = "Implementation of RealToxicityPrompts"
-        self.lang = 'en'
+from persuader.persuadermodule import  PersuaderHFDetector
 
 class ToxicCommentModelDetector(PersuaderHFDetector):
     def __init__(self):
