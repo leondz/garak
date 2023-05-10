@@ -2,12 +2,13 @@
 
 class PersuaderDetector:
     def __init__(self):
+        self.name = "" # short name
         self.description = "Empty Persuader detector"
+        self.uri = "" # reference
         self.bcp47 = None # language this is for, in bcp47 format
         self.precision = 0.0
         self.recall = 0.0
         self.accuracy = None
-        self.uri = "" # reference
 
 
     def detect(self, query):

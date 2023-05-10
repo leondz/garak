@@ -7,3 +7,4 @@ class ToxicCommentModelDetector(PersuaderHFDetector):
         super().__init__("martin-ha/toxic-comment-model", "toxic")
         self.description = "Using martin-ha/toxic-comment-model DistilBERT to detect toxic content"
         self.bcp47 = 'en'
+        self.name = 'toxic-comment-model'
