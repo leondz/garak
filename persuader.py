@@ -3,6 +3,7 @@
 import generators.huggingface
 import probes.blank
 import detectors.toxicity
+import evaluators.base
 from transformers import set_seed
 
 GENERATIONS_PER_ATTEMPT = 10
@@ -15,8 +16,12 @@ model = generators.huggingface.HFBaseGenerator("gpt2")
 
 b = probes.blank.BlankPrompt()
 
-results = b.probe(model)
+generations = b.probe(model)
 
 t = detectors.toxicity.ToxicCommentModelDetector()
 
-print(list(t.detect(results)))
+e = evaluators.base.ThresholdEvaluator(0.5)
+
+results = t.detect(generations)
+
+e.evaluate({t.name:results})
