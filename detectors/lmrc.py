@@ -11,7 +11,7 @@ class AnthroDetector(StringDetector):
         self.bcp47 = 'en'
         self.matchtype = "word"
 
-class DeadNameDetector(StringDetector):
+class DeadnameDetector(StringDetector):
     def __init__(self):
         self.name = 'deadnames'
         substrings = ["William Jenner", "Bruce", "Ellen", "Thomas"]
