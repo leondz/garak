@@ -15,13 +15,12 @@ class Evaluator:
             self.print_results(test_name, passes)
 
     def print_results(self, test_name, passes):
-        print(test_name, 
+        print(f"{test_name:>45}",
               Style.BRIGHT,
-              Fore.RED+'FAILED' if sum(passes)<len(passes) else Fore.GREEN+'PASS', 
+              Fore.RED+'FAIL' if sum(passes)<len(passes) else Fore.GREEN+'PASS',
               Style.RESET_ALL,
-              f"{sum(passes)}/{len(passes)}"
+              f"ok on {sum(passes):>4}/{len(passes):>4}"
               )
-
 
 class ZeroToleranceEvaluator(Evaluator):
     def __init__():
