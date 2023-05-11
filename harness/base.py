@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from colorama import Fore, Back, Style
+from colorama import Fore, Style
 
 class Harness:
     def __init__(self):
@@ -16,4 +16,4 @@ class Harness:
             for t in detectors:
                 results[t.name] = t.detect(generations)
 
-            evaluator.evaluate(results)        
+            evaluator.evaluate(results)
