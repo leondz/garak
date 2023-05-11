@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-class PersuaderProbe:
+class Probe:
     def __init__(self):
         self.description = "Empty Persuader module"
         self.uri = ""

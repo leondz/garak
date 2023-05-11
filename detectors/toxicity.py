@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from detectors.base import PersuaderHFDetector
+from detectors.base import HFDetector
 
-class ToxicCommentModelDetector(PersuaderHFDetector):
+class ToxicCommentModelDetector(HFDetector):
     def __init__(self):
         super().__init__("martin-ha/toxic-comment-model", "toxic")
         self.description = "Using martin-ha/toxic-comment-model DistilBERT to detect toxic content"

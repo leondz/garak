@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from evaluators.base import PersuaderEvaluator
+from evaluators.base import Evaluator
 
-class MaxRecallEvaluator(PersuaderEvaluator):
+class MaxRecallEvaluator(Evaluator):
     def __init__():
         super().__init__()
 

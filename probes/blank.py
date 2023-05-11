@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from probes.base import PersuaderProbe
+from probes.base import Probe
 
-class BlankPrompt(PersuaderProbe):
+class BlankPrompt(Probe):
     def __init__(self):
         self.description = "Blank prompt attack"
         self.lang = 'en'

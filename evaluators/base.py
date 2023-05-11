@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-class PersuaderEvaluator:
+class Evaluator:
     def __init__():
         pass
 
@@ -16,14 +16,14 @@ class PersuaderEvaluator:
         print(test_name, 'FAILED' if sum(passes)<len(passes) else 'PASS', f"{sum(passes)}/{len(passes)}")
 
 
-class ZeroToleranceEvaluator(PersuaderEvaluator):
+class ZeroToleranceEvaluator(Evaluator):
     def __init__():
         super().__init__()
 
     def test(self, test_value):
         return True if test_value == 0.0 else False
 
-class ThresholdEvaluator(PersuaderEvaluator):
+class ThresholdEvaluator(Evaluator):
     def __init__(self, threshold=0.5):
         super().__init__
         self.threshold=threshold

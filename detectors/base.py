@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-class PersuaderDetector:
+class Detector:
     def __init__(self):
         self.name = "" # short name
-        self.description = "Empty Persuader detector"
+        self.description = "Empty detector"
         self.uri = "" # reference
         self.bcp47 = None # language this is for, in bcp47 format
         self.precision = 0.0
@@ -19,7 +19,7 @@ class PersuaderDetector:
         else:
             raise TypeError('Can only evaluate str or list')
 
-class PersuaderHFDetector(PersuaderDetector):
+class HFDetector(Detector):
 
     def __init__(self, model_path, target_class):
         from transformers import AutoModelForSequenceClassification, AutoTokenizer, TextClassificationPipeline
