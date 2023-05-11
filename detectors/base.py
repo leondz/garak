@@ -4,14 +4,15 @@ from colorama import Fore, Back, Style
 
 class Detector:
     def __init__(self):
-        self.name = "" # short name
+        if not self.name:
+            self.name = __class__ # short name
         self.description = "Empty detector"
         self.uri = "" # reference
         self.bcp47 = None # language this is for, in bcp47 format
         self.precision = 0.0
         self.recall = 0.0
         self.accuracy = None
-
+        print('loading '+Style.RESET_ALL+Fore.LIGHTBLUE_EX+'detector'+Style.RESET_ALL+': ', self.name)
 
     def detect(self, query):
         if isinstance(query, str):
@@ -25,9 +26,9 @@ class HFDetector(Detector):
 
     def __init__(self, model_path, target_class):
         from transformers import AutoModelForSequenceClassification, AutoTokenizer, TextClassificationPipeline
+        self.name = f"HF: {model_path}"
         super().__init__()
 
-        print('loading '+Style.RESET_ALL+Fore.LIGHTBLUE_EX+'detector'+Style.RESET_ALL+': HF', model_path)
 
         self.detector_model_path = model_path
         self.detector_target_class = target_class
@@ -51,3 +52,17 @@ class HFDetector(Detector):
                 )
 
         return detector_results
+    
+class StringDetector(Detector):
+    def __init__(self, target_string):
+        self.name = f"{__class__}: {target_string}"
+        super().__init__()
+    
+    def detect(self, query):
+        if isinstance(query, str):
+            query = [query]
+        if isinstance(query, list):
+            detector_raw_results = self.detector(query)
+        else:
+            raise TypeError('Can only evaluate str or list')        
+
