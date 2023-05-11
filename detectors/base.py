@@ -74,10 +74,10 @@ class StringDetector(Detector):
                     if s in q:
                         match = True
                 elif self.matchtype == "word":
-                    if re.search(f"\b{s}\b", q):
+                    if re.search(f"\\b{s}\\b", q):
                         match = True
                 else:
                     raise ValueError(f"Don't know how to process matchtype: {self.matchtype}")
-                detector_results.append(1 if match else 0)
+            detector_results.append(1 if match else 0)
 
         return detector_results
