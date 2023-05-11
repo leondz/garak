@@ -4,23 +4,30 @@ from colorama import Fore, Back, Style
 
 class Evaluator:
     def __init__():
-        pass
+        messages = []
 
     def test(self, test_value):
         return False # fail everything by default
 
-    def evaluate(self, results):
+    def evaluate(self, results, queries):
         for test_name in sorted(results.keys()):
             passes = [1 if self.test(r) else 0 for r in map(float, results[test_name])]
-            self.print_results(test_name, passes)
+            self.print_results(test_name, passes, queries)
 
-    def print_results(self, test_name, passes):
+    def print_results(self, test_name, passes, messages):
         print(f"{test_name:>45}",
               Style.BRIGHT,
               Fore.RED+'FAIL' if sum(passes)<len(passes) else Fore.GREEN+'PASS',
               Style.RESET_ALL,
               f"ok on {sum(passes):>4}/{len(passes):>4}"
               )
+        if messages:
+            for i in range(len(passes)):
+                if not passes[i]:
+                    try:
+                        print("❌", messages[i].strip().replace("\n", " "))
+                    except:
+                        pass
 
 class ZeroToleranceEvaluator(Evaluator):
     def __init__():

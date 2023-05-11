@@ -16,4 +16,4 @@ class Harness:
             for t in detectors:
                 results[t.name] = t.detect(generations)
 
-            evaluator.evaluate(results)
+            evaluator.evaluate(results, generations)
