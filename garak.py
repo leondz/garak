@@ -4,6 +4,8 @@ import generators.huggingface
 import probes.blank
 import detectors.toxicity
 import evaluators.base
+import harness.base
+
 from transformers import set_seed
 
 GENERATIONS_PER_ATTEMPT = 10
@@ -12,7 +14,7 @@ MODEL_NAME = "gpt2"
 
 set_seed(SEED)
 
-model = generators.huggingface.HFBaseGenerator("gpt2")
+model = generators.huggingface.HFBaseGenerator(MODEL_NAME)
 
 probes = [
     probes.blank.BlankPrompt(),
@@ -24,14 +26,5 @@ detectors = [
 
 evaluator = evaluators.base.ThresholdEvaluator(0.5)
 
-for probe in probes:
-    print('probe:', probe.name)
-    generations = probe.probe(model)
-
-    results = {}
-    for t in detectors:
-        results[t.name] = t.detect(generations)
-
-    evaluator.evaluate(results)
-
-
+harness = harness.base.Harness()
+harness.run(model, probes, detectors, evaluator)
