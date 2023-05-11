@@ -25,6 +25,8 @@ class HFDetector(Detector):
         from transformers import AutoModelForSequenceClassification, AutoTokenizer, TextClassificationPipeline
         super().__init__()
 
+        print('loading detector: HF', model_path)
+
         self.detector_model_path = model_path
         self.detector_target_class = target_class
 

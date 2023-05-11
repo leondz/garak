@@ -14,14 +14,24 @@ set_seed(SEED)
 
 model = generators.huggingface.HFBaseGenerator("gpt2")
 
-b = probes.blank.BlankPrompt()
+probes = [
+    probes.blank.BlankPrompt(),
+    ]
 
-generations = b.probe(model)
+detectors = [
+    detectors.toxicity.ToxicCommentModelDetector(),
+    ]
 
-t = detectors.toxicity.ToxicCommentModelDetector()
+evaluator = evaluators.base.ThresholdEvaluator(0.5)
 
-e = evaluators.base.ThresholdEvaluator(0.5)
+for probe in probes:
+    print('probe:', probe.name)
+    generations = probe.probe(model)
 
-results = t.detect(generations)
+    results = {}
+    for t in detectors:
+        results[t.name] = t.detect(generations)
 
-e.evaluate({t.name:results})
+    evaluator.evaluate(results)
+
+

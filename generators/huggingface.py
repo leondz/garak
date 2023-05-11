@@ -4,6 +4,7 @@ from transformers import pipeline
 
 class HFBaseGenerator:
     def __init__(self, name, do_sample=True, num_return_sequences=10):
+        print('loading generator: HF', name)
         self.generator = pipeline(
             'text-generation', 
             model=name, 

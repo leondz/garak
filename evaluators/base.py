@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+from colorama import Fore, Back, Style
+
 class Evaluator:
     def __init__():
         pass
@@ -13,7 +15,12 @@ class Evaluator:
             self.print_results(test_name, passes)
 
     def print_results(self, test_name, passes):
-        print(test_name, 'FAILED' if sum(passes)<len(passes) else 'PASS', f"{sum(passes)}/{len(passes)}")
+        print(test_name, 
+              Style.BRIGHT,
+              Fore.RED+'FAILED' if sum(passes)<len(passes) else Fore.GREEN+'PASS', 
+              Style.RESET_ALL,
+              f"{sum(passes)}/{len(passes)}"
+              )
 
 
 class ZeroToleranceEvaluator(Evaluator):
