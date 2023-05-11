@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
 from transformers import pipeline
+from colorama import Fore, Back, Style
 
 class HFBaseGenerator:
     def __init__(self, name, do_sample=True, num_return_sequences=10):
-        print('loading generator: HF', name)
+        print('loading '+Style.RESET_ALL+Fore.LIGHTMAGENTA_EX+'generator'+Style.RESET_ALL+': HF', name)
         self.generator = pipeline(
             'text-generation', 
             model=name, 

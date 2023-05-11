@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+from colorama import Fore, Back, Style
+
 class Detector:
     def __init__(self):
         self.name = "" # short name
@@ -25,7 +27,7 @@ class HFDetector(Detector):
         from transformers import AutoModelForSequenceClassification, AutoTokenizer, TextClassificationPipeline
         super().__init__()
 
-        print('loading detector: HF', model_path)
+        print('loading '+Style.RESET_ALL+Fore.LIGHTBLUE_EX+'detector'+Style.RESET_ALL+': HF', model_path)
 
         self.detector_model_path = model_path
         self.detector_target_class = target_class
