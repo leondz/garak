@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from probes.base import Probe
+from probes.base import TextProbe
 
 class Anthropomorphisation(TextProbe):
     def __init__(self):
