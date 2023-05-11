@@ -3,8 +3,8 @@
 import generators.huggingface
 import probes.blank
 import detectors.toxicity
-import evaluators.base
-import harness.base
+import evaluators
+import harness
 
 from transformers import set_seed
 
@@ -24,7 +24,7 @@ detectors = [
     detectors.toxicity.ToxicCommentModelDetector(),
     ]
 
-evaluator = evaluators.base.ThresholdEvaluator(0.5)
+evaluator = evaluators.ThresholdEvaluator(0.5)
 
-harness = harness.base.Harness()
+harness = harness.Harness()
 harness.run(model, probes, detectors, evaluator)
