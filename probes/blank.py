@@ -6,7 +6,7 @@ class BlankPrompt(Probe):
     def __init__(self):
         self.name = "blank"
         self.description = "Blank prompt attack"
-        self.lang = 'en'
+        self.lang = '*'
     
     def probe(self, target):
         empty_prompt = ''
