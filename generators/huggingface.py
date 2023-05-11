@@ -3,6 +3,7 @@
 from colorama import Fore, Back, Style
 import re
 from transformers import pipeline
+import warnings
 
 class HFBaseGenerator:
     def __init__(self, name, do_sample=True, num_return_sequences=10):
@@ -16,10 +17,12 @@ class HFBaseGenerator:
         self.deprefix_prompt = False
 
     def generate(self, prompt):
-        raw_output = self.generator(
-            prompt,
-            pad_token_id=self.generator.tokenizer.eos_token_id,
-            )
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            raw_output = self.generator(
+                prompt,
+                pad_token_id=self.generator.tokenizer.eos_token_id,
+                )
         generations = [i['generated_text'] for i in raw_output]
         if not self.deprefix_prompt:
             return generations
