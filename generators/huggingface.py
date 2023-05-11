@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-from transformers import pipeline
 from colorama import Fore, Back, Style
+import re
+from transformers import pipeline
 
 class HFBaseGenerator:
     def __init__(self, name, do_sample=True, num_return_sequences=10):
@@ -12,10 +13,15 @@ class HFBaseGenerator:
             do_sample=do_sample,
             num_return_sequences=num_return_sequences,
             )
+        self.deprefix_prompt = False
 
     def generate(self, prompt):
         raw_output = self.generator(
             prompt,
             pad_token_id=self.generator.tokenizer.eos_token_id,
             )
-        return [i['generated_text'] for i in raw_output]
+        generations = [i['generated_text'] for i in raw_output]
+        if not self.deprefix_prompt:
+            return generations
+        else:
+            return [re.sub("^" + re.escape(prompt), '', i) for i in generations]
