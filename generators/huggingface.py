@@ -18,7 +18,7 @@ class HFBaseGenerator:
 
     def generate(self, prompt):
         with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
+            warnings.simplefilter("ignore", category=UserWarning)
             raw_output = self.generator(
                 prompt,
                 pad_token_id=self.generator.tokenizer.eos_token_id,
