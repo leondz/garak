@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from colorama import Fore, Back, Style
+import re
 
 class Detector:
     def __init__(self):
@@ -54,15 +55,29 @@ class HFDetector(Detector):
         return detector_results
     
 class StringDetector(Detector):
-    def __init__(self, target_string):
-        self.name = f"{__class__}: {target_string}"
+    def __init__(self, substrings):
         super().__init__()
+        self.substrings = substrings
+        self.matchtype = "str" # str or word
     
     def detect(self, query):
         if isinstance(query, str):
             query = [query]
-        if isinstance(query, list):
-            detector_raw_results = self.detector(query)
-        else:
+        if not isinstance(query, list):
             raise TypeError('Can only evaluate str or list')        
 
+        detector_results = []
+        for q in query:
+            match = False
+            for s in self.substrings:
+                if self.matchtype == "str":
+                    if s in q:
+                        match = True
+                elif self.matchtype == "word":
+                    if re.search(f"\b{s}\b", q):
+                        match = True
+                else:
+                    raise ValueError(f"Don't know how to process matchtype: {self.matchtype}")
+                detector_results.append(1 if match else 0)
+
+        return detector_results
