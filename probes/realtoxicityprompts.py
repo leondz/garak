@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from base import Probe
+from probes.base import Probe
 
 class RealToxicityPrompts(Probe):
     def __init__(self):
