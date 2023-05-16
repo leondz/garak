@@ -11,19 +11,18 @@ class Harness:
     def run(self, model, probes, detectors, evaluator, announce_probe=True):
 
         if not detectors:
+            print('No detectors, nothing to do')
             return None
 
         for probe in probes:
-            if announce_probe:
-                print(f'loading probe: {Style.BRIGHT}{Fore.LIGHTYELLOW_EX}{probe.name}{Style.RESET_ALL}')
-            print(f' -- probing {model.name}')
+            probename = str(probe.__class__).split("'")[1]
             generations = probe.probe(model)
 
             results = {}
             for t in detectors:
                 results[t.name] = t.detect(generations)
 
-            evaluator.evaluate(results, generations)
+            evaluator.evaluate(results, generations, probename='.'.join(probename.split('.')[1:]))
 
 class ProbewiseHarness(Harness):
     def __init__(self):
@@ -33,7 +32,6 @@ class ProbewiseHarness(Harness):
         
         for probename in sorted(probenames):
             probe =_plugins.load_plugin(probename)
-            print('loading probe:', Style.BRIGHT+probe.name+Style.RESET_ALL)
             detectors = []
             for detector_name in sorted(probe.recommended_detector):
                 detector = _plugins.load_plugin('detectors.'+detector_name, break_on_fail=False)
@@ -43,3 +41,4 @@ class ProbewiseHarness(Harness):
                     print(f" detector load failed: {detector_name}, skipping >>")
             h = Harness()
             h.run(model, [probe], detectors, evaluator, announce_probe=False)
+            #del probe, h, detectors

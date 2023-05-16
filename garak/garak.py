@@ -13,8 +13,8 @@ MODEL_NAME = "gpt2"
 
 set_seed(SEED)
 
-#probe_names = enumerate_plugins(category = 'probes').values()
-probe_names = ['probes.lmrc.Bullying']
+probe_names = enumerate_plugins(category = 'probes').values()
+#probe_names = ['probes.lmrc.Bullying']
 
 evaluator = evaluators.ThresholdEvaluator(0.5)
 

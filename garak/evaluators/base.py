@@ -5,20 +5,23 @@ from colorama import Fore, Back, Style
 class Evaluator:
     def __init__():
         messages = []
+        self.probename = ""
 
     def test(self, test_value):
         return False # fail everything by default
 
-    def evaluate(self, results, queries):
+    def evaluate(self, results, queries, probename=""):
+        self.probename=probename
         for test_name in sorted(results.keys()):
             passes = [1 if self.test(r) else 0 for r in map(float, results[test_name])]
             self.print_results(test_name, passes, queries)
 
     def print_results(self, test_name, passes, messages):
-        print(f"{test_name:>45}",
-              Style.BRIGHT,
-              Fore.RED+'FAIL' if sum(passes)<len(passes) else Fore.GREEN+'PASS',
-              Style.RESET_ALL,
+        if len(passes):
+            outcome = Fore.LIGHTRED_EX+'FAIL' if sum(passes)<len(passes) else Fore.LIGHTGREEN_EX+'PASS'
+        else:
+            outcome = Fore.LIGHTYELLOW_EX+'SKIP'
+        print(f"{self.probename:<25}{test_name:>25} {Style.BRIGHT}{outcome}{Style.RESET_ALL},",
               f"ok on {sum(passes):>4}/{len(passes):>4}"
               )
         if messages:
