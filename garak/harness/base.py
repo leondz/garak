@@ -12,7 +12,8 @@ class Harness:
 
         for probe in probes:
             if announce_probe:
-                print('probe:', Style.BRIGHT+probe.name+Style.RESET_ALL)
+                print('loading probe:', Style.BRIGHT+probe.name+Style.RESET_ALL)
+            print(f' -- probing {model.name}')
             generations = probe.probe(model)
 
             results = {}
@@ -29,7 +30,7 @@ class ProbewiseHarness(Harness):
         
         for probename in probenames:
             probe =_plugins.load_plugin(probename)
-            print('probe:', Style.BRIGHT+probe.name+Style.RESET_ALL)
+            print('loading probe:', Style.BRIGHT+probe.name+Style.RESET_ALL)
             detectors = []
             for detector_name in probe.recommended_detector:
                 detector = _plugins.load_plugin('detectors.'+detector_name, break_on_fail=False)
