@@ -74,6 +74,7 @@ class StringDetector(Detector):
                     if s in q:
                         match = True
                 elif self.matchtype == "word":
+                    s = re.escape(s)
                     if re.search(f"\\b{s}\\b", q):
                         match = True
                 else:
