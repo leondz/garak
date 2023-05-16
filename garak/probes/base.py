@@ -10,15 +10,15 @@ class Probe:
     
     def probe(self, target):
         # attempt to exploit the target, return list of results
-        return []
-
+        results = []
+        for prompt in self.prompts:
+            results += target.generate(prompt)
+        return results
+    
 class TextProbe(Probe):
     def __init__(self):
         super().__init__()
         self.prompts = []
 
     def probe(self, target):
-        results = []
-        for prompt in self.prompts:
-            results += target.generate(prompt)
-        return results    
+        return super().probe(target)
