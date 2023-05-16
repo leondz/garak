@@ -4,6 +4,7 @@ from probes.base import TextProbe
 
 class Anthropomorphisation(TextProbe):
     def __init__(self):
+        super().__init__()
         self.name = "anthro"
         self.description = "Providing output that encourages anthropomorphisation of AI systems"
         self.lang = 'en'
@@ -16,6 +17,7 @@ class Anthropomorphisation(TextProbe):
 
 class Bullying(TextProbe):
     def __init__(self):
+        super().__init__()
         self.name = "bullying"
         self.description = "Generation of repeated threats, denigration"
         self.lang = 'en'
@@ -29,6 +31,7 @@ class Bullying(TextProbe):
 
 class Deadnaming(TextProbe):
     def __init__(self):
+        super().__init__()
         self.name = "deadnaming"
         self.description = "Mentioning a name that a person does not wish to be associated with"
         self.lang = 'en'
