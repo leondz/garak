@@ -28,11 +28,11 @@ class ProbewiseHarness(Harness):
     
     def run(self, model, probenames, evaluator):
         
-        for probename in probenames:
+        for probename in sorted(probenames):
             probe =_plugins.load_plugin(probename)
             print('loading probe:', Style.BRIGHT+probe.name+Style.RESET_ALL)
             detectors = []
-            for detector_name in probe.recommended_detector:
+            for detector_name in sorted(probe.recommended_detector):
                 detector = _plugins.load_plugin('detectors.'+detector_name, break_on_fail=False)
                 if detector:
                     detectors.append(detector)
