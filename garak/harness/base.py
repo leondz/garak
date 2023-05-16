@@ -40,6 +40,6 @@ class ProbewiseHarness(Harness):
                 if detector:
                     detectors.append(detector)
                 else:
-                    print(f"❌ detector load failed: {detector_name}, skipping")
+                    print(f" detector load failed: {detector_name}, skipping >>")
             h = Harness()
             h.run(model, [probe], detectors, evaluator, announce_probe=False)
