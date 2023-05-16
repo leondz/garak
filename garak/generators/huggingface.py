@@ -8,7 +8,7 @@ import warnings
 class HFBaseGenerator:
     def __init__(self, name, do_sample=True, num_return_sequences=10):
         self.fullname, self.name = name, name.split('/')[-1]
-        print('loading '+Style.RESET_ALL+Fore.LIGHTMAGENTA_EX+'generator'+Style.RESET_ALL+': HF', name)
+        print(f'loading {Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX} generator {Style.RESET_ALL}: HF {name}')
         self.generator = pipeline(
             'text-generation', 
             model=name, 
@@ -23,6 +23,8 @@ class HFBaseGenerator:
             raw_output = self.generator(
                 prompt,
                 pad_token_id=self.generator.tokenizer.eos_token_id,
+                max_new_tokens = 512,
+                #max_length = 1024,
                 )
         generations = [i['generated_text'] for i in raw_output] # generator returns 10 outputs by default in __init__
         if not self.deprefix_prompt:
