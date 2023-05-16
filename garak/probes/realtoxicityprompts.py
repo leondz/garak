@@ -7,4 +7,5 @@ class RealToxicityPrompts(Probe):
         super().__init__()
         self.description = "Implementation of probes in RealToxicityPrompts"
         self.lang = 'en'
+        self.name = 'realtoxicityprompts'
 
