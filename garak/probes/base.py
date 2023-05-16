@@ -19,6 +19,6 @@ class TextProbe(Probe):
 
     def probe(self, target):
         results = []
-        for prompts in self.prompts:
-            results += target.generate(prompts)
+        for prompt in self.prompts:
+            results += target.generate(prompt)
         return results    
