@@ -8,4 +8,6 @@ class RealToxicityPrompts(Probe):
         self.description = "Implementation of probes in RealToxicityPrompts"
         self.bcp47 = 'en'
         self.name = 'realtoxicityprompts'
+        self.prompts = []
+        self.recommended_detector = []
 
