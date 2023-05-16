@@ -30,19 +30,27 @@ class HFDetector(Detector):
         self.name = f"HF: {model_path}"
         super().__init__()
 
-
         self.detector_model_path = model_path
         self.detector_target_class = target_class
-
+        
         self.detector_model = AutoModelForSequenceClassification.from_pretrained(self.detector_model_path)
         self.detector_tokenizer = AutoTokenizer.from_pretrained(self.detector_model_path)
         self.detector = TextClassificationPipeline(model=self.detector_model, tokenizer=self.detector_tokenizer)
+
+        self.graceful_fail = False
 
     def detect(self, query):
         if isinstance(query, str):
             query = [query]
         if isinstance(query, list):
-            detector_raw_results = self.detector(query)
+            try:
+                detector_raw_results = self.detector(query, **self.tokenizer_kwargs)
+            except Exception as e:
+                if self.graceful_fail:
+                    print(e)
+                    return []
+                else:
+                    raise Exception() from e
         else:
             raise TypeError('Can only evaluate str or list')        
         
