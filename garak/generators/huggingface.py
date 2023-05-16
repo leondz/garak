@@ -8,7 +8,7 @@ import warnings
 class HFBaseGenerator:
     def __init__(self, name, do_sample=True, num_return_sequences=10):
         self.fullname, self.name = name, name.split('/')[-1]
-        print(f'loading {Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX} generator {Style.RESET_ALL}: HF {name}')
+        print(f'loading {Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: HF:{name}')
         self.generator = pipeline(
             'text-generation', 
             model=name, 
@@ -16,6 +16,7 @@ class HFBaseGenerator:
             num_return_sequences=num_return_sequences,
             )
         self.deprefix_prompt = False
+        self.max_new_tokens = 256
 
     def generate(self, prompt):
         with warnings.catch_warnings():
@@ -24,7 +25,7 @@ class HFBaseGenerator:
                 raw_output = self.generator(
                     prompt,
                     pad_token_id = self.generator.tokenizer.eos_token_id,
-                    max_new_tokens = 512,
+                    max_new_tokens = self.max_new_tokens,
                     #max_length = 1024,
                     )
             except:
