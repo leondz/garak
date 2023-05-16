@@ -27,10 +27,28 @@ def enumerate_plugins(category = 'probes'):
 
     return plugin_class_names
 
-def load_plugin(path): # input: sth like "probe.blank.BlankPrompt"; return class instance
-    category, module_name, plugin_class_name = path.split('.')
+def load_plugin(path, break_on_fail=True): # input: sth like "probe.blank.BlankPrompt"; return class instance
+    try:
+        category, module_name, plugin_class_name = path.split('.')
+    except ValueError:
+        if break_on_fail:
+            raise ValueError(f'Expected plugin name in format category.module_name.class_name, got "{path}"')
+        else:
+            return False
     try:
         mod = importlib.import_module(f"{category}.{module_name}")
     except:
-        raise ValueError("Couldn't import " + module_name)
-    return getattr(mod, plugin_class_name)()
+        if break_on_fail:
+            raise ValueError("Couldn't import " + module_name)
+        else:
+            return False
+    
+    try:
+        plugin_instance = getattr(mod, plugin_class_name)()
+    except AttributeError:
+        if break_on_fail:
+            raise ValueError(f"Plugin {plugin_class_name} not found in {category}.{module}")
+        else:
+            return False
+        
+    return plugin_instance

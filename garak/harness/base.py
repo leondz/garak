@@ -2,14 +2,17 @@
 
 from colorama import Fore, Style
 
+import _plugins
+
 class Harness:
     def __init__(self):
         pass
     
-    def run(self, model, probes, detectors, evaluator):
+    def run(self, model, probes, detectors, evaluator, announce_probe=True):
 
         for probe in probes:
-            print('probe:', Style.BRIGHT+probe.name+Style.RESET_ALL)
+            if announce_probe:
+                print('probe:', Style.BRIGHT+probe.name+Style.RESET_ALL)
             generations = probe.probe(model)
 
             results = {}
@@ -17,3 +20,20 @@ class Harness:
                 results[t.name] = t.detect(generations)
 
             evaluator.evaluate(results, generations)
+
+class ProbewiseHarness(Harness):
+    def __init__(self):
+        super().__init__()
+    
+    def run(self, model, probenames, evaluator):
+        
+        for probename in probenames:
+            probe =_plugins.load_plugin(probename)
+            print('probe:', Style.BRIGHT+probe.name+Style.RESET_ALL)
+            detectors = []
+            for detector_name in probe.recommended_detector:
+                detector = _plugins.load_plugin('detectors.'+detector_name, break_on_fail=False)
+                if detector:
+                    detectors.append(detector)
+            h = Harness()
+            h.run(model, [probe], detectors, evaluator, announce_probe=False)
