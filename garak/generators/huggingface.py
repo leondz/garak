@@ -20,12 +20,15 @@ class HFBaseGenerator:
     def generate(self, prompt):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=UserWarning)
-            raw_output = self.generator(
-                prompt,
-                pad_token_id=self.generator.tokenizer.eos_token_id,
-                max_new_tokens = 512,
-                #max_length = 1024,
-                )
+            try:
+                raw_output = self.generator(
+                    prompt,
+                    pad_token_id = self.generator.tokenizer.eos_token_id,
+                    max_new_tokens = 512,
+                    #max_length = 1024,
+                    )
+            except:
+                raw_output = [] # could handle better than this..
         generations = [i['generated_text'] for i in raw_output] # generator returns 10 outputs by default in __init__
         if not self.deprefix_prompt:
             return generations
