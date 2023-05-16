@@ -15,10 +15,10 @@ class Probe:
 class TextProbe(Probe):
     def __init__(self):
         super().__init__()
-        self.questions = []
+        self.prompts = []
 
     def probe(self, target):
         results = []
-        for question in self.questions:
-            results += target.generate(question)
+        for prompts in self.prompts:
+            results += target.generate(prompts)
         return results    
