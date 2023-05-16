@@ -13,7 +13,7 @@ class Detector:
         self.precision = 0.0
         self.recall = 0.0
         self.accuracy = None
-        print('loading '+Style.RESET_ALL+Fore.LIGHTBLUE_EX+'detector'+Style.RESET_ALL+': ', self.name)
+        print(f'loading {Style.RESET_ALL}{Fore.LIGHTBLUE_EX}detector{Style.RESET_ALL}: {self.name}')
 
     def detect(self, query):
         if isinstance(query, str):
