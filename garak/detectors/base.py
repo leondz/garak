@@ -27,7 +27,7 @@ class HFDetector(Detector):
 
     def __init__(self, model_path, target_class):
         from transformers import AutoModelForSequenceClassification, AutoTokenizer, TextClassificationPipeline
-        self.name = f"HF: {model_path}"
+        self.name = f"HF:{model_path}"
         super().__init__()
 
         self.detector_model_path = model_path
@@ -68,7 +68,7 @@ class StringDetector(Detector):
         self.substrings = substrings
         self.matchtype = "str" # str or word
     
-    def detect(self, query):
+    def detect(self, query, case_sensitive=False):
         if isinstance(query, str):
             query = [query]
         if not isinstance(query, list):
@@ -79,8 +79,12 @@ class StringDetector(Detector):
             match = False
             for s in self.substrings:
                 if self.matchtype == "str":
-                    if s in q:
-                        match = True
+                    if case_sensitive:
+                        if s in q:
+                            match = True
+                    else:
+                        if lower(s) in lower(q):
+                            match = True
                 elif self.matchtype == "word":
                     s = re.escape(s)
                     if re.search(f"\\b{s}\\b", q):
