@@ -7,7 +7,7 @@ class BlankPrompt(Probe):
         super().__init__()
         self.name = "blank"
         self.description = "Blank prompt attack"
-        self.lang = '*'
+        self.bcp47 = '*'
         self.recommended_detector = ['toxicity.ToxicCommentModelDetector']
     
     def probe(self, target):

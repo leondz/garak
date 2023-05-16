@@ -7,7 +7,7 @@ class Dan_11_0(Probe):
         super().__init__()
         self.name = "dan_11.0"
         self.description = "DAN 11.0"
-        self.lang = 'en'
+        self.bcp47 = 'en'
         self.recommended_detector = ["dan.DANDetector"]
 
     def probe(self, target):
@@ -20,7 +20,7 @@ class Dan_10_0(Probe):
         super().__init__()
         self.name = "dan_10.0"
         self.description = "DAN 10.0"
-        self.lang = 'en'
+        self.bcp47 = 'en'
         self.recommended_detector = ["dan.DANDetector"]
     
     def probe(self, target):
@@ -33,7 +33,7 @@ class Dan_9_0(Probe):
         super().__init__()
         self.name = "dan_9.0"
         self.description = "DAN 9.0"
-        self.lang = 'en'
+        self.bcp47 = 'en'
         self.recommended_detector = ["dan.DANDetector"]
     
     def probe(self, target):
@@ -73,7 +73,7 @@ class Dan_8_0(Probe):
         super().__init__()
         self.name = "dan_8.0"
         self.description = "DAN 8.0"
-        self.lang = 'en'
+        self.bcp47 = 'en'
         self.recommended_detector = ["dan.DANDetector"]
     
     def probe(self, target):
@@ -116,7 +116,7 @@ class Dan_7_0(Probe):
         super().__init__()
         self.name = "dan_7.0"
         self.description = "DAN 7.0"
-        self.lang = 'en'
+        self.bcp47 = 'en'
         self.recommended_detector = ["dan.DANDetector"]
     
     def probe(self, target):
@@ -147,7 +147,7 @@ class Dan_6_2(Probe):
         super().__init__()
         self.name = "dan_6.2"
         self.description = "DAN 6.2"
-        self.lang = 'en'
+        self.bcp47 = 'en'
         self.recommended_detector = ["dan.DANDetector"]
     
     def probe(self, target):
@@ -174,7 +174,7 @@ class Dan_6_0(Probe):
         super().__init__()
         self.name = "dan_6.0"
         self.description = "DAN 6.0"
-        self.lang = 'en'
+        self.bcp47 = 'en'
         self.recommended_detector = ["dan.DANDetector"]
     
     def probe(self, target):
@@ -187,7 +187,7 @@ class DUDE(Probe):
         super().__init__()
         self.name = "dude"
         self.description = "DUDE"
-        self.lang = 'en'
+        self.bcp47 = 'en'
         self.recommended_detector = ["dan.DUDEDetector"]
     
     def probe(self, target):
@@ -200,7 +200,7 @@ class STAN(Probe):
         super().__init__()
         self.name = "stan"
         self.description = "STAN"
-        self.lang = 'en'
+        self.bcp47 = 'en'
         self.recommended_detector = ["dan.STANDetector"]
     
     def probe(self, target):
@@ -213,7 +213,7 @@ class DAN_Jailbreak(Probe):
         super().__init__()
         self.name = "dan_jailbreak"
         self.description = "DAN Jailbreak"
-        self.lang = 'en'
+        self.bcp47 = 'en'
         self.recommended_detector = ["dan.DANJailbreakDetector"]
  
     def probe(self, target):
@@ -226,7 +226,7 @@ class AntiDAN(Probe):
         super().__init__()
         self.name = "anti_dan"
         self.description = "Anti-DAN"
-        self.lang = 'en'
+        self.bcp47 = 'en'
         self.recommended_detector = ["dan.AntiDANDetector"]
     
     def probe(self, target):
@@ -253,7 +253,7 @@ class ChatGPT_Developer_Mode_v2(Probe):
         super().__init__()
         self.name = "chatgpt_devmode_v2"
         self.description = "ChatGPT Developer Mode v2"
-        self.lang = 'en'
+        self.bcp47 = 'en'
         self.recommended_detector = ["dan.DevModeDetector"]
     
     def probe(self, target):
@@ -266,7 +266,7 @@ class ChatGPT_Developer_Mode_RANTI(Probe):
         super().__init__()
         self.name = "chatgpt_ranti"
         self.description = "ChatGPT DevMode + Ranti"
-        self.lang = 'en'
+        self.bcp47 = 'en'
         self.recommended_detector = ["dan.DevModeDetector"]
     
     def probe(self, target):
@@ -279,7 +279,7 @@ class ChatGPT_Image_Markdown(Probe):
         super().__init__()
         self.name = "chatgpt_img_md"
         self.description = "ChatGPT Markdown Image Unlocker / markdown injection"
-        self.lang = 'en'
+        self.bcp47 = 'en'
         self.recommended_detector = ["dan.MarkdownLinkDetector"]
     
     def probe(self, target):

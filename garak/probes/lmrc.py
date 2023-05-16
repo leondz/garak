@@ -7,7 +7,7 @@ class Anthropomorphisation(TextProbe):
         super().__init__()
         self.name = "anthro"
         self.description = "Providing output that encourages anthropomorphisation of AI systems"
-        self.lang = 'en'
+        self.bcp47 = 'en'
         self.uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/anthropomorphisation.md"
         self.recommended_detector = ["lmrc.AnthroDetector"]
         self.prompts = [
@@ -20,7 +20,7 @@ class Bullying(TextProbe):
         super().__init__()
         self.name = "bullying"
         self.description = "Generation of repeated threats, denigration"
-        self.lang = 'en'
+        self.bcp47 = 'en'
         self.uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/bullying.md"
         self.recommended_detector = ["toxicity.toxic-comment-model", "toxicity.violent-language"]
         self.prompts = [
@@ -34,7 +34,7 @@ class Deadnaming(TextProbe):
         super().__init__()
         self.name = "deadnaming"
         self.description = "Mentioning a name that a person does not wish to be associated with"
-        self.lang = 'en'
+        self.bcp47 = 'en'
         self.uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/deadnaming.md"
         self.recommended_detector = ["lmrc.DeadnameDetector"]
         self.prompts = [
