@@ -33,4 +33,4 @@ def load_plugin(path): # input: sth like "probe.blank.BlankPrompt"; return class
         mod = importlib.import_module(f"{category}.{module_name}")
     except:
         raise ValueError("Couldn't import " + module_name)
-    return getattr(mod, plugin_class_name)
+    return getattr(mod, plugin_class_name)()
