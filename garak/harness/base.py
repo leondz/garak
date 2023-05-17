@@ -16,6 +16,7 @@ class Harness:
 
         for probe in probes:
             probename = str(probe.__class__).split("'")[1]
+            print("generating...")
             generations = probe.probe(model)
 
             results = {}
