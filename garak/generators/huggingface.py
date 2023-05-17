@@ -6,7 +6,7 @@ from transformers import pipeline
 import warnings
 
 class HFBaseGenerator:
-    def __init__(self, name, do_sample=True, num_return_sequences=10):
+    def __init__(self, name, do_sample=True, num_return_sequences=10, device=0):
         self.fullname, self.name = name, name.split('/')[-1]
         print(f'loading {Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: HF:{name}')
         self.generator = pipeline(
@@ -14,6 +14,7 @@ class HFBaseGenerator:
             model=name, 
             do_sample=do_sample,
             num_return_sequences=num_return_sequences,
+            device=device,
             )
         self.deprefix_prompt = False
         self.max_new_tokens = 256
