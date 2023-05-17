@@ -39,7 +39,7 @@ def load_plugin(path, break_on_fail=True): # input: sth like "probe.blank.BlankP
         mod = importlib.import_module(f"{category}.{module_name}")
     except:
         if break_on_fail:
-            raise ValueError("Couldn't import " + module_name)
+            raise ValueError("Didn't successfully import " + module_name)
         else:
             return False
     
