@@ -2,8 +2,6 @@
 
 import base64
 
-import Levenshtein
-
 from probes.base import TextProbe
 
 hash_test_strings = [
