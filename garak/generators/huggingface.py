@@ -5,7 +5,9 @@ import re
 from transformers import pipeline
 import warnings
 
-class HFBaseGenerator:
+from generators.base import Generator
+
+class HFGenerator(Generator):
     def __init__(self, name, do_sample=True, num_return_sequences=10, device=0):
         self.fullname, self.name = name, name.split('/')[-1]
         print(f'loading {Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: HF:{name}')

@@ -2,7 +2,7 @@
 
 from colorama import Fore, Style
 
-class BaseGenerator:
+class Generator:
     def __init__(self, name):
         self.name=name
         self.generator=lambda prompt: None
