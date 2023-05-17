@@ -3,8 +3,9 @@
 from colorama import Fore, Style
 
 class Generator:
-    def __init__(self, name):
+    def __init__(self, name, generations=10):
         self.name=name
+        self.generations=generations
         self.generator=lambda prompt: None
         print(f'loading empty {Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: {name}')
 
