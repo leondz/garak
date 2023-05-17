@@ -7,18 +7,20 @@ import warnings
 
 from generators.base import Generator
 
+models_to_deprefix = ['gpt2']
+
 class HFGenerator(Generator):
-    def __init__(self, name, do_sample=True, num_return_sequences=10, device=0):
+    def __init__(self, name, do_sample=True, generations=10, device=0):
         self.fullname, self.name = name, name.split('/')[-1]
         print(f'loading {Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: HF:{name}')
         self.generator = pipeline(
             'text-generation', 
             model=name, 
             do_sample=do_sample,
-            num_return_sequences=num_return_sequences,
+            num_return_sequences=generations,
             device=device,
             )
-        self.deprefix_prompt = False
+        self.deprefix_prompt = name in models_to_deprefix
         self.max_new_tokens = 256
 
     def generate(self, prompt):
