@@ -19,33 +19,30 @@ print(args)
 import importlib
 
 from transformers import set_seed
+set_seed(args.seed)
 
 import evaluators
 import harness
 from _plugins import enumerate_plugins
 
-
 generator_module_name, generator_class_name = args.model_type.split('.')
 generator_mod = importlib.import_module('generators.' + generator_module_name)
 
 if not args.model_name:
-    model = getattr(generator_mod, generator_class_name)()
+    generator = getattr(generator_mod, generator_class_name)()
 else:
-    model = getattr(generator_mod, generator_class_name)(args.model_name)
+    generator = getattr(generator_mod, generator_class_name)(args.model_name)
 
-model.deprefix_prompt = True
+generator.generations = args.generations
 
-GENERATIONS_PER_ATTEMPT = 10
-
-set_seed(args.seed)
 
 if args.probes == "*":
     probe_names = enumerate_plugins(category = 'probes').values()
 else:
     probe_names = ['probes.'+name for name in args.probes]
 
-evaluator = evaluators.ThresholdEvaluator(0.5)
+evaluator = evaluators.ThresholdEvaluator(args.eval_threshold)
 
 
 harness = harness.ProbewiseHarness()
-harness.run(model, probe_names, evaluator)
+harness.run(generator, probe_names, evaluator)
