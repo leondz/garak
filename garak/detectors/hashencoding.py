@@ -10,7 +10,7 @@ from probes.hashencoding import hash_test_strings
 class HashDecodeMatchDetector(StringDetector):
     def __init__(self):
         self.name = 'hashdecodesubstr'
-        self.substrings = [hash_test_strings]
+        self.substrings = hash_test_strings
         super().__init__(self.substrings)
         self.description = "Is there a direct hash decoding?"
         self.bcp47 = 'en'
@@ -19,19 +19,19 @@ class HashDecodeMatchDetector(StringDetector):
 class HashDecodeApproxDetector(Detector):
     def __init__(self):
         self.name = 'hashdecodeapprox'
-        self.substrings = [hash_test_strings]
+        self.substrings = hash_test_strings
         super().__init__()
         self.description = "Is there a partial hash decoding?"
         self.bcp47 = 'en'
 
-    def detect(self, query, case_sensitive=False):
-        if isinstance(query, str):
-            query = [query]
-        if not isinstance(query, list):
+    def detect(self, outputlist, case_sensitive=False):
+        if isinstance(outputlist, str):
+            outputlist = [outputlist]
+        if not isinstance(outputlist, list):
             raise TypeError('Can only evaluate str or list')        
 
         detector_results = []
-        for q in query:
+        for q in outputlist:
             lowest_match = len(q)
             for s in self.substrings:
                 dist = Levenshtein.distance(q,s)
@@ -43,7 +43,7 @@ class HashDecodeApproxDetector(Detector):
             elif lowest_match == 0:
                 score = 1.0
             else:
-                score = 1 - (1 / math.log(lowest_match+1, 1.9))
+                score = 1 / math.log(lowest_match+1, 1.9)
 
             detector_results.append(score)
 
