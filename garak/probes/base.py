@@ -12,11 +12,11 @@ class Probe:
         probename = str(self.__class__).split("'")[1]
         print(f'loading {Style.BRIGHT}{Fore.LIGHTYELLOW_EX}probe: {Style.RESET_ALL}{probename}')
     
-    def probe(self, target):
+    def probe(self, generator):
         # attempt to exploit the target, return list of results
         results = []
         for prompt in self.prompts:
-            results += target.generate(prompt)
+            results += generator.generate(prompt)
         return results
     
 class TextProbe(Probe):
@@ -24,5 +24,5 @@ class TextProbe(Probe):
         super().__init__()
         self.prompts = []
 
-    def probe(self, target):
-        return super().probe(target)
+    def probe(self, generator):
+        return super().probe(generator)

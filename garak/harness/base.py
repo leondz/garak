@@ -19,8 +19,8 @@ class Harness:
             generations = probe.probe(model)
 
             results = {}
-            for t in detectors:
-                results[t.name] = t.detect(generations)
+            for d in detectors:
+                results[d.name] = d.detect(generations)
 
             evaluator.evaluate(results, generations, probename='.'.join(probename.split('.')[1:]))
 
