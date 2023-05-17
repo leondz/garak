@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from colorama import Fore, Style
+from tqdm import tqdm
 
 class Probe:
     def __init__(self):
@@ -15,7 +16,7 @@ class Probe:
     def probe(self, generator):
         # attempt to exploit the target, return list of results
         results = []
-        for prompt in self.prompts:
+        for prompt in tqdm(self.prompts):
             results += generator.generate(prompt)
         return results
     
