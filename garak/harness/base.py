@@ -36,7 +36,7 @@ class ProbewiseHarness(Harness):
         for probename in probenames:
             try:
                 probe =_plugins.load_plugin(probename)
-            except:
+            except Exception as e:
                 print(f"failed to load plugin {probename}")
                 continue
             detectors = []

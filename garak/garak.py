@@ -8,7 +8,7 @@ parser = argparse.ArgumentParser(
     )
 # model type; model name; seed; generations; probe names; eval threshold
 parser.add_argument('--model_type', type=str, help="class of the generator, e.g. 'huggingface.HFBaseGenerator'", required=True)
-parser.add_argument('--model_name', type=str, nargs='?', help="name of the model, e.g. 'gpt2'")
+parser.add_argument('--model_name', type=str, nargs='?', default="", help="name of the model, e.g. 'gpt2'")
 parser.add_argument('--seed', type=int, nargs="?", default=320, help="random seed")
 parser.add_argument('--generations', type=int, default=10, help="number of generations per prompt")
 parser.add_argument('--probes', type=str, nargs="*", default="*", help='list of probe names to use, or * for all')
@@ -27,10 +27,7 @@ from _plugins import enumerate_plugins
 
 generator_module_name, generator_class_name = args.model_type.split('.')
 generator_mod = importlib.import_module('generators.' + generator_module_name)
-if not args.model_name:
-    generator = getattr(generator_mod, generator_class_name)()
-else:
-    generator = getattr(generator_mod, generator_class_name)(args.model_name)
+generator = getattr(generator_mod, generator_class_name)(args.model_name)
 generator.generations = args.generations
 
 if args.probes == "*":

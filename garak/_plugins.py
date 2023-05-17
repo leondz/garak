@@ -1,4 +1,5 @@
 import importlib
+import inspect
 import os
 
 def enumerate_plugins(category = 'probes'):
@@ -6,9 +7,10 @@ def enumerate_plugins(category = 'probes'):
     if category not in ('probes', 'detectors'):
         raise ValueError('Not a recognised plugin type:', category)
     
-    pkg = importlib.import_module(f"{category}.base")
+    base_mod = importlib.import_module(f"{category}.base")
 
-    base_plugin_classnames = set([n for n in dir(pkg) if not n.startswith('__')])
+    base_plugin_classnames = set([n for n in dir(base_mod) if not n.startswith('__')])
+    # todo: prune refs that aren't category.title() or subclasses of that
     plugin_class_names = {}
 
     for module_filename in os.listdir(category):
@@ -19,11 +21,18 @@ def enumerate_plugins(category = 'probes'):
         module_name = module_filename.replace('.py', '')
         #print(category, 'module:', module_name)
         mod = importlib.import_module(f"{category}.{module_name}")
-        module_plugin_names = set([p for p in dir(mod) if not p.startswith('__')])
-        module_plugin_names = module_plugin_names.difference(base_plugin_classnames)
+        module_entries = set([p for p in dir(mod) if not p.startswith('__')])
+        module_entries = module_entries.difference(base_plugin_classnames)
+        module_plugin_names = set()
+        for module_entry in module_entries:
+            obj = getattr(mod, module_entry)
+            if inspect.isclass(obj):
+                if obj.__bases__[0].__name__ in base_plugin_classnames:
+                    module_plugin_names.add(module_entry)
+        
         #print(' >> ', ', '.join(module_plugin_names))
-        for module_probe_name in module_plugin_names:
-            plugin_class_names[module_probe_name] = f"{category}.{module_name}.{module_probe_name}"
+        for module_plugin_name in module_plugin_names:
+            plugin_class_names[module_plugin_name] = f"{category}.{module_name}.{module_plugin_name}"
 
     return plugin_class_names
 
