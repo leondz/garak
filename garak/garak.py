@@ -14,6 +14,7 @@ parser.add_argument('--generations', type=int, default=10, help="number of gener
 parser.add_argument('--probes', type=str, nargs="*", default="*", help='list of probe names to use, or * for all')
 parser.add_argument('--eval_threshold', type=float, default=0.5, help="minimum threshold for a successful hit")
 args = parser.parse_args()
+print(args)
 
 import importlib
 
@@ -23,7 +24,6 @@ import evaluators
 import harness
 from _plugins import enumerate_plugins
 
-print(args)
 
 generator_module_name, generator_class_name = args.model_type.split('.')
 generator_mod = importlib.import_module('generators.' + generator_module_name)
@@ -42,7 +42,7 @@ set_seed(args.seed)
 if args.probes == "*":
     probe_names = enumerate_plugins(category = 'probes').values()
 else:
-    probe_names = args.probes
+    probe_names = ['probes.'+name for name in args.probes]
 
 evaluator = evaluators.ThresholdEvaluator(0.5)
 
