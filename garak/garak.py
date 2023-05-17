@@ -27,14 +27,11 @@ from _plugins import enumerate_plugins
 
 generator_module_name, generator_class_name = args.model_type.split('.')
 generator_mod = importlib.import_module('generators.' + generator_module_name)
-
 if not args.model_name:
     generator = getattr(generator_mod, generator_class_name)()
 else:
     generator = getattr(generator_mod, generator_class_name)(args.model_name)
-
 generator.generations = args.generations
-
 
 if args.probes == "*":
     probe_names = enumerate_plugins(category = 'probes').values()

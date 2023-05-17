@@ -50,5 +50,8 @@ def load_plugin(path, break_on_fail=True): # input: sth like "probe.blank.BlankP
             raise ValueError(f"Plugin {plugin_class_name} not found in {category}.{module}")
         else:
             return False
+    except Exception as e:
+        print("error in: module", mod, "class", plugin_class_name)
+        raise e
         
     return plugin_instance

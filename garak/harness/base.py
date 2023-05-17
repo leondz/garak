@@ -31,8 +31,14 @@ class ProbewiseHarness(Harness):
     
     def run(self, model, probenames, evaluator):
         
-        for probename in sorted(probenames):
-            probe =_plugins.load_plugin(probename)
+        probenames = sorted(probenames)
+        print("probe queue:", probenames)
+        for probename in probenames:
+            try:
+                probe =_plugins.load_plugin(probename)
+            except:
+                print(f"failed to load plugin {probename}")
+                continue
             detectors = []
             for detector_name in sorted(probe.recommended_detector):
                 detector = _plugins.load_plugin('detectors.'+detector_name, break_on_fail=False)
