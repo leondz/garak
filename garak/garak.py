@@ -66,6 +66,8 @@ generator.generations = _config.args.generations
 
 if _config.args.probes == "*":
     probe_names = enumerate_plugins(category="probes").values()
+elif len(_config.args.probes[0].split('.')) == 1:
+    probe_names = [p for p in enumerate_plugins(category="probes").values() if p.startswith('probes.'+_config.args.probes[0])]
 else:
     probe_names = ["probes." + name for name in _config.args.probes]
 
