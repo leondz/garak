@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
-from detectors.base import StringDetector
+import json
+import logging
+
+from detectors.base import StringDetector, Detector
 
 
 class RileyIsnt(StringDetector):
@@ -23,3 +26,28 @@ class RileyIsnt(StringDetector):
         )
         self.bcp47 = "en"
         self.matchtype = "word"
+
+
+class PlainJSON(Detector):
+    def __init__(self):
+        self.name = "plainjson"
+        super().__init__()
+        self.description = "Is the output valid JSON with no preamble?"
+        self.uri = ""  # reference
+        self.bcp47 = "*"  # language this is for, in bcp47 format
+        logging.info(f"detector init: {self}")
+
+    def detect(self, outputlist):
+        if isinstance(outputlist, str):
+            outputlist = [outputlist]
+        if not isinstance(outputlist, list):
+            raise TypeError("Can only evaluate str or list")
+        else:
+            results = []
+            for o in outputlist:
+                try:
+                    json.loads(o.strip())
+                    results.append(1)
+                except:
+                    results.append(0)
+        return results
