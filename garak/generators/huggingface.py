@@ -52,3 +52,6 @@ class HFGenerator(Generator):
             return generations
         else:
             return [re.sub("^" + re.escape(prompt), "", i) for i in generations]
+
+
+default_class = "HFGenerator"

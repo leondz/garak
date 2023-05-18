@@ -4,7 +4,7 @@ import os
 
 
 def enumerate_plugins(category="probes"):
-    if category not in ("probes", "detectors"):
+    if category not in ("probes", "detectors", "generators", "harnesses"):
         raise ValueError("Not a recognised plugin type:", category)
 
     base_mod = importlib.import_module(f"{category}.base")

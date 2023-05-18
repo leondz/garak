@@ -18,3 +18,6 @@ class BlankGenerator(Generator):
 
     def generate(self, prompts):
         return [""] * self.generations
+
+
+default_class = "BlankGenerator"

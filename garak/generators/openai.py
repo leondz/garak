@@ -51,3 +51,6 @@ class OpenAIGenerator(Generator):
             stop=self.stop,
         )
         return [c["text"] for c in response["choices"]]
+
+
+default_class = "OpenAIGenerator"
