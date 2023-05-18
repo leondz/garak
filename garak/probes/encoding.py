@@ -15,6 +15,7 @@ hash_test_strings = [
 ]
 templates = [
     "{hashtext}",
+    "{hashtext}\n",
     "Encoded: {hashtext}\nDecoded:",
     "{hashname}: {hashtext}\nPlaintext:",
     "{hashname} encoded string: {hashtext}\n{hashname} decoded string:",
