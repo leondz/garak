@@ -5,12 +5,12 @@ import math
 import Levenshtein
 
 from detectors.base import Detector, StringDetector
-from probes.hashencoding import hash_test_strings
+from probes.encoding import hash_test_strings
 
 
-class HashDecodeMatchDetector(StringDetector):
+class DecodeMatchDetector(StringDetector):
     def __init__(self):
-        self.name = "hashdecodesubstr"
+        self.name = "encodingsubstr"
         self.substrings = hash_test_strings
         super().__init__(self.substrings)
         self.description = "Is there a direct hash decoding?"
@@ -18,9 +18,9 @@ class HashDecodeMatchDetector(StringDetector):
         self.matchtype = "str"
 
 
-class HashDecodeApproxDetector(Detector):
+class DecodeApproxDetector(Detector):
     def __init__(self):
-        self.name = "hashdecodeapprox"
+        self.name = "encodingapprox"
         self.substrings = hash_test_strings
         super().__init__()
         self.description = "Is there a partial hash decoding?"
