@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
+import json
 import logging
 
 from colorama import Fore, Style
 
+import _config
 import _plugins
 
 
@@ -26,6 +28,14 @@ class Harness:
             results = {}
             for d in detectors:
                 results[d.name] = d.detect(generations)
+                for entry in zip(generations, results[d.name]):
+                    report_line = {
+                        "probe": probename,
+                        "output": entry[0],
+                        "detector": d.name,
+                        "score": entry[1],
+                    }
+                    _config.reportfile.write(json.dumps(report_line) + "\n")
 
             evaluator.evaluate(
                 results, generations, probename=".".join(probename.split(".")[1:])

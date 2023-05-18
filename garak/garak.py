@@ -49,6 +49,10 @@ logging.basicConfig(
 )
 logging.info(f"invoked with arguments {_config.args}")
 
+report_filename = "garak.jsonl"
+_config.reportfile = open(report_filename, "w")
+logging.info(f"reporting to {report_filename}")
+
 import importlib
 
 import evaluators
