@@ -2,10 +2,13 @@
 
 from colorama import Fore, Back, Style
 import re
-from transformers import pipeline
+from transformers import pipeline, set_seed
 import warnings
 
+from _config import args
 from generators.base import Generator
+
+set_seed(args.seed)
 
 models_to_deprefix = ['gpt2']
 

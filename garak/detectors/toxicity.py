@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 
+from _config import args
 from detectors.base import HFDetector
+
+from transformers import set_seed
+
+set_seed(args.seed)
 
 class ToxicCommentModelDetector(HFDetector):
     def __init__(self):

@@ -21,7 +21,7 @@ class Evaluator:
             outcome = Fore.LIGHTRED_EX+'FAIL' if sum(passes)<len(passes) else Fore.LIGHTGREEN_EX+'PASS'
         else:
             outcome = Fore.LIGHTYELLOW_EX+'SKIP'
-        print(f"{self.probename:<25}{test_name:>25} {Style.BRIGHT}{outcome}{Style.RESET_ALL},",
+        print(f"{self.probename:<25}{test_name:>40} {Style.BRIGHT}{outcome}{Style.RESET_ALL},",
               f"ok on {sum(passes):>4}/{len(passes):>4}"
               )
         if messages:
