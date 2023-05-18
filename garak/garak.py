@@ -56,7 +56,7 @@ logging.info(f"reporting to {report_filename}")
 import importlib
 
 import evaluators
-import harness
+import harness.probewise
 from _plugins import enumerate_plugins
 
 generator_module_name, generator_class_name = _config.args.model_type.split(".")
@@ -77,7 +77,7 @@ else:
 
 evaluator = evaluators.ThresholdEvaluator(_config.args.eval_threshold)
 
-harness = harness.ProbewiseHarness()
-logging.debug(f"harness run: {harness}")
-harness.run(generator, probe_names, evaluator)
+h = harness.probewise.ProbewiseHarness()
+logging.debug(f"harness run: {h}")
+h.run(generator, probe_names, evaluator)
 logging.info("run complete, ending")
