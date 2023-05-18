@@ -39,7 +39,15 @@ parser.add_argument(
     help="minimum threshold for a successful hit",
 )
 _config.args = parser.parse_args()
-print("args:", _config.args)
+
+import logging
+
+logging.basicConfig(
+    filename="garak.log",
+    level=logging.DEBUG,
+    format="%(asctime)s  %(levelname)s  %(message)s",
+)
+logging.info(f"invoked with arguments {_config.args}")
 
 import importlib
 
@@ -59,6 +67,7 @@ else:
 
 evaluator = evaluators.ThresholdEvaluator(_config.args.eval_threshold)
 
-
 harness = harness.ProbewiseHarness()
+logging.debug(f"harness run: {harness}")
 harness.run(generator, probe_names, evaluator)
+logging.info("run complete, ending")

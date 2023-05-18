@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 
-from colorama import Fore, Back, Style
+import logging
 import re
 from transformers import pipeline, set_seed
 import warnings
+
+from colorama import Fore, Back, Style
+
 
 from _config import args
 from generators.base import Generator
@@ -19,6 +22,7 @@ class HFGenerator(Generator):
         print(
             f"loading {Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: HF:{name}"
         )
+        logging.info("generator init: {self}")
         self.generator = pipeline(
             "text-generation",
             model=name,

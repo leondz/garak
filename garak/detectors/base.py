@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
-from colorama import Fore, Back, Style
+import logging
 import re
+
+from colorama import Fore, Back, Style
 
 
 class Detector:
@@ -17,6 +19,7 @@ class Detector:
         print(
             f"loading {Style.RESET_ALL}{Fore.LIGHTBLUE_EX}detector{Style.RESET_ALL}: {self.name}"
         )
+        logging.info(f"detector init: {self}")
 
     def detect(self, outputlist):
         if isinstance(outputlist, str):

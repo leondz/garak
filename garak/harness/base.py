@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import logging
+
 from colorama import Fore, Style
 
 import _plugins
@@ -11,12 +13,14 @@ class Harness:
 
     def run(self, model, probes, detectors, evaluator, announce_probe=True):
         if not detectors:
+            logging.warning("No detectors, nothing to do")
             print("No detectors, nothing to do")
             return None
 
         for probe in probes:
             probename = str(probe.__class__).split("'")[1]
             print("generating...")
+            logging.info("generating...")
             generations = probe.probe(model)
 
             results = {}
@@ -35,11 +39,13 @@ class ProbewiseHarness(Harness):
     def run(self, model, probenames, evaluator):
         probenames = sorted(probenames)
         print("probe queue:", probenames)
+        logging.info("probe queue: " + " ".join(probenames))
         for probename in probenames:
             try:
                 probe = _plugins.load_plugin(probename)
             except Exception as e:
                 print(f"failed to load probe {probename}")
+                logging.warning(f"failed to load probe {probename}")
                 continue
             detectors = []
             for detector_name in sorted(probe.recommended_detector):
@@ -50,6 +56,9 @@ class ProbewiseHarness(Harness):
                     detectors.append(detector)
                 else:
                     print(f" detector load failed: {detector_name}, skipping >>")
+                    logging.error(
+                        f" detector load failed: {detector_name}, skipping >>"
+                    )
             h = Harness()
             h.run(model, [probe], detectors, evaluator, announce_probe=False)
             # del probe, h, detectors

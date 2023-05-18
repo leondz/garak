@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import logging
+
 from colorama import Fore, Style
 
 from generators.base import Generator
@@ -12,6 +14,7 @@ class BlankGenerator(Generator):
         print(
             f"loading {Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: BlankGenerator"
         )
+        logging.info("generator init: {self}")
 
     def generate(self, prompts):
         return [""] * self.generations

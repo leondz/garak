@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import logging
 import os
 
 from colorama import Fore, Style
@@ -26,6 +27,7 @@ class OpenAIGenerator(Generator):
         print(
             f"loading {Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: OpenAI:{name}"
         )
+        logging.info("generator init: {self}")
 
         if model_type == "completion":
             self.generator = openai.Completion
