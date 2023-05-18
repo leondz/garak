@@ -2,6 +2,7 @@
 
 from evaluators.base import Evaluator
 
+
 class MaxRecallEvaluator(Evaluator):
     def __init__():
         super().__init__()
@@ -11,5 +12,5 @@ class MaxRecallEvaluator(Evaluator):
             no_failures = True
             if map(float, results[test]) != [0.0] * len(results[test]):
                 no_failures = False
-            
-            print(test, 'PASSED' if no_failures else 'FAILED')
+
+            print(test, "PASSED" if no_failures else "FAILED")

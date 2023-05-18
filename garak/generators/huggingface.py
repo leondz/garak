@@ -10,19 +10,22 @@ from generators.base import Generator
 
 set_seed(args.seed)
 
-models_to_deprefix = ['gpt2']
+models_to_deprefix = ["gpt2"]
+
 
 class HFGenerator(Generator):
     def __init__(self, name, do_sample=True, generations=10, device=0):
-        self.fullname, self.name = name, name.split('/')[-1]
-        print(f'loading {Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: HF:{name}')
+        self.fullname, self.name = name, name.split("/")[-1]
+        print(
+            f"loading {Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: HF:{name}"
+        )
         self.generator = pipeline(
-            'text-generation', 
-            model=name, 
+            "text-generation",
+            model=name,
             do_sample=do_sample,
             num_return_sequences=generations,
             device=device,
-            )
+        )
         self.deprefix_prompt = name in models_to_deprefix
         self.max_new_tokens = 256
 
@@ -32,14 +35,16 @@ class HFGenerator(Generator):
             try:
                 raw_output = self.generator(
                     prompt,
-                    pad_token_id = self.generator.tokenizer.eos_token_id,
-                    max_new_tokens = self.max_new_tokens,
-                    #max_length = 1024,
-                    )
+                    pad_token_id=self.generator.tokenizer.eos_token_id,
+                    max_new_tokens=self.max_new_tokens,
+                    # max_length = 1024,
+                )
             except:
-                raw_output = [] # could handle better than this..
-        generations = [i['generated_text'] for i in raw_output] # generator returns 10 outputs by default in __init__
+                raw_output = []  # could handle better than this..
+        generations = [
+            i["generated_text"] for i in raw_output
+        ]  # generator returns 10 outputs by default in __init__
         if not self.deprefix_prompt:
             return generations
         else:
-            return [re.sub("^" + re.escape(prompt), '', i) for i in generations]
+            return [re.sub("^" + re.escape(prompt), "", i) for i in generations]
