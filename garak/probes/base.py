@@ -23,7 +23,7 @@ class Probe:
         # attempt to exploit the target, return list of results
         results = []
         logging.debug(f"probe execute: {self}")
-        for prompt in tqdm(self.prompts):
+        for prompt in tqdm(list(self.prompts)):
             results += generator.generate(prompt)
         return results
 
