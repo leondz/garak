@@ -2,16 +2,18 @@
 
 import logging
 import os
-import time
 
 from colorama import Fore, Style
-import cohere  
+import cohere
 
-api_key = os.getenv("COHERE_API_KEY")
 
 from generators.base import Generator
 
-COHERE_GENERATION_LIMIT = 5 # c.f. https://docs.cohere.com/reference/generate 18 may 2023
+api_key = os.getenv("COHERE_API_KEY")
+COHERE_GENERATION_LIMIT = (
+    5  # c.f. https://docs.cohere.com/reference/generate 18 may 2023
+)
+
 
 class CohereGenerator(Generator):
     def __init__(self, name="command", generations=10):
@@ -38,7 +40,9 @@ class CohereGenerator(Generator):
     def generate(self, prompt):
         if self.generations > COHERE_GENERATION_LIMIT:
             self.generations = COHERE_GENERATION_LIMIT
-            logging.debug(f"Cohere generation limit capped at {COHERE_GENERATION_LIMIT}")
+            logging.debug(
+                f"Cohere generation limit capped at {COHERE_GENERATION_LIMIT}"
+            )
         try:
             response = self.generator.generate(
                 model=self.name,
@@ -54,5 +58,5 @@ class CohereGenerator(Generator):
                 end_sequences=self.stop,
             )
         except:
-            return [] # cohere client handles rate limiting ungracefully
+            return []  # cohere client handles rate limiting ungracefully
         return [g.text for g in response]
