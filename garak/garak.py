@@ -12,7 +12,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model_type",
         type=str,
-        help="class of the generator, e.g. 'huggingface.HFBaseGenerator'",
+        required=True,
+        help="module and optionally also class of the generator, e.g. 'huggingface.HFBaseGenerator', or 'openai'",
     )
     parser.add_argument(
         "--model_name",
