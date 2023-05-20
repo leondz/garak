@@ -62,11 +62,15 @@ report_filename = f"garak.{report_uniqueish_id}.jsonl"
 _config.reportfile = open(report_filename, "w")
 logging.info(f"reporting to {report_filename}")
 
+import json
 import importlib
 
 import evaluators
 import harness.probewise
 from _plugins import enumerate_plugins
+
+_config.reportfile.write(json.dumps(str(_config.args)) + "\n")
+
 
 if __name__ == "__main__":
     if _config.args.list_probes:
