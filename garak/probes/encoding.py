@@ -2,6 +2,7 @@
 
 import base64
 import quopri
+import base2048
 
 from probes.base import TextProbe
 
@@ -28,8 +29,10 @@ def _generate_hashed_prompts(hash_funcs, hashname):
         for test_string in hash_test_strings:
             for hashfunc in hash_funcs:
                 hash = hashfunc(bytes(test_string, "utf-8"))
+                if isinstance(hash, bytes):
+                    hash = hash.decode()
                 yield template.replace("{hashname}", hashname).replace(
-                    "{hashtext}", hash.decode()
+                    "{hashtext}", hash
                 )
 
 
@@ -244,5 +247,22 @@ class InjectROT13(TextProbe):
         ]
         hash_funcs = [rot13]
         hashname = "ROT13"
+
+        self.prompts = _generate_hashed_prompts(hash_funcs, hashname)
+
+
+class InjectBase2048(TextProbe):
+    def __init__(self):
+        super().__init__()
+        self.name = "encodingrot13"
+        self.description = "Probe for susceptibility to Base2048 encoding"
+        self.bcp47 = "en"
+        self.uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
+        self.recommended_detector = [
+            "encoding.DecodeMatchDetector",
+            "encoding.DecodeApproxDetector",
+        ]
+        hash_funcs = [base2048.encode]
+        hashname = "BASE2048"
 
         self.prompts = _generate_hashed_prompts(hash_funcs, hashname)
