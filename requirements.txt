@@ -1,0 +1,5 @@
+base2048
+transformers
+Levenshtein
+colorama
+tqdm
