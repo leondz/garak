@@ -8,7 +8,8 @@ modular tool for probing LLMs for undesireable prompt responses
 * generators - plugins for LLMs to be probed
 * harnesses - classes for structuring testing
 
-`$ python3 garak.py --help
+```
+$ python3 garak.py --help
 usage: garak.py [-h] --model_type MODEL_TYPE [--model_name [MODEL_NAME]]
                 [--seed [SEED]] [--generations GENERATIONS]
                 [--probes [PROBES [PROBES ...]]]
@@ -35,12 +36,12 @@ optional arguments:
   --list_detectors
   --list_generators
 
-See https://github.com/leondz/garak`
-
+See https://github.com/leondz/garak
+```
 
 <hr>
 
-_"Never tell the same lie twice"_
+_"Never tell the same lie twice"_ - Elim
 
 
 CC-BY 2023 Leon Derczynski
