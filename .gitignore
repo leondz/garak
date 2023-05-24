@@ -161,4 +161,5 @@ cython_debug/
 
 
 garak.*.jsonl
+garak.log
 .vscode
