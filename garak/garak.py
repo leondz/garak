@@ -12,13 +12,11 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model_type",
         type=str,
-        required=True,
         help="module and optionally also class of the generator, e.g. 'huggingface.HFBaseGenerator', or 'openai'",
     )
     parser.add_argument(
         "--model_name",
         type=str,
-        nargs="?",
         default="",
         help="name of the model, e.g. 'gpt2'",
     )
@@ -31,7 +29,7 @@ if __name__ == "__main__":
         type=str,
         nargs="*",
         default="*",
-        help="list of probe names to use, or * for all",
+        help="list of probe names to use, or * for all (default)",
     )
     parser.add_argument(
         "--eval_threshold",
@@ -85,7 +83,7 @@ if __name__ == "__main__":
         probe_names = enumerate_plugins(category="generators").values()
         print("\n".join(probe_names))
 
-    else:
+    elif _config.args.model_type:
         generator_module_name = _config.args.model_type.split(".")[0]
         generator_mod = importlib.import_module("generators." + generator_module_name)
         if "." not in _config.args.model_type:
@@ -119,3 +117,7 @@ if __name__ == "__main__":
         logging.debug(f"harness run: {h}")
         h.run(generator, probe_names, evaluator)
         logging.info("run complete, ending")
+
+    else:
+        print("nothing to do 🤷  try --help")
+        logging.info("nothing to do 🤷")
