@@ -3,3 +3,5 @@ transformers
 Levenshtein
 colorama
 tqdm
+cohere
+openai

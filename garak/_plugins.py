@@ -7,20 +7,20 @@ def enumerate_plugins(category="probes"):
     if category not in ("probes", "detectors", "generators", "harnesses"):
         raise ValueError("Not a recognised plugin type:", category)
 
-    base_mod = importlib.import_module(f"{category}.base")
+    base_mod = importlib.import_module(f"garak.{category}.base")
 
     base_plugin_classnames = set([n for n in dir(base_mod) if not n.startswith("__")])
     # todo: prune refs that aren't category.title() or subclasses of that
     plugin_class_names = {}
 
-    for module_filename in os.listdir(category):
+    for module_filename in os.listdir("garak/" + category):
         if not module_filename.endswith(".py"):
             continue
         if module_filename.startswith("__") or module_filename == "base.py":
             continue
         module_name = module_filename.replace(".py", "")
         # print(category, 'module:', module_name)
-        mod = importlib.import_module(f"{category}.{module_name}")
+        mod = importlib.import_module(f"garak.{category}.{module_name}")
         module_entries = set([p for p in dir(mod) if not p.startswith("__")])
         module_entries = module_entries.difference(base_plugin_classnames)
         module_plugin_names = set()
@@ -52,7 +52,7 @@ def load_plugin(
         else:
             return False
     try:
-        mod = importlib.import_module(f"{category}.{module_name}")
+        mod = importlib.import_module(f"garak.{category}.{module_name}")
     except:
         if break_on_fail:
             raise ValueError("Didn't successfully import " + module_name)

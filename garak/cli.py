@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-import argparse
-import _config
+def main() -> None:
+    import argparse
+    import garak._config as _config
 
-if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="LLM safety & security scanning tool",
         epilog="See https://github.com/leondz/garak",
@@ -42,35 +42,30 @@ if __name__ == "__main__":
     parser.add_argument("--list_generators", action="store_true")
     _config.args = parser.parse_args()
 
-import logging
+    import logging
 
-logging.basicConfig(
-    filename="garak.log",
-    level=logging.DEBUG,
-    format="%(asctime)s  %(levelname)s  %(message)s",
-)
+    logging.basicConfig(
+        filename="garak.log",
+        level=logging.DEBUG,
+        format="%(asctime)s  %(levelname)s  %(message)s",
+    )
 
-if __name__ == "__main__":
     logging.info(f"invoked with arguments {_config.args}")
-else:
-    logging.info(f"imported")
 
-report_uniqueish_id = abs(hash(dir))
-report_filename = f"garak.{report_uniqueish_id}.jsonl"
-_config.reportfile = open(report_filename, "w")
-logging.info(f"reporting to {report_filename}")
+    report_uniqueish_id = abs(hash(dir))
+    report_filename = f"garak.{report_uniqueish_id}.jsonl"
+    _config.reportfile = open(report_filename, "w")
+    logging.info(f"reporting to {report_filename}")
 
-import json
-import importlib
+    import json
+    import importlib
 
-import evaluators
-import harness.probewise
-from _plugins import enumerate_plugins
+    import garak.evaluators
+    import garak.harness.probewise
+    from garak._plugins import enumerate_plugins
 
-_config.reportfile.write(json.dumps(str(_config.args)) + "\n")
+    _config.reportfile.write(json.dumps(str(_config.args)) + "\n")
 
-
-if __name__ == "__main__":
     if _config.args.list_probes:
         probe_names = enumerate_plugins(category="probes").values()
         print("\n".join(probe_names))
@@ -85,7 +80,7 @@ if __name__ == "__main__":
 
     elif _config.args.model_type:
         generator_module_name = _config.args.model_type.split(".")[0]
-        generator_mod = importlib.import_module("generators." + generator_module_name)
+        generator_mod = importlib.import_module("garak.generators." + generator_module_name)
         if "." not in _config.args.model_type:
             if generator_mod.default_class:
                 generator_class_name = generator_mod.default_class
@@ -111,9 +106,9 @@ if __name__ == "__main__":
         else:
             probe_names = ["probes." + name for name in _config.args.probes]
 
-        evaluator = evaluators.ThresholdEvaluator(_config.args.eval_threshold)
+        evaluator = garak.evaluators.ThresholdEvaluator(_config.args.eval_threshold)
 
-        h = harness.probewise.ProbewiseHarness()
+        h = garak.harness.probewise.ProbewiseHarness()
         logging.debug(f"harness run: {h}")
         h.run(generator, probe_names, evaluator)
         logging.info("run complete, ending")

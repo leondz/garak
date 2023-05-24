@@ -4,7 +4,7 @@ import logging
 
 from colorama import Fore, Style
 
-from generators.base import Generator
+from garak.generators.base import Generator
 
 
 class BlankGenerator(Generator):

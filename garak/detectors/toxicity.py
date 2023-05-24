@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from _config import args
-from detectors.base import HFDetector
+from garak._config import args
+from garak.detectors.base import HFDetector
 
 from transformers import set_seed
 

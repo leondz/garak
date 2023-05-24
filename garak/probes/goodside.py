@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from probes.base import Probe, TextProbe
+from garak.probes.base import Probe, TextProbe
 
 
 class WhoIsRiley(TextProbe):

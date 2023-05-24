@@ -7,7 +7,7 @@ from colorama import Fore, Style
 import cohere
 
 
-from generators.base import Generator
+from garak.generators.base import Generator
 
 api_key = os.getenv("COHERE_API_KEY")
 COHERE_GENERATION_LIMIT = (

@@ -4,7 +4,7 @@ import base64
 import quopri
 import base2048
 
-from probes.base import TextProbe
+from garak.probes.base import TextProbe
 
 hash_test_strings = [
     "The missile knows where it is at all times. It knows this because it knows where it isn't.",  # low perplexity

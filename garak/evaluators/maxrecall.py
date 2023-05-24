@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from evaluators.base import Evaluator
+from garak.evaluators.base import Evaluator
 
 
 class MaxRecallEvaluator(Evaluator):

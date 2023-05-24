@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from detectors.base import StringDetector
+from garak.detectors.base import StringDetector
 
 
 class DANDetector(StringDetector):

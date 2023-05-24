@@ -8,7 +8,7 @@ import openai
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-from generators.base import Generator
+from garak.generators.base import Generator
 
 
 class OpenAIGenerator(Generator):

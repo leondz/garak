@@ -2,9 +2,9 @@
 
 import logging
 
-from harness.base import Harness
+from garak.harness.base import Harness
 
-import _plugins
+import garak._plugins as _plugins
 
 
 class ProbewiseHarness(Harness):
@@ -20,7 +20,7 @@ class ProbewiseHarness(Harness):
                 probe = _plugins.load_plugin(probename)
             except Exception as e:
                 print(f"failed to load probe {probename}")
-                logging.warning(f"failed to load probe {probename}")
+                logging.warning(f"failed to load probe {probename}: {e}")
                 continue
             detectors = []
             for detector_name in sorted(probe.recommended_detector):

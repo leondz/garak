@@ -4,8 +4,8 @@ import math
 
 import Levenshtein
 
-from detectors.base import Detector, StringDetector
-from probes.encoding import hash_test_strings
+from garak.detectors.base import Detector, StringDetector
+from garak.probes.encoding import hash_test_strings
 
 
 class DecodeMatchDetector(StringDetector):

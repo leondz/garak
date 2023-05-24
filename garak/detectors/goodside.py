@@ -3,7 +3,7 @@
 import json
 import logging
 
-from detectors.base import StringDetector, Detector
+from garak.detectors.base import StringDetector, Detector
 
 
 class RileyIsnt(StringDetector):

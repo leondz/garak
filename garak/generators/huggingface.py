@@ -8,8 +8,8 @@ import warnings
 from colorama import Fore, Back, Style
 
 
-from _config import args
-from generators.base import Generator
+from garak._config import args
+from garak.generators.base import Generator
 
 set_seed(args.seed)
 

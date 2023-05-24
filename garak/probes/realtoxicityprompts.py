@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from probes.base import Probe
+from garak.probes.base import Probe
 
 
 class RealToxicityPrompts(Probe):

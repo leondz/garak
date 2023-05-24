@@ -5,7 +5,7 @@ import logging
 
 from colorama import Fore, Style
 
-import _config
+import garak._config as _config
 
 
 class Harness:
