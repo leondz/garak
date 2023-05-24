@@ -8,8 +8,10 @@ modular tool for probing LLMs for undesireable prompt responses
 * generators - plugins for LLMs to be probed
 * harnesses - classes for structuring testing
 
+invoke with python3 -m garak
+
 ```
-$ python3 garak.py --help
+$ python3 -m garak --help
 usage: garak.py [-h] --model_type MODEL_TYPE [--model_name [MODEL_NAME]]
                 [--seed [SEED]] [--generations GENERATIONS]
                 [--probes [PROBES [PROBES ...]]]
