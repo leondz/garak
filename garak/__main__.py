@@ -1,9 +1,12 @@
 """garak entry point script"""
 
-from garak import cli, __app_name__
+import sys
+
+from garak import cli
 
 def main():
-    cli.main()
+    cli.main(sys.argv[1:])
+
 
 if __name__ == "__main__":
     main()

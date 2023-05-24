@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-def main() -> None:
+
+def main(arguments=[]) -> None:
     import argparse
     import garak._config as _config
 
@@ -40,7 +41,9 @@ def main() -> None:
     parser.add_argument("--list_probes", action="store_true")
     parser.add_argument("--list_detectors", action="store_true")
     parser.add_argument("--list_generators", action="store_true")
-    _config.args = parser.parse_args()
+    parser.add_argument("--version", action="store_true")
+
+    _config.args = parser.parse_args(arguments)
 
     import logging
 
@@ -63,10 +66,16 @@ def main() -> None:
     import garak.evaluators
     import garak.harness.probewise
     from garak._plugins import enumerate_plugins
+    from garak import __version__
 
+    _config.version = __version__
     _config.reportfile.write(json.dumps(str(_config.args)) + "\n")
 
-    if _config.args.list_probes:
+    if _config.args.version:
+        print(
+            f"garak llm scanner v{_config.version} -- https://github.com/leondz/garak"
+        )
+    elif _config.args.list_probes:
         probe_names = enumerate_plugins(category="probes").values()
         print("\n".join(probe_names))
 
@@ -80,7 +89,9 @@ def main() -> None:
 
     elif _config.args.model_type:
         generator_module_name = _config.args.model_type.split(".")[0]
-        generator_mod = importlib.import_module("garak.generators." + generator_module_name)
+        generator_mod = importlib.import_module(
+            "garak.generators." + generator_module_name
+        )
         if "." not in _config.args.model_type:
             if generator_mod.default_class:
                 generator_class_name = generator_mod.default_class
