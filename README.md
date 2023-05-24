@@ -51,4 +51,4 @@ See https://github.com/leondz/garak
 _"Never tell the same lie twice"_ - Elim
 
 
-CC-BY 2023 Leon Derczynski
+© GPLv3 2023 Leon Derczynski
