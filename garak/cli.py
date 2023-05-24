@@ -126,4 +126,6 @@ def main(arguments=[]) -> None:
 
     else:
         print("nothing to do 🤷  try --help")
+        if _config.args.model_name and not _config.args.model_type:
+            print("💡 try setting --model_type (--model_name is currently set but not --model_type)")
         logging.info("nothing to do 🤷")
