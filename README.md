@@ -8,7 +8,12 @@ modular tool for probing LLMs for undesireable prompt responses
 * generators - plugins for LLMs to be probed
 * harnesses - classes for structuring testing
 
-invoke with python3 -m garak
+invoke with `python3 -m garak`
+
+currently supports:
+* [hugging face hub](https://huggingface.co/models) generative models
+* [replicate](https://replicate.com/) text models
+* [openai api](https://platform.openai.com/docs/introduction) continuation models
 
 ```
 $ python3 -m garak --help
