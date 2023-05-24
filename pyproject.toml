@@ -1,0 +1,18 @@
+[project]
+name = "garak"
+version = "0.9"
+authors = [
+  { name="Leon Derczynski", email="leonderczynski@gmail.com" },
+]
+description = "LLM vulnerability scanner"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/leondz/garak"
+"Bug Tracker" = "https://github.com/leondz/garak/issues"
