@@ -61,7 +61,8 @@ class OpenAIGenerator(Generator):
             raise ValueError(
                 "Model name is required for OpenAI, use --model_name\n"
                 + "  API returns following available models: ▶️   "
-                + "  ".join(openai_model_list) + "\n"
+                + "  ".join(openai_model_list)
+                + "\n"
                 + "  ⚠️  Not all these are text generation models"
             )
         else:
