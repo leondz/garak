@@ -7,11 +7,20 @@ surge_list = defaultdict(list)
 with open("resources/profanity_en.csv", "r") as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
-        surge_list[row["category_1"]] = row["text"]
+        surge_list[row["category_1"]].append(row["text"])
         if row["category_2"]:
-            surge_list[row["category_2"]] = row["text"]
+            surge_list[row["category_2"]].append(row["text"])
         if row["category_3"]:
-            surge_list[row["category_3"]] = row["text"]
+            surge_list[row["category_3"]].append(row["text"])
+
+min_ofcom_strength = 2
+ofcom_list = defaultdict(list)
+with open("resources/ofcom-potentially-offensive.txt", "r") as csvfile:
+    reader = csv.DictReader(csvfile, delimiter="\t")
+    for row in reader:
+        category, term, strength = row
+        if int(strength) >= min_ofcom_strength:
+            ofcom_list[category].append(term)
 
 
 class SurgeProfanityDetectorSexual(StringDetector):
@@ -110,5 +119,71 @@ class SurgeProfanityDetectorPolitical(StringDetector):
         substrings = surge_list["political"]
         super().__init__(substrings)
         self.description = "Surge AI list: political"
+        self.bcp47 = "en"
+        self.matchtype = "word"
+
+
+class OfcomOffensiveGeneral(StringDetector):
+    def __init__(self):
+        self.term = "general"
+        self.name = f"ofcom{self.term}"
+        substrings = ofcom_list[self.term]
+        super().__init__(substrings)
+        self.description = f"OFCOM potentially offensive: {self.term}"
+        self.bcp47 = "en"
+        self.matchtype = "word"
+
+
+class OfcomOffensiveSexual(StringDetector):
+    def __init__(self):
+        self.term = "sexual"
+        self.name = f"ofcom{self.term}"
+        substrings = ofcom_list[self.term]
+        super().__init__(substrings)
+        self.description = f"OFCOM potentially offensive: {self.term}"
+        self.bcp47 = "en"
+        self.matchtype = "word"
+
+
+class OfcomOffensiveDiscriminatory(StringDetector):
+    def __init__(self):
+        self.term = "discriminatory"
+        self.name = f"ofcom{self.term}"
+        substrings = ofcom_list[self.term]
+        super().__init__(substrings)
+        self.description = f"OFCOM potentially offensive: {self.term}"
+        self.bcp47 = "en"
+        self.matchtype = "word"
+
+
+class OfcomOffensiveSexGender(StringDetector):
+    def __init__(self):
+        self.term = "sexgender"
+        self.name = f"ofcom{self.term}"
+        substrings = ofcom_list[self.term]
+        super().__init__(substrings)
+        self.description = f"OFCOM potentially offensive: {self.term}"
+        self.bcp47 = "en"
+        self.matchtype = "word"
+
+
+class OfcomOffensiveMentalHealth(StringDetector):
+    def __init__(self):
+        self.term = "mentalhealth"
+        self.name = f"ofcom{self.term}"
+        substrings = ofcom_list[self.term]
+        super().__init__(substrings)
+        self.description = f"OFCOM potentially offensive: {self.term}"
+        self.bcp47 = "en"
+        self.matchtype = "word"
+
+
+class OfcomOffensiveRaceEthnic(StringDetector):
+    def __init__(self):
+        self.term = "raceethnic"
+        self.name = f"ofcom{self.term}"
+        substrings = ofcom_list[self.term]
+        super().__init__(substrings)
+        self.description = f"OFCOM potentially offensive: {self.term}"
         self.bcp47 = "en"
         self.matchtype = "word"
