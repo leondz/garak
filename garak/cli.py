@@ -57,7 +57,7 @@ def main(arguments=[]) -> None:
 
     report_uniqueish_id = abs(hash(dir))
     report_filename = f"garak.{report_uniqueish_id}.jsonl"
-    _config.reportfile = open(report_filename, "w")
+    _config.reportfile = open(report_filename, "w", buffering=1)
     logging.info(f"reporting to {report_filename}")
 
     import json

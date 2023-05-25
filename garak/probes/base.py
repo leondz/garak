@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 
 import copy
+import json
 import logging
 
 from colorama import Fore, Style
 from tqdm import tqdm
 
 from garak.harness.base import Attempt
+from garak._config import reportfile
 
 class Probe:
     def __init__(self):
@@ -32,6 +34,7 @@ class Probe:
             this_attempt.prompt = prompt
             this_attempt.probe_classname = self.__class__.__name__
             this_attempt.outputs = generator.generate(prompt)
+            reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
             attempts.append(copy.deepcopy(this_attempt))
         return attempts
 

@@ -6,17 +6,23 @@ import os
 from colorama import Fore, Style
 import openai
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
 from garak.generators.base import Generator
 
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+"""
+sources:
+* https://platform.openai.com/docs/models/model-endpoint-compatibility
+* https://platform.openai.com/docs/model-index-for-researchers
+"""
+completion_models = ('text-davinci-003', 'text-davinci-002', 'text-curie-001', 'text-babbage-001', 'text-ada-001', 'code-davinci-002', 'code-davinci-001', 'davinci-instruct-beta')
+chat_models = ('gpt-4', 'gpt-4-0314', 'gpt-4-32k', 'gpt-4-32k-0314', 'gpt-3.5-turbo', 'gpt-3.5-turbo-0301')
 
 class OpenAIGenerator(Generator):
-    def __init__(self, name, model_type="completion", generations=10):
+    def __init__(self, name, generations=10):
         self.name = name
         self.fullname = f"OpenAI {self.name}"
         self.generations = generations
-        self.model_type = model_type
 
         self.temperature = 0.7
         self.max_tokens = 150
@@ -29,28 +35,47 @@ class OpenAIGenerator(Generator):
         )
         logging.info("generator init: {self}")
 
-        if model_type == "completion":
+        if self.name in completion_models:
             self.generator = openai.Completion
-        elif model_type == "chat":
-            self.generator = openai.Completion
+        elif self.name in chat_models:
+            self.generator = openai.ChatCompletion
         else:
             raise ValueError(
-                f"No support yet for requested {model_type} OpenAI model type"
+                f"No model type defined for {model_name} in generators/openai.py - please add one!"
             )
 
     def generate(self, prompt):
-        response = self.generator.create(
-            model=self.name,
-            prompt=prompt,
-            temperature=self.temperature,
-            max_tokens=self.max_tokens,
-            n=self.generations,
-            top_p=self.top_p,
-            frequency_penalty=self.frequency_penalty,
-            presence_penalty=self.presence_penalty,
-            stop=self.stop,
-        )
-        return [c["text"] for c in response["choices"]]
+        if self.generator == openai.Completion:
+            response = self.generator.create(
+                model=self.name,
+                prompt=prompt,
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
+                n=self.generations,
+                top_p=self.top_p,
+                frequency_penalty=self.frequency_penalty,
+                presence_penalty=self.presence_penalty,
+                stop=self.stop,
+            )
+            return [c["text"] for c in response["choices"]]
+        elif self.generator == openai.ChatCompletion:
+            response = self.generator.create(
+                model=self.name,
+                messages=[{'role':'user', 'content':prompt}],
+                temperature=self.temperature,
+                top_p=self.top_p,
+                n=self.generations,
+                stop=self.stop,
+                max_tokens=self.max_tokens,
+                presence_penalty=self.presence_penalty,
+                frequency_penalty=self.frequency_penalty,
+            )
+            return [c["message"]['content'] for c in response["choices"]]
+        else:
+            raise ValueError(
+                f"Unsupported model at generation time in generators/openai.py - please add a clause!"
+            )
+
 
 
 default_class = "OpenAIGenerator"
