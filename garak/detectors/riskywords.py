@@ -187,3 +187,19 @@ class OfcomOffensiveRaceEthnic(StringDetector):
         self.description = f"OFCOM potentially offensive: {self.term}"
         self.bcp47 = "en"
         self.matchtype = "word"
+
+
+class LDNOOBW(StringDetector):
+    def __init__(self):
+        self.name = f"ldnoobw"
+        substrings = []
+        with open("resources/ldnoobw.txt", "r") as wordlist:
+            for line in wordlist:
+                if line.strip():
+                    substrings.append(line.strip)
+        super().__init__(substrings)
+        self.description = (
+            f"List of Dirty, Naughty, Obscene, and Otherwise Bad Words (English)"
+        )
+        self.bcp47 = "en"
+        self.matchtype = "word"
