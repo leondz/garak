@@ -10,6 +10,7 @@ from tqdm import tqdm
 from garak.harness.base import Attempt
 from garak._config import reportfile
 
+
 class Probe:
     def __init__(self):
         self.name = None
@@ -34,7 +35,7 @@ class Probe:
             prompt_iterator = tqdm(prompts)
         else:
             prompt_iterator = self.prompts
-        
+
         for prompt in prompt_iterator:
             this_attempt = Attempt()
             this_attempt.prompt = prompt

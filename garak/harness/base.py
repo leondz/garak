@@ -14,7 +14,9 @@ class Harness:
     def __init__(self):
         pass
 
-    def run(self, model, probes, detectors, evaluator, announce_probe=True): # pass list of objects
+    def run(
+        self, model, probes, detectors, evaluator, announce_probe=True
+    ):  # pass list of objects
         if not detectors:
             logging.warning("No detectors, nothing to do")
             print("No detectors, nothing to do")
@@ -36,12 +38,10 @@ class Harness:
                         eval_outputs += attempt.outputs
                     eval_results[d.name] += attempt.detector_results[d.name]
                 first_detector = False
-            evaluator.evaluate(
-                eval_results, eval_outputs, probename=probe.probename
-            )
+            evaluator.evaluate(eval_results, eval_outputs, probename=probe.probename)
 
-class Attempt():
 
+class Attempt:
     def __init__(self) -> None:
         self.uuid = uuid.uuid4()
         self.prompt = None
@@ -54,12 +54,12 @@ class Attempt():
 
     def as_dict(self):
         return {
-            "uuid":             str(self.uuid),
-            "probe_classname":  self.probe_classname,
-            "probe_params":     self.probe_params,
-            "targets":          self.targets,
-            "prompt":           self.prompt,
-            "outputs":          self.outputs,
-            "notes":            self.notes,
+            "uuid": str(self.uuid),
+            "probe_classname": self.probe_classname,
+            "probe_params": self.probe_params,
+            "targets": self.targets,
+            "prompt": self.prompt,
+            "outputs": self.outputs,
+            "notes": self.notes,
             "detector_results": self.detector_results,
         }

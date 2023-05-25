@@ -14,4 +14,3 @@ class BlankPrompt(Probe):
 
     def probe(self, generator):
         return super().probe(generator)
-        

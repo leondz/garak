@@ -7,6 +7,7 @@ from colorama import Fore, Style
 
 from garak.harness.base import Attempt
 
+
 class Detector:
     def __init__(self):
         if not self.name:
@@ -83,7 +84,6 @@ class StringDetector(Detector):
         self.matchtype = "str"  # str or word
 
     def detect(self, attempt: Attempt, case_sensitive=False):
-
         detector_results = []
         for output in attempt.outputs:
             match = False

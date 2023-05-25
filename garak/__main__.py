@@ -4,6 +4,7 @@ import sys
 
 from garak import cli
 
+
 def main():
     cli.main(sys.argv[1:])
 

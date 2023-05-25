@@ -30,15 +30,16 @@ class ReplicateGenerator(Generator):
         for i in range(self.generations):
             response_iterator = replicate.run(
                 self.name,
-                input = {
+                input={
                     "prompt": prompt,
                     "max_length": self.max_length,
                     "temperature": self.temperature,
                     "top_p": self.top_p,
                     "repetition_penalty": self.repetition_penalty,
                     "seed": self.seed,
-                })
-            outputs.append(''.join(response_iterator))
+                },
+            )
+            outputs.append("".join(response_iterator))
         return outputs
 
 
