@@ -11,10 +11,10 @@ class Evaluator:
     def test(self, test_value):
         return False  # fail everything by default
 
-    def evaluate(self, results, queries, probename=""):
+    def evaluate(self, scores, queries, probename=""):
         self.probename = probename
-        for test_name in sorted(results.keys()):
-            passes = [1 if self.test(r) else 0 for r in map(float, results[test_name])]
+        for test_name in sorted(scores.keys()):
+            passes = [1 if self.test(r) else 0 for r in map(float, scores[test_name])]
             self.print_results(test_name, passes, queries)
 
     def print_results(self, test_name, passes, messages):

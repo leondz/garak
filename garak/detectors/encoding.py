@@ -1,12 +1,8 @@
 #!/usr/bin/env python3
 
-import math
-
-import Levenshtein
-
 from garak.detectors.base import Detector, StringDetector
 from garak.probes.encoding import hash_test_strings
-
+from garak.harness.base import Attempt
 
 class DecodeMatchDetector(StringDetector):
     def __init__(self):
@@ -37,14 +33,10 @@ class DecodeApproxDetector(Detector):
         score = matching_ngrams / len(target_ngrams)
         return score
 
-    def detect(self, outputlist, case_sensitive=False, n=4):
-        if isinstance(outputlist, str):
-            outputlist = [outputlist]
-        if not isinstance(outputlist, list):
-            raise TypeError("Can only evaluate str or list")
+    def detect(self, attempt: Attempt, case_sensitive=False, n=4):
 
         detector_results = []
-        for q in outputlist:
+        for q in attempt.outputs:
             best_match = 0.0
             for s in self.substrings:
                 match = self._ngram_match_func(s, q, case_sensitive=case_sensitive, n=n)

@@ -3,8 +3,9 @@
 import logging
 import re
 
-from colorama import Fore, Back, Style
+from colorama import Fore, Style
 
+from garak.harness.base import Attempt
 
 class Detector:
     def __init__(self):
@@ -22,13 +23,8 @@ class Detector:
         )
         logging.info(f"detector init: {self}")
 
-    def detect(self, outputlist):
-        if isinstance(outputlist, str):
-            outputlist = [outputlist]
-        if not isinstance(outputlist, list):
-            raise TypeError("Can only evaluate str or list")
-        else:
-            return [None] * len(outputlist)
+    def detect(self, attempt: Attempt):
+        return [None] * len(attempt.outputs)
 
 
 class HFDetector(Detector):
@@ -57,22 +53,17 @@ class HFDetector(Detector):
 
         self.graceful_fail = False
 
-    def detect(self, outputlist):
-        if isinstance(outputlist, str):
-            outputlist = [outputlist]
-        if isinstance(outputlist, list):
-            try:
-                detector_raw_results = self.detector(
-                    outputlist, **self.tokenizer_kwargs
-                )
-            except Exception as e:
-                if self.graceful_fail:
-                    print(e)
-                    return []
-                else:
-                    raise Exception() from e
-        else:
-            raise TypeError("Can only evaluate str or list")
+    def detect(self, attempt: Attempt):
+        try:
+            detector_raw_results = self.detector(
+                attempt.outputs, **self.tokenizer_kwargs
+            )
+        except Exception as e:
+            if self.graceful_fail:
+                print(e)
+                return []
+            else:
+                raise Exception() from e
 
         detector_results = []
         for d in detector_raw_results:
@@ -91,14 +82,10 @@ class StringDetector(Detector):
         self.substrings = substrings
         self.matchtype = "str"  # str or word
 
-    def detect(self, outputlist, case_sensitive=False):
-        if isinstance(outputlist, str):
-            outputlist = [outputlist]
-        elif not isinstance(outputlist, list):
-            raise TypeError("Can only evaluate str or list")
+    def detect(self, attempt: Attempt, case_sensitive=False):
 
         detector_results = []
-        for output in outputlist:
+        for output in attempt.outputs:
             match = False
             for s in self.substrings:
                 if self.matchtype == "str":

@@ -2,6 +2,7 @@
 
 import json
 import logging
+import uuid
 
 from colorama import Fore, Style
 
@@ -22,20 +23,37 @@ class Harness:
             probename = str(probe.__class__).split("'")[1]
             print("generating...")
             logging.info("generating...")
-            generations = probe.probe(model)
+            attempt_results = probe.probe(model)
 
-            results = {}
             for d in detectors:
-                results[d.name] = d.detect(generations)
-                for entry in zip(generations, results[d.name]):
-                    report_line = {
-                        "probe": probename,
-                        "output": entry[0],
-                        "detector": d.name,
-                        "score": entry[1],
-                    }
-                    _config.reportfile.write(json.dumps(report_line) + "\n")
-
+                for attempt in attempt_results:
+                    attempt.detector_results[d.name] = d.detect(attempt)
+                    _config.reportfile.write(json.dumps(attempt.as_dict()) + "\n")
+               
             evaluator.evaluate(
-                results, generations, probename=".".join(probename.split(".")[1:])
+                attempt.detector_results, attempt.outputs, probename=".".join(probename.split(".")[1:])
             )
+
+class Attempt():
+
+    def __init__(self) -> None:
+        self.uuid = uuid.uuid4()
+        self.prompt = None
+        self.probe_classname = None
+        self.probe_params = {}
+        self.targets = None
+        self.outputs = []
+        self.notes = {}
+        self.detector_results = {}
+
+    def as_dict(self):
+        return {
+            "uuid":             str(self.uuid),
+            "probe_classname":  self.probe_classname,
+            "probe_params":     self.probe_params,
+            "targets":          self.targets,
+            "prompt":           self.prompt,
+            "outputs":          self.outputs,
+            "notes":            self.notes,
+            "detector_results": self.detector_results,
+        }
