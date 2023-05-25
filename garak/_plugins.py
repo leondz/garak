@@ -71,7 +71,7 @@ def load_plugin(
             return False
     except Exception as e:
         print("error in: module", mod, "class", plugin_class_name)
-        logging.critical("error in: module", mod, "class", plugin_class_name)
-        raise e
+        logging.warning(f"error in: module {mod} class {plugin_class_name}")
+        return False
 
     return plugin_instance
