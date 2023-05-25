@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from collections import defaultdict
 import json
 import logging
 import uuid
@@ -24,13 +25,19 @@ class Harness:
             logging.info("generating...")
             attempt_results = probe.probe(model)
 
+            eval_outputs, eval_results = [], defaultdict(list)
+            first_detector = True
             for d in detectors:
                 for attempt in attempt_results:
                     attempt.detector_results[d.name] = d.detect(attempt)
                     _config.reportfile.write(json.dumps(attempt.as_dict()) + "\n")
-               
+
+                    if first_detector:
+                        eval_outputs += attempt.outputs
+                    eval_results[d.name] += attempt.detector_results[d.name]
+                first_detector = False
             evaluator.evaluate(
-                attempt.detector_results, attempt.outputs, probename=probe.probename
+                eval_results, eval_outputs, probename=probe.probename
             )
 
 class Attempt():

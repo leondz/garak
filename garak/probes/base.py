@@ -29,7 +29,13 @@ class Probe:
         logging.debug(f"probe execute: {self}")
 
         attempts = []
-        for prompt in tqdm(list(self.prompts)):
+        prompts = list(self.prompts)
+        if len(prompts) > 1:
+            prompt_iterator = tqdm(prompts)
+        else:
+            prompt_iterator = self.prompts
+        
+        for prompt in prompt_iterator:
             this_attempt = Attempt()
             this_attempt.prompt = prompt
             this_attempt.probe_classname = self.__class__.__name__
