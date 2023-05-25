@@ -15,9 +15,9 @@ class Probe:
         self.uri = ""
         self.bcp47 = None  # language this is for, in bcp47 format; * for all langs
         self.recommended_detector = ["toxicity.ToxicCommentModelDetector"]
-        probename = str(self.__class__).split("'")[1]
+        self.probename = str(self.__class__).split("'")[1]
         print(
-            f"loading {Style.BRIGHT}{Fore.LIGHTYELLOW_EX}probe: {Style.RESET_ALL}{probename}"
+            f"loading {Style.BRIGHT}{Fore.LIGHTYELLOW_EX}probe: {Style.RESET_ALL}{self.probename}"
         )
         logging.info(f"probe init: {self}")
 

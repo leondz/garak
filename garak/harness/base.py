@@ -13,7 +13,7 @@ class Harness:
     def __init__(self):
         pass
 
-    def run(self, model, probes, detectors, evaluator, announce_probe=True):
+    def run(self, model, probes, detectors, evaluator, announce_probe=True): # pass list of objects
         if not detectors:
             logging.warning("No detectors, nothing to do")
             print("No detectors, nothing to do")
