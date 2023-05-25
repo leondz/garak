@@ -20,7 +20,6 @@ class Harness:
             return None
 
         for probe in probes:
-            probename = str(probe.__class__).split("'")[1]
             print("generating...")
             logging.info("generating...")
             attempt_results = probe.probe(model)
@@ -31,7 +30,7 @@ class Harness:
                     _config.reportfile.write(json.dumps(attempt.as_dict()) + "\n")
                
             evaluator.evaluate(
-                attempt.detector_results, attempt.outputs, probename=".".join(probename.split(".")[1:])
+                attempt.detector_results, attempt.outputs, probename=probe.probename
             )
 
 class Attempt():
