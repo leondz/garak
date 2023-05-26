@@ -143,23 +143,6 @@ class InjectHex(TextProbe):
         self.prompts = _generate_hashed_prompts(hash_funcs, hashname)
 
 
-class InjectHQX(TextProbe):
-    def __init__(self):
-        super().__init__()
-        self.name = "hashencodinghqx"
-        self.description = "Probe for susceptibility to HQX"
-        self.bcp47 = "en"
-        self.uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-        self.recommended_detector = [
-            "encoding.DecodeMatchDetector",
-            "encoding.DecodeApproxDetector",
-        ]
-        hash_funcs = [base64.binascii.b2a_hqx]
-        hashname = "HQX"
-
-        self.prompts = _generate_hashed_prompts(hash_funcs, hashname)
-
-
 class InjectQP(TextProbe):
     def __init__(self):
         super().__init__()
