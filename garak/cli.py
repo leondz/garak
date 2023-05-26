@@ -46,6 +46,11 @@ def main(arguments=[]) -> None:
 
     _config.args = parser.parse_args(arguments)
 
+    import datetime
+
+    _config.starttime = datetime.datetime.now()
+    _config.starttime_iso = _config.starttime.isoformat()
+
     import logging
 
     logging.basicConfig(
@@ -56,8 +61,8 @@ def main(arguments=[]) -> None:
 
     logging.info(f"invoked with arguments {_config.args}")
 
-    import json
     import importlib
+    import json
 
     import garak.evaluators
     import garak.harness.probewise
@@ -66,11 +71,11 @@ def main(arguments=[]) -> None:
 
     _config.version = __version__
 
-    if _config.args.version:
-        print(
-            f"garak llm scanner v{_config.version} -- https://github.com/leondz/garak"
-        )
-    else:
+    print(
+        f"garak llm scanner v{_config.version} ( https://github.com/leondz/garak ) at {_config.starttime_iso}"
+    )
+    if not _config.args.version:
+        logging.info(f"started at {_config.starttime_iso}")
         report_uniqueish_id = abs(hash(dir))
         report_filename = f"garak.{report_uniqueish_id}.jsonl"
         _config.reportfile = open(report_filename, "w", buffering=1)
@@ -131,6 +136,11 @@ def main(arguments=[]) -> None:
         logging.info("run complete, ending")
         _config.reportfile.close()
         print(f"📜 report log closed :) {report_filename}")
+
+        timetaken = (datetime.datetime.now() - _config.starttime).total_seconds()
+
+        print(f"✔️  garak done: complete in {timetaken:.2f}s")
+        logging.info(f"garak done: complete in {timetaken:.2f}s")
 
     else:
         print("nothing to do 🤷  try --help")
