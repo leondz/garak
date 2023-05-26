@@ -23,7 +23,6 @@ class Harness:
             print("No detectors, nothing to do")
             return None
 
-        first_probe = True
         for probe in probes:
             logging.info("generating...")
             attempt_results = probe.probe(model)
@@ -32,15 +31,13 @@ class Harness:
             first_detector = True
             for d in detectors:
                 for attempt in attempt_results:
-                    if first_probe:
-                        attempt.status = garak.ATTEMPT_STARTED
                     attempt.detector_results[d.name] = d.detect(attempt)
 
                     if first_detector:
                         eval_outputs += attempt.outputs
                     eval_results[d.name] += attempt.detector_results[d.name]
                 first_detector = False
-            first_probe = False
+
             for attempt in attempt_results:
                 attempt.status = garak.ATTEMPT_COMPLETE
                 _config.reportfile.write(json.dumps(attempt.as_dict()) + "\n")

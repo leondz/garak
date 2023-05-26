@@ -7,6 +7,7 @@ import logging
 from colorama import Fore, Style
 from tqdm import tqdm
 
+import garak
 from garak.harness.base import Attempt
 from garak._config import reportfile, args
 
@@ -19,7 +20,7 @@ class Probe:
         self.bcp47 = None  # language this is for, in bcp47 format; * for all langs
         self.recommended_detector = ["toxicity.ToxicCommentModelDetector"]
         self.probename = str(self.__class__).split("'")[1]
-        if args.verbose > 0:
+        if not args or args.verbose > 0:
             print(
                 f"loading {Style.BRIGHT}{Fore.LIGHTYELLOW_EX}probe: {Style.RESET_ALL}{self.probename}"
             )
@@ -39,6 +40,7 @@ class Probe:
             this_attempt = Attempt()
             this_attempt.prompt = prompt
             this_attempt.probe_classname = self.__class__.__name__
+            this_attempt.status = garak.ATTEMPT_STARTED
             this_attempt.outputs = generator.generate(prompt)
             reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
             attempts.append(copy.deepcopy(this_attempt))

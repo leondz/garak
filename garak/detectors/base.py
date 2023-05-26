@@ -20,7 +20,7 @@ class Detector:
         self.recall = 0.0
         self.accuracy = None
         self.detectorname = str(self.__class__).split("'")[1]
-        if args.verbose > 0:
+        if not args or args.verbose > 0:
             print(
                 f"loading {Style.RESET_ALL}{Fore.LIGHTBLUE_EX}detector{Style.RESET_ALL}: {self.detectorname}"
             )
