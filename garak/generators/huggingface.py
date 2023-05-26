@@ -20,7 +20,7 @@ class HFGenerator(Generator):
     def __init__(self, name, do_sample=True, generations=10, device=0):
         self.fullname, self.name = name, name.split("/")[-1]
         print(
-            f"loading {Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: HF:{name}"
+            f"🦜 loading {Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: HF:{name}"
         )
         logging.info("generator init: {self}")
         self.generator = pipeline(

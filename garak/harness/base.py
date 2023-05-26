@@ -23,7 +23,6 @@ class Harness:
             return None
 
         for probe in probes:
-            print("generating...")
             logging.info("generating...")
             attempt_results = probe.probe(model)
 

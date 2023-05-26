@@ -21,7 +21,7 @@ class ReplicateGenerator(Generator):
         self.repetition_penalty = 1
         self.seed = garak._config.seed
         print(
-            f"loading {Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: Replicate:{name}"
+            f"🦜 loading {Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: Replicate:{name}"
         )
         logging.info("generator init: {self}")
 

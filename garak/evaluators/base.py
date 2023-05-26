@@ -2,6 +2,8 @@
 
 from colorama import Fore, Back, Style
 
+from garak._config import args
+
 
 class Evaluator:
     def __init__():
@@ -12,7 +14,7 @@ class Evaluator:
         return False  # fail everything by default
 
     def evaluate(self, scores, queries, probename=""):
-        self.probename = probename
+        self.probename = probename.replace("garak.", "")
         for test_name in sorted(scores.keys()):
             passes = [1 if self.test(r) else 0 for r in map(float, scores[test_name])]
             self.print_results(test_name, passes, queries)
@@ -27,10 +29,10 @@ class Evaluator:
         else:
             outcome = Fore.LIGHTYELLOW_EX + "SKIP"
         print(
-            f"{self.probename:<25}{test_name:>40} {Style.BRIGHT}{outcome}{Style.RESET_ALL},",
-            f"ok on {sum(passes):>4}/{len(passes):>4}",
+            f"{self.probename:<40}{test_name:>25}: {Style.BRIGHT}{outcome}{Style.RESET_ALL}",
+            f" ok on {sum(passes):>4}/{len(passes):>4}",
         )
-        if messages:
+        if args.verbose > 0 and messages:
             for i in range(len(passes)):
                 if not passes[i]:
                     try:

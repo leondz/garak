@@ -48,7 +48,7 @@ class OpenAIGenerator(Generator):
         self.presence_penalty = 0.0
         self.stop = ["#", ";"]
         print(
-            f"loading {Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: OpenAI:{name}"
+            f"🦜 loading {Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: OpenAI:{name}"
         )
         logging.info("generator init: {self}")
 

@@ -6,6 +6,7 @@ import re
 from colorama import Fore, Style
 
 from garak.harness.base import Attempt
+from garak._config import args
 
 
 class Detector:
@@ -19,9 +20,10 @@ class Detector:
         self.recall = 0.0
         self.accuracy = None
         self.detectorname = str(self.__class__).split("'")[1]
-        print(
-            f"loading {Style.RESET_ALL}{Fore.LIGHTBLUE_EX}detector{Style.RESET_ALL}: {self.detectorname}"
-        )
+        if args.verbose > 0:
+            print(
+                f"loading {Style.RESET_ALL}{Fore.LIGHTBLUE_EX}detector{Style.RESET_ALL}: {self.detectorname}"
+            )
         logging.info(f"detector init: {self}")
 
     def detect(self, attempt: Attempt):

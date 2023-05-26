@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import logging
+from colorama import Fore, Style
 
 from garak.harness.base import Harness
 
@@ -13,7 +14,10 @@ class ProbewiseHarness(Harness):
 
     def run(self, model, probenames, evaluator):
         probenames = sorted(probenames)
-        print("probe queue:", probenames)
+        print(
+            f"🕵️  queue of {Style.BRIGHT}{Fore.LIGHTYELLOW_EX}probes:{Style.RESET_ALL} "
+            + ", ".join([name.replace("probes.", "") for name in probenames])
+        )
         logging.info("probe queue: " + " ".join(probenames))
         for probename in probenames:
             try:

@@ -42,6 +42,7 @@ def main(arguments=[]) -> None:
     parser.add_argument("--list_detectors", action="store_true")
     parser.add_argument("--list_generators", action="store_true")
     parser.add_argument("--version", action="store_true")
+    parser.add_argument("-v", "--verbose", action="count", default=0)
 
     _config.args = parser.parse_args(arguments)
 
@@ -55,11 +56,6 @@ def main(arguments=[]) -> None:
 
     logging.info(f"invoked with arguments {_config.args}")
 
-    report_uniqueish_id = abs(hash(dir))
-    report_filename = f"garak.{report_uniqueish_id}.jsonl"
-    _config.reportfile = open(report_filename, "w", buffering=1)
-    logging.info(f"reporting to {report_filename}")
-
     import json
     import importlib
 
@@ -69,12 +65,21 @@ def main(arguments=[]) -> None:
     from garak import __version__
 
     _config.version = __version__
-    _config.reportfile.write(json.dumps(str(_config.args)) + "\n")
 
     if _config.args.version:
         print(
             f"garak llm scanner v{_config.version} -- https://github.com/leondz/garak"
         )
+    else:
+        report_uniqueish_id = abs(hash(dir))
+        report_filename = f"garak.{report_uniqueish_id}.jsonl"
+        _config.reportfile = open(report_filename, "w", buffering=1)
+        _config.reportfile.write(json.dumps(str(_config.args)) + "\n")
+        logging.info(f"reporting to {report_filename}")
+
+    if _config.args.version:
+        pass
+
     elif _config.args.list_probes:
         probe_names = enumerate_plugins(category="probes").values()
         print("\n".join(probe_names))
@@ -88,6 +93,7 @@ def main(arguments=[]) -> None:
         print("\n".join(probe_names))
 
     elif _config.args.model_type:
+        print(f"📜 reporting to {report_filename}")
         generator_module_name = _config.args.model_type.split(".")[0]
         generator_mod = importlib.import_module(
             "garak.generators." + generator_module_name
@@ -123,6 +129,8 @@ def main(arguments=[]) -> None:
         logging.debug(f"harness run: {h}")
         h.run(generator, probe_names, evaluator)
         logging.info("run complete, ending")
+        _config.reportfile.close()
+        print(f"📜 report log closed :) {report_filename}")
 
     else:
         print("nothing to do 🤷  try --help")
