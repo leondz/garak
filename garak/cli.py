@@ -2,8 +2,19 @@
 
 
 def main(arguments=[]) -> None:
+    import datetime
+
+    from garak import __version__, __description__, _config
+
+    _config.starttime = datetime.datetime.now()
+    _config.starttime_iso = _config.starttime.isoformat()
+    _config.version = __version__
+
+    print(
+        f"garak {__description__} v{_config.version} ( https://github.com/leondz/garak ) at {_config.starttime_iso}"
+    )
+
     import argparse
-    import garak._config as _config
 
     parser = argparse.ArgumentParser(
         description="LLM safety & security scanning tool",
@@ -46,11 +57,6 @@ def main(arguments=[]) -> None:
 
     _config.args = parser.parse_args(arguments)
 
-    import datetime
-
-    _config.starttime = datetime.datetime.now()
-    _config.starttime_iso = _config.starttime.isoformat()
-
     import logging
 
     logging.basicConfig(
@@ -67,13 +73,7 @@ def main(arguments=[]) -> None:
     import garak.evaluators
     import garak.harness.probewise
     from garak._plugins import enumerate_plugins
-    from garak import __version__
 
-    _config.version = __version__
-
-    print(
-        f"garak llm scanner v{_config.version} ( https://github.com/leondz/garak ) at {_config.starttime_iso}"
-    )
     if not _config.args.version:
         logging.info(f"started at {_config.starttime_iso}")
         report_uniqueish_id = abs(hash(dir))
