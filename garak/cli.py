@@ -70,6 +70,8 @@ def main(arguments=[]) -> None:
     import importlib
     import json
 
+    from colorama import Fore, Style
+
     import garak.evaluators
     import garak.harness.probewise
     from garak._plugins import enumerate_plugins
@@ -86,16 +88,28 @@ def main(arguments=[]) -> None:
         pass
 
     elif _config.args.list_probes:
-        probe_names = enumerate_plugins(category="probes").values()
-        print("\n".join(probe_names))
+        plugin_names = enumerate_plugins(category="probes").values()
+        for plugin_name in plugin_names:
+            plugin_shortname = plugin_name.replace("probes.", "")
+            print(
+                f"{Style.BRIGHT}{Fore.LIGHTYELLOW_EX}probe: {Style.RESET_ALL}{plugin_shortname}"
+            )
 
     elif _config.args.list_detectors:
-        probe_names = enumerate_plugins(category="detectors").values()
-        print("\n".join(probe_names))
+        plugin_names = enumerate_plugins(category="detectors").values()
+        for plugin_name in plugin_names:
+            plugin_shortname = plugin_name.replace("detectors.", "")
+            print(
+                f"{Style.BRIGHT}{Fore.LIGHTBLUE_EX}detector: {Style.RESET_ALL}{plugin_shortname}"
+            )
 
     elif _config.args.list_generators:
-        probe_names = enumerate_plugins(category="generators").values()
-        print("\n".join(probe_names))
+        plugin_names = enumerate_plugins(category="generators").values()
+        for plugin_name in plugin_names:
+            plugin_shortname = plugin_name.replace("generators.", "")
+            print(
+                f"{Style.BRIGHT}{Fore.LIGHTMAGENTA_EX}generator: {Style.RESET_ALL}{plugin_shortname}"
+            )
 
     elif _config.args.model_type:
         print(f"📜 reporting to {report_filename}")

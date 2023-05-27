@@ -31,7 +31,7 @@ class CohereGenerator(Generator):
         self.stop = []
 
         print(
-            f"🦜 loading {Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: Cohere:{name}"
+            f"🦜 loading {Style.BRIGHT}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: Cohere:{name}"
         )
         logging.info("generator init: {self}")
 

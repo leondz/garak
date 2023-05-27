@@ -12,7 +12,7 @@ class BlankGenerator(Generator):
         self.name = name
         self.generations = generations
         print(
-            f"🦜 loading {Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: BlankGenerator"
+            f"🦜 loading {Style.BRIGHT}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: BlankGenerator"
         )
         logging.info("generator init: {self}")
 

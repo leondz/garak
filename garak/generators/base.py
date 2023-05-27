@@ -10,7 +10,7 @@ class Generator:
         self.name = name
         self.generations = generations
         print(
-            f"🦜 loading empty {Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: {name}"
+            f"🦜 loading empty {Style.BRIGHT}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: {name}"
         )
         logging.info("generator init: {self}")
 
