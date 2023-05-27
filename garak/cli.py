@@ -24,13 +24,13 @@ def main(arguments=[]) -> None:
     parser.add_argument(
         "--model_type",
         type=str,
-        help="module and optionally also class of the generator, e.g. 'huggingface.HFBaseGenerator', or 'openai'",
+        help="module and optionally also class of the generator, e.g. 'huggingface', or 'openai'",
     )
     parser.add_argument(
         "--model_name",
         type=str,
         default="",
-        help="name of the model, e.g. 'gpt2'",
+        help="name of the model, e.g. 'timdettmers/guanaco-33b-merged'",
     )
     parser.add_argument("--seed", type=int, nargs="?", default=320, help="random seed")
     parser.add_argument(
