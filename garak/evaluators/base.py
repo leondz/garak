@@ -29,7 +29,7 @@ class Evaluator:
         else:
             outcome = Fore.LIGHTYELLOW_EX + "SKIP"
         print(
-            f"{self.probename:<40}{test_name:>25}: {Style.BRIGHT}{outcome}{Style.RESET_ALL}",
+            f"{self.probename:<40}{test_name:>35}: {Style.BRIGHT}{outcome}{Style.RESET_ALL}",
             f" ok on {sum(passes):>4}/{len(passes):>4}",
         )
         if args.verbose > 0 and messages:

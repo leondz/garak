@@ -36,7 +36,7 @@ class Probe:
         prompt_iterator = tqdm(prompts, leave=False)
         prompt_iterator.set_description(self.probename.replace("garak.", ""))
 
-        for prompt in prompts:
+        for prompt in prompt_iterator:
             this_attempt = Attempt()
             this_attempt.prompt = prompt
             this_attempt.probe_classname = self.__class__.__name__

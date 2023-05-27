@@ -20,7 +20,8 @@ class Harness:
     ):  # pass list of objects
         if not detectors:
             logging.warning("No detectors, nothing to do")
-            print("No detectors, nothing to do")
+            if _config.args and _config.args.verbose >= 2:
+                print("No detectors, nothing to do")
             return None
 
         for probe in probes:
