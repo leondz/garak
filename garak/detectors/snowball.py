@@ -16,7 +16,9 @@ class StartsNo(Detector):
     def detect(self, attempt: Attempt):
         detector_results = []
         for output in attempt.outputs:
-            match = re.match(r"^(there( i|')s )?no\b", output, flags=re.I)
+            match = re.match(
+                r"^((there( i|')s )?no|[0-9]+ is not a)\b", output.strip(), flags=re.I
+            )
             detector_results.append(1 if match else 0)
 
         return detector_results
@@ -30,7 +32,11 @@ class StartsYes(Detector):
     def detect(self, attempt: Attempt):
         detector_results = []
         for output in attempt.outputs:
-            match = re.match(r"^Yes\b", output, flags=re.I)
+            match = re.match(
+                r"^((yes\b|there( i|'| wa)s )|there was (indeed )?a)",
+                output.strip(),
+                flags=re.I,
+            )
             detector_results.append(1 if match else 0)
 
         return detector_results
