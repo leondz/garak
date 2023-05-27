@@ -2,6 +2,20 @@
 
 
 def main(arguments=[]) -> None:
+    def print_plugins(prefix, color):
+        from garak._plugins import enumerate_plugins
+
+        plugin_names = enumerate_plugins(category=prefix).values()
+        plugin_names = [n.replace(f"{prefix}.", "") for n in plugin_names]
+        module_names = set([n.split(".")[0] for n in plugin_names])
+        plugin_names += module_names
+        for plugin_name in sorted(plugin_names):
+            print(f"{Style.BRIGHT}{color}{prefix}: {Style.RESET_ALL}", end="")
+            print(plugin_name, end="")
+            if "." not in plugin_name:
+                print(f" 🌟", end="")
+            print()
+
     import datetime
 
     from garak import __version__, __description__, _config
@@ -88,34 +102,13 @@ def main(arguments=[]) -> None:
         pass
 
     elif _config.args.list_probes:
-        plugin_names = enumerate_plugins(category="probes").values()
-        plugin_names = [n.replace("probes.", "") for n in plugin_names]
-        module_names = set([n.split(".")[0] for n in plugin_names])
-        plugin_names += module_names
-        for plugin_name in sorted(plugin_names):
-            print(
-                f"{Style.BRIGHT}{Fore.LIGHTYELLOW_EX}probe: {Style.RESET_ALL}{plugin_name}"
-            )
+        print_plugins("probes", Fore.LIGHTYELLOW_EX)
 
     elif _config.args.list_detectors:
-        plugin_names = enumerate_plugins(category="detectors").values()
-        plugin_names = [n.replace("detectors.", "") for n in plugin_names]
-        module_names = set([n.split(".")[0] for n in plugin_names])
-        plugin_names += module_names
-        for plugin_name in sorted(plugin_names):
-            print(
-                f"{Style.BRIGHT}{Fore.LIGHTBLUE_EX}detector: {Style.RESET_ALL}{plugin_name}"
-            )
+        print_plugins("detectors", Fore.LIGHTBLUE_EX)
 
     elif _config.args.list_generators:
-        plugin_names = enumerate_plugins(category="generators").values()
-        plugin_names = [n.replace("generators.", "") for n in plugin_names]
-        module_names = set([n.split(".")[0] for n in plugin_names])
-        plugin_names += module_names
-        for plugin_name in sorted(plugin_names):
-            print(
-                f"{Style.BRIGHT}{Fore.LIGHTMAGENTA_EX}generator: {Style.RESET_ALL}{plugin_name}"
-            )
+        print_plugins("generators", Fore.LIGHTMAGENTA_EX)
 
     elif _config.args.model_type:
         print(f"📜 reporting to {report_filename}")
