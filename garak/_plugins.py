@@ -14,7 +14,7 @@ def enumerate_plugins(category="probes"):
     # todo: prune refs that aren't category.title() or subclasses of that
     plugin_class_names = {}
 
-    for module_filename in os.listdir("garak/" + category):
+    for module_filename in sorted(os.listdir("garak/" + category)):
         if not module_filename.endswith(".py"):
             continue
         if module_filename.startswith("__") or module_filename == "base.py":
@@ -32,7 +32,7 @@ def enumerate_plugins(category="probes"):
                     module_plugin_names.add(module_entry)
 
         # print(' >> ', ', '.join(module_plugin_names))
-        for module_plugin_name in module_plugin_names:
+        for module_plugin_name in sorted(module_plugin_names):
             plugin_class_names[
                 module_plugin_name
             ] = f"{category}.{module_name}.{module_plugin_name}"

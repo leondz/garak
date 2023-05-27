@@ -89,26 +89,32 @@ def main(arguments=[]) -> None:
 
     elif _config.args.list_probes:
         plugin_names = enumerate_plugins(category="probes").values()
-        for plugin_name in plugin_names:
-            plugin_shortname = plugin_name.replace("probes.", "")
+        plugin_names = [n.replace("probes.", "") for n in plugin_names]
+        module_names = set([n.split(".")[0] for n in plugin_names])
+        plugin_names += module_names
+        for plugin_name in sorted(plugin_names):
             print(
-                f"{Style.BRIGHT}{Fore.LIGHTYELLOW_EX}probe: {Style.RESET_ALL}{plugin_shortname}"
+                f"{Style.BRIGHT}{Fore.LIGHTYELLOW_EX}probe: {Style.RESET_ALL}{plugin_name}"
             )
 
     elif _config.args.list_detectors:
         plugin_names = enumerate_plugins(category="detectors").values()
-        for plugin_name in plugin_names:
-            plugin_shortname = plugin_name.replace("detectors.", "")
+        plugin_names = [n.replace("detectors.", "") for n in plugin_names]
+        module_names = set([n.split(".")[0] for n in plugin_names])
+        plugin_names += module_names
+        for plugin_name in sorted(plugin_names):
             print(
-                f"{Style.BRIGHT}{Fore.LIGHTBLUE_EX}detector: {Style.RESET_ALL}{plugin_shortname}"
+                f"{Style.BRIGHT}{Fore.LIGHTBLUE_EX}detector: {Style.RESET_ALL}{plugin_name}"
             )
 
     elif _config.args.list_generators:
         plugin_names = enumerate_plugins(category="generators").values()
-        for plugin_name in plugin_names:
-            plugin_shortname = plugin_name.replace("generators.", "")
+        plugin_names = [n.replace("generators.", "") for n in plugin_names]
+        module_names = set([n.split(".")[0] for n in plugin_names])
+        plugin_names += module_names
+        for plugin_name in sorted(plugin_names):
             print(
-                f"{Style.BRIGHT}{Fore.LIGHTMAGENTA_EX}generator: {Style.RESET_ALL}{plugin_shortname}"
+                f"{Style.BRIGHT}{Fore.LIGHTMAGENTA_EX}generator: {Style.RESET_ALL}{plugin_name}"
             )
 
     elif _config.args.model_type:
