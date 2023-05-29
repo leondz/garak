@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-import logging
-
-from colorama import Fore, Style
 import replicate
 
 import garak._config
@@ -20,10 +17,10 @@ class ReplicateGenerator(Generator):
         self.top_p = 1.0
         self.repetition_penalty = 1
         self.seed = garak._config.seed
-        print(
-            f"🦜 loading {Style.BRIGHT}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: Replicate:{name}"
-        )
-        logging.info("generator init: {self}")
+
+        self.generator_family_name = "Replicate"
+        super().__init__(name)
+
 
     def generate(self, prompt):
         outputs = []

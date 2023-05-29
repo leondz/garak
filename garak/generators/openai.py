@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
-import logging
 import os
 
-from colorama import Fore, Style
 import openai
 
 from garak.generators.base import Generator
@@ -47,10 +45,9 @@ class OpenAIGenerator(Generator):
         self.frequency_penalty = 0.0
         self.presence_penalty = 0.0
         self.stop = ["#", ";"]
-        print(
-            f"🦜 loading {Style.BRIGHT}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: OpenAI:{name}"
-        )
-        logging.info("generator init: {self}")
+
+        self.generator_family_name = "OpenAI"
+        super().__init__(name)
 
         if self.name in completion_models:
             self.generator = openai.Completion

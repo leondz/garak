@@ -5,8 +5,6 @@ import re
 from transformers import pipeline, set_seed
 import warnings
 
-from colorama import Fore, Back, Style
-
 
 from garak._config import args
 from garak.generators.base import Generator
@@ -19,9 +17,10 @@ models_to_deprefix = ["gpt2"]
 class HFGenerator(Generator):
     def __init__(self, name, do_sample=True, generations=10, device=0):
         self.fullname, self.name = name, name.split("/")[-1]
-        print(
-            f"🦜 loading {Style.BRIGHT}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: HF:{name}"
-        )
+
+        self.generator_family_name = "Hugging Face 🤗"
+        super().__init__(name)
+
         logging.info("generator init: {self}")
         self.generator = pipeline(
             "text-generation",

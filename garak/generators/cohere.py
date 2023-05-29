@@ -3,7 +3,6 @@
 import logging
 import os
 
-from colorama import Fore, Style
 import cohere
 
 
@@ -30,10 +29,8 @@ class CohereGenerator(Generator):
         self.presence_penalty = 0.0
         self.stop = []
 
-        print(
-            f"🦜 loading {Style.BRIGHT}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: Cohere:{name}"
-        )
-        logging.info("generator init: {self}")
+        self.generator_family_name = "Cohere"
+        super().__init__(name)
 
         self.generator = cohere.Client(api_key)
 

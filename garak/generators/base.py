@@ -7,10 +7,13 @@ from colorama import Fore, Style
 
 class Generator:
     def __init__(self, name, generations=10):
-        self.name = name
+        if not self.name:
+            self.name = name
         self.generations = generations
+        if not self.generator_family_name:
+            self.generator_family_name = "<empty>"
         print(
-            f"🦜 loading empty {Style.BRIGHT}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: {name}"
+            f"🦜 loading {Style.BRIGHT}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: {self.generator_family_name}: {self.name}"
         )
         logging.info("generator init: {self}")
 
