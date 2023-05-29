@@ -2,7 +2,7 @@
 
 from garak.detectors.base import Detector, StringDetector
 from garak.probes.encoding import test_strings
-from garak.harness.base import Attempt
+from garak.attempt import Attempt
 
 
 class DecodeMatchDetector(StringDetector):

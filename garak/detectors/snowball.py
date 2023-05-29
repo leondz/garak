@@ -4,7 +4,7 @@ import re
 
 
 from garak.detectors import Detector
-from garak.harness.base import Attempt
+from garak.attempt import Attempt
 from garak._config import args
 
 

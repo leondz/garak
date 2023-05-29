@@ -4,7 +4,7 @@ import json
 import logging
 
 from garak.detectors.base import StringDetector, Detector
-from garak.harness.base import Attempt
+from garak.attempt import Attempt
 
 
 class RileyIsnt(StringDetector):

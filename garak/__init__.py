@@ -3,9 +3,3 @@
 __version__ = "0.9"
 __app__ = "garak"
 __description__ = "LLM probe"
-
-(
-    ATTEMPT_NEW,
-    ATTEMPT_STARTED,
-    ATTEMPT_COMPLETE,
-) = range(3)

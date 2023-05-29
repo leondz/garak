@@ -5,7 +5,7 @@ import re
 
 from colorama import Fore, Style
 
-from garak.harness.base import Attempt
+from garak.attempt import Attempt
 from garak._config import args
 
 

@@ -7,8 +7,7 @@ import logging
 from colorama import Fore, Style
 from tqdm import tqdm
 
-import garak
-from garak.harness.base import Attempt
+from garak.attempt import *
 from garak._config import reportfile, args
 
 
@@ -40,7 +39,7 @@ class Probe:
             this_attempt = Attempt()
             this_attempt.prompt = prompt
             this_attempt.probe_classname = self.__class__.__name__
-            this_attempt.status = garak.ATTEMPT_STARTED
+            this_attempt.status = ATTEMPT_STARTED
             this_attempt.outputs = generator.generate(prompt)
             reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
             attempts.append(copy.deepcopy(this_attempt))

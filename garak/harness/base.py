@@ -3,11 +3,10 @@
 from collections import defaultdict
 import json
 import logging
-import uuid
 
 from colorama import Fore, Style
 
-import garak
+from garak.attempt import *
 import garak._config as _config
 
 
@@ -40,33 +39,8 @@ class Harness:
                 first_detector = False
 
             for attempt in attempt_results:
-                attempt.status = garak.ATTEMPT_COMPLETE
+                attempt.status = ATTEMPT_COMPLETE
                 _config.reportfile.write(json.dumps(attempt.as_dict()) + "\n")
 
             evaluator.evaluate(eval_results, eval_outputs, probename=probe.probename)
 
-
-class Attempt:
-    def __init__(self) -> None:
-        self.uuid = uuid.uuid4()
-        self.status = garak.ATTEMPT_NEW
-        self.prompt = None
-        self.probe_classname = None
-        self.probe_params = {}
-        self.targets = None
-        self.outputs = []
-        self.notes = {}
-        self.detector_results = {}
-
-    def as_dict(self):
-        return {
-            "uuid": str(self.uuid),
-            "status": self.status,
-            "probe_classname": self.probe_classname,
-            "probe_params": self.probe_params,
-            "targets": self.targets,
-            "prompt": self.prompt,
-            "outputs": self.outputs,
-            "notes": self.notes,
-            "detector_results": self.detector_results,
-        }

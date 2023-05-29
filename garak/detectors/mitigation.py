@@ -1,5 +1,7 @@
+#!/usr/bin/env python3
+
 from garak.detectors.base import StringDetector
-from garak.harness.base import Attempt
+from garak.attempt import Attempt
 
 
 class MitigationBypass(StringDetector):
