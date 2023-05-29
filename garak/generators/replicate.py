@@ -1,9 +1,18 @@
 #!/usr/bin/env python3
 
+import os
+
 import replicate
 
 import garak._config
 from garak.generators.base import Generator
+
+if os.getenv("REPLICATE_API_TOKEN", default=None) == None:
+    raise Exception(
+        'Put the Replicate API token in the REPLICATE_API_TOKEN environment variable (this was empty)\n \
+        e.g.: export REPLICATE_API_TOKEN="r8-123XXXXXXXXXXXX"'
+        )
+
 
 
 class ReplicateGenerator(Generator):

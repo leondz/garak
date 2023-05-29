@@ -6,7 +6,12 @@ import openai
 
 from garak.generators.base import Generator
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = os.getenv("OPENAI_API_KEY", default=None)
+if openai.api_key == None:
+    raise Exception(
+        'Put the OpenAI API key in the OPENAI_API_KEY environment variable (this was empty)\n \
+        e.g.: export OPENAI_API_KEY="sk-123XXXXXXXXXXXX"'
+        )
 
 """
 sources:
