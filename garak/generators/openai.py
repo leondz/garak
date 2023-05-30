@@ -11,7 +11,7 @@ if openai.api_key == None:
     raise Exception(
         'Put the OpenAI API key in the OPENAI_API_KEY environment variable (this was empty)\n \
         e.g.: export OPENAI_API_KEY="sk-123XXXXXXXXXXXX"'
-        )
+    )
 
 """
 sources:

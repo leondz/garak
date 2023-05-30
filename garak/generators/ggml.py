@@ -30,20 +30,32 @@ class LLaMaGgmlGenerator(Generator):
     def _call_ggml(self, prompt):
         command = [
             self.path_to_ggml_man,
-            "-m", self.name,
-            "-n", self.max_tokens,
-            "--repeat-penalty", self.repeat_penalty,
-            "--presence-penalty", self.presence_penalty,
-            "--frequency-penalty", self.frequency_penalty,
-            "--top-k", self.top_k,
-            "--top-p", self.top_p,
-            "--temp", self.temperature,
-            "-s", self.seed,
-            "-p", prompt
+            "-m",
+            self.name,
+            "-n",
+            self.max_tokens,
+            "--repeat-penalty",
+            self.repeat_penalty,
+            "--presence-penalty",
+            self.presence_penalty,
+            "--frequency-penalty",
+            self.frequency_penalty,
+            "--top-k",
+            self.top_k,
+            "--top-p",
+            self.top_p,
+            "--temp",
+            self.temperature,
+            "-s",
+            self.seed,
+            "-p",
+            prompt,
         ]
         command = [str(param) for param in command]
-        result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
-        output = result.stdout.decode('utf-8')
+        result = subprocess.run(
+            command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
+        )
+        output = result.stdout.decode("utf-8")
         output = re.sub("^" + re.escape(prompt.lstrip()), "", output.lstrip())
         return output
 

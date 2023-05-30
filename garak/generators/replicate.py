@@ -11,8 +11,7 @@ if os.getenv("REPLICATE_API_TOKEN", default=None) == None:
     raise Exception(
         'Put the Replicate API token in the REPLICATE_API_TOKEN environment variable (this was empty)\n \
         e.g.: export REPLICATE_API_TOKEN="r8-123XXXXXXXXXXXX"'
-        )
-
+    )
 
 
 class ReplicateGenerator(Generator):
@@ -29,7 +28,6 @@ class ReplicateGenerator(Generator):
 
         self.generator_family_name = "Replicate"
         super().__init__(name)
-
 
     def generate(self, prompt):
         outputs = []
