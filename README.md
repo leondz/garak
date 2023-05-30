@@ -46,6 +46,19 @@ optional arguments:
 See https://github.com/leondz/garak
 ```
 
+
+Example to install and then probe ChatGPT for encoding-based prompt injection (OSX/\*nix) (replace example value with a real OpenAI API key)
+
+```
+export OPENAI_API_KEY="sk-123XXXXXXXXXXXX"
+gh repo clone leondz/garak
+cd garak
+python3 -m garak --model_type openai --model_name gpt-3.5-turbo --probes encoding
+```
+
+Happy hunting!
+
+
 <hr>
 
 _"Never tell the same lie twice"_ - Elim
