@@ -26,7 +26,6 @@ class HFGenerator(Generator):
             "text-generation",
             model=name,
             do_sample=do_sample,
-            num_return_sequences=generations,
             device=device,
         )
         self.deprefix_prompt = name in models_to_deprefix
@@ -40,6 +39,7 @@ class HFGenerator(Generator):
                     prompt,
                     pad_token_id=self.generator.tokenizer.eos_token_id,
                     max_new_tokens=self.max_new_tokens,
+                    num_return_sequences=self.generations,
                     # max_length = 1024,
                 )
             except:
