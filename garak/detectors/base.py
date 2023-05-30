@@ -11,15 +11,22 @@ from garak._config import args
 
 class Detector:
     def __init__(self):
-        if not self.name:
+        if 'name' not in dir(self):
             self.name = __class__  # short name
-        self.description = "Empty detector"
-        self.uri = ""  # reference
-        self.bcp47 = None  # language this is for, in bcp47 format
-        self.precision = 0.0
-        self.recall = 0.0
-        self.accuracy = None
-        self.detectorname = str(self.__class__).split("'")[1]
+        if 'description' not in dir(self):
+            self.description = "Empty detector"
+        if 'uti' not in dir(self):
+            self.uri = ""  # reference
+        if 'bcp47' not in dir(self):
+            self.bcp47 = None  # language this is for, in bcp47 format
+        if 'precision' not in dir(self):
+            self.precision = 0.0
+        if 'recall' not in dir(self):
+            self.recall = 0.0
+        if 'accuracy' not in dir(self):
+            self.accuracy = None
+        if 'detectorname' not in dir(self):
+            self.detectorname = str(self.__class__).split("'")[1]
         if not args or args.verbose > 0:
             print(
                 f"loading {Style.RESET_ALL}{Fore.LIGHTBLUE_EX}detector{Style.RESET_ALL}: {self.detectorname}"
