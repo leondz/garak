@@ -14,6 +14,7 @@ currently supports:
 * [hugging face hub](https://huggingface.co/models) generative models
 * [replicate](https://replicate.com/) text models
 * [openai api](https://platform.openai.com/docs/introduction) continuation models
+* ggml models like [llama.cpp](https://github.com/ggerganov/llama.cpp)
 
 ```
 $ python3 -m garak --help
