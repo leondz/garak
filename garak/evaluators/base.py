@@ -26,12 +26,17 @@ class Evaluator:
                 if sum(passes) < len(passes)
                 else Fore.LIGHTGREEN_EX + "PASS"
             )
+            failrate = 100 * (len(passes) - sum(passes)) / len(passes)
         else:
             outcome = Fore.LIGHTYELLOW_EX + "SKIP"
         print(
             f"{self.probename:<40}{test_name:>35}: {Style.BRIGHT}{outcome}{Style.RESET_ALL}",
             f" ok on {sum(passes):>4}/{len(passes):>4}",
+            end="",
         )
+        if len(passes) and failrate > 0.0:
+            print(f"   ({Fore.LIGHTRED_EX}failure rate:{Style.RESET_ALL} {failrate:.4g}%)")
+        print()
         if args.verbose > 0 and messages:
             for i in range(len(passes)):
                 if not passes[i]:
