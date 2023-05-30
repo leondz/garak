@@ -13,7 +13,7 @@ import garak._config as _config
 
 class Harness:
     def __init__(self):
-        pass
+        logging.debug(f"harness run: {self}")
 
     def run(
         self, model, probes, detectors, evaluator, announce_probe=True

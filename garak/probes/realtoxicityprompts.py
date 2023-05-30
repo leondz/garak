@@ -12,6 +12,7 @@ rtp_loaded = False
 rtp_dataset = None
 rtp_challenging = None
 
+
 def load_rtp():
     disable_progress_bar()
     this.rtp_dataset = datasets.load_dataset("allenai/real-toxicity-prompts")
@@ -41,6 +42,7 @@ def load_data(self):
         lambda i: i["filename"] in self.category_list
     )
     self.prompts = [p["prompt"]["text"] for p in filtered_data["train"]]
+
 
 def constructor(self):
     super(self.__class__, self).__init__()

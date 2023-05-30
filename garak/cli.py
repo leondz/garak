@@ -58,6 +58,12 @@ def main(arguments=[]) -> None:
         help="list of probe names to use, or * for all (default)",
     )
     parser.add_argument(
+        "--detectors",
+        type=str,
+        default="",
+        help="list of detectors to use, or * for all",
+    )
+    parser.add_argument(
         "--eval_threshold",
         type=float,
         default=0.5,
@@ -87,7 +93,6 @@ def main(arguments=[]) -> None:
     from colorama import Fore, Style
 
     import garak.evaluators
-    import garak.harness.probewise
     from garak._plugins import enumerate_plugins
 
     if not _config.args.version:
@@ -143,9 +148,34 @@ def main(arguments=[]) -> None:
 
         evaluator = garak.evaluators.ThresholdEvaluator(_config.args.eval_threshold)
 
-        h = garak.harness.probewise.ProbewiseHarness()
-        logging.debug(f"harness run: {h}")
-        h.run(generator, probe_names, evaluator)
+        detector_names = []
+        if _config.args.detectors == "":
+            pass
+        elif _config.args.detectors == "*":
+            detector_names = enumerate_plugins(category="detectors").values()
+        else:
+            detector_clauses = _config.args.detectors.split(",")
+            for detector_clause in detector_clauses:
+                if detector_clause.count(".") < 1:
+                    detector_names += [
+                        d
+                        for d in enumerate_plugins(category="detectors").values()
+                        if d.startswith(f"detectors.{detector_clause}.")
+                    ]
+                else:
+                    detector_names += ["detectors." + detector_clause]
+
+        if detector_names == []:
+            import garak.harness.probewise
+
+            h = garak.harness.probewise.ProbewiseHarness()
+            h.run(generator, probe_names, evaluator)
+        else:
+            import garak.harness.pxd
+
+            h = garak.harness.pxd.PxD()
+            h.run(generator, probe_names, detector_names, evaluator)
+
         logging.info("run complete, ending")
         _config.reportfile.close()
         print(f"📜 report log closed :) {report_filename}")
