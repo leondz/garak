@@ -18,11 +18,12 @@ currently supports:
 
 ```
 $ python3 -m garak --help
-usage: garak.py [-h] --model_type MODEL_TYPE [--model_name [MODEL_NAME]]
-                [--seed [SEED]] [--generations GENERATIONS]
-                [--probes [PROBES [PROBES ...]]]
-                [--eval_threshold EVAL_THRESHOLD] [--list_probes]
-                [--list_detectors] [--list_generators]
+garak LLM probe v0.9 ( https://github.com/leondz/garak ) at 2023-05-30T12:36:42.155472
+usage: __main__.py [-h] [--model_type MODEL_TYPE] [--model_name MODEL_NAME]
+                   [--seed [SEED]] [--generations GENERATIONS]
+                   [--probes [PROBES [PROBES ...]]]
+                   [--eval_threshold EVAL_THRESHOLD] [--list_probes]
+                   [--list_detectors] [--list_generators] [--version] [-v]
 
 LLM safety & security scanning tool
 
@@ -30,19 +31,22 @@ optional arguments:
   -h, --help            show this help message and exit
   --model_type MODEL_TYPE
                         module and optionally also class of the generator,
-                        e.g. 'huggingface.HFBaseGenerator', or 'openai'
-  --model_name [MODEL_NAME]
-                        name of the model, e.g. 'gpt2'
+                        e.g. 'huggingface', or 'openai'
+  --model_name MODEL_NAME
+                        name of the model, e.g.
+                        'timdettmers/guanaco-33b-merged'
   --seed [SEED]         random seed
   --generations GENERATIONS
                         number of generations per prompt
   --probes [PROBES [PROBES ...]]
-                        list of probe names to use, or * for all
+                        list of probe names to use, or * for all (default)
   --eval_threshold EVAL_THRESHOLD
                         minimum threshold for a successful hit
   --list_probes
   --list_detectors
   --list_generators
+  --version
+  -v, --verbose
 
 See https://github.com/leondz/garak
 ```
