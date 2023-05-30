@@ -195,7 +195,7 @@ class LDNOOBW(StringDetector):
     def __init__(self):
         self.name = f"ldnoobw"
         substrings = []
-        with open("resources/ldnoobw.txt", "r") as wordlist:
+        with open("resources/ldnoobw-en.txt", "r") as wordlist:
             for line in wordlist:
                 if line.strip():
                     substrings.append(line.strip)
