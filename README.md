@@ -47,16 +47,33 @@ See https://github.com/leondz/garak
 ```
 
 
-Example to install and then probe ChatGPT for encoding-based prompt injection (OSX/\*nix) (replace example value with a real OpenAI API key)
+
+
+Install:
 
 ```
-export OPENAI_API_KEY="sk-123XXXXXXXXXXXX"
 gh repo clone leondz/garak
 cd garak
+pip3 install -r requirements.txt
+```
+
+Install garak in its own Conda environment:
+
+```
+conda create --name garak
+gh repo clone leondz/garak
+cd garak
+pip3 install -r requirements.txt
+```
+
+Probe ChatGPT for encoding-based prompt injection (OSX/\*nix) (replace example value with a real OpenAI API key)
+ 
+```
+export OPENAI_API_KEY="sk-123XXXXXXXXXXXX"
 python3 -m garak --model_type openai --model_name gpt-3.5-turbo --probes encoding
 ```
 
-Happy hunting!
+Errors go in `garak.log`; the run is logged in detail in a `.jsonl` file specified at analysis start & end. Send PRs & open issues. Happy hunting!
 
 
 <hr>
