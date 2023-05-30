@@ -13,7 +13,7 @@ invoke with `python3 -m garak`
 currently supports:
 * [hugging face hub](https://huggingface.co/models) generative models
 * [replicate](https://replicate.com/) text models
-* [openai api](https://platform.openai.com/docs/introduction) continuation models
+* [openai api](https://platform.openai.com/docs/introduction) chat & continuation models
 * ggml models like [llama.cpp](https://github.com/ggerganov/llama.cpp)
 
 ```
