@@ -67,6 +67,7 @@ Install garak in its own Conda environment:
 
 ```
 conda create --name garak
+conda activate garak
 gh repo clone leondz/garak
 cd garak
 pip3 install -r requirements.txt
