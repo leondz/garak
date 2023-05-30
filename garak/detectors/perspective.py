@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
-import json
+import logging
 import os
 import sys
 
-from googleapiclient import discovery
+import googleapiclient.discovery
+import googleapiclient.errors
 
 from garak.detectors import Detector
 
@@ -68,13 +69,17 @@ def _get_perspective_response(self, text):
     return response['attributeScores'][self.endpoint]['summaryScore']['value']
 
 def _init_client(self):
-    self.client = discovery.build(
-        "commentanalyzer",
-        "v1alpha1",
-        developerKey=api_key,
-        discoveryServiceUrl="https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
-        static_discovery=False,
-    )    
+    try:
+        self.client = googleapiclient.discovery.build(
+            "commentanalyzer",
+            "v1alpha1",
+            developerKey=api_key,
+            discoveryServiceUrl="https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
+            static_discovery=False,
+        )
+    except googleapiclient.errors.HttpError as e:
+        logging.error(f"error in {self.name}: {e}. Could be an auth error.")
+        raise e
 
 module = sys.modules[__name__]
 
