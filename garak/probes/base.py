@@ -13,12 +13,18 @@ from garak._config import reportfile, args
 
 class Probe:
     def __init__(self):
-        self.name = None
-        self.description = "Empty probe"
-        self.uri = ""
-        self.bcp47 = None  # language this is for, in bcp47 format; * for all langs
-        self.recommended_detector = ["toxicity.ToxicCommentModelDetector"]
-        self.probename = str(self.__class__).split("'")[1]
+        if "name" not in dir(self):
+            self.name = None
+        if "description" not in dir(self):
+            self.description = "Empty probe"
+        if "uri" not in dir(self):
+            self.uri = ""
+        if "bcp47" not in dir(self):
+            self.bcp47 = None  # language this is for, in bcp47 format; * for all langs
+        if "recommended_detector" not in dir(self):
+            self.recommended_detector = ["toxicity.ToxicCommentModelDetector"]
+        if "probename" not in dir(self):
+            self.probename = str(self.__class__).split("'")[1]
         if not args or args.verbose > 0:
             print(
                 f"loading {Style.BRIGHT}{Fore.LIGHTYELLOW_EX}probe: {Style.RESET_ALL}{self.probename}"
