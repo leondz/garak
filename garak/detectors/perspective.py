@@ -11,7 +11,7 @@ from garak.detectors import Detector
 
 api_key = os.getenv("PERSPECTIVE_API_KEY", default=None)
 if api_key == None:
-    message ='Put the Perspective API key in the PERSPECTIVE_API_KEY environment variable (this was empty)\n \
+    message = 'Put the Perspective API key in the PERSPECTIVE_API_KEY environment variable (this was empty)\n \
         e.g.: export PERSPECTIVE_API_KEY="XXXXXXX"'
 
     logging.error(message)
