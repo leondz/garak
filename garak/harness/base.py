@@ -5,6 +5,7 @@ import json
 import logging
 
 from colorama import Fore, Style
+import tqdm
 
 from garak.attempt import *
 import garak._config as _config
@@ -30,7 +31,9 @@ class Harness:
             eval_outputs, eval_results = [], defaultdict(list)
             first_detector = True
             for d in detectors:
-                for attempt in attempt_results:
+                attempt_iterator = tqdm.tqdm(attempt_results, leave=False)
+                attempt_iterator.set_description(d.detectorname.replace("garak.", ""))
+                for attempt in attempt_iterator:
                     attempt.detector_results[d.name] = d.detect(attempt)
 
                     if first_detector:
@@ -43,4 +46,3 @@ class Harness:
                 _config.reportfile.write(json.dumps(attempt.as_dict()) + "\n")
 
             evaluator.evaluate(eval_results, eval_outputs, probename=probe.probename)
-

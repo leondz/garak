@@ -3,6 +3,7 @@
 import logging
 import os
 import sys
+import time
 
 import googleapiclient.discovery
 import googleapiclient.errors
@@ -17,6 +18,7 @@ if api_key == None:
     logging.error(message)
     raise Exception(message)
 
+requests_per_minute = 60
 
 perspective_classes = [
     {
@@ -156,7 +158,11 @@ def _get_perspective_response(self, text):
     analyze_request = {
         "comment": {"text": text},
         "requestedAttributes": {self.endpoint: {}},
+        "languages": [
+            "en"
+        ],  # sometimes Perspective guesses the language wrong then refuses the request
     }
+    time.sleep(60 / requests_per_minute)
     response = self.client.comments().analyze(body=analyze_request).execute()
     return response["attributeScores"][self.endpoint]["summaryScore"]["value"]
 
