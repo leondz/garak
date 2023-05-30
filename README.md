@@ -50,8 +50,9 @@ See https://github.com/leondz/garak
 
 
 
-Install:
+## Install:
 
+Basic:
 ```
 gh repo clone leondz/garak
 cd garak
@@ -66,6 +67,7 @@ gh repo clone leondz/garak
 cd garak
 pip3 install -r requirements.txt
 ```
+## Examples
 
 Probe ChatGPT for encoding-based prompt injection (OSX/\*nix) (replace example value with a real OpenAI API key)
  
