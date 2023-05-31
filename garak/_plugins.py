@@ -1,10 +1,29 @@
+#!/usr/bin/env python3
+
 import importlib
 import inspect
 import logging
 import os
+from typing import List
 
 
-def enumerate_plugins(category="probes"):
+def enumerate_plugins(category: str = "probes") -> List[str]:
+    """A function for listing all modules & plugins of the specified kind.
+
+    garak's plugins are organised into four packages - probes, detectors, generators
+    and harnesses. Each package contains a base module defining the core plugin
+    classes. The other modules in the package define classes that inherit from the
+    base module's classes.
+
+    enumerate_plugins() works by first looking at the base module in a package
+    and finding the root classes here; it will then go through the other modules
+    in the package and see which classes can be enumerated from these.
+
+    :param category: the name of the plugin package to be scanned; should
+      be one of probes, detectors, generators, or harnesses.
+    :type category: str
+    """
+
     if category not in ("probes", "detectors", "generators", "harnesses"):
         raise ValueError("Not a recognised plugin type:", category)
 
@@ -40,9 +59,16 @@ def enumerate_plugins(category="probes"):
     return plugin_class_names
 
 
-def load_plugin(
-    path, break_on_fail=True
-):  # input: sth like "probe.blank.BlankPrompt"; return class instance
+def load_plugin(path, break_on_fail=True):
+    """load_plugin takes a path to a plugin class, and attempts to load that class.
+    If successful, it returns an instance of that class.
+
+    :param path: The path to the class to be loaded, e.g. "probes.blank.BlankPrompt"
+    :type path: str
+    :param break_on_fail: Should we raise exceptions if there are problems with the load?
+      (default is True)
+    :type break_on_fail: bool
+    """
     try:
         category, module_name, plugin_class_name = path.split(".")
     except ValueError:

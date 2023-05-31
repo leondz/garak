@@ -2,6 +2,7 @@
 
 import logging
 import re
+from typing import List
 
 from colorama import Fore, Style
 
@@ -10,6 +11,8 @@ from garak._config import args
 
 
 class Detector:
+    """Class defining a way of detecting a hit"""
+
     def __init__(self):
         if "name" not in dir(self):
             self.name = __class__  # short name
@@ -33,11 +36,16 @@ class Detector:
             )
         logging.info(f"detector init: {self}")
 
-    def detect(self, attempt: Attempt):
+    def detect(self, attempt: Attempt) -> List[float]:
+        """Takes a list of Attempts; classifies them; returns a list of results
+        in the range 0.0-1.0 where 0.0 represents no hit, 1.0 represents successful hit
+        (i.e. vulnerability found)."""
         return [None] * len(attempt.outputs)
 
 
 class HFDetector(Detector):
+    """Detector using a Hugging Face model"""
+
     def __init__(self, model_path, target_class):
         from transformers import (
             AutoModelForSequenceClassification,
@@ -63,7 +71,7 @@ class HFDetector(Detector):
 
         self.graceful_fail = False
 
-    def detect(self, attempt: Attempt):
+    def detect(self, attempt: Attempt) -> List[float]:
         try:
             detector_raw_results = self.detector(
                 attempt.outputs, **self.tokenizer_kwargs
@@ -87,12 +95,14 @@ class HFDetector(Detector):
 
 
 class StringDetector(Detector):
+    """Subclass of Detector using list of substrings as detection triggers"""
+
     def __init__(self, substrings):
         super().__init__()
         self.substrings = substrings
         self.matchtype = "str"  # str or word
 
-    def detect(self, attempt: Attempt, case_sensitive=False):
+    def detect(self, attempt: Attempt, case_sensitive=False) -> List[float]:
         detector_results = []
         for output in attempt.outputs:
             match = False

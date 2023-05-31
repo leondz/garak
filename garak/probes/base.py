@@ -3,6 +3,7 @@
 import copy
 import json
 import logging
+from typing import List
 
 from colorama import Fore, Style
 from tqdm import tqdm
@@ -12,6 +13,8 @@ from garak._config import reportfile, args
 
 
 class Probe:
+    """Base class for objects that define and execute LLM evaluations"""
+
     def __init__(self):
         if "name" not in dir(self):
             self.name = None
@@ -31,9 +34,8 @@ class Probe:
             )
         logging.info(f"probe init: {self}")
 
-    def probe(self, generator):
-        # attempt to exploit the target, return list of results
-        results = []
+    def probe(self, generator) -> List[Attempt]:
+        """attempt to exploit the target generator, returning a list of results"""
         logging.debug(f"probe execute: {self}")
 
         attempts = []
@@ -53,9 +55,11 @@ class Probe:
 
 
 class TextProbe(Probe):
+    """Subclass of Probe for text-based probes using a list of prompts, kept in `self.prompts`."""
+
     def __init__(self):
         super().__init__()
         self.prompts = []
 
-    def probe(self, generator):
+    def probe(self, generator) -> List[Attempt]:
         return super().probe(generator)

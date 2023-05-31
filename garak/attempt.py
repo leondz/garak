@@ -10,6 +10,10 @@ import uuid
 
 
 class Attempt:
+    """A class defining objects that represent everything that constitutes
+    a single attempt at evaluating an LLM.
+    """
+
     def __init__(self) -> None:
         self.uuid = uuid.uuid4()
         self.status = ATTEMPT_NEW
@@ -21,7 +25,7 @@ class Attempt:
         self.notes = {}
         self.detector_results = {}
 
-    def as_dict(self):
+    def as_dict(self) -> dict:
         return {
             "uuid": str(self.uuid),
             "status": self.status,
