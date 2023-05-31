@@ -36,7 +36,8 @@ class Evaluator:
         )
         if len(passes) and failrate > 0.0:
             print(
-                f"   ({Fore.LIGHTRED_EX}failure rate:{Style.RESET_ALL} {failrate:.4g}%)"
+                f"   ({Fore.LIGHTRED_EX}failure rate:{Style.RESET_ALL} {failrate:.4g}%)",
+                end="",
             )
         print()
         if args.verbose > 0 and messages:

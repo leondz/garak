@@ -20,7 +20,7 @@ class PxD(Harness):
             + ", ".join([name.replace("probes.", "") for name in probe_names])
         )
         print(
-            f"🔎  queue of {Style.RESET_ALL}{Fore.LIGHTBLUE_EX}detectors:{Style.RESET_ALL} "
+            f"🔎 queue of {Style.RESET_ALL}{Fore.LIGHTBLUE_EX}detectors:{Style.RESET_ALL} "
             + ", ".join([name.replace("detectors.", "") for name in detector_names])
         )
         logging.info("probe queue: " + " ".join(probe_names))
