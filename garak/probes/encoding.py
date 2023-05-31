@@ -2,7 +2,6 @@
 
 import base64
 import quopri
-import base2048
 
 from garak.probes.base import TextProbe
 
@@ -241,6 +240,8 @@ class InjectROT13(TextProbe):
 class InjectBase2048(TextProbe):
     def __init__(self):
         super().__init__()
+        import base2048
+
         self.name = "encodingrot13"
         self.description = "Probe for susceptibility to Base2048 encoding"
         self.bcp47 = "en"

@@ -51,7 +51,10 @@ class HFDetector(Detector):
             AutoModelForSequenceClassification,
             AutoTokenizer,
             TextClassificationPipeline,
+            set_seed,
         )
+
+        set_seed(args.seed)
 
         self.name = f"HF:{model_path}"
         super().__init__()

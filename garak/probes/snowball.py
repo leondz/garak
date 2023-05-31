@@ -3,7 +3,7 @@
 
 import json
 
-from garak.probes.base import Probe, TextProbe
+from garak.probes.base import TextProbe
 
 
 class GraphConnectivity(TextProbe):

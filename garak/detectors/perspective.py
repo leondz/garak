@@ -5,8 +5,6 @@ import os
 import sys
 import time
 
-import googleapiclient.discovery
-import googleapiclient.errors
 
 from garak.detectors import Detector
 
@@ -168,6 +166,9 @@ def _init_client(self):
 
         logging.error(message)
         raise Exception(message)
+
+    import googleapiclient.discovery
+    import googleapiclient.errors
 
     try:
         self.client = googleapiclient.discovery.build(
