@@ -53,15 +53,14 @@ def main(arguments=[]) -> None:
     parser.add_argument(
         "--probes",
         type=str,
-        nargs="*",
-        default="*",
-        help="list of probe names to use, or * for all (default)",
+        default="all",
+        help="list of probe names to use, or 'all' for all (default).",
     )
     parser.add_argument(
         "--detectors",
         type=str,
         default="",
-        help="list of detectors to use, or * for all",
+        help="list of detectors to use, or 'all' for all. Default is to use the probe's suggestion.",
     )
     parser.add_argument(
         "--eval_threshold",
@@ -135,7 +134,7 @@ def main(arguments=[]) -> None:
         )
         generator.generations = _config.args.generations
 
-        if _config.args.probes == "*":
+        if _config.args.probes == "all":
             probe_names = enumerate_plugins(category="probes").values()
         elif len(_config.args.probes[0].split(".")) == 1:
             probe_names = [
@@ -151,7 +150,7 @@ def main(arguments=[]) -> None:
         detector_names = []
         if _config.args.detectors == "":
             pass
-        elif _config.args.detectors == "*":
+        elif _config.args.detectors == "all":
             detector_names = enumerate_plugins(category="detectors").values()
         else:
             detector_clauses = _config.args.detectors.split(",")
