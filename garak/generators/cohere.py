@@ -3,17 +3,8 @@
 import logging
 import os
 
-import cohere
-
-
 from garak.generators.base import Generator
 
-api_key = os.getenv("COHERE_API_KEY", default=None)
-if api_key == None:
-    raise Exception(
-        'Put the Cohere API key in the COHERE_API_KEY environment variable (this was empty)\n \
-        e.g.: export COHERE_API_KEY="XXXXXXX"'
-    )
 
 COHERE_GENERATION_LIMIT = (
     5  # c.f. https://docs.cohere.com/reference/generate 18 may 2023
@@ -37,6 +28,15 @@ class CohereGenerator(Generator):
 
         self.generator_family_name = "Cohere"
         super().__init__(name)
+
+        import cohere
+
+        api_key = os.getenv("COHERE_API_KEY", default=None)
+        if api_key == None:
+            raise Exception(
+                'Put the Cohere API key in the COHERE_API_KEY environment variable (this was empty)\n \
+                e.g.: export COHERE_API_KEY="XXXXXXX"'
+            )
 
         self.generator = cohere.Client(api_key)
 

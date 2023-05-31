@@ -2,14 +2,12 @@
 
 import logging
 import re
-from transformers import pipeline, set_seed
 import warnings
 
 
 from garak._config import args
 from garak.generators.base import Generator
 
-set_seed(args.seed)
 
 models_to_deprefix = ["gpt2"]
 
@@ -20,6 +18,10 @@ class HFGenerator(Generator):
 
         self.generator_family_name = "Hugging Face 🤗"
         super().__init__(name)
+
+        from transformers import pipeline, set_seed
+
+        set_seed(args.seed)
 
         logging.info("generator init: {self}")
         self.generator = pipeline(

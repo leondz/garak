@@ -1,17 +1,9 @@
 #!/usr/bin/env python3
 
+import importlib
 import os
 
-import openai
-
 from garak.generators.base import Generator
-
-openai.api_key = os.getenv("OPENAI_API_KEY", default=None)
-if openai.api_key == None:
-    raise Exception(
-        'Put the OpenAI API key in the OPENAI_API_KEY environment variable (this was empty)\n \
-        e.g.: export OPENAI_API_KEY="sk-123XXXXXXXXXXXX"'
-    )
 
 """
 sources:
@@ -54,12 +46,22 @@ class OpenAIGenerator(Generator):
         self.generator_family_name = "OpenAI"
         super().__init__(name)
 
+        self.openai = importlib.import_module("openai")
+        self.openai.api_key = os.getenv("OPENAI_API_KEY", default=None)
+        if self.openai.api_key == None:
+            raise Exception(
+                'Put the OpenAI API key in the OPENAI_API_KEY environment variable (this was empty)\n \
+                e.g.: export OPENAI_API_KEY="sk-123XXXXXXXXXXXX"'
+            )
+
         if self.name in completion_models:
-            self.generator = openai.Completion
+            self.generator = self.openai.Completion
         elif self.name in chat_models:
-            self.generator = openai.ChatCompletion
+            self.generator = self.openai.ChatCompletion
         elif self.name == "":
-            openai_model_list = sorted([m["id"] for m in openai.Model().list()["data"]])
+            openai_model_list = sorted(
+                [m["id"] for m in self.openai.Model().list()["data"]]
+            )
             raise ValueError(
                 "Model name is required for OpenAI, use --model_name\n"
                 + "  API returns following available models: ▶️   "
@@ -73,7 +75,7 @@ class OpenAIGenerator(Generator):
             )
 
     def generate(self, prompt):
-        if self.generator == openai.Completion:
+        if self.generator == self.openai.Completion:
             response = self.generator.create(
                 model=self.name,
                 prompt=prompt,
@@ -86,7 +88,7 @@ class OpenAIGenerator(Generator):
                 stop=self.stop,
             )
             return [c["text"] for c in response["choices"]]
-        elif self.generator == openai.ChatCompletion:
+        elif self.generator == self.openai.ChatCompletion:
             response = self.generator.create(
                 model=self.name,
                 messages=[{"role": "user", "content": prompt}],
