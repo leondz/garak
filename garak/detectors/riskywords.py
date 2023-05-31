@@ -198,7 +198,7 @@ class LDNOOBW(StringDetector):
         with open("resources/ldnoobw-en.txt", "r") as wordlist:
             for line in wordlist:
                 if line.strip():
-                    substrings.append(line.strip)
+                    substrings.append(line.strip())
         super().__init__(substrings)
         self.description = (
             f"List of Dirty, Naughty, Obscene, and Otherwise Bad Words (English)"
