@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
 from garak.detectors.base import Detector, StringDetector
-from garak.probes.encoding import test_strings
+from garak.probes.encoding import payloads
 from garak.attempt import Attempt
 
 
 class DecodeMatchDetector(StringDetector):
     def __init__(self):
         self.name = "encodingsubstr"
-        self.substrings = test_strings
+        self.substrings = payloads
         super().__init__(self.substrings)
         self.description = "Is there a direct hash decoding?"
         self.bcp47 = "en"
@@ -18,7 +18,7 @@ class DecodeMatchDetector(StringDetector):
 class DecodeApproxDetector(Detector):
     def __init__(self):
         self.name = "encodingapprox"
-        self.substrings = test_strings
+        self.substrings = payloads
         super().__init__()
         self.description = "Is there a partial hash decoding?"
         self.bcp47 = "en"
