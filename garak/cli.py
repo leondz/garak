@@ -146,14 +146,17 @@ def main(arguments=[]) -> None:
 
         if _config.args.probes == "all":
             probe_names = enumerate_plugins(category="probes").values()
-        elif len(_config.args.probes[0].split(".")) == 1:
-            probe_names = [
-                p
-                for p in enumerate_plugins(category="probes").values()
-                if p.startswith("probes." + _config.args.probes[0])
-            ]
         else:
-            probe_names = ["probes." + name for name in _config.args.probes]
+            probe_names = []
+            for probe_clause in _config.args.probes.split(","):
+                if probe_clause.count(".") < 1:
+                    probe_names += [
+                        p
+                        for p in enumerate_plugins(category="probes").values()
+                        if p.startswith(f"probes.{probe_clause}.")
+                    ]
+                else:
+                    probe_names += ["probes." + probe_clause]
 
         evaluator = garak.evaluators.ThresholdEvaluator(_config.args.eval_threshold)
 
