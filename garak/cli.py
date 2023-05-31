@@ -37,27 +37,37 @@ def main(arguments=[]) -> None:
     # model type; model name; seed; generations; probe names; eval threshold
     parser.add_argument(
         "--model_type",
+        "-m",
         type=str,
         help="module and optionally also class of the generator, e.g. 'huggingface', or 'openai'",
     )
     parser.add_argument(
         "--model_name",
+        "-n",
         type=str,
         default="",
         help="name of the model, e.g. 'timdettmers/guanaco-33b-merged'",
     )
-    parser.add_argument("--seed", type=int, nargs="?", default=320, help="random seed")
     parser.add_argument(
-        "--generations", type=int, default=10, help="number of generations per prompt"
+        "--seed", "-s", type=int, nargs="?", default=320, help="random seed"
+    )
+    parser.add_argument(
+        "--generations",
+        "-g",
+        type=int,
+        default=10,
+        help="number of generations per prompt",
     )
     parser.add_argument(
         "--probes",
+        "-p",
         type=str,
         default="all",
         help="list of probe names to use, or 'all' for all (default).",
     )
     parser.add_argument(
         "--detectors",
+        "-d",
         type=str,
         default="",
         help="list of detectors to use, or 'all' for all. Default is to use the probe's suggestion.",
@@ -71,7 +81,7 @@ def main(arguments=[]) -> None:
     parser.add_argument("--list_probes", action="store_true")
     parser.add_argument("--list_detectors", action="store_true")
     parser.add_argument("--list_generators", action="store_true")
-    parser.add_argument("--version", action="store_true")
+    parser.add_argument("-V", "--version", action="store_true")
     parser.add_argument("-v", "--verbose", action="count", default=0)
 
     _config.args = parser.parse_args(arguments)
