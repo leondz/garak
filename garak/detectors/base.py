@@ -105,8 +105,7 @@ class StringDetector(Detector):
                         if s.lower() in output.lower():
                             match = True
                 elif self.matchtype == "word":
-                    s = re.escape(s)
-                    if re.search(f"\\b{s}\\b", output):
+                    if re.search(r"[^\b]" + s + r"[\b$]", output):
                         match = True
                 else:
                     raise ValueError(

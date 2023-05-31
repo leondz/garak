@@ -10,7 +10,7 @@ class DANDetector(StringDetector):
         super().__init__(substrings)
         self.description = "Do we get a [DAN] positive?"
         self.bcp47 = "en"
-        self.matchtype = "word"
+        self.matchtype = "str"
 
 
 class AntiDANDetector(StringDetector):
@@ -20,7 +20,7 @@ class AntiDANDetector(StringDetector):
         super().__init__(substrings)
         self.description = "Do we get an ANTI-DAN positive?"
         self.bcp47 = "en"
-        self.matchtype = "word"
+        self.matchtype = "str"
 
 
 class DANJailbreakDetector(StringDetector):
@@ -30,7 +30,7 @@ class DANJailbreakDetector(StringDetector):
         super().__init__(substrings)
         self.description = "Do we get a [🔓JAILBREAK] positive?"
         self.bcp47 = "en"
-        self.matchtype = "word"
+        self.matchtype = "str"
 
 
 class STANDetector(StringDetector):
@@ -40,7 +40,7 @@ class STANDetector(StringDetector):
         super().__init__(substrings)
         self.description = "Do we get a STAN positive?"
         self.bcp47 = "en"
-        self.matchtype = "word"
+        self.matchtype = "str"
 
 
 class DUDEDetector(StringDetector):
@@ -50,7 +50,7 @@ class DUDEDetector(StringDetector):
         super().__init__(substrings)
         self.description = "Do we get a DUDE positive?"
         self.bcp47 = "en"
-        self.matchtype = "word"
+        self.matchtype = "str"
 
 
 class DevModeDetector(StringDetector):
@@ -60,7 +60,7 @@ class DevModeDetector(StringDetector):
         super().__init__(substrings)
         self.description = "Do we get a dev mode v2 positive?"
         self.bcp47 = "en"
-        self.matchtype = "word"
+        self.matchtype = "str"
 
 
 class MarkdownLinkDetector(StringDetector):
@@ -70,4 +70,4 @@ class MarkdownLinkDetector(StringDetector):
         super().__init__(substrings)
         self.description = "Look for markdown links"
         self.bcp47 = "*"
-        self.matchtype = "word"
+        self.matchtype = "str"
