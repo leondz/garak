@@ -3,6 +3,9 @@
 import logging
 import os
 
+import cohere
+import backoff
+
 from garak.generators.base import Generator
 
 
@@ -29,37 +32,35 @@ class CohereGenerator(Generator):
         self.generator_family_name = "Cohere"
         super().__init__(name)
 
-        import cohere
-
         api_key = os.getenv("COHERE_API_KEY", default=None)
         if api_key == None:
             raise Exception(
                 'Put the Cohere API key in the COHERE_API_KEY environment variable (this was empty)\n \
                 e.g.: export COHERE_API_KEY="XXXXXXX"'
             )
-
         self.generator = cohere.Client(api_key)
 
+    @backoff.on_exception(backoff.expo, cohere.error.CohereAPIError, max_time=70)
     def generate(self, prompt):
         if self.generations > COHERE_GENERATION_LIMIT:
             self.generations = COHERE_GENERATION_LIMIT
             logging.debug(
                 f"Cohere generation limit capped at {COHERE_GENERATION_LIMIT}"
             )
-        try:
-            response = self.generator.generate(
-                model=self.name,
-                prompt=prompt,
-                temperature=self.temperature,
-                num_generations=self.generations,
-                max_tokens=self.max_tokens,
-                preset=self.preset,
-                k=self.k,
-                p=self.p,
-                frequency_penalty=self.frequency_penalty,
-                presence_penalty=self.presence_penalty,
-                end_sequences=self.stop,
-            )
-        except:
-            return []  # cohere client handles rate limiting ungracefully
+        response = self.generator.generate(
+            model=self.name,
+            prompt=prompt,
+            temperature=self.temperature,
+            num_generations=self.generations,
+            max_tokens=self.max_tokens,
+            preset=self.preset,
+            k=self.k,
+            p=self.p,
+            frequency_penalty=self.frequency_penalty,
+            presence_penalty=self.presence_penalty,
+            end_sequences=self.stop,
+        )
         return [g.text for g in response]
+
+
+default_class = "CohereGenerator"
