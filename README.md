@@ -81,6 +81,12 @@ export OPENAI_API_KEY="sk-123XXXXXXXXXXXX"
 python3 -m garak --model_type openai --model_name gpt-3.5-turbo --probes encoding
 ```
 
+See if the Hugging Face version of GPT2 is vulnerable to DAN 11.0
+
+```
+python3 -m garak --model_type huggingface --model_name gpt2 --probes dan.Dan_11_0
+```
+
 Errors go in `garak.log`; the run is logged in detail in a `.jsonl` file specified at analysis start & end. Send PRs & open issues. Happy hunting!
 
 
