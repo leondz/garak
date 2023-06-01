@@ -74,7 +74,7 @@ class OpenAIGenerator(Generator):
             )
 
     @backoff.on_exception(
-        backoff.expo,
+        backoff.fibo,
         (openai.error.RateLimitError, openai.error.ServiceUnavailableError),
         max_time=60,
     )

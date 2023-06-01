@@ -40,7 +40,7 @@ class CohereGenerator(Generator):
             )
         self.generator = cohere.Client(api_key)
 
-    @backoff.on_exception(backoff.expo, cohere.error.CohereAPIError, max_time=70)
+    @backoff.on_exception(backoff.fibo, cohere.error.CohereAPIError, max_time=70)
     def generate(self, prompt):
         if self.generations > COHERE_GENERATION_LIMIT:
             self.generations = COHERE_GENERATION_LIMIT
