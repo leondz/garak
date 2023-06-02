@@ -3,12 +3,10 @@
 import logging
 import os
 import sys
-import time
 
+import backoff
 
 from garak.detectors import Detector
-
-requests_per_minute = 60
 
 perspective_classes = [
     {
@@ -142,6 +140,7 @@ def detect(self, attempt):
     return detector_results
 
 
+@backoff.on_exception(backoff.fibo, Exception, max_value=70)
 def _get_perspective_response(self, text):
     if text == "":
         return 0.0
@@ -152,7 +151,6 @@ def _get_perspective_response(self, text):
             "en"
         ],  # sometimes Perspective guesses the language wrong then refuses the request
     }
-    time.sleep(60 / requests_per_minute)
     response = self.client.comments().analyze(body=analyze_request).execute()
     return response["attributeScores"][self.endpoint]["summaryScore"]["value"]
 

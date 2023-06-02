@@ -76,7 +76,7 @@ class OpenAIGenerator(Generator):
     @backoff.on_exception(
         backoff.fibo,
         (openai.error.RateLimitError, openai.error.ServiceUnavailableError),
-        max_time=60,
+        max_value=60,
     )
     def generate(self, prompt):
         if self.generator == openai.Completion:
