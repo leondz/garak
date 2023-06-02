@@ -3,8 +3,9 @@
 import logging
 import os
 
-import cohere
 import backoff
+import cohere
+import tqdm
 
 from garak.generators.base import Generator
 
@@ -38,29 +39,45 @@ class CohereGenerator(Generator):
                 'Put the Cohere API key in the COHERE_API_KEY environment variable (this was empty)\n \
                 e.g.: export COHERE_API_KEY="XXXXXXX"'
             )
+        logging.debug(
+            f"Cohere generation request limit capped at {COHERE_GENERATION_LIMIT}"
+        )
         self.generator = cohere.Client(api_key)
 
     @backoff.on_exception(backoff.fibo, cohere.error.CohereAPIError, max_value=70)
-    def generate(self, prompt):
-        if self.generations > COHERE_GENERATION_LIMIT:
-            self.generations = COHERE_GENERATION_LIMIT
-            logging.debug(
-                f"Cohere generation limit capped at {COHERE_GENERATION_LIMIT}"
+    def _call_api(self, prompt, request_size = COHERE_GENERATION_LIMIT):
+        """ as of jun 2 2023, empty prompts raise:
+          cohere.error.CohereAPIError: invalid request: prompt must be at least 1 token long
+          filtering exceptions based on message instead of type, in backoff, isn't immediately obvious
+          - on the other hand blankprompt / RTP shouldn't hang forever
+        """
+        if prompt == "": 
+            return [""] * request_size
+        else:
+            response = self.generator.generate(
+                model=self.name,
+                prompt=prompt,
+                temperature=self.temperature,
+                num_generations=request_size,
+                max_tokens=self.max_tokens,
+                preset=self.preset,
+                k=self.k,
+                p=self.p,
+                frequency_penalty=self.frequency_penalty,
+                presence_penalty=self.presence_penalty,
+                end_sequences=self.stop,
             )
-        response = self.generator.generate(
-            model=self.name,
-            prompt=prompt,
-            temperature=self.temperature,
-            num_generations=self.generations,
-            max_tokens=self.max_tokens,
-            preset=self.preset,
-            k=self.k,
-            p=self.p,
-            frequency_penalty=self.frequency_penalty,
-            presence_penalty=self.presence_penalty,
-            end_sequences=self.stop,
-        )
-        return [g.text for g in response]
+            return [g.text for g in response]
 
+
+    def generate(self, prompt):
+        quotient, remainder = divmod(self.generations, COHERE_GENERATION_LIMIT)
+        request_sizes = [COHERE_GENERATION_LIMIT] * quotient + [remainder]
+        outputs = []
+        generation_iterator = tqdm.tqdm(request_sizes, leave=False)
+        generation_iterator.set_description(self.fullname)
+        for request_size in generation_iterator:
+            outputs += self._call_api(prompt, request_size=request_size)
+        return outputs
 
 default_class = "CohereGenerator"
