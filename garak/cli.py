@@ -45,7 +45,7 @@ def main(arguments=[]) -> None:
         "--model_name",
         "-n",
         type=str,
-        default="",
+        default=None,
         help="name of the model, e.g. 'timdettmers/guanaco-33b-merged'",
     )
     parser.add_argument(
@@ -125,6 +125,13 @@ def main(arguments=[]) -> None:
         print_plugins("generators", Fore.LIGHTMAGENTA_EX)
 
     elif _config.args.model_type:
+        if (
+            _config.args.model_type in ("openai", "replicate", "ggml", "huggingface")
+            and not _config.args.model_name
+        ):
+            message = f"⚠️  Model type '{_config.args.model_type}' also needs a model name\n You can set one with e.g. --model_name \"billwurtz/gpt-1.0\""
+            logging.error(message)
+            raise ValueError(message)
         print(f"📜 reporting to {report_filename}")
         generator_module_name = _config.args.model_type.split(".")[0]
         generator_mod = importlib.import_module(
@@ -139,9 +146,13 @@ def main(arguments=[]) -> None:
                 )
         else:
             generator_class_name = _config.args.model_type.split(".")[1]
-        generator = getattr(generator_mod, generator_class_name)(
-            _config.args.model_name
-        )
+
+        if not _config.args.model_name:
+            generator = getattr(generator_mod, generator_class_name)()
+        else:
+            generator = getattr(generator_mod, generator_class_name)(
+                _config.args.model_name
+            )
         generator.generations = _config.args.generations
 
         if _config.args.probes == "all":
