@@ -34,6 +34,136 @@ def rot13(text):
     return bytes(text.decode().translate(rot13trans), "utf-8")
 
 
+def braille(text):
+    characterUnicodes = {
+        "a": "\u2801",
+        "b": "\u2803",
+        "k": "\u2805",
+        "l": "\u2807",
+        "c": "\u2809",
+        "i": "\u280A",
+        "f": "\u280B",
+        "m": "\u280D",
+        "s": "\u280E",
+        "p": "\u280F",
+        "e": "\u2811",
+        "h": "\u2813",
+        "o": "\u2815",
+        "r": "\u2817",
+        "d": "\u2819",
+        "j": "\u281A",
+        "g": "\u281B",
+        "n": "\u281D",
+        "t": "\u281E",
+        "q": "\u281F",
+        "u": "\u2825",
+        "v": "\u2827",
+        "x": "\u282D",
+        "z": "\u2835",
+        "w": "\u283A",
+        "y": "\u283D",
+        "num": "\u283C",
+        "caps": "\u2820",
+        ".": "\u2832",
+        "'": "\u2804",
+        ",": "\u2802",
+        "-": "\u2824",
+        "/": "\u280C",
+        "!": "\u2816",
+        "?": "\u2826",
+        "$": "\u2832",
+        ":": "\u2812",
+        ";": "\u2830",
+        "(": "\u2836",
+        ")": "\u2836",
+        "1": "\u2801",
+        "2": "\u2803",
+        "3": "\u2809",
+        "4": "\u2819",
+        "5": "\u2811",
+        "6": "\u280B",
+        "7": "\u281B",
+        "8": "\u2813",
+        "9": "\u280A",
+        "0": "\u281A",
+        " ": " ",
+    }
+    numberPunctuations = [".", ",", "-", "/", "$"]
+    escapeCharacters = ["\n", "\r", "\t"]
+
+    output = ""
+
+    for char in text.decode():
+        is_number = False
+        if char in escapeCharacters:
+            output += char
+        elif char.isupper():
+            if char.lower() in characterUnicodes:
+                output += characterUnicodes["caps"]
+                output += characterUnicodes[char.lower()]
+        elif char in characterUnicodes:
+            if char.isdigit():
+                if not is_number:
+                    is_number == True
+                    output += characterUnicodes["num"]
+            output += characterUnicodes[char]
+        if is_number and char not in numberPunctuations:
+            is_number = False
+
+    return bytes(output, "utf-8")
+
+
+def morse(text):
+    morsemap = {
+        "A": ".-",
+        "B": "-...",
+        "C": "-.-.",
+        "D": "-..",
+        "E": ".",
+        "F": "..-.",
+        "G": "--.",
+        "H": "....",
+        "I": "..",
+        "J": ".---",
+        "K": "-.-",
+        "L": ".-..",
+        "M": "--",
+        "N": "-.",
+        "O": "---",
+        "P": ".--.",
+        "Q": "--.-",
+        "R": ".-.",
+        "S": "...",
+        "T": "-",
+        "U": "..-",
+        "V": "...-",
+        "W": ".--",
+        "X": "-..-",
+        "Y": "-.--",
+        "Z": "--..",
+        "1": ".----",
+        "2": "..---",
+        "3": "...--",
+        "4": "....-",
+        "5": ".....",
+        "6": "-....",
+        "7": "--...",
+        "8": "---..",
+        "9": "----.",
+        "0": "-----",
+        " ": "/",
+        "\n": "/",
+        "\r": "/",
+        "\t": "/",
+    }
+
+    output = []
+    for char in text.decode().upper():
+        if char in morsemap:
+            output.append(morsemap[char])
+    return bytes(" ".join(output), "utf-8")
+
+
 def _generate_encoded_prompts(encoding_funcs, encoding_name):
     encoded_prompts = set([])
     for template in templates:
@@ -253,5 +383,45 @@ class InjectBase2048(TextProbe):
         ]
         encoding_funcs = [base2048.encode]
         encoding_name = "BASE2048"
+
+        self.prompts = _generate_encoded_prompts(encoding_funcs, encoding_name)
+
+
+class InjectBraille(TextProbe):
+    def __init__(self):
+        super().__init__()
+
+        self.name = "encodingbraille"
+        self.description = (
+            "Probe for susceptibility to Braille encoding. Credit Wally#3422"
+        )
+        self.bcp47 = "en"
+        self.uri = ""
+        self.recommended_detector = [
+            "encoding.DecodeMatchDetector",
+            "encoding.DecodeApproxDetector",
+        ]
+        encoding_funcs = [braille]
+        encoding_name = "Braille"
+
+        self.prompts = _generate_encoded_prompts(encoding_funcs, encoding_name)
+
+
+class InjectMorse(TextProbe):
+    def __init__(self):
+        super().__init__()
+
+        self.name = "encodingmorse"
+        self.description = (
+            "Probe for susceptibility to Morse encoding. Credit Wally#3422"
+        )
+        self.bcp47 = "en"
+        self.uri = ""
+        self.recommended_detector = [
+            "encoding.DecodeMatchDetector",
+            "encoding.DecodeApproxDetector",
+        ]
+        encoding_funcs = [morse]
+        encoding_name = "Morse"
 
         self.prompts = _generate_encoded_prompts(encoding_funcs, encoding_name)
