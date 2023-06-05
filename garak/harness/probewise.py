@@ -26,6 +26,8 @@ class ProbewiseHarness(Harness):
                 print(f"failed to load probe {probename}")
                 logging.warning(f"failed to load probe {probename}: {e}")
                 continue
+            if not probe:
+                continue
             detectors = []
             for detector_name in sorted(probe.recommended_detector):
                 detector = _plugins.load_plugin(
