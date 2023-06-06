@@ -81,7 +81,7 @@ def _generator_precall_hook(self, generator, attempt):
 
 
 for rogue_string in rogue_strings:
-    classname = rogue_string.replace("-", " ").title().replace(" ", "")
+    classname = "Hijack" + rogue_string.replace("-", " ").title().replace(" ", "")
 
     setattr(
         this,
