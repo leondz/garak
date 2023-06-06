@@ -25,7 +25,7 @@ with open("resources/ofcom-potentially-offensive.txt", "r") as csvfile:
             ofcom_list[category].append(term)
 
 
-class SurgeProfanityDetectorSexual(StringDetector):
+class SurgeProfanitySexual(StringDetector):
     def __init__(self):
         self.name = "sexualterms"
         substrings = surge_list["sexual anatomy / sexual acts"]
@@ -35,7 +35,7 @@ class SurgeProfanityDetectorSexual(StringDetector):
         self.matchtype = "word"
 
 
-class SurgeProfanityDetectorBodilyFluids(StringDetector):
+class SurgeProfanityBodilyFluids(StringDetector):
     def __init__(self):
         self.name = "bodilyfluids"
         substrings = surge_list["bodily fluids / excrement"]
@@ -45,7 +45,7 @@ class SurgeProfanityDetectorBodilyFluids(StringDetector):
         self.matchtype = "word"
 
 
-class SurgeProfanityDetectorSexualOrientationGender(StringDetector):
+class SurgeProfanitySexualOrientationGender(StringDetector):
     def __init__(self):
         self.name = "sexualorientationandgender"
         substrings = surge_list["sexual orientation / gender"]
@@ -55,7 +55,7 @@ class SurgeProfanityDetectorSexualOrientationGender(StringDetector):
         self.matchtype = "word"
 
 
-class SurgeProfanityDetectorRacialEthnic(StringDetector):
+class SurgeProfanityRacialEthnic(StringDetector):
     def __init__(self):
         self.name = "racialethnic"
         substrings = surge_list["racial / ethnic"]
@@ -65,7 +65,7 @@ class SurgeProfanityDetectorRacialEthnic(StringDetector):
         self.matchtype = "word"
 
 
-class SurgeProfanityDetectorMentalDisability(StringDetector):
+class SurgeProfanityMentalDisability(StringDetector):
     def __init__(self):
         self.name = "mentaldisability"
         substrings = surge_list["mental disability"]
@@ -75,7 +75,7 @@ class SurgeProfanityDetectorMentalDisability(StringDetector):
         self.matchtype = "word"
 
 
-class SurgeProfanityDetectorPhysicalDisability(StringDetector):
+class SurgeProfanityPhysicalDisability(StringDetector):
     def __init__(self):
         self.name = "physicaldisability"
         substrings = surge_list["physical disability"]
@@ -85,7 +85,7 @@ class SurgeProfanityDetectorPhysicalDisability(StringDetector):
         self.matchtype = "word"
 
 
-class SurgeProfanityDetectorPhysicalAttributes(StringDetector):
+class SurgeProfanityPhysicalAttributes(StringDetector):
     def __init__(self):
         self.name = "physicalattributes"
         substrings = surge_list["physical attributes"]
@@ -95,7 +95,7 @@ class SurgeProfanityDetectorPhysicalAttributes(StringDetector):
         self.matchtype = "word"
 
 
-class SurgeProfanityDetectorAnimalReferences(StringDetector):
+class SurgeProfanityAnimalReferences(StringDetector):
     def __init__(self):
         self.name = "animalreferences"
         substrings = surge_list["animal references"]
@@ -105,7 +105,7 @@ class SurgeProfanityDetectorAnimalReferences(StringDetector):
         self.matchtype = "word"
 
 
-class SurgeProfanityDetectorReligious(StringDetector):
+class SurgeProfanityReligious(StringDetector):
     def __init__(self):
         self.name = "religiousoffence"
         substrings = surge_list["religious offense"]
@@ -115,7 +115,7 @@ class SurgeProfanityDetectorReligious(StringDetector):
         self.matchtype = "word"
 
 
-class SurgeProfanityDetectorPolitical(StringDetector):
+class SurgeProfanityPolitical(StringDetector):
     def __init__(self):
         self.name = "political"
         substrings = surge_list["political"]

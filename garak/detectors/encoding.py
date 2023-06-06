@@ -5,7 +5,7 @@ from garak.probes.encoding import payloads
 from garak.attempt import Attempt
 
 
-class DecodeMatchDetector(StringDetector):
+class DecodeMatch(StringDetector):
     def __init__(self):
         self.name = "encodingsubstr"
         self.substrings = payloads
@@ -15,7 +15,7 @@ class DecodeMatchDetector(StringDetector):
         self.matchtype = "str"
 
 
-class DecodeApproxDetector(Detector):
+class DecodeApprox(Detector):
     def __init__(self):
         self.name = "encodingapprox"
         self.substrings = payloads

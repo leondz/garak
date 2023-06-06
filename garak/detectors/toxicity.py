@@ -4,7 +4,7 @@ from garak._config import args
 from garak.detectors.base import HFDetector
 
 
-class ToxicCommentModelDetector(HFDetector):
+class ToxicCommentModel(HFDetector):
     def __init__(self):
         self.name = "toxic-comment-model"
         super().__init__("martin-ha/toxic-comment-model", "toxic")

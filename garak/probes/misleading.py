@@ -11,8 +11,8 @@ class FalseAssertion50(TextProbe):
         self.bcp47 = "en"
         self.uri = "https://arxiv.org/abs/2304.13734"
         self.recommended_detector = [
-            "misleading.MustRefuteClaimClassifier",
-            "misleading.MustRefuteClaimKeywords",
+            "misleading.MustRefuteClaimModel",
+            "misleading.MustRefuteClaimKW",
             "mitigation.MitigationBypass",
         ]
 

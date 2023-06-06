@@ -8,7 +8,7 @@ from garak.attempt import Attempt
 from garak._config import args
 
 
-class StartsNo(Detector):
+class DontStartNo(Detector):
     def __init__(self):
         self.name = "startsno"
         super().__init__()
@@ -24,7 +24,7 @@ class StartsNo(Detector):
         return detector_results
 
 
-class StartsYes(Detector):
+class DontStartYes(Detector):
     def __init__(self):
         self.name = "startsyes"
         super().__init__()

@@ -9,7 +9,7 @@ class Dan_11_0(Probe):
         self.name = "dan_11.0"
         self.description = "DAN 11.0"
         self.bcp47 = "en"
-        self.recommended_detector = ["mitigation.MitigationBypass", "dan.DANDetector"]
+        self.recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
 
     def probe(self, target):
         modelname = target.name
@@ -25,7 +25,7 @@ class Dan_10_0(Probe):
         self.name = "dan_10.0"
         self.description = "DAN 10.0"
         self.bcp47 = "en"
-        self.recommended_detector = ["mitigation.MitigationBypass", "dan.DANDetector"]
+        self.recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
 
     def probe(self, target):
         modelname = target.name
@@ -41,7 +41,7 @@ class Dan_9_0(Probe):
         self.name = "dan_9.0"
         self.description = "DAN 9.0"
         self.bcp47 = "en"
-        self.recommended_detector = ["mitigation.MitigationBypass", "dan.DANDetector"]
+        self.recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
 
     def probe(self, target):
         modelname = target.name
@@ -84,7 +84,7 @@ class Dan_8_0(Probe):
         self.name = "dan_8.0"
         self.description = "DAN 8.0"
         self.bcp47 = "en"
-        self.recommended_detector = ["mitigation.MitigationBypass", "dan.DANDetector"]
+        self.recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
 
     def probe(self, target):
         modelname = target.name
@@ -130,7 +130,7 @@ class Dan_7_0(Probe):
         self.name = "dan_7.0"
         self.description = "DAN 7.0"
         self.bcp47 = "en"
-        self.recommended_detector = ["mitigation.MitigationBypass", "dan.DANDetector"]
+        self.recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
 
     def probe(self, target):
         modelname = target.name
@@ -164,7 +164,7 @@ class Dan_6_2(Probe):
         self.name = "dan_6.2"
         self.description = "DAN 6.2"
         self.bcp47 = "en"
-        self.recommended_detector = ["mitigation.MitigationBypass", "dan.DANDetector"]
+        self.recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
 
     def probe(self, target):
         modelname = target.name
@@ -194,7 +194,7 @@ class Dan_6_0(Probe):
         self.name = "dan_6.0"
         self.description = "DAN 6.0"
         self.bcp47 = "en"
-        self.recommended_detector = ["mitigation.MitigationBypass", "dan.DANDetector"]
+        self.recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
 
     def probe(self, target):
         modelname = target.name
@@ -210,7 +210,7 @@ class DUDE(Probe):
         self.name = "dude"
         self.description = "DUDE"
         self.bcp47 = "en"
-        self.recommended_detector = ["mitigation.MitigationBypass", "dan.DUDEDetector"]
+        self.recommended_detector = ["mitigation.MitigationBypass", "dan.DUDE"]
 
     def probe(self, target):
         modelname = target.name
@@ -226,7 +226,7 @@ class STAN(Probe):
         self.name = "stan"
         self.description = "STAN"
         self.bcp47 = "en"
-        self.recommended_detector = ["mitigation.MitigationBypass", "dan.STANDetector"]
+        self.recommended_detector = ["mitigation.MitigationBypass", "dan.STAN"]
 
     def probe(self, target):
         modelname = target.name
@@ -244,7 +244,7 @@ class DAN_Jailbreak(Probe):
         self.bcp47 = "en"
         self.recommended_detector = [
             "mitigation.MitigationBypass",
-            "dan.DANJailbreakDetector",
+            "dan.DANJailbreak",
         ]
 
     def probe(self, target):
@@ -263,7 +263,7 @@ class AntiDAN(Probe):
         self.bcp47 = "en"
         self.recommended_detector = [
             "mitigation.MitigationBypass",
-            "dan.AntiDANDetector",
+            "dan.AntiDAN",
         ]
 
     def probe(self, target):
@@ -296,7 +296,7 @@ class ChatGPT_Developer_Mode_v2(Probe):
         self.bcp47 = "en"
         self.recommended_detector = [
             "mitigation.MitigationBypass",
-            "dan.DevModeDetector",
+            "dan.DevMode",
         ]
 
     def probe(self, target):
@@ -315,7 +315,7 @@ class ChatGPT_Developer_Mode_RANTI(Probe):
         self.bcp47 = "en"
         self.recommended_detector = [
             "mitigation.MitigationBypass",
-            "dan.DevModeDetector",
+            "dan.DevMode",
         ]
 
     def probe(self, target):
@@ -334,7 +334,7 @@ class ChatGPT_Image_Markdown(Probe):
         self.bcp47 = "en"
         self.recommended_detector = [
             "mitigation.MitigationBypass",
-            "dan.MarkdownLinkDetector",
+            "dan.MarkdownLink",
         ]
 
     def probe(self, target):
@@ -353,7 +353,7 @@ class Ablation_Dan_11_0(Probe):
         self.name = "dan_11.0"
         self.description = "DAN 11.0"
         self.bcp47 = "en"
-        self.recommended_detector = ["mitigation.MitigationBypass", "dan.DANDetector"]
+        self.recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
 
     def probe(self, target):
         self.prompts = []

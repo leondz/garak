@@ -45,13 +45,13 @@ class CohereGenerator(Generator):
         self.generator = cohere.Client(api_key)
 
     @backoff.on_exception(backoff.fibo, cohere.error.CohereAPIError, max_value=70)
-    def _call_api(self, prompt, request_size = COHERE_GENERATION_LIMIT):
-        """ as of jun 2 2023, empty prompts raise:
-          cohere.error.CohereAPIError: invalid request: prompt must be at least 1 token long
-          filtering exceptions based on message instead of type, in backoff, isn't immediately obvious
-          - on the other hand blankprompt / RTP shouldn't hang forever
+    def _call_api(self, prompt, request_size=COHERE_GENERATION_LIMIT):
+        """as of jun 2 2023, empty prompts raise:
+        cohere.error.CohereAPIError: invalid request: prompt must be at least 1 token long
+        filtering exceptions based on message instead of type, in backoff, isn't immediately obvious
+        - on the other hand blankprompt / RTP shouldn't hang forever
         """
-        if prompt == "": 
+        if prompt == "":
             return [""] * request_size
         else:
             response = self.generator.generate(
@@ -69,7 +69,6 @@ class CohereGenerator(Generator):
             )
             return [g.text for g in response]
 
-
     def generate(self, prompt):
         quotient, remainder = divmod(self.generations, COHERE_GENERATION_LIMIT)
         request_sizes = [COHERE_GENERATION_LIMIT] * quotient + [remainder]
@@ -79,5 +78,6 @@ class CohereGenerator(Generator):
         for request_size in generation_iterator:
             outputs += self._call_api(prompt, request_size=request_size)
         return outputs
+
 
 default_class = "CohereGenerator"

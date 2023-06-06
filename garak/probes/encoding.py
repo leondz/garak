@@ -188,8 +188,8 @@ class InjectBase64(TextProbe):
         self.bcp47 = "en"
         self.uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
         self.recommended_detector = [
-            "encoding.DecodeMatchDetector",
-            "encoding.DecodeApproxDetector",
+            "encoding.DecodeMatch",
+            "encoding.DecodeApprox",
         ]
         encoding_funcs = [
             base64.b64encode,
@@ -210,8 +210,8 @@ class InjectBase16(TextProbe):
         self.bcp47 = "en"
         self.uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
         self.recommended_detector = [
-            "encoding.DecodeMatchDetector",
-            "encoding.DecodeApproxDetector",
+            "encoding.DecodeMatch",
+            "encoding.DecodeApprox",
         ]
         encoding_funcs = [base64.b16encode]
         encoding_name = "BASE16"
@@ -227,8 +227,8 @@ class InjectBase32(TextProbe):
         self.bcp47 = "en"
         self.uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
         self.recommended_detector = [
-            "encoding.DecodeMatchDetector",
-            "encoding.DecodeApproxDetector",
+            "encoding.DecodeMatch",
+            "encoding.DecodeApprox",
         ]
         encoding_funcs = [base64.b32encode]
         encoding_name = "BASE32"
@@ -244,8 +244,8 @@ class InjectAscii85(TextProbe):
         self.bcp47 = "en"
         self.uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
         self.recommended_detector = [
-            "encoding.DecodeMatchDetector",
-            "encoding.DecodeApproxDetector",
+            "encoding.DecodeMatch",
+            "encoding.DecodeApprox",
         ]
         encoding_funcs = [base64.a85encode, base64.b85encode]
         encoding_name = "ASCII85"
@@ -261,8 +261,8 @@ class InjectBase32(TextProbe):
         self.bcp47 = "en"
         self.uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
         self.recommended_detector = [
-            "encoding.DecodeMatchDetector",
-            "encoding.DecodeApproxDetector",
+            "encoding.DecodeMatch",
+            "encoding.DecodeApprox",
         ]
         encoding_funcs = [base64.b32encode]
         encoding_name = "BASE32"
@@ -278,8 +278,8 @@ class InjectHex(TextProbe):
         self.bcp47 = "en"
         self.uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
         self.recommended_detector = [
-            "encoding.DecodeMatchDetector",
-            "encoding.DecodeApproxDetector",
+            "encoding.DecodeMatch",
+            "encoding.DecodeApprox",
         ]
         encoding_funcs = [base64.binascii.b2a_hex]
         encoding_name = "hex"
@@ -295,8 +295,8 @@ class InjectQP(TextProbe):
         self.bcp47 = "en"
         self.uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
         self.recommended_detector = [
-            "encoding.DecodeMatchDetector",
-            "encoding.DecodeApproxDetector",
+            "encoding.DecodeMatch",
+            "encoding.DecodeApprox",
         ]
         encoding_funcs = [base64.binascii.b2a_qp]
         encoding_name = "Quoted-Printable"
@@ -312,8 +312,8 @@ class InjectUU(TextProbe):
         self.bcp47 = "en"
         self.uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
         self.recommended_detector = [
-            "encoding.DecodeMatchDetector",
-            "encoding.DecodeApproxDetector",
+            "encoding.DecodeMatch",
+            "encoding.DecodeApprox",
         ]
         encoding_funcs = [base64.binascii.b2a_uu]
         encoding_name = "UUencode"
@@ -342,8 +342,8 @@ class InjectMime(TextProbe):
         self.bcp47 = "en"
         self.uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
         self.recommended_detector = [
-            "encoding.DecodeMatchDetector",
-            "encoding.DecodeApproxDetector",
+            "encoding.DecodeMatch",
+            "encoding.DecodeApprox",
         ]
         encoding_funcs = [quopri.encodestring]
         encoding_name = "MIME"
@@ -359,8 +359,8 @@ class InjectROT13(TextProbe):
         self.bcp47 = "en"
         self.uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
         self.recommended_detector = [
-            "encoding.DecodeMatchDetector",
-            "encoding.DecodeApproxDetector",
+            "encoding.DecodeMatch",
+            "encoding.DecodeApprox",
         ]
         encoding_funcs = [rot13]
         encoding_name = "ROT13"
@@ -378,8 +378,8 @@ class InjectBase2048(TextProbe):
         self.bcp47 = "en"
         self.uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
         self.recommended_detector = [
-            "encoding.DecodeMatchDetector",
-            "encoding.DecodeApproxDetector",
+            "encoding.DecodeMatch",
+            "encoding.DecodeApprox",
         ]
         encoding_funcs = [base2048.encode]
         encoding_name = "BASE2048"
@@ -398,8 +398,8 @@ class InjectBraille(TextProbe):
         self.bcp47 = "en"
         self.uri = ""
         self.recommended_detector = [
-            "encoding.DecodeMatchDetector",
-            "encoding.DecodeApproxDetector",
+            "encoding.DecodeMatch",
+            "encoding.DecodeApprox",
         ]
         encoding_funcs = [braille]
         encoding_name = "Braille"
@@ -418,8 +418,8 @@ class InjectMorse(TextProbe):
         self.bcp47 = "en"
         self.uri = ""
         self.recommended_detector = [
-            "encoding.DecodeMatchDetector",
-            "encoding.DecodeApproxDetector",
+            "encoding.DecodeMatch",
+            "encoding.DecodeApprox",
         ]
         encoding_funcs = [morse]
         encoding_name = "Morse"
