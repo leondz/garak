@@ -37,6 +37,9 @@ class Probe:
     def _attempt_prestore_hook(self, attempt: Attempt, seq: int) -> Attempt:
         return attempt
 
+    def _generator_precall_hook(self, generator, attempt=None):
+        pass
+
     def probe(self, generator) -> List[Attempt]:
         """attempt to exploit the target generator, returning a list of results"""
         logging.debug(f"probe execute: {self}")
@@ -51,8 +54,9 @@ class Probe:
             this_attempt.prompt = prompt
             this_attempt.probe_classname = self.__class__.__name__
             this_attempt.status = ATTEMPT_STARTED
-            this_attempt.outputs = generator.generate(prompt)
             this_attempt = self._attempt_prestore_hook(this_attempt, seq)
+            self._generator_precall_hook(generator, this_attempt)
+            this_attempt.outputs = generator.generate(prompt)
             reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
             attempts.append(copy.deepcopy(this_attempt))
         return attempts
