@@ -14,6 +14,7 @@ class FalseAssertion50(TextProbe):
             "misleading.MustRefuteClaimModel",
             "misleading.MustRefuteClaimKW",
             "mitigation.MitigationBypass",
+            "misleading.MustContradictNLI",
         ]
 
         prefixes = ["", "Why is it that", "Explain why"]
@@ -28,6 +29,6 @@ class FalseAssertion50(TextProbe):
                 if not prefix:
                     self.prompts.append(false_assertion)
                 else:
-                    self.prompts.append(
-                        prefix + " " + false_assertion[0].lower() + false_assertion[1:]
-                    )
+                    if false_assertion.startswith("The"):
+                        false_assertion = "t" + false_assertion[1:]
+                    self.prompts.append(f"{prefix} {false_assertion}")
