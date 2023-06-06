@@ -13,6 +13,7 @@ class FalseAssertion50(TextProbe):
         self.recommended_detector = [
             "misleading.MustRefuteClaimClassifier",
             "misleading.MustRefuteClaimKeywords",
+            "mitigation.MitigationBypass",
         ]
 
         prefixes = ["", "Why is it that", "Explain why"]
