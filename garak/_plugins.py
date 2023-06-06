@@ -96,8 +96,8 @@ def load_plugin(path, break_on_fail=True):
         else:
             return False
     except Exception as e:
-        print("error in: module", mod, "class", plugin_class_name)
-        logging.warning(f"error in: module {mod} class {plugin_class_name}")
+        # print("error in: module", mod.__name__, "class", plugin_class_name)
+        # logging.warning(f"error in: module {mod} class {plugin_class_name}")
         return False
 
     return plugin_instance
