@@ -35,6 +35,8 @@ class Harness:
 
         for probe in probes:
             logging.info("generating...")
+            if not probe:
+                continue
             attempt_results = probe.probe(model)
 
             eval_outputs, eval_results = [], defaultdict(list)

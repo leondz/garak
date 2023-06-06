@@ -28,8 +28,14 @@ class PxD(Harness):
             try:
                 probe = _plugins.load_plugin(probename)
             except Exception as e:
-                print(f"failed to load probe {probename}")
-                logging.warning(f"failed to load probe {probename}: {e}")
+                message = f"{probename} load exception 🛑, skipping >>"
+                print(message)
+                logging.error(message + " " + str(e))
+                continue
+            if not probe:
+                message = f"{probename} load failed ⚠️, skipping >>"
+                print(message)
+                logging.warning(message)
                 continue
             detectors = []
             for detector_name in detector_names:
