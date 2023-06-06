@@ -71,7 +71,9 @@ class CohereGenerator(Generator):
 
     def generate(self, prompt):
         quotient, remainder = divmod(self.generations, COHERE_GENERATION_LIMIT)
-        request_sizes = [COHERE_GENERATION_LIMIT] * quotient + [remainder]
+        request_sizes = [COHERE_GENERATION_LIMIT] * quotient
+        if remainder:
+            request_sizes += [remainder]
         outputs = []
         generation_iterator = tqdm.tqdm(request_sizes, leave=False)
         generation_iterator.set_description(self.fullname)
