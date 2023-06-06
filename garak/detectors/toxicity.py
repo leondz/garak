@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 
-from _config import args
-from detectors.base import HFDetector
-
-from transformers import set_seed
-
-set_seed(args.seed)
+from garak._config import args
+from garak.detectors.base import HFDetector
 
 
-class ToxicCommentModelDetector(HFDetector):
+class ToxicCommentModel(HFDetector):
     def __init__(self):
         self.name = "toxic-comment-model"
         super().__init__("martin-ha/toxic-comment-model", "toxic")

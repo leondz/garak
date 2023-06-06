@@ -2,16 +2,12 @@
 
 import logging
 import re
-from transformers import pipeline, set_seed
 import warnings
 
-from colorama import Fore, Back, Style
 
+from garak._config import args
+from garak.generators.base import Generator
 
-from _config import args
-from generators.base import Generator
-
-set_seed(args.seed)
 
 models_to_deprefix = ["gpt2"]
 
@@ -19,15 +15,19 @@ models_to_deprefix = ["gpt2"]
 class HFGenerator(Generator):
     def __init__(self, name, do_sample=True, generations=10, device=0):
         self.fullname, self.name = name, name.split("/")[-1]
-        print(
-            f"loading {Style.RESET_ALL}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: HF:{name}"
-        )
+
+        self.generator_family_name = "Hugging Face 🤗"
+        super().__init__(name)
+
+        from transformers import pipeline, set_seed
+
+        set_seed(args.seed)
+
         logging.info("generator init: {self}")
         self.generator = pipeline(
             "text-generation",
             model=name,
             do_sample=do_sample,
-            num_return_sequences=generations,
             device=device,
         )
         self.deprefix_prompt = name in models_to_deprefix
@@ -41,6 +41,7 @@ class HFGenerator(Generator):
                     prompt,
                     pad_token_id=self.generator.tokenizer.eos_token_id,
                     max_new_tokens=self.max_new_tokens,
+                    num_return_sequences=self.generations,
                     # max_length = 1024,
                 )
             except:

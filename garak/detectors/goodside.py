@@ -3,7 +3,8 @@
 import json
 import logging
 
-from detectors.base import StringDetector, Detector
+from garak.detectors.base import StringDetector, Detector
+from garak.attempt import Attempt
 
 
 class RileyIsnt(StringDetector):
@@ -37,17 +38,12 @@ class PlainJSON(Detector):
         self.bcp47 = "*"  # language this is for, in bcp47 format
         logging.info(f"detector init: {self}")
 
-    def detect(self, outputlist):
-        if isinstance(outputlist, str):
-            outputlist = [outputlist]
-        if not isinstance(outputlist, list):
-            raise TypeError("Can only evaluate str or list")
-        else:
-            results = []
-            for o in outputlist:
-                try:
-                    json.loads(o.strip())
-                    results.append(1)
-                except:
-                    results.append(0)
+    def detect(self, attempt: Attempt):
+        results = []
+        for o in attempt.outputs:
+            try:
+                json.loads(o.strip())
+                results.append(1)
+            except:
+                results.append(0)
         return results
