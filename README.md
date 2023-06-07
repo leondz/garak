@@ -1,12 +1,6 @@
 # garak, an llm vulnerability scanner
 
-modular tool for probing LLMs for undesireable prompt responses
-
-* probes - classes for generating interactions with LLMs
-* detectors - classes for detecting an LLM is exhibiting a given failure mode
-* evaluators - assessment reporting schemes
-* generators - plugins for LLMs to be probed
-* harnesses - classes for structuring testing
+`garak` is a modular tool for probing LLMs for undesireable prompt responses
 
 invoke with `python3 -m garak`
 
@@ -52,18 +46,11 @@ See https://github.com/leondz/garak
 ```
 
 
-
-
 ## Install:
 
-Basic:
-```
-gh repo clone leondz/garak
-cd garak
-pip3 install -r requirements.txt
-```
+`garak` is a command-line tool. It's developed in Linux and OSX.
 
-Install garak in its own Conda environment:
+`garak` has its own dependencies. You'll probably want to install `garak` in its own Conda environment:
 
 ```
 conda create --name garak
@@ -72,6 +59,23 @@ gh repo clone leondz/garak
 cd garak
 pip3 install -r requirements.txt
 ```
+
+OK, if that went fine, you're probably good to go!
+
+## Getting started
+
+The general syntax is:
+
+`python3 -m garak <options>`
+
+`garak` needs to know what model to scan, and by default, it'll try all the probes it knows on that model, using the vulnerability detectors recommended by each probe. You can see a list of probes using:
+
+`python3 -m garak --list_probes`
+
+To specify a generator, use the `--model_name` and, optionally, the `--model_type` options. Model name specifies a model family/interface; model type specifies the exact model to be used. The "Intro to generators" section below describes some of the generators supported. A straightfoward generator family is Hugging Face models; to load one of these, set `--model_name` to `huggingface` and `--model_type` to the model's name on Hub (e.g. `"RWKV/rwkv-4-169m-pile"`). Some generators might need an API key to be set as an environment variable, and they'll let you know if they need that.
+
+`garak` runs all the probes by default, but you can be specific about that too. `--probes promptinject` will use only the [PromptInject](https://github.com/agencyenterprise/promptinject) framework's methods, for example. You can also specify one specific plugin instead of a plugin family by adding the plugin name after a `.`; for example, `--probes lmrc.Deadnaming` will use an implementation of checking for deadnaming based on the [Language Model Risk Cards](https://arxiv.org/abs/2303.18190) framework.
+
 ## Examples
 
 Probe ChatGPT for encoding-based prompt injection (OSX/\*nix) (replace example value with a real OpenAI API key)
@@ -89,6 +93,125 @@ python3 -m garak --model_type huggingface --model_name gpt2 --probes dan.Dan_11_
 
 Errors go in `garak.log`; the run is logged in detail in a `.jsonl` file specified at analysis start & end. Send PRs & open issues. Happy hunting!
 
+## Intro to generators
+
+### huggingface
+
+* `--model_name huggingface`
+* `--model_type` - use the model name from Hub. Only generative models will work. If it fails and shouldn't, please open an issue and paste in the command you tried + the exception!
+
+### openai
+
+* `--model_name openai`
+* `--model_type` - the OpenAI model you'd like to use. `text-babbage-001` is fast and fine for testing; `gpt-4` seems weaker to many of the more subtle attacks.
+* set the `OPENAI_API_KEY` environment variable to your OpenAI API key (e.g. "sk-19763ASDF87q6657"); see [https://platform.openai.com/account/api-keys]
+
+Recognised model types are whitelisted, because the plugin needs to know which sub-API to use. Completion or ChatCompletion models are OK. If you'd like to use a model not supported, you should get an informative error message, and please send a PR / open an issue.
+
+### replicate
+
+* `--model_name replicate`
+* `--model_type` - the Replicate model name and hash, e.g. `"stability-ai/stablelm-tuned-alpha-7b:c49dae36"`
+* set the `REPLICATE_API_TOKEN` environment variable to your Replicate API token, e.g. "r8-123XXXXXXXXXXXX"; see [https://replicate.com/account/api-tokens]
+
+### cohere
+
+* `--model_name cohere`
+* `--model_type` (optional, `command` by default) - The specific Cohere model you'd like to test
+* set the `COHERE_API_KEY` environment variable to your Cohere API key, e.g. "aBcDeFgHiJ123456789"; see [https://dashboard.cohere.ai/api-keys]
+
+### ggml
+
+* `--model_name ggml`
+* `--model_type` - The path to the ggml model you'd like to load, e.g. `/home/leon/llama.cpp/models/7B/ggml-model-q4_0.bin`
+* set the `GGML_MAIN_PATH` environment variable to the path to your ggml `main` executable
+
+### blank
+
+* `--model_name blank`
+* `--model_type` ignored
+This model always generates the empty string. Fine for testing. Will be marked as failing for any tests that *require* an output, e.g. those that make contentious claims and expect the model to refute them in order to pass.
+
+## Intro to probes
+
+### blank
+ 
+A simple probe that always sends a blank prompt.
+
+### continuation
+
+Probes that test if the model will continue a word
+
+### dan
+
+Various [DAN]() and DAN-like attacks
+
+### encoding
+
+Prompt injection through text encoding
+
+### goodside
+
+### knownbadsignatures
+
+Probes that attempt to make the model output malicious content signatures
+
+### lmrc
+
+Subsample of the [Language Model Risk Cards](https://arxiv.org/abs/2303.18190) probes
+
+### misleading
+
+Attempts to make a model support misleading and false claims
+
+### promptinject
+
+Implementation of the Agency Enterprise [PromptInject](https://github.com/agencyenterprise/PromptInject/tree/main/promptinject) work (best paper awards @ NeurIPS ML Safety Workshop 2022)
+
+### realtoxicityprompts
+
+Subset of the RealToxicityPrompts work (data constrained because the full test will take so long to run)
+
+### snowball
+
+[Snowballed Hallucination](https://ofir.io/snowballed_hallucination.pdf) probes designed to make a model give a wrong answer to questions too complex for it to process
+
+
+
+## How is the code structured?
+
+In a typical run, `garak` will read a model type (and optionally model name) from the command line, then determine which `probe`s and `detector`s to run, start up a `generator`, and then pass these to a `harness` to do the probing; an `evaluator` deals with the results. There are many modules in each of these categories, and each module provides a number of classes that act as individual plugins.
+
+* `garak/probes/` - classes for generating interactions with LLMs
+* `garak/detectors/` - classes for detecting an LLM is exhibiting a given failure mode
+* `garak/evaluators/` - assessment reporting schemes
+* `garak/generators/` - plugins for LLMs to be probed
+* `garak/harnesses/` - classes for structuring testing
+* `resources/` - ancillary items required by plugins
+
+The default operating mode is to use the `probewise` harness. Given a list of probe module names and probe plugin names, the `probewise` harness instantiates each probe, then for each probe reads its `recommended_detectors` attribute to get a list of `detector`s to run on the output.
+
+Each plugin category (`probes`, `detectors`, `evaluators`, `generators`, `harnesses`) includes a `base.py` which defines the base classes usable by plugins in that category. Each plugin module defines plugin classes that inherit from one of the base classes. For example, `garak.generators.openai.OpenAIGenerator` descends from `garak.generators.base.Generator`.
+
+Larger artefacts, like model files and bigger corpora, are kept out of the repository; they can be stored on e.g. Hugging Face Hub and loaded locally by clients using `garak`.
+
+
+## Developing your own plugin
+
+* Take a look at how other plugins do it
+* Inherit from one of the base classes, e.g. `garak.probes.base.TextProbe`
+* Override as little as possible
+* You can test the new code in at least two ways:
+  * Start an interactive Python session
+    * Import the model, e.g. `import garak.probes.mymodule`
+    * Instantiate the plugin, e.g. `p = garak.probes.mymodule.MyProbe()`
+  * Run a scan with test plugins
+    * For probes, try a blank generator and always.Pass detector: `python3 -m garak -m blank -p mymodule -d always.Pass`
+    * For detectors, try a blank generator and a blank probe: `python3 -m garak -m blank -p blank -d mymodule`
+    * For generators, try a blank probe and always.Pass detector: `python3 -m garak -m mymodule -p blank -d always.Pass`
+  * Get `garak` to list all the plugins of the type you're writing, with `--list_probes`, `--list_detectors`, or `--list_generators`
+
+Reach out if you have any questions!
 
 <hr>
 
