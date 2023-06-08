@@ -24,6 +24,10 @@ class HFLoadingException(Exception):
     pass
 
 
+class HFInternalServerError(Exception):
+    pass
+
+
 class Local(Generator):
     def __init__(self, name, do_sample=True, generations=10, device=0):
         self.fullname, self.name = name, name.split("/")[-1]
@@ -35,7 +39,6 @@ class Local(Generator):
 
         set_seed(args.seed)
 
-        logging.info("generator init: {self}")
         import torch.cuda
 
         if torch.cuda.is_available() == False:
@@ -79,7 +82,7 @@ class InferenceAPI(Generator):
         self.generator_family_name = "Hugging Face 🤗 Inference API"
         super().__init__(name, generations)
 
-        self.api_url = "https://api-inference.huggingface.co/models/gpt2"
+        self.api_url = "https://api-inference.huggingface.co/models/" + name
         self.api_token = os.getenv("HF_INFERENCE_TOKEN", default=None)
         if self.api_token:
             self.headers = {"Authorization": f"Bearer {self.api_token}"}
@@ -90,27 +93,31 @@ class InferenceAPI(Generator):
             logging.info(message)
         self.deprefix = True
         self.max_new_tokens = hf_max_new_tokens
+        self.max_time = 20
 
     @backoff.on_exception(
-        backoff.fibo, (HFRateLimitException, HFLoadingException), max_value=125
+        backoff.fibo,
+        (HFRateLimitException, HFLoadingException, HFInternalServerError),
+        max_value=125,
     )
     def _call_api(self, prompt: str) -> List[str]:
         import json
         import requests
-
-        self.wait_for_model = False
 
         payload = {
             "inputs": prompt,
             "parameters": {
                 "return_full_text": not self.deprefix,
                 "num_return_sequences": self.generations,
-                "max_new_tokens": self.max_new_tokens,
+                "max_time": self.max_time,
             },
             "options": {
                 "wait_for_model": self.wait_for_model,
             },
         }
+        if self.max_new_tokens:
+            payload["parameters"]["max_new_tokens"] = self.max_new_tokens
+
         if self.generations > 1:
             payload["parameters"]["do_sample"] = True
 
@@ -122,9 +129,8 @@ class InferenceAPI(Generator):
             self.wait_for_model = True
             raise HFLoadingException
 
-        if (
-            self.wait_for_model
-        ):  # if we get this far, reset the model load wait. let's hope 503 is only for model loading :|
+        # if we get this far, reset the model load wait. let's hope 503 is only for model loading :|
+        if self.wait_for_model:
             self.wait_for_model = False
 
         response = json.loads(req_response.content.decode("utf-8"))
@@ -137,10 +143,17 @@ class InferenceAPI(Generator):
                         f"Received list of errors, processing first only. Response: {response['error']}"
                     )
                     response["error"] = response["error"][0]
+
                 if "rate limit" in response["error"].lower():
                     raise HFRateLimitException(response["error"])
                 else:
-                    raise IOError("🤗 " + response["error"])
+                    if req_response.status_code == 500:
+                        raise HFInternalServerError()
+                    else:
+                        raise IOError(
+                            f"🤗 reported: {req_response.status_code} "
+                            + response["error"]
+                        )
             else:
                 raise TypeError(
                     f"Unsure how to parse 🤗 API response dict: {response}, please open an issue at https://github.com/leondz/garak/issues including this message"
@@ -153,6 +166,7 @@ class InferenceAPI(Generator):
             )
 
     def generate(self, prompt):
+        self.wait_for_model = False
         return self._call_api(prompt)
 
 
