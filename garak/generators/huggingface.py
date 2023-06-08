@@ -152,7 +152,7 @@ class InferenceAPI(Generator):
                 f"Unsure how to parse 🤗 API response type: {response}, please open an issue at https://github.com/leondz/garak/issues including this message"
             )
 
-    def generator(self, prompt):
+    def generate(self, prompt):
         return self._call_api(prompt)
 
 

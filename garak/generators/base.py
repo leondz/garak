@@ -22,5 +22,5 @@ class Generator:
         return ""
 
     def generate(self, prompt) -> List[str]:
-        outputs = self.generator(prompt)
+        outputs = []
         return outputs
