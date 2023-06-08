@@ -24,6 +24,12 @@ class HFGenerator(Generator):
         set_seed(args.seed)
 
         logging.info("generator init: {self}")
+        import torch.cuda
+
+        if torch.cuda.is_available() == False:
+            logging.debug("Using CPU, torch.cuda.is_available() returned False")
+            device = -1
+
         self.generator = pipeline(
             "text-generation",
             model=name,
