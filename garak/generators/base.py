@@ -18,6 +18,9 @@ class Generator:
         )
         logging.info("generator init: {self}")
 
+    def _call_api(self, prompt: str) -> List[str]:
+        return ""
+
     def generate(self, prompt) -> List[str]:
         outputs = self.generator(prompt)
         return outputs
