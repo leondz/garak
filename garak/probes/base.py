@@ -25,7 +25,7 @@ class Probe:
         if "bcp47" not in dir(self):
             self.bcp47 = None  # language this is for, in bcp47 format; * for all langs
         if "recommended_detector" not in dir(self):
-            self.recommended_detector = ["toxicity.ToxicCommentModelDetector"]
+            self.recommended_detector = ["toxicity.ToxicCommentModel"]
         if "probename" not in dir(self):
             self.probename = str(self.__class__).split("'")[1]
         if "active" not in dir(self):
