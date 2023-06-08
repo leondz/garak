@@ -13,9 +13,14 @@ from garak.generators.base import Generator
 
 
 models_to_deprefix = ["gpt2"]
+hf_max_new_tokens = 150
 
 
 class HFRateLimitException(Exception):
+    pass
+
+
+class HFLoadingException(Exception):
     pass
 
 
@@ -44,7 +49,7 @@ class Local(Generator):
             device=device,
         )
         self.deprefix_prompt = name in models_to_deprefix
-        self.max_new_tokens = 256
+        self.max_new_tokens = hf_max_new_tokens
 
     def generate(self, prompt):
         with warnings.catch_warnings():
@@ -84,27 +89,54 @@ class InferenceAPI(Generator):
             print(message)
             logging.info(message)
         self.deprefix = True
+        self.max_new_tokens = hf_max_new_tokens
 
-    @backoff.on_exception(backoff.fibo, HFRateLimitException, max_value=125)
+    @backoff.on_exception(
+        backoff.fibo, (HFRateLimitException, HFLoadingException), max_value=125
+    )
     def _call_api(self, prompt: str) -> List[str]:
         import json
         import requests
 
+        self.wait_for_model = False
+
         payload = {
             "inputs": prompt,
             "parameters": {
-                "return_full_text": False,
+                "return_full_text": not self.deprefix,
                 "num_return_sequences": self.generations,
+                "max_new_tokens": self.max_new_tokens,
+            },
+            "options": {
+                "wait_for_model": self.wait_for_model,
             },
         }
         if self.generations > 1:
             payload["parameters"]["do_sample"] = True
-        raw_response = requests.request(
+
+        req_response = requests.request(
             "POST", self.api_url, headers=self.headers, data=json.dumps(payload)
         )
-        response = json.loads(raw_response.content.decode("utf-8"))
+
+        if req_response.status_code == 503:
+            self.wait_for_model = True
+            raise HFLoadingException
+
+        if (
+            self.wait_for_model
+        ):  # if we get this far, reset the model load wait. let's hope 503 is only for model loading :|
+            self.wait_for_model = False
+
+        response = json.loads(req_response.content.decode("utf-8"))
         if isinstance(response, dict):
             if "error" in response.keys():
+                if isinstance(response["error"], list) and isinstance(
+                    response["error"][0], str
+                ):
+                    logging.error(
+                        f"Received list of errors, processing first only. Response: {response['error']}"
+                    )
+                    response["error"] = response["error"][0]
                 if "rate limit" in response["error"].lower():
                     raise HFRateLimitException(response["error"])
                 else:
