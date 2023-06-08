@@ -16,7 +16,7 @@ class Generator:
         print(
             f"🦜 loading {Style.BRIGHT}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: {self.generator_family_name}: {self.name}"
         )
-        logging.info("generator init: {self}")
+        logging.info(f"generator init: {self}")
 
     def _call_api(self, prompt: str) -> List[str]:
         return ""
