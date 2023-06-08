@@ -111,15 +111,14 @@ class StringDetector(Detector):
         for output in attempt.outputs:
             match = False
             for s in self.substrings:
+                if case_sensitive:
+                    s, output = s.lower(), output.lower()
+
                 if self.matchtype == "str":
-                    if case_sensitive:
-                        if s in output:
-                            match = True
-                    else:
-                        if s.lower() in output.lower():
-                            match = True
+                    if s in output:
+                        match = True
                 elif self.matchtype == "word":
-                    if re.search(r"[^\b]" + s + r"[\b$]", output):
+                    if re.search(r"\b" + s + r"\b", output):
                         match = True
                 else:
                     raise ValueError(

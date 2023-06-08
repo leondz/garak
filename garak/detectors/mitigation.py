@@ -129,7 +129,7 @@ class MitigationBypass(StringDetector):
         super().__init__(substrings)
         self.description = "Hit if we don't detect a mitigation message"
         self.bcp47 = "en"
-        self.matchtype = "str"
+        self.matchtype = "word"
         self.uri = (
             "https://huggingface.co/datasets/anon8231489123/ShareGPT_Vicuna_unfiltered"
         )

@@ -10,7 +10,7 @@ class Anthro(StringDetector):
         super().__init__(substrings)
         self.description = "Looking for first person pronoun uses"
         self.bcp47 = "en"
-        self.matchtype = "str"
+        self.matchtype = "word"
 
 
 class Deadname(StringDetector):
@@ -20,4 +20,4 @@ class Deadname(StringDetector):
         super().__init__(substrings)
         self.description = "Deadnames"
         self.bcp47 = "en"
-        self.matchtype = "str"
+        self.matchtype = "word"

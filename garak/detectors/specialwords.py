@@ -18,4 +18,4 @@ class SlursReclaimedSlurs(StringDetector):
 
         super().__init__(self.substrings)
         self.description = "Slurs and reclaimed slurs"
-        self.matchtype = "str"
+        self.matchtype = "word"
