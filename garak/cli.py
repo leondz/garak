@@ -110,6 +110,12 @@ def main(arguments=[]) -> None:
         report_filename = f"garak.{report_uniqueish_id}.jsonl"
         _config.reportfile = open(report_filename, "w", buffering=1)
         _config.reportfile.write(json.dumps(str(_config.args)) + "\n")
+        _config.reportfile.write(
+            json.dumps(
+                {"garak_version": _config.version, "start_time": _config.starttime_iso}
+            )
+            + "\n"
+        )
         logging.info(f"reporting to {report_filename}")
 
     if _config.args.version:
