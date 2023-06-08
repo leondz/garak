@@ -2,8 +2,9 @@
 
 import json
 import logging
+from typing import List
 
-from garak.detectors.base import StringDetector, Detector
+from garak.detectors.base import StringDetector, Detector, TriggerListDetector
 from garak.attempt import Attempt
 
 
@@ -47,3 +48,9 @@ class PlainJSON(Detector):
             except:
                 results.append(0)
         return results
+
+
+class _Davidjl(TriggerListDetector):
+    def detect(self, attempt: Attempt) -> List[float]:
+        detector_results = super().detect(attempt, case_sensitive=False)
+        return [1 - r for r in detector_results]
