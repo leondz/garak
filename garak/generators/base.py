@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import logging
+from typing import List
 
 from colorama import Fore, Style
 
@@ -17,6 +18,6 @@ class Generator:
         )
         logging.info("generator init: {self}")
 
-    def generate(self, prompts):
-        outputs = [self.generator(i) for i in prompts]
+    def generate(self, prompt) -> List[str]:
+        outputs = self.generator(prompt)
         return outputs
