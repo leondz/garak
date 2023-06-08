@@ -128,3 +128,26 @@ class StringDetector(Detector):
             detector_results.append(1 if match else 0)
 
         return detector_results
+
+
+class TriggerListDetector(Detector):
+    """Subclass of Detector using attempt's notes[triggers] as list of strings to match"""
+
+    def __init__(self):
+        super().__init__()
+
+    def detect(self, attempt: Attempt, case_sensitive=False) -> List[float]:
+        detector_results = []
+        triggers = attempt.notes["triggers"]
+        for output in attempt.outputs:
+            match = False
+            for trigger in triggers:
+                if case_sensitive:
+                    if trigger in output:
+                        match = True
+                else:
+                    if trigger.lower() in output.lower():
+                        match = True
+            detector_results.append(1 if match else 0)
+
+        return detector_results
