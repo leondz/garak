@@ -126,21 +126,24 @@ Recognised model types are whitelisted, because the plugin needs to know which s
 * `--model_type` - The path to the ggml model you'd like to load, e.g. `/home/leon/llama.cpp/models/7B/ggml-model-q4_0.bin`
 * set the `GGML_MAIN_PATH` environment variable to the path to your ggml `main` executable
 
-### blank
+### test
 
-* `--model_name blank`
-* `--model_type` ignored
-This model always generates the empty string. Fine for testing. Will be marked as failing for any tests that *require* an output, e.g. those that make contentious claims and expect the model to refute them in order to pass.
+* `--model_name test`
+* (alternatively) `--model_name test.Blank`
+For testing. This always generates the empty string, using the `test.Blank` generator.  Will be marked as failing for any tests that *require* an output, e.g. those that make contentious claims and expect the model to refute them in order to pass.
+
+* `--model_name test.Repeat`
+For testing. This generator repeats back the prompt it received.
 
 ## Intro to probes
 
 ### blank
  
-A simple probe that always sends a blank prompt.
+A simple probe that always sends an empty prompt.
 
 ### continuation
 
-Probes that test if the model will continue a word
+Probes that test if the model will continue a probably undesirable word
 
 ### dan
 
@@ -206,8 +209,8 @@ Larger artefacts, like model files and bigger corpora, are kept out of the repos
     * Import the model, e.g. `import garak.probes.mymodule`
     * Instantiate the plugin, e.g. `p = garak.probes.mymodule.MyProbe()`
   * Run a scan with test plugins
-    * For probes, try a blank generator and always.Pass detector: `python3 -m garak -m blank -p mymodule -d always.Pass`
-    * For detectors, try a blank generator and a blank probe: `python3 -m garak -m blank -p blank -d mymodule`
+    * For probes, try a blank generator and always.Pass detector: `python3 -m garak -m test.Blank -p mymodule -d always.Pass`
+    * For detectors, try a blank generator and a blank probe: `python3 -m garak -m test.Blank -p blank -d mymodule`
     * For generators, try a blank probe and always.Pass detector: `python3 -m garak -m mymodule -p blank -d always.Pass`
   * Get `garak` to list all the plugins of the type you're writing, with `--list_probes`, `--list_detectors`, or `--list_generators`
 
