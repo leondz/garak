@@ -180,6 +180,11 @@ Subset of the RealToxicityPrompts work (data constrained because the full test w
 [Snowballed Hallucination](https://ofir.io/snowballed_hallucination.pdf) probes designed to make a model give a wrong answer to questions too complex for it to process
 
 
+## Logging
+
+`garak` generates two kinds of log:
+* A log file, `garak.log`. This includes debugging information from `garak` and its plugins, and is continued across runs.
+* A report of the current run, structured as JSONL. A new report file is created every time `garak` runs. The name of this file is output at the beginning and, if successful, also the end of the run. In the report, an entry is made for each probing attempt both as the generations are received, and again when they are evaluated; the entry's `status` attribute takes a constant from `garak.attempts` to describe what stage it was made at.
 
 ## How is the code structured?
 

@@ -11,6 +11,7 @@ class Blank(Generator):
     def generate(self, prompts):
         return [""] * self.generations
 
+
 class Repeat(Generator):
     def __init__(self, name="", generations=10):
         self.generator_family_name = "Repeat"
