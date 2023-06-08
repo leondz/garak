@@ -8,8 +8,8 @@ from typing import List
 from colorama import Fore, Style
 from tqdm import tqdm
 
+from garak import _config
 from garak.attempt import *
-from garak._config import reportfile, args
 
 
 class Probe:
@@ -28,7 +28,9 @@ class Probe:
             self.recommended_detector = ["toxicity.ToxicCommentModelDetector"]
         if "probename" not in dir(self):
             self.probename = str(self.__class__).split("'")[1]
-        if not args or args.verbose > 0:
+        if "active" not in dir(self):
+            self.active = True
+        if not _config.args or _config.args.verbose > 0:
             print(
                 f"loading {Style.BRIGHT}{Fore.LIGHTYELLOW_EX}probe: {Style.RESET_ALL}{self.probename}"
             )
@@ -57,7 +59,7 @@ class Probe:
             this_attempt = self._attempt_prestore_hook(this_attempt, seq)
             self._generator_precall_hook(generator, this_attempt)
             this_attempt.outputs = generator.generate(prompt)
-            reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
+            _config.reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
             attempts.append(copy.deepcopy(this_attempt))
         return attempts
 
