@@ -91,7 +91,7 @@ class InferenceAPI(Generator):
             message = " ⚠️  No Hugging Face Inference API token in HF_INFERENCE_TOKEN, expect heavier rate-limiting"
             print(message)
             logging.info(message)
-        self.deprefix = True
+        self.deprefix_prompt = True
         self.max_new_tokens = hf_max_new_tokens
         self.max_time = 20
 
@@ -107,7 +107,7 @@ class InferenceAPI(Generator):
         payload = {
             "inputs": prompt,
             "parameters": {
-                "return_full_text": not self.deprefix,
+                "return_full_text": not self.deprefix_prompt,
                 "num_return_sequences": self.generations,
                 "max_time": self.max_time,
             },

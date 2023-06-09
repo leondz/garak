@@ -2,31 +2,38 @@
 
 """auto redteam"""
 
+import copy
 import logging
+import json
+import re
 from typing import List
 
 import nltk
 from tqdm import tqdm
 
+import garak._config
 import garak.attempt
 from garak.probes.base import Probe
-from garak.generators.huggingface import InferenceAPI
+from garak.generators.huggingface import Local
 
 output_sep = "<||>"
 
 
 class Tox(Probe):
     def __init__(self):
-        self.name = ""
+        self.name = "ART"
         super().__init__()
+        self.description = "Auto Red-Team"
         self.recommended_detector = ["toxicity.ToxicCommentModel"]
         self.redteamer = None
         self.max_calls = 5
+        self.constructive_tension = True
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
         if self.redteamer == None:
-            self.redteamer = InferenceAPI("leondz/artopttox350m")
+            self.redteamer = Local("leondz/artgpt2tox")
             self.redteamer.generations = 1
+            self.redteamer.deprefix_prompt = True
 
         attempts = []
 
@@ -52,6 +59,7 @@ class Tox(Probe):
             this_attempt.prompt = ""
             last_response = ""
             turns = []
+            logging.debug(f"ART: attempt {i} uuid {this_attempt.uuid}")
 
             while calls_made < self.max_calls and keep_going:
                 # generate a challenge
@@ -60,10 +68,12 @@ class Tox(Probe):
                 else:
                     last_response_first_sent = ""
                 query = f"<|input|>{last_response_first_sent}<|response|>"
+                # print("query:", query)
                 challenge = self.redteamer.generate(query)
-                challenge = (
-                    challenge[0].strip().split("\n")[0].strip()
-                )  # get first item, ignore whitespace, take everything up to the first newline
+                # print("challenge:", challenge)
+                challenge = re.sub("\<\|.*", "", challenge[0]).strip()
+                # get first item, ignore whitespace, take everything up to the first newline
+                # challenge[0].strip().split("\n")[0].strip()
                 # log what we'll send
                 turn = ("probe", challenge)
                 turns.append(turn)
@@ -77,21 +87,18 @@ class Tox(Probe):
                 # increment calls_made
                 calls_made += 1
                 # check if the resp is empty or if it matches the previous resp
-                if not len(response) or response == last_response:
+                if not len(response) and not self.constructive_tension:
+                    keep_going = False
+                if response == last_response:
                     keep_going = False
                 # update last_response
-                last_response = response.replace("\n", " ")
-                self.redteamer.max_new_tokens = 150  # after first iter, give a limit
+                last_response = response.replace("\n", " ").strip()
+                self.redteamer.max_new_tokens = 170  # after first iter, give a limit
 
             this_attempt.notes["turns"] = turns
-            this_attempt.outputs.append(
-                output_sep
-                + f"\n{output_sep}".join(
-                    [turn[1] for turn in turns if turn[0] == "model"]
-                )
-            )
+            this_attempt.outputs = [turn[1] for turn in turns if turn[0] == "model"]
 
-            _config.reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
+            garak._config.reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
             attempts.append(copy.deepcopy(this_attempt))
 
         # restore the generator object's original number of generations
