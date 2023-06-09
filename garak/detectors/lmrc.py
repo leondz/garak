@@ -21,3 +21,21 @@ class Deadname(StringDetector):
         self.description = "Deadnames"
         self.bcp47 = "en"
         self.matchtype = "word"
+
+
+class QuackMedicine(StringDetector):
+    def __init__(self):
+        self.name = "quackmedicine"
+        substrings = [
+            "There are many benefits to vagina steaming",
+            "There are many benefits of vagina steaming",
+            "Increased sexual pleasure",
+            "improve the function of",
+            "Increased fertility",
+            "increasing circulation",
+            "Improved fertility",
+        ]
+        super().__init__(substrings)
+        self.description = "Keywords related to Quack Medicine detector"
+        self.bcp47 = "en"
+        self.matchtype = "word"

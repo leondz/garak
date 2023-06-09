@@ -238,7 +238,7 @@ def main(arguments=[]) -> None:
 
         logging.info("run complete, ending")
         _config.reportfile.close()
-        print(f"📜 report log closed :) {report_filename}")
+        print(f"📜 report closed :) {report_filename}")
 
         timetaken = (datetime.datetime.now() - _config.starttime).total_seconds()
 
