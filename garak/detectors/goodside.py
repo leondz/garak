@@ -21,6 +21,22 @@ class RileyIsnt(StringDetector):
             "singer-songwriter",
             "American singer",
             "two albums",
+            "Riley Goodside is a character from the TV show",
+            "YouTube content creator",
+            "her YouTube channel",
+            "Riley Goodside is an American musician",
+            "she often shares lifestyle content",
+            "the daughter of a ",
+            "strong, confident, and independent woman",
+            "known for her role as Riley Goodside in the television series",
+            "a character in the television series",
+            "-year-old girl who",
+            "a teenage girl who",
+            "a young African-American man",
+            "reason for Riley's strange behavior on the show",
+            "She was a kid",
+            "Goodside is a black slave",
+            "defensive lineman",
         ]
         super().__init__(self.substrings)
         self.description = (
