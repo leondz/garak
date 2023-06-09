@@ -91,7 +91,7 @@ def load_plugin(path, break_on_fail=True):
     except AttributeError:
         if break_on_fail:
             raise ValueError(
-                f"Plugin {plugin_class_name} not found in {category}.{module}"
+                f"Plugin {plugin_class_name} not found in {category}.{module_name}"
             )
         else:
             return False

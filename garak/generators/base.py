@@ -10,6 +10,8 @@ class Generator:
     def __init__(self, name="", generations=10):
         if "name" not in dir(self):
             self.name = name
+        if "description" not in dir(self):
+            self.description = ""
         self.generations = generations
         if not self.generator_family_name:
             self.generator_family_name = "<empty>"

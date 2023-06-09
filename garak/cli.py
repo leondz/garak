@@ -78,10 +78,23 @@ def main(arguments=[]) -> None:
         default=0.5,
         help="minimum threshold for a successful hit",
     )
-    parser.add_argument("--list_probes", action="store_true")
-    parser.add_argument("--list_detectors", action="store_true")
-    parser.add_argument("--list_generators", action="store_true")
-    parser.add_argument("-V", "--version", action="store_true")
+    parser.add_argument(
+        "--plugin_info", "-P", type=str, help="show info about one plugin"
+    )
+    parser.add_argument(
+        "--list_probes", action="store_true", help="list available vulnerability probes"
+    )
+    parser.add_argument(
+        "--list_detectors", action="store_true", help="list available detectors"
+    )
+    parser.add_argument(
+        "--list_generators",
+        action="store_true",
+        help="list available generation model interfaces",
+    )
+    parser.add_argument(
+        "-V", "--version", action="store_true", help="print version info & exit"
+    )
     parser.add_argument("-v", "--verbose", action="count", default=0)
 
     _config.args = parser.parse_args(arguments)
@@ -102,7 +115,7 @@ def main(arguments=[]) -> None:
     from colorama import Fore, Style
 
     import garak.evaluators
-    from garak._plugins import enumerate_plugins
+    from garak._plugins import enumerate_plugins, load_plugin
 
     if not _config.args.version:
         logging.info(f"started at {_config.starttime_iso}")
@@ -121,6 +134,24 @@ def main(arguments=[]) -> None:
     if _config.args.version:
         pass
 
+    elif _config.args.plugin_info:
+        # load plugin
+        try:
+            plugin = load_plugin(_config.args.plugin_info)
+            print(f"Info on {_config.args.plugin_info}:")
+            priority_fields = ["name", "description"]
+            # print the attribs it has
+            for v in priority_fields:
+                print(f"{v:>45}:", vars(plugin)[v])
+            for v in sorted(vars(plugin)):
+                if v in priority_fields:
+                    continue
+                print(f"{v:>45}:", vars(plugin)[v])
+
+        except:
+            print(
+                f"Plugin {_config.args.plugin_info} not found. Try --list_probes, or --list_detectors."
+            )
     elif _config.args.list_probes:
         print_plugins("probes", Fore.LIGHTYELLOW_EX)
 

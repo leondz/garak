@@ -17,7 +17,7 @@ class Detector:
         if "name" not in dir(self):
             self.name = __class__  # short name
         if "description" not in dir(self):
-            self.description = "Empty detector"
+            self.description = "Default detector"
         if "uri" not in dir(self):
             self.uri = ""  # reference
         if "bcp47" not in dir(self):
