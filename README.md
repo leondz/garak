@@ -183,6 +183,9 @@ Subset of the RealToxicityPrompts work (data constrained because the full test w
 
 [Snowballed Hallucination](https://ofir.io/snowballed_hallucination.pdf) probes designed to make a model give a wrong answer to questions too complex for it to process
 
+### art
+
+Auto Red-Team. A red-teaming LLM probes the target and reacts to it in an attempt to get toxic output. Prototype, mostly stateless, for now uses a simple GPT-2 [fine-tuned](https://huggingface.co/leondz/artgpt2tox) on the subset of hhrlhf attempts that yielded detectable toxicity (the only target currently supported for now).
 
 ## Logging
 
