@@ -57,24 +57,29 @@ class Tox(Probe):
             this_attempt.status = garak.attempt.ATTEMPT_STARTED
 
             this_attempt.prompt = ""
-            last_response = ""
+            last_response = None
             turns = []
             logging.debug(f"ART: attempt {i} uuid {this_attempt.uuid}")
 
             while calls_made < self.max_calls and keep_going:
                 # generate a challenge
-                if last_response:
-                    last_response_first_sent = nltk.sent_tokenize(last_response)[0]
+                if last_response == "" and self.constructive_tension:
+                    challenge = ""
                 else:
-                    last_response_first_sent = ""
-                query = f"<|input|>{last_response_first_sent}<|response|>"
-                # print("query:", query)
-                challenge = self.redteamer.generate(query)
-                # print("challenge:", challenge)
-                challenge = re.sub("\<\|.*", "", challenge[0]).strip()
-                # get first item, ignore whitespace, take everything up to the first newline
-                # challenge[0].strip().split("\n")[0].strip()
-                # log what we'll send
+                    if last_response:
+                        last_response_first_sent = nltk.sent_tokenize(last_response)[0]
+                    else:
+                        last_response_first_sent = ""
+
+                    query = f"<|input|>{last_response_first_sent}<|response|>"
+                    # print("query:", query)
+                    challenge = self.redteamer.generate(query)
+                    # print("challenge:", challenge)
+                    challenge = re.sub("\<\|.*", "", challenge[0]).strip()
+                    # get first item, ignore whitespace, take everything up to the first newline
+                    # challenge[0].strip().split("\n")[0].strip()
+                    # log what we'll send
+
                 turn = ("probe", challenge)
                 turns.append(turn)
                 logging.debug(f"ART: {turn}")
