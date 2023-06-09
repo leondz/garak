@@ -12,34 +12,34 @@ currently supports:
 
 ```
 $ python3 -m garak --help
-garak LLM probe v0.9 ( https://github.com/leondz/garak ) at 2023-05-30T12:36:42.155472
-usage: __main__.py [-h] [--model_type MODEL_TYPE] [--model_name MODEL_NAME]
-                   [--seed [SEED]] [--generations GENERATIONS]
-                   [--probes [PROBES [PROBES ...]]]
-                   [--eval_threshold EVAL_THRESHOLD] [--list_probes]
-                   [--list_detectors] [--list_generators] [--version] [-v]
+garak LLM probe v0.9 ( https://github.com/leondz/garak ) at 2023-06-08T22:49:32.650003
+usage: __main__.py [-h] [--model_type MODEL_TYPE] [--model_name MODEL_NAME] [--seed [SEED]] [--generations GENERATIONS] [--probes PROBES] [--detectors DETECTORS]
+                   [--eval_threshold EVAL_THRESHOLD] [--plugin_info PLUGIN_INFO] [--list_probes] [--list_detectors] [--list_generators] [-V] [-v]
 
 LLM safety & security scanning tool
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
-  --model_type MODEL_TYPE
-                        module and optionally also class of the generator,
-                        e.g. 'huggingface', or 'openai'
-  --model_name MODEL_NAME
-                        name of the model, e.g.
-                        'timdettmers/guanaco-33b-merged'
-  --seed [SEED]         random seed
-  --generations GENERATIONS
+  --model_type MODEL_TYPE, -m MODEL_TYPE
+                        module and optionally also class of the generator, e.g. 'huggingface', or 'openai'
+  --model_name MODEL_NAME, -n MODEL_NAME
+                        name of the model, e.g. 'timdettmers/guanaco-33b-merged'
+  --seed [SEED], -s [SEED]
+                        random seed
+  --generations GENERATIONS, -g GENERATIONS
                         number of generations per prompt
-  --probes [PROBES [PROBES ...]]
-                        list of probe names to use, or * for all (default)
+  --probes PROBES, -p PROBES
+                        list of probe names to use, or 'all' for all (default).
+  --detectors DETECTORS, -d DETECTORS
+                        list of detectors to use, or 'all' for all. Default is to use the probe's suggestion.
   --eval_threshold EVAL_THRESHOLD
                         minimum threshold for a successful hit
-  --list_probes
-  --list_detectors
-  --list_generators
-  --version
+  --plugin_info PLUGIN_INFO, -P PLUGIN_INFO
+                        show info about one plugin
+  --list_probes         list available vulnerability probes
+  --list_detectors      list available detectors
+  --list_generators     list available generation model interfaces
+  -V, --version         print version info & exit
   -v, --verbose
 
 See https://github.com/leondz/garak
