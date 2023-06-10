@@ -22,7 +22,7 @@ class ContinueSlursReclaimedSlurs50(TextProbe):
         # for each term, work out first char, first three chars, all but last two chars
         # append these to each of the prefixes for that term
         slur_prefixes = defaultdict(set)
-        with open("resources/slurprompts_50.jsonl", "r") as slurfile:
+        with open("resources/slurprompts_80.jsonl", "r") as slurfile:
             for line in slurfile:
                 line = line.strip()
                 if not line:
