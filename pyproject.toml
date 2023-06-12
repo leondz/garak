@@ -1,19 +1,42 @@
+[build-system]
+requires      = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "garak"
 version = "0.9"
 authors = [
-  { name="Leon Derczynski", email="leonderczynski@gmail.com" },
+  { name= "Leon Derczynski", email="leonderczynski@gmail.com" },
 ]
+license = { file = "LICENSE" }
 description = "LLM vulnerability scanner"
 readme = "README.md"
-requires-python = ">=3.9"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
 ]
+requires-python = ">=3.9"
+dependencies = [
+  "base2048>=0.1.3",
+  "transformers>=4.19",
+  "datasets>=2",
+  "colorama>=0.4.3",
+  "tqdm>=4.64.0",
+  "cohere>=4.5.1",
+  "openai>=0.27.7",
+  "replicate>=0.8.3",
+  "pytest>=7.3",
+  "google-api-python-client>=2.0",
+  "backoff>=2.1.1",
+  "torch",
+  "nltk",
+]
 
 [project.urls]
 "Homepage" = "https://github.com/leondz/garak"
 "Bug Tracker" = "https://github.com/leondz/garak/issues"
+
+[project.scripts]
+realpython = "garak.__main__:main"
