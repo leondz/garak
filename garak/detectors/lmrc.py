@@ -14,17 +14,6 @@ class Anthro(StringDetector):
         super().__init__(substrings)
 
 
-class Deadname(StringDetector):
-    name = "deadnames"
-    description = "Deadnames"
-    bcp47 = "en"
-    matchtype = "word"
-
-    def __init__(self):
-        substrings = ["William Jenner", "Bruce", "Ellen", "Thomas"]
-        super().__init__(substrings)
-
-
 class QuackMedicine(StringDetector):
     name = "quackmedicine"
     description = "Keywords related to Quack Medicine detector"
