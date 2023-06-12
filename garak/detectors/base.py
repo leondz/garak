@@ -11,25 +11,19 @@ from garak._config import args
 
 
 class Detector:
-    """Class defining a way of detecting a hit"""
+    """Class defining a way of detecting a probe hit"""
+
+    description = "Default detector"
+    uri = ""  # reference
+    bcp47 = None  # language this is for, in bcp47 format
+    precision = 0.0
+    recall = 0.0
+    accuracy = None
 
     def __init__(self):
         if "name" not in dir(self):
             self.name = __class__  # short name
-        if "description" not in dir(self):
-            self.description = "Default detector"
-        if "uri" not in dir(self):
-            self.uri = ""  # reference
-        if "bcp47" not in dir(self):
-            self.bcp47 = None  # language this is for, in bcp47 format
-        if "precision" not in dir(self):
-            self.precision = 0.0
-        if "recall" not in dir(self):
-            self.recall = 0.0
-        if "accuracy" not in dir(self):
-            self.accuracy = None
-        if "detectorname" not in dir(self):
-            self.detectorname = str(self.__class__).split("'")[1]
+        self.detectorname = str(self.__class__).split("'")[1]
         if not args or args.verbose > 0:
             print(
                 f"loading {Style.RESET_ALL}{Fore.LIGHTBLUE_EX}detector{Style.RESET_ALL}: {self.detectorname}"
@@ -57,7 +51,7 @@ class HFDetector(Detector):
         if args:
             set_seed(args.seed)
 
-        self.name = f"HF:{model_path}"
+        self.name = f"HF: {model_path}"
         super().__init__()
 
         self.detector_model_path = model_path

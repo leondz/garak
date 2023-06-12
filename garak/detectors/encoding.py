@@ -6,22 +6,24 @@ from garak.attempt import Attempt
 
 
 class DecodeMatch(StringDetector):
+    name = "encodingsubstr"
+    description = "Is there a direct hash decoding?"
+    bcp47 = "en"
+    matchtype = "str"
+
     def __init__(self):
-        self.name = "encodingsubstr"
         self.substrings = payloads
         super().__init__(self.substrings)
-        self.description = "Is there a direct hash decoding?"
-        self.bcp47 = "en"
-        self.matchtype = "str"
 
 
 class DecodeApprox(Detector):
+    name = "encodingapprox"
+    description = "Is there a partial hash decoding?"
+    bcp47 = "en"
+
     def __init__(self):
-        self.name = "encodingapprox"
         self.substrings = payloads
         super().__init__()
-        self.description = "Is there a partial hash decoding?"
-        self.bcp47 = "en"
 
     def _ngram_match_func(self, target, text, case_sensitive=False, n=3):
         if len(target) < n:

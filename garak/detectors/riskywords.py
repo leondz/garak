@@ -26,182 +26,197 @@ with open("resources/ofcom-potentially-offensive.txt", "r") as csvfile:
 
 
 class SurgeProfanitySexual(StringDetector):
+    name = "sexualterms"
+    description = "Surge AI list: sexual anatomy / sexual acts"
+    bcp47 = "en"
+    matchtype = "word"
+
     def __init__(self):
-        self.name = "sexualterms"
         substrings = surge_list["sexual anatomy / sexual acts"]
         super().__init__(substrings)
-        self.description = "Surge AI list: sexual anatomy / sexual acts"
-        self.bcp47 = "en"
-        self.matchtype = "word"
 
 
 class SurgeProfanityBodilyFluids(StringDetector):
+    name = "bodilyfluids"
+    description = "Surge AI list: bodily fluids / excrement"
+    bcp47 = "en"
+    matchtype = "word"
+
     def __init__(self):
-        self.name = "bodilyfluids"
         substrings = surge_list["bodily fluids / excrement"]
         super().__init__(substrings)
-        self.description = "Surge AI list: bodily fluids / excrement"
-        self.bcp47 = "en"
-        self.matchtype = "word"
 
 
 class SurgeProfanitySexualOrientationGender(StringDetector):
+    name = "sexualorientationandgender"
+    description = "Surge AI list: sexual orientation / gender"
+    bcp47 = "en"
+    matchtype = "word"
+
     def __init__(self):
-        self.name = "sexualorientationandgender"
         substrings = surge_list["sexual orientation / gender"]
         super().__init__(substrings)
-        self.description = "Surge AI list: sexual orientation / gender"
-        self.bcp47 = "en"
-        self.matchtype = "word"
 
 
 class SurgeProfanityRacialEthnic(StringDetector):
+    name = "racialethnic"
+    description = "Surge AI list: racial / ethnic"
+    bcp47 = "en"
+    matchtype = "word"
+
     def __init__(self):
-        self.name = "racialethnic"
         substrings = surge_list["racial / ethnic"]
         super().__init__(substrings)
-        self.description = "Surge AI list: racial / ethnic"
-        self.bcp47 = "en"
-        self.matchtype = "word"
 
 
 class SurgeProfanityMentalDisability(StringDetector):
+    name = "mentaldisability"
+    description = "Surge AI list: mental disability"
+    bcp47 = "en"
+    matchtype = "word"
+
     def __init__(self):
-        self.name = "mentaldisability"
         substrings = surge_list["mental disability"]
         super().__init__(substrings)
-        self.description = "Surge AI list: mental disability"
-        self.bcp47 = "en"
-        self.matchtype = "word"
 
 
 class SurgeProfanityPhysicalDisability(StringDetector):
+    name = "physicaldisability"
+    description = "Surge AI list: physical disability"
+    bcp47 = "en"
+    matchtype = "word"
+
     def __init__(self):
-        self.name = "physicaldisability"
         substrings = surge_list["physical disability"]
         super().__init__(substrings)
-        self.description = "Surge AI list: physical disability"
-        self.bcp47 = "en"
-        self.matchtype = "word"
 
 
 class SurgeProfanityPhysicalAttributes(StringDetector):
+    name = "physicalattributes"
+    description = "Surge AI list: physical attributes"
+    bcp47 = "en"
+    matchtype = "word"
+
     def __init__(self):
-        self.name = "physicalattributes"
         substrings = surge_list["physical attributes"]
         super().__init__(substrings)
-        self.description = "Surge AI list: physical attributes"
-        self.bcp47 = "en"
-        self.matchtype = "word"
 
 
 class SurgeProfanityAnimalReferences(StringDetector):
+    name = "animalreferences"
+    description = "Surge AI list: animal references"
+    bcp47 = "en"
+    matchtype = "word"
+
     def __init__(self):
-        self.name = "animalreferences"
         substrings = surge_list["animal references"]
         super().__init__(substrings)
-        self.description = "Surge AI list: animal references"
-        self.bcp47 = "en"
-        self.matchtype = "word"
 
 
 class SurgeProfanityReligious(StringDetector):
+    name = "religiousoffence"
+    description = "Surge AI list: religious offense"
+    bcp47 = "en"
+    matchtype = "word"
+
     def __init__(self):
-        self.name = "religiousoffence"
         substrings = surge_list["religious offense"]
         super().__init__(substrings)
-        self.description = "Surge AI list: religious offense"
-        self.bcp47 = "en"
-        self.matchtype = "word"
 
 
 class SurgeProfanityPolitical(StringDetector):
+    name = "political"
+    description = "Surge AI list: political"
+    bcp47 = "en"
+    matchtype = "word"
+
     def __init__(self):
-        self.name = "political"
         substrings = surge_list["political"]
         super().__init__(substrings)
-        self.description = "Surge AI list: political"
-        self.bcp47 = "en"
-        self.matchtype = "word"
 
 
 class OfcomOffensiveGeneral(StringDetector):
+    term = "general"
+    name = f"ofcom{term}"
+    description = f"OFCOM potentially offensive: {term}"
+    bcp47 = "en"
+    matchtype = "word"
+
     def __init__(self):
-        self.term = "general"
-        self.name = f"ofcom{self.term}"
         substrings = ofcom_list[self.term]
         super().__init__(substrings)
-        self.description = f"OFCOM potentially offensive: {self.term}"
-        self.bcp47 = "en"
-        self.matchtype = "word"
 
 
 class OfcomOffensiveSexual(StringDetector):
+    term = "sexual"
+    name = f"ofcom{term}"
+    description = f"OFCOM potentially offensive: {term}"
+    bcp47 = "en"
+    matchtype = "word"
+
     def __init__(self):
-        self.term = "sexual"
-        self.name = f"ofcom{self.term}"
         substrings = ofcom_list[self.term]
         super().__init__(substrings)
-        self.description = f"OFCOM potentially offensive: {self.term}"
-        self.bcp47 = "en"
-        self.matchtype = "word"
 
 
 class OfcomOffensiveDiscriminatory(StringDetector):
+    term = "discriminatory"
+    name = f"ofcom{term}"
+    description = f"OFCOM potentially offensive: {term}"
+    bcp47 = "en"
+    matchtype = "word"
+
     def __init__(self):
-        self.term = "discriminatory"
-        self.name = f"ofcom{self.term}"
         substrings = ofcom_list[self.term]
         super().__init__(substrings)
-        self.description = f"OFCOM potentially offensive: {self.term}"
-        self.bcp47 = "en"
-        self.matchtype = "word"
 
 
 class OfcomOffensiveSexGender(StringDetector):
+    term = "sexgender"
+    name = f"ofcom{term}"
+    description = f"OFCOM potentially offensive: {term}"
+    bcp47 = "en"
+    matchtype = "word"
+
     def __init__(self):
-        self.term = "sexgender"
-        self.name = f"ofcom{self.term}"
         substrings = ofcom_list[self.term]
         super().__init__(substrings)
-        self.description = f"OFCOM potentially offensive: {self.term}"
-        self.bcp47 = "en"
-        self.matchtype = "word"
 
 
 class OfcomOffensiveMentalHealth(StringDetector):
+    term = "mentalhealth"
+    name = f"ofcom{term}"
+    description = f"OFCOM potentially offensive: {term}"
+    bcp47 = "en"
+    matchtype = "word"
+
     def __init__(self):
-        self.term = "mentalhealth"
-        self.name = f"ofcom{self.term}"
         substrings = ofcom_list[self.term]
         super().__init__(substrings)
-        self.description = f"OFCOM potentially offensive: {self.term}"
-        self.bcp47 = "en"
-        self.matchtype = "word"
 
 
 class OfcomOffensiveRaceEthnic(StringDetector):
+    term = "raceethnic"
+    name = f"ofcom{term}"
+    description = f"OFCOM potentially offensive: {term}"
+    bcp47 = "en"
+    matchtype = "word"
+
     def __init__(self):
-        self.term = "raceethnic"
-        self.name = f"ofcom{self.term}"
         substrings = ofcom_list[self.term]
         super().__init__(substrings)
-        self.description = f"OFCOM potentially offensive: {self.term}"
-        self.bcp47 = "en"
-        self.matchtype = "word"
 
 
 class LDNOOBW(StringDetector):
+    name = f"ldnoobw"
+    description = f"List of Dirty, Naughty, Obscene, and Otherwise Bad Words (English)"
+    bcp47 = "en"
+
     def __init__(self):
-        self.name = f"ldnoobw"
         substrings = []
         with open("resources/ldnoobw-en.txt", "r") as wordlist:
             for line in wordlist:
                 if line.strip():
                     substrings.append(line.strip())
         super().__init__(substrings)
-        self.description = (
-            f"List of Dirty, Naughty, Obscene, and Otherwise Bad Words (English)"
-        )
-        self.bcp47 = "en"
         self.matchtype = "word"

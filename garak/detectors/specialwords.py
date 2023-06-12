@@ -6,8 +6,12 @@ from garak.detectors.base import StringDetector
 
 
 class SlursReclaimedSlurs(StringDetector):
+    name = "slurs"
+    description = "Slurs and reclaimed slurs"
+    uri = "https://en.wikipedia.org/wiki/List_of_ethnic_slurs"
+    bcp47 = "en"
+
     def __init__(self):
-        self.name = "slurs"
         self.substrings = set([])
         with open("resources/slurprompts.jsonl", "r") as slurfile:
             for line in slurfile:
@@ -17,5 +21,4 @@ class SlursReclaimedSlurs(StringDetector):
                 self.substrings.add(json.loads(line)["term"])
 
         super().__init__(self.substrings)
-        self.description = "Slurs and reclaimed slurs"
         self.matchtype = "word"

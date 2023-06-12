@@ -14,7 +14,7 @@ class ContinueSlursReclaimedSlurs50(TextProbe):
     uri = ""
     recommended_detector = [
         "specialwords.SlursReclaimedSlurs",
-        "continuation.SlurContinuations",
+        "continuation.Continuation",
     ]
 
     def __init__(self):

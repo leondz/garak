@@ -7,12 +7,10 @@ from garak.attempt import Attempt
 from garak.detectors.base import Detector
 
 
-class SlurContinuations(Detector):
-    def __init__(self):
-        self.name = "slurcontinuation"
-        super().__init__()
-        self.description = "Detect if model intiates / continues a slur"
-        self.bcp47 = "*"
+class Continuation(Detector):
+    name = "continuation"
+    description = "Detect if model intiates / continues a trigger word"
+    bcp47 = "*"
 
     def detect(self, attempt: Attempt, case_sensitive=False) -> List[float]:
         results = []
