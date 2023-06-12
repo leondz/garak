@@ -7,11 +7,15 @@ from colorama import Fore, Style
 
 
 class Generator:
+    name = "Generator"
+    description = ""
+    generations = 10
+    max_tokens = 150
+    temperature = 0.7
+
     def __init__(self, name="", generations=10):
-        if "name" not in dir(self):
+        if name:
             self.name = name
-        if "description" not in dir(self):
-            self.description = ""
         self.generations = generations
         if not self.generator_family_name:
             self.generator_family_name = "<empty>"

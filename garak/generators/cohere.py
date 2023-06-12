@@ -16,22 +16,21 @@ COHERE_GENERATION_LIMIT = (
 
 
 class CohereGenerator(Generator):
+    temperature = 0.750
+    k = 0
+    p = 0.75
+    preset = None
+    frequency_penalty = 0.0
+    presence_penalty = 0.0
+    stop = []
+    generator_family_name = "Cohere"
+
     def __init__(self, name="command", generations=10):
         self.name = name
         self.fullname = f"Cohere {self.name}"
         self.generations = generations
 
-        self.temperature = 0.750
-        self.max_tokens = 200
-        self.k = 0
-        self.p = 0.75
-        self.preset = None
-        self.frequency_penalty = 0.0
-        self.presence_penalty = 0.0
-        self.stop = []
-
-        self.generator_family_name = "Cohere"
-        super().__init__(name)
+        super().__init__(name, generations=generations)
 
         api_key = os.getenv("COHERE_API_KEY", default=None)
         if api_key == None:

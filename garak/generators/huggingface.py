@@ -13,7 +13,6 @@ from garak.generators.base import Generator
 
 
 models_to_deprefix = ["gpt2"]
-hf_max_new_tokens = 150
 
 
 class HFRateLimitException(Exception):
@@ -29,11 +28,12 @@ class HFInternalServerError(Exception):
 
 
 class Local(Generator):
+    generator_family_name = "Hugging Face 🤗"
+
     def __init__(self, name, do_sample=True, generations=10, device=0):
         self.fullname, self.name = name, name.split("/")[-1]
 
-        self.generator_family_name = "Hugging Face 🤗"
-        super().__init__(name)
+        super().__init__(name, generations=generations)
 
         from transformers import pipeline, set_seed
 
@@ -52,7 +52,6 @@ class Local(Generator):
             device=device,
         )
         self.deprefix_prompt = name in models_to_deprefix
-        self.max_new_tokens = hf_max_new_tokens
 
     def generate(self, prompt):
         with warnings.catch_warnings():
@@ -61,7 +60,7 @@ class Local(Generator):
                 raw_output = self.generator(
                     prompt,
                     pad_token_id=self.generator.tokenizer.eos_token_id,
-                    max_new_tokens=self.max_new_tokens,
+                    max_new_tokens=self.max_tokens,
                     num_return_sequences=self.generations,
                     # max_length = 1024,
                 )
@@ -77,13 +76,14 @@ class Local(Generator):
 
 
 class InferenceAPI(Generator):
-    def __init__(self, name="", generations=10):
-        self.fullname, self.name = name, name
-        self.generator_family_name = "Hugging Face 🤗 Inference API"
-        super().__init__(name, generations)
+    generator_family_name = "Hugging Face 🤗 Inference API"
 
+    def __init__(self, name="", generations=10):
         self.api_url = "https://api-inference.huggingface.co/models/" + name
         self.api_token = os.getenv("HF_INFERENCE_TOKEN", default=None)
+        self.fullname, self.name = name, name
+        super().__init__(name, generations=generations)
+
         if self.api_token:
             self.headers = {"Authorization": f"Bearer {self.api_token}"}
         else:
@@ -92,7 +92,6 @@ class InferenceAPI(Generator):
             print(message)
             logging.info(message)
         self.deprefix_prompt = True
-        self.max_new_tokens = hf_max_new_tokens
         self.max_time = 20
 
     @backoff.on_exception(
@@ -115,8 +114,8 @@ class InferenceAPI(Generator):
                 "wait_for_model": self.wait_for_model,
             },
         }
-        if self.max_new_tokens:
-            payload["parameters"]["max_new_tokens"] = self.max_new_tokens
+        if self.max_tokens:
+            payload["parameters"]["max_new_tokens"] = self.max_tokens
 
         if self.generations > 1:
             payload["parameters"]["do_sample"] = True

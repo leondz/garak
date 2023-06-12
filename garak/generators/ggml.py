@@ -9,27 +9,24 @@ from garak.generators.base import Generator
 
 
 class LLaMaGgmlGenerator(Generator):
+    repeat_penalty = 1.1
+    presence_penalty = 0.0
+    frequency_penalty = 0.0
+    top_k = 40
+    top_p = 0.95
+    temperature = 0.8
+
+    generator_family_name = "ggml"
+
     def __init__(self, name, generations=10):
-        self.name = name
-        self.generations = generations
+        self.path_to_ggml_main = os.getenv("GGML_MAIN_PATH")
 
-        self.path_to_ggml_man = os.getenv("GGML_MAIN_PATH")
-
-        self.max_tokens = 128
-        self.repeat_penalty = 1.1
-        self.presence_penalty = 0.0
-        self.frequency_penalty = 0.0
-        self.top_k = 40
-        self.top_p = 0.95
-        self.temperature = 0.8
         self.seed = garak._config.seed
-
-        self.generator_family_name = "ggml"
-        super().__init__(name)
+        super().__init__(name, generations=generations)
 
     def _call_ggml(self, prompt):
         command = [
-            self.path_to_ggml_man,
+            self.path_to_ggml_main,
             "-m",
             self.name,
             "-n",
@@ -52,6 +49,8 @@ class LLaMaGgmlGenerator(Generator):
             prompt,
         ]
         command = [str(param) for param in command]
+        if garak._config.args.verbose > 1:
+            print("GGML invoked with", command)
         result = subprocess.run(
             command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )

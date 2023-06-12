@@ -33,20 +33,18 @@ chat_models = (
 
 
 class OpenAIGenerator(Generator):
+    temperature = 0.7
+    top_p = 1.0
+    frequency_penalty = 0.0
+    presence_penalty = 0.0
+    stop = ["#", ";"]
+    generator_family_name = "OpenAI"
+
     def __init__(self, name, generations=10):
         self.name = name
         self.fullname = f"OpenAI {self.name}"
-        self.generations = generations
 
-        self.temperature = 0.7
-        self.max_tokens = 150
-        self.top_p = 1.0
-        self.frequency_penalty = 0.0
-        self.presence_penalty = 0.0
-        self.stop = ["#", ";"]
-
-        self.generator_family_name = "OpenAI"
-        super().__init__(name)
+        super().__init__(name, generations=generations)
 
         openai.api_key = os.getenv("OPENAI_API_KEY", default=None)
         if openai.api_key == None:

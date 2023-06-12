@@ -4,18 +4,14 @@ from garak.generators.base import Generator
 
 
 class Blank(Generator):
-    def __init__(self, name="", generations=10):
-        self.generator_family_name = "Blank"
-        super().__init__(name=name, generations=generations)
+    generator_family_name = "Blank"
 
-    def generate(self, prompts):
+    def generate(self, prompt):
         return [""] * self.generations
 
 
 class Repeat(Generator):
-    def __init__(self, name="", generations=10):
-        self.generator_family_name = "Repeat"
-        super().__init__(name=name, generations=generations)
+    generator_family_name = "Repeat"
 
     def generate(self, prompt):
         return [prompt] * self.generations

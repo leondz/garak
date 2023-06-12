@@ -12,19 +12,17 @@ from garak.generators.base import Generator
 
 
 class ReplicateGenerator(Generator):
+    generator_family_name = "Replicate"
+    temperature = 1
+    top_p = 1.0
+    repetition_penalty = 1
+
     def __init__(self, name, generations=10):
         self.name = name
         self.fullname = f"Replicate {self.name}"
-        self.generations = generations
-
-        self.max_length = 200
-        self.temperature = 1
-        self.top_p = 1.0
-        self.repetition_penalty = 1
         self.seed = garak._config.seed
 
-        self.generator_family_name = "Replicate"
-        super().__init__(name)
+        super().__init__(name, generations=generations)
 
         if os.getenv("REPLICATE_API_TOKEN", default=None) == None:
             raise Exception(
@@ -41,7 +39,7 @@ class ReplicateGenerator(Generator):
             self.name,
             input={
                 "prompt": prompt,
-                "max_length": self.max_length,
+                "max_length": self.max_tokens,
                 "temperature": self.temperature,
                 "top_p": self.top_p,
                 "repetition_penalty": self.repetition_penalty,
