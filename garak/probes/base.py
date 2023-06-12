@@ -9,7 +9,7 @@ from colorama import Fore, Style
 from tqdm import tqdm
 
 from garak import _config
-from garak.attempt import *
+import garak.attempt
 
 
 class Probe:
@@ -31,13 +31,15 @@ class Probe:
             )
         logging.info(f"probe init: {self}")
 
-    def _attempt_prestore_hook(self, attempt: Attempt, seq: int) -> Attempt:
+    def _attempt_prestore_hook(
+        self, attempt: garak.attempt.Attempt, seq: int
+    ) -> garak.attempt.Attempt:
         return attempt
 
     def _generator_precall_hook(self, generator, attempt=None):
         pass
 
-    def probe(self, generator) -> List[Attempt]:
+    def probe(self, generator) -> List[garak.attempt.Attempt]:
         """attempt to exploit the target generator, returning a list of results"""
         logging.debug(f"probe execute: {self}")
 
@@ -47,10 +49,10 @@ class Probe:
         prompt_iterator.set_description(self.probename.replace("garak.", ""))
 
         for seq, prompt in enumerate(prompt_iterator):
-            this_attempt = Attempt()
+            this_attempt = garak.attempt.Attempt()
             this_attempt.prompt = prompt
             this_attempt.probe_classname = self.__class__.__name__
-            this_attempt.status = ATTEMPT_STARTED
+            this_attempt.status = garak.attempt.ATTEMPT_STARTED
             this_attempt = self._attempt_prestore_hook(this_attempt, seq)
             self._generator_precall_hook(generator, this_attempt)
             this_attempt.outputs = generator.generate(prompt)
@@ -62,9 +64,10 @@ class Probe:
 class TextProbe(Probe):
     """Subclass of Probe for text-based probes using a list of prompts, kept in `self.prompts`."""
 
+    prompts = []
+
     def __init__(self):
         super().__init__()
-        self.prompts = []
 
-    def probe(self, generator) -> List[Attempt]:
+    def probe(self, generator) -> List[garak.attempt.Attempt]:
         return super().probe(generator)

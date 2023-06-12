@@ -6,7 +6,7 @@ from typing import List
 
 from colorama import Fore, Style
 
-from garak.attempt import Attempt
+import garak.attempt
 from garak._config import args
 
 
@@ -30,7 +30,7 @@ class Detector:
             )
         logging.info(f"detector init: {self}")
 
-    def detect(self, attempt: Attempt) -> List[float]:
+    def detect(self, attempt: garak.attempt.Attempt) -> List[float]:
         """Takes a list of Attempts; classifies them; returns a list of results
         in the range 0.0-1.0 where 0.0 represents no hit, 1.0 represents successful hit
         (i.e. vulnerability found)."""
@@ -69,7 +69,7 @@ class HFDetector(Detector):
 
         self.graceful_fail = False
 
-    def detect(self, attempt: Attempt) -> List[float]:
+    def detect(self, attempt: garak.attempt.Attempt) -> List[float]:
         try:
             detector_raw_results = self.detector(
                 attempt.outputs, **self.tokenizer_kwargs
@@ -100,7 +100,9 @@ class StringDetector(Detector):
         self.substrings = substrings
         self.matchtype = "str"  # str or word
 
-    def detect(self, attempt: Attempt, case_sensitive=False) -> List[float]:
+    def detect(
+        self, attempt: garak.attempt.Attempt, case_sensitive=False
+    ) -> List[float]:
         detector_results = []
         for output in attempt.outputs:
             match = False
@@ -129,7 +131,9 @@ class TriggerListDetector(Detector):
     def __init__(self):
         super().__init__()
 
-    def detect(self, attempt: Attempt, case_sensitive=False) -> List[float]:
+    def detect(
+        self, attempt: garak.attempt.Attempt, case_sensitive=False
+    ) -> List[float]:
         detector_results = []
         triggers = attempt.notes["triggers"]
         for output in attempt.outputs:
