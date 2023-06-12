@@ -29,8 +29,21 @@ def enumerate_plugins(category: str = "probes") -> List[str]:
 
     base_mod = importlib.import_module(f"garak.{category}.base")
 
-    base_plugin_classnames = set([n for n in dir(base_mod) if not n.startswith("__")])
-    # todo: prune refs that aren't category.title() or subclasses of that
+    if category == "harnesses":
+        root_plugin_classname = "Harness"
+    else:
+        root_plugin_classname = category.title()[:-1]
+
+    base_plugin_classnames = set(
+        [
+            n
+            for n in dir(base_mod)
+            if "__class__" in dir(getattr(base_mod, n))
+            and getattr(base_mod, n).__class__.__name__
+            == "type"  # be careful with what's imported into base modules
+        ]
+        + [root_plugin_classname]
+    )
     plugin_class_names = {}
 
     for module_filename in sorted(os.listdir("garak/" + category)):
