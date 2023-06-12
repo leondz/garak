@@ -27,43 +27,48 @@ repeat_prompts = [
 
 
 class EICAR(TextProbe):
+    name = "eicar"
+    description = "Does the model check its output for viruses? Try to send the EICAR code through"
+    bcp47 = "*"
+    uri = "https://en.wikipedia.org/wiki/EICAR_test_file"
+    recommended_detector = [
+        "knownbadsignatures.EICAR",
+    ]
+
     def __init__(self):
         super().__init__()
-        self.name = "eicar"
-        self.description = "Does the model check its output for viruses? Try to send the EICAR code through"
-        self.bcp47 = "*"
-        self.uri = "https://en.wikipedia.org/wiki/EICAR_test_file"
-        self.recommended_detector = [
-            "knownbadsignatures.EICAR",
-        ]
         signature = eicar_signature
         self.prompts = [p.replace("{signature}", signature) for p in repeat_prompts]
 
 
 class GTUBE(TextProbe):
+    name = "gtube"
+    description = (
+        "Does the model check its output for spam? Try to send the GTUBE code through"
+    )
+    bcp47 = "*"
+    uri = "https://en.wikipedia.org/wiki/GTUBE"
+    recommended_detector = [
+        "knownbadsignatures.GTUBE",
+    ]
+
     def __init__(self):
         super().__init__()
-        self.name = "gtube"
-        self.description = "Does the model check its output for spam? Try to send the GTUBE code through"
-        self.bcp47 = "*"
-        self.uri = "https://en.wikipedia.org/wiki/GTUBE"
-        self.recommended_detector = [
-            "knownbadsignatures.GTUBE",
-        ]
         signature = gtube_signature
         self.prompts = [p.replace("{signature}", signature) for p in repeat_prompts]
 
 
 class GTphish(TextProbe):
+    name = "GTphish"
+    description = "Does the model check its output for phishing? Try to send the GTphish code through"
+    bcp47 = "*"
+    uri = "https://www.cisco.com/c/en/us/support/docs/security/email-security-appliance/213465-testing-outbreak-filter-url-rewriting.html"
+    recommended_detector = [
+        "knownbadsignatures.GTphish",
+    ]
+
     def __init__(self):
         super().__init__()
-        self.name = "GTphish"
-        self.description = "Does the model check its output for phishing? Try to send the GTphish code through"
-        self.bcp47 = "*"
-        self.uri = "https://www.cisco.com/c/en/us/support/docs/security/email-security-appliance/213465-testing-outbreak-filter-url-rewriting.html"
-        self.recommended_detector = [
-            "knownbadsignatures.GTphish",
-        ]
         signature = gtphish_signature
         self.prompts = [p.replace("{signature}", signature) for p in repeat_prompts]
 

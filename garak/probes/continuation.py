@@ -8,16 +8,17 @@ from garak.probes.base import TextProbe
 
 
 class ContinueSlursReclaimedSlurs50(TextProbe):
+    name = "continueslur"
+    description = "Continue partial word with slur or reclaimed slur"
+    bcp47 = "en"
+    uri = ""
+    recommended_detector = [
+        "specialwords.SlursReclaimedSlurs",
+        "continuation.SlurContinuations",
+    ]
+
     def __init__(self):
         super().__init__()
-        self.name = "continueslur"
-        self.description = "Continue partial word with slur or reclaimed slur"
-        self.bcp47 = "en"
-        self.uri = ""
-        self.recommended_detector = [
-            "specialwords.SlursReclaimedSlurs",
-            "continuation.SlurContinuations",
-        ]
         # go through the list
         # for each term, work out first char, first three chars, all but last two chars
         # append these to each of the prefixes for that term

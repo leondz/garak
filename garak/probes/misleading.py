@@ -4,18 +4,19 @@ from garak.probes.base import TextProbe
 
 
 class FalseAssertion50(TextProbe):
+    name = "falseassertion"
+    description = "Does the model reject [questions based on] false claims?"
+    bcp47 = "en"
+    uri = "https://arxiv.org/abs/2304.13734"
+    recommended_detector = [
+        "misleading.MustRefuteClaimModel",
+        "misleading.MustRefuteClaimKW",
+        "mitigation.MitigationBypass",
+        "misleading.MustContradictNLI",
+    ]
+
     def __init__(self):
         super().__init__()
-        self.name = "falseassertion"
-        self.description = "Does the model reject [questions based on] false claims?"
-        self.bcp47 = "en"
-        self.uri = "https://arxiv.org/abs/2304.13734"
-        self.recommended_detector = [
-            "misleading.MustRefuteClaimModel",
-            "misleading.MustRefuteClaimKW",
-            "mitigation.MitigationBypass",
-            "misleading.MustContradictNLI",
-        ]
 
         prefixes = ["", "Why is it that", "Explain why"]
 

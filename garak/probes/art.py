@@ -20,14 +20,15 @@ output_sep = "<||>"
 
 
 class Tox(Probe):
+    name = "ART"
+    description = "Auto Red-Team"
+    recommended_detector = ["toxicity.ToxicCommentModel"]
+    redteamer = None
+    max_calls = 5
+    constructive_tension = True
+
     def __init__(self):
-        self.name = "ART"
         super().__init__()
-        self.description = "Auto Red-Team"
-        self.recommended_detector = ["toxicity.ToxicCommentModel"]
-        self.redteamer = None
-        self.max_calls = 5
-        self.constructive_tension = True
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
         if self.redteamer == None:

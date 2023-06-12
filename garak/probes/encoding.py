@@ -181,16 +181,17 @@ def _generate_encoded_prompts(encoding_funcs, encoding_name):
 
 
 class InjectBase64(TextProbe):
+    name = "encoding64"
+    description = "Probe for susceptibility to base64 encoded injections"
+    bcp47 = "en"
+    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
+    recommended_detector = [
+        "encoding.DecodeMatch",
+        "encoding.DecodeApprox",
+    ]
+
     def __init__(self):
         super().__init__()
-        self.name = "encoding64"
-        self.description = "Probe for susceptibility to base64"
-        self.bcp47 = "en"
-        self.uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-        self.recommended_detector = [
-            "encoding.DecodeMatch",
-            "encoding.DecodeApprox",
-        ]
         encoding_funcs = [
             base64.b64encode,
             base64.urlsafe_b64encode,
@@ -203,50 +204,51 @@ class InjectBase64(TextProbe):
 
 
 class InjectBase16(TextProbe):
+    name = "encoding16"
+    description = "Probe for susceptibility to base16 encoded injections"
+    bcp47 = "en"
+    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
+    recommended_detector = [
+        "encoding.DecodeMatch",
+        "encoding.DecodeApprox",
+    ]
+
     def __init__(self):
         super().__init__()
-        self.name = "encoding16"
-        self.description = "Probe for susceptibility to base16"
-        self.bcp47 = "en"
-        self.uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-        self.recommended_detector = [
-            "encoding.DecodeMatch",
-            "encoding.DecodeApprox",
-        ]
         encoding_funcs = [base64.b16encode]
         encoding_name = "BASE16"
-
         self.prompts = _generate_encoded_prompts(encoding_funcs, encoding_name)
 
 
 class InjectBase32(TextProbe):
+    name = "encoding32"
+    description = "Probe for susceptibility to base32 encoded injections"
+    bcp47 = "en"
+    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
+    recommended_detector = [
+        "encoding.DecodeMatch",
+        "encoding.DecodeApprox",
+    ]
+
     def __init__(self):
         super().__init__()
-        self.name = "encoding32"
-        self.description = "Probe for susceptibility to base32"
-        self.bcp47 = "en"
-        self.uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-        self.recommended_detector = [
-            "encoding.DecodeMatch",
-            "encoding.DecodeApprox",
-        ]
         encoding_funcs = [base64.b32encode]
         encoding_name = "BASE32"
-
         self.prompts = _generate_encoded_prompts(encoding_funcs, encoding_name)
 
 
 class InjectAscii85(TextProbe):
+    name = "encoding85"
+    description = "Probe for susceptibility to base85 encoded injections"
+    bcp47 = "en"
+    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
+    recommended_detector = [
+        "encoding.DecodeMatch",
+        "encoding.DecodeApprox",
+    ]
+
     def __init__(self):
         super().__init__()
-        self.name = "encoding85"
-        self.description = "Probe for susceptibility to base85"
-        self.bcp47 = "en"
-        self.uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-        self.recommended_detector = [
-            "encoding.DecodeMatch",
-            "encoding.DecodeApprox",
-        ]
         encoding_funcs = [base64.a85encode, base64.b85encode]
         encoding_name = "ASCII85"
 
@@ -254,16 +256,17 @@ class InjectAscii85(TextProbe):
 
 
 class InjectBase32(TextProbe):
+    name = "encoding32"
+    description = "Probe for susceptibility to base32 encoded injections"
+    bcp47 = "en"
+    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
+    recommended_detector = [
+        "encoding.DecodeMatch",
+        "encoding.DecodeApprox",
+    ]
+
     def __init__(self):
         super().__init__()
-        self.name = "encoding32"
-        self.description = "Probe for susceptibility to base32"
-        self.bcp47 = "en"
-        self.uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-        self.recommended_detector = [
-            "encoding.DecodeMatch",
-            "encoding.DecodeApprox",
-        ]
         encoding_funcs = [base64.b32encode]
         encoding_name = "BASE32"
 
@@ -271,16 +274,17 @@ class InjectBase32(TextProbe):
 
 
 class InjectHex(TextProbe):
+    name = "encodinghex"
+    description = "Probe for susceptibility to hex encoded injections"
+    bcp47 = "en"
+    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
+    recommended_detector = [
+        "encoding.DecodeMatch",
+        "encoding.DecodeApprox",
+    ]
+
     def __init__(self):
         super().__init__()
-        self.name = "encodinghex"
-        self.description = "Probe for susceptibility to hex"
-        self.bcp47 = "en"
-        self.uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-        self.recommended_detector = [
-            "encoding.DecodeMatch",
-            "encoding.DecodeApprox",
-        ]
         encoding_funcs = [base64.binascii.b2a_hex]
         encoding_name = "hex"
 
@@ -288,16 +292,17 @@ class InjectHex(TextProbe):
 
 
 class InjectQP(TextProbe):
+    name = "encodingqp"
+    description = "Probe for susceptibility to QP encoded injections"
+    bcp47 = "en"
+    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
+    recommended_detector = [
+        "encoding.DecodeMatch",
+        "encoding.DecodeApprox",
+    ]
+
     def __init__(self):
         super().__init__()
-        self.name = "encodingqp"
-        self.description = "Probe for susceptibility to QP"
-        self.bcp47 = "en"
-        self.uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-        self.recommended_detector = [
-            "encoding.DecodeMatch",
-            "encoding.DecodeApprox",
-        ]
         encoding_funcs = [base64.binascii.b2a_qp]
         encoding_name = "Quoted-Printable"
 
@@ -305,16 +310,17 @@ class InjectQP(TextProbe):
 
 
 class InjectUU(TextProbe):
+    name = "encodingUU"
+    description = "Probe for susceptibility to UU encoded injections"
+    bcp47 = "en"
+    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
+    recommended_detector = [
+        "encoding.DecodeMatch",
+        "encoding.DecodeApprox",
+    ]
+
     def __init__(self):
         super().__init__()
-        self.name = "encodingUU"
-        self.description = "Probe for susceptibility to UU"
-        self.bcp47 = "en"
-        self.uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-        self.recommended_detector = [
-            "encoding.DecodeMatch",
-            "encoding.DecodeApprox",
-        ]
         encoding_funcs = [base64.binascii.b2a_uu]
         encoding_name = "UUencode"
 
@@ -335,16 +341,17 @@ class InjectUU(TextProbe):
 
 
 class InjectMime(TextProbe):
+    name = "encodingmime"
+    description = "Probe for susceptibility to MIME encoding injections"
+    bcp47 = "en"
+    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
+    recommended_detector = [
+        "encoding.DecodeMatch",
+        "encoding.DecodeApprox",
+    ]
+
     def __init__(self):
         super().__init__()
-        self.name = "encodingmime"
-        self.description = "Probe for susceptibility to MIME encoding"
-        self.bcp47 = "en"
-        self.uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-        self.recommended_detector = [
-            "encoding.DecodeMatch",
-            "encoding.DecodeApprox",
-        ]
         encoding_funcs = [quopri.encodestring]
         encoding_name = "MIME"
 
@@ -352,16 +359,17 @@ class InjectMime(TextProbe):
 
 
 class InjectROT13(TextProbe):
+    name = "encodingrot13"
+    description = "Probe for susceptibility to ROT13 encoding injections"
+    bcp47 = "en"
+    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
+    recommended_detector = [
+        "encoding.DecodeMatch",
+        "encoding.DecodeApprox",
+    ]
+
     def __init__(self):
         super().__init__()
-        self.name = "encodingrot13"
-        self.description = "Probe for susceptibility to ROT13 encoding"
-        self.bcp47 = "en"
-        self.uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-        self.recommended_detector = [
-            "encoding.DecodeMatch",
-            "encoding.DecodeApprox",
-        ]
         encoding_funcs = [rot13]
         encoding_name = "ROT13"
 
@@ -369,18 +377,19 @@ class InjectROT13(TextProbe):
 
 
 class InjectBase2048(TextProbe):
+    name = "encodingrot13"
+    description = "Probe for susceptibility to Base2048 encoding injections"
+    bcp47 = "en"
+    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
+    recommended_detector = [
+        "encoding.DecodeMatch",
+        "encoding.DecodeApprox",
+    ]
+
     def __init__(self):
         super().__init__()
         import base2048
 
-        self.name = "encodingrot13"
-        self.description = "Probe for susceptibility to Base2048 encoding"
-        self.bcp47 = "en"
-        self.uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-        self.recommended_detector = [
-            "encoding.DecodeMatch",
-            "encoding.DecodeApprox",
-        ]
         encoding_funcs = [base2048.encode]
         encoding_name = "BASE2048"
 
@@ -388,19 +397,20 @@ class InjectBase2048(TextProbe):
 
 
 class InjectBraille(TextProbe):
+    name = "encodingbraille"
+    description = (
+        "Probe for susceptibility to Braille encoding injections. Credit Wally#3422"
+    )
+    bcp47 = "en"
+    uri = ""
+    recommended_detector = [
+        "encoding.DecodeMatch",
+        "encoding.DecodeApprox",
+    ]
+
     def __init__(self):
         super().__init__()
 
-        self.name = "encodingbraille"
-        self.description = (
-            "Probe for susceptibility to Braille encoding. Credit Wally#3422"
-        )
-        self.bcp47 = "en"
-        self.uri = ""
-        self.recommended_detector = [
-            "encoding.DecodeMatch",
-            "encoding.DecodeApprox",
-        ]
         encoding_funcs = [braille]
         encoding_name = "Braille"
 
@@ -408,19 +418,18 @@ class InjectBraille(TextProbe):
 
 
 class InjectMorse(TextProbe):
+    name = "encodingmorse"
+    description = "Probe for susceptibility to Morse encoding. Credit Wally#3422"
+    bcp47 = "en"
+    uri = ""
+    recommended_detector = [
+        "encoding.DecodeMatch",
+        "encoding.DecodeApprox",
+    ]
+
     def __init__(self):
         super().__init__()
 
-        self.name = "encodingmorse"
-        self.description = (
-            "Probe for susceptibility to Morse encoding. Credit Wally#3422"
-        )
-        self.bcp47 = "en"
-        self.uri = ""
-        self.recommended_detector = [
-            "encoding.DecodeMatch",
-            "encoding.DecodeApprox",
-        ]
         encoding_funcs = [morse]
         encoding_name = "Morse"
 
