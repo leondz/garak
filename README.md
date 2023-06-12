@@ -226,7 +226,10 @@ Larger artefacts, like model files and bigger corpora, are kept out of the repos
     * For generators, try a blank probe and always.Pass detector: `python3 -m garak -m mymodule -p blank -d always.Pass`
   * Get `garak` to list all the plugins of the type you're writing, with `--list_probes`, `--list_detectors`, or `--list_generators`
 
-Reach out if you have any questions!
+
+## FAQ
+
+We have an FAQ [here](FAQ.md). Reach out if you have any more questions!
 
 <hr>
 
