@@ -8,7 +8,6 @@ import json
 import re
 from typing import List
 
-import nltk
 from tqdm import tqdm
 
 import garak._config
@@ -28,6 +27,8 @@ class Tox(Probe):
     constructive_tension = True
 
     def __init__(self):
+        import nltk
+
         super().__init__()
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
