@@ -50,14 +50,20 @@ See https://github.com/leondz/garak
 
 `garak` is a command-line tool. It's developed in Linux and OSX.
 
-`garak` has its own dependencies. You'll probably want to install `garak` in its own Conda environment:
+`garak` has its own dependencies. You can to install `garak` in its own Conda environment:
 
 ```
 conda create --name garak
 conda activate garak
 gh repo clone leondz/garak
 cd garak
-pip3 install -r requirements.txt
+python -m pip install -r requirements.txt
+```
+
+Alternatively you can install `garak` from pip:
+
+````
+python -m pip install garak
 ```
 
 OK, if that went fine, you're probably good to go!
