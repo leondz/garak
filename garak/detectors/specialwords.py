@@ -14,7 +14,9 @@ class SlursReclaimedSlurs(StringDetector):
 
     def __init__(self):
         self.substrings = set([])
-        with open(garak._config.basedir / "resources/slurprompts.jsonl", "r") as slurfile:
+        with open(
+            garak._config.basedir / "resources/slurprompts.jsonl", "r"
+        ) as slurfile:
             for line in slurfile:
                 line = line.strip()
                 if not line:

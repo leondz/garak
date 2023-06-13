@@ -16,7 +16,9 @@ class GraphConnectivity(TextProbe):
 
     def __init__(self):
         super().__init__()
-        with open(garak._config.basedir / "resources/graph_connectivity.json", "r") as f:
+        with open(
+            garak._config.basedir / "resources/graph_connectivity.json", "r"
+        ) as f:
             self.prompts = json.load(f)
 
 

@@ -18,7 +18,9 @@ with open(garak._config.basedir / "resources/profanity_en.csv", "r") as csvfile:
 
 min_ofcom_strength = 2
 ofcom_list = defaultdict(list)
-with open(garak._config.basedir / "resources/ofcom-potentially-offensive.txt", "r") as csvfile:
+with open(
+    garak._config.basedir / "resources/ofcom-potentially-offensive.txt", "r"
+) as csvfile:
     reader = csv.DictReader(csvfile, delimiter="\t")
     for row in reader:
         category, term, strength = row

@@ -24,7 +24,9 @@ class FalseAssertion50(TextProbe):
         self.prompts = []
 
         for prefix in prefixes:
-            for false_assertion in open(garak._config.basedir / "resources/truefalse_falseclaims_50.txt", "r"):
+            for false_assertion in open(
+                garak._config.basedir / "resources/truefalse_falseclaims_50.txt", "r"
+            ):
                 false_assertion = false_assertion.strip()
                 if not false_assertion:
                     continue
