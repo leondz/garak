@@ -1,4 +1,4 @@
-# garak, an llm vulnerability scanner
+# garak, an LLM vulnerability scanner
 
 `garak` is a modular tool for probing LLMs for undesireable prompt responses
 
@@ -91,7 +91,22 @@ See if the Hugging Face version of GPT2 is vulnerable to DAN 11.0
 python3 -m garak --model_type huggingface --model_name gpt2 --probes dan.Dan_11_0
 ```
 
-Errors go in `garak.log`; the run is logged in detail in a `.jsonl` file specified at analysis start & end. Send PRs & open issues. Happy hunting!
+
+## Reading the results
+
+For each probe loaded, garak will print a progress bar as it generates. Once generation is complete, a row evaluating that probe's results on each detector is given. If any of the prompt attempts yielded an undesirable behaviour, the response will be marked as FAIL, and the failure rate given.
+
+Here are the results with the `encoding` module on a GPT-3 variant:
+![alt text](https://i.imgur.com/8Dxf45N.png)
+
+And the same results for ChatGPT:
+![alt text](https://i.imgur.com/VKAF5if.png)
+
+We can see that the more recent model is much more susceptible to encoding-based injection attacks, where text-babbage-001 was only found to be vulnerable to quoted-printable and MIME encoding injections.  The figures at the end of each row, e.g. 840/840, indicate the number of text generations total and then how many of these seemed to behave OK. The figure can be quite high because more than one generation is made per prompt - by default, 10.
+
+Errors go in `garak.log`; the run is logged in detail in a `.jsonl` file specified at analysis start & end. There's a basic analysis script in `analyse/analyse_log.py` which will output the probes and prompts that led to the most hits.
+
+Send PRs & open issues. Happy hunting!
 
 ## Intro to generators
 
