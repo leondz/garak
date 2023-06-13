@@ -62,7 +62,7 @@ python -m pip install -r requirements.txt
 
 Alternatively you can install `garak` from pip:
 
-````
+```
 python -m pip install garak
 ```
 
