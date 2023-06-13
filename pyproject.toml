@@ -39,3 +39,6 @@ dependencies = [
 
 [project.scripts]
 realpython = "garak.__main__:main"
+
+[tool.setuptools]
+packages = ["garak"]
