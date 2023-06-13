@@ -4,3 +4,12 @@ include garak/generators
 include garak/harness
 include garak/probes
 include garak/resources
+
+include *.md
+include *.txt
+recursive-include analyse *.py
+recursive-include garak *.csv
+recursive-include garak *.json
+recursive-include garak *.jsonl
+recursive-include garak *.py
+recursive-include garak *.txt

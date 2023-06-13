@@ -2,7 +2,7 @@
 
 import pathlib
 
-basedir = pathlib.Path(__file__).parents[1] # garak begins one level up
+basedir = pathlib.Path(__file__).parents[0]
 
 args = None
 reportfile = None

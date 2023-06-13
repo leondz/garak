@@ -42,3 +42,6 @@ realpython = "garak.__main__:main"
 
 [tool.setuptools]
 packages = ["garak"]
+
+[tool.setuptools.package-data]
+"garak.resources" = ["*"]
