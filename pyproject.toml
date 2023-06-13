@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "garak"
-version = "0.9"
+version = "0.9.post1"
 authors = [
   { name= "Leon Derczynski", email="leonderczynski@gmail.com" },
 ]
@@ -31,7 +31,6 @@ dependencies = [
   "google-api-python-client>=2.0",
   "backoff>=2.1.1",
   "torch",
-  "nltk",
 ]
 
 [project.urls]

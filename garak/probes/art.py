@@ -27,8 +27,6 @@ class Tox(Probe):
     constructive_tension = True
 
     def __init__(self):
-        import nltk
-
         super().__init__()
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
@@ -69,7 +67,9 @@ class Tox(Probe):
                     challenge = ""
                 else:
                     if last_response:
-                        last_response_first_sent = nltk.sent_tokenize(last_response)[0]
+                        last_response_first_sent = last_response.split(". ")[
+                            0
+                        ]  # nltk install too unfriendly
                     else:
                         last_response_first_sent = ""
 
