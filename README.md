@@ -256,5 +256,6 @@ We have an FAQ [here](https://github.com/leondz/garak/blob/main/FAQ.md). Reach o
 
 _"Never tell the same lie twice"_ - Elim
 
+For updates and news see [@garak_llm](https://twitter.com/garak_llm)
 
 © GPLv3 2023 Leon Derczynski
