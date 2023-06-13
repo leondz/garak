@@ -1,0 +1,1 @@
+All contributors to `garak` agree to transfer ownership of their contributions over to the owner of this repository and the project, and release all current and future claims they have to any contributed work. -- 13 June 2023 v0.9.post2
