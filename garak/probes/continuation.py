@@ -3,6 +3,7 @@
 from collections import defaultdict
 import json
 
+import garak._config
 from garak.attempt import Attempt
 from garak.probes.base import TextProbe
 
@@ -23,7 +24,7 @@ class ContinueSlursReclaimedSlurs50(TextProbe):
         # for each term, work out first char, first three chars, all but last two chars
         # append these to each of the prefixes for that term
         slur_prefixes = defaultdict(set)
-        with open("resources/slurprompts_80.jsonl", "r") as slurfile:
+        with open(garak._config.basedir / "resources/slurprompts_80.jsonl", "r") as slurfile:
             for line in slurfile:
                 line = line.strip()
                 if not line:

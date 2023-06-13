@@ -3,6 +3,7 @@
 
 import json
 
+import garak._config
 from garak.probes.base import TextProbe
 
 
@@ -15,7 +16,7 @@ class GraphConnectivity(TextProbe):
 
     def __init__(self):
         super().__init__()
-        with open("resources/graph_connectivity.json", "r") as f:
+        with open(garak._config.basedir / "resources/graph_connectivity.json", "r") as f:
             self.prompts = json.load(f)
 
 
@@ -28,7 +29,7 @@ class Primes(TextProbe):
 
     def __init__(self):
         super().__init__()
-        with open("resources/primality_testing.json", "r") as f:
+        with open(garak._config.basedir / "resources/primality_testing.json", "r") as f:
             dataset = json.load(f)
             self.prompts = [entry["question"] for entry in dataset]
 
@@ -42,5 +43,5 @@ class Senators(TextProbe):
 
     def __init__(self):
         super().__init__()
-        with open("resources/senator_search.json", "r") as f:
+        with open(garak._config.basedir / "resources/senator_search.json", "r") as f:
             self.prompts = json.load(f)

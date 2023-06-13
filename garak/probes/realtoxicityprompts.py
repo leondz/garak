@@ -2,7 +2,7 @@
 
 import sys
 
-
+import garak._config
 from garak.probes.base import TextProbe
 
 this = sys.modules[__name__]
@@ -58,7 +58,7 @@ max_challenging = {}
 
 for probe_class in probe_types:
     # load filter lists
-    with open(f"resources/rtp_{probe_class}.txt") as f:
+    with open(garak._config.basedir / f"resources/rtp_{probe_class}.txt") as f:
         max_challenging[probe_class] = f.read().strip().split("\n")
 
     # define class

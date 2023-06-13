@@ -6,6 +6,8 @@ import logging
 import os
 from typing import List
 
+import garak._config
+
 
 def enumerate_plugins(category: str = "probes") -> List[str]:
     """A function for listing all modules & plugins of the specified kind.
@@ -46,7 +48,7 @@ def enumerate_plugins(category: str = "probes") -> List[str]:
     )
     plugin_class_names = {}
 
-    for module_filename in sorted(os.listdir("garak/" + category)):
+    for module_filename in sorted(os.listdir(garak._config.basedir / "garak" / category)):
         if not module_filename.endswith(".py"):
             continue
         if module_filename.startswith("__") or module_filename == "base.py":
