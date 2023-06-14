@@ -33,7 +33,8 @@ class Attempt:
             "probe_params": self.probe_params,
             "targets": self.targets,
             "prompt": self.prompt,
-            "outputs": self.outputs,
+            "outputs": list(self.outputs),
             "notes": self.notes,
             "detector_results": self.detector_results,
+            "entry_type": "attempt",
         }
