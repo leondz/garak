@@ -60,7 +60,7 @@ class Evaluator:
                 {
                     "entry_type": "eval",
                     "probe": self.probename,
-                    "detector": test_name,
+                    "detector": "detector." + test_name,
                     "passed": sum(passes),
                     "total": len(passes),
                 }
