@@ -93,9 +93,11 @@ def load_plugin(path, break_on_fail=True):
             )
         else:
             return False
+    module_path = f"garak.{category}.{module_name}"
     try:
-        mod = importlib.import_module(f"garak.{category}.{module_name}")
+        mod = importlib.import_module(module_path)
     except:
+        logging.warning(f"Exception failed import of {module_path}")
         if break_on_fail:
             raise ValueError("Didn't successfully import " + module_name)
         else:
@@ -104,6 +106,9 @@ def load_plugin(path, break_on_fail=True):
     try:
         plugin_instance = getattr(mod, plugin_class_name)()
     except AttributeError:
+        logging.warning(
+            f"Exception failed instantiation of {module_path}.{plugin_class_name}"
+        )
         if break_on_fail:
             raise ValueError(
                 f"Plugin {plugin_class_name} not found in {category}.{module_name}"
