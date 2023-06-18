@@ -52,7 +52,11 @@ class Probe:
         for seq, prompt in enumerate(prompt_iterator):
             this_attempt = garak.attempt.Attempt()
             this_attempt.prompt = prompt
-            this_attempt.probe_classname = self.__class__.__name__
+            this_attempt.probe_classname = (
+                str(self.__class__.__module__).replace("garak.probes.", "")
+                + "."
+                + self.__class__.__name__
+            )
             this_attempt.status = garak.attempt.ATTEMPT_STARTED
             this_attempt = self._attempt_prestore_hook(this_attempt, seq)
             self._generator_precall_hook(generator, this_attempt)
