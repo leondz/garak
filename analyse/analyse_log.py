@@ -37,7 +37,7 @@ with open(sys.argv[1], "r") as reportfile:
                 completed_attempt_uuids.add(record["uuid"])
 
             if record["probe_classname"] != current_probe_classname:
-                print("PROBE:", record["probe_classname"])
+                print("## PROBE:", record["probe_classname"])
                 current_probe_classname = record["probe_classname"]
 
             # for each detector:
@@ -66,7 +66,7 @@ with open(sys.argv[1], "r") as reportfile:
                         [
                             record["probe"],
                             record["detector"],
-                            record["passed"] / record["total"],
+                            "%0.4f" % (record["passed"] / record["total"]),
                             record["total"],
                         ],
                     )
