@@ -50,20 +50,32 @@ See https://github.com/leondz/garak
 
 `garak` is a command-line tool. It's developed in Linux and OSX.
 
+### Standard install with `pip`
+
+Just grab it from PyPI and you should be good to go:
+
+```
+python -m pip install -U garak
+```
+
+### Install development version with `pip`
+
+The standard pip version of `garak` is updated periodically. To get a fresher version, from GitHub, try:
+
+```
+python -m pip install -U git+https://github.com/leondz/garak.git@main
+```
+
+### Clone from source
+
 `garak` has its own dependencies. You can to install `garak` in its own Conda environment:
 
 ```
-conda create --name garak
+conda create --name garak python>=3.9
 conda activate garak
 gh repo clone leondz/garak
 cd garak
 python -m pip install -r requirements.txt
-```
-
-Alternatively you can install `garak` from pip:
-
-```
-python -m pip install garak
 ```
 
 OK, if that went fine, you're probably good to go!
@@ -178,7 +190,9 @@ Various [DAN]() and DAN-like attacks
 
 Prompt injection through text encoding
 
-### goodside
+### malwaregen
+
+Attempts to have the model generate code for building malware
 
 ### knownbadsignatures
 
