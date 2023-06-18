@@ -122,10 +122,15 @@ def main(arguments=[]) -> None:
         report_uniqueish_id = abs(hash(dir))
         report_filename = f"garak.{report_uniqueish_id}.jsonl"
         _config.reportfile = open(report_filename, "w", buffering=1)
-        _config.reportfile.write(json.dumps(str(_config.args)) + "\n")
+        _config.args.__dict__.update({"entry_type": "config"})
+        _config.reportfile.write(json.dumps(_config.args.__dict__) + "\n")
         _config.reportfile.write(
             json.dumps(
-                {"garak_version": _config.version, "start_time": _config.starttime_iso}
+                {
+                    "entry_type": "init",
+                    "garak_version": _config.version,
+                    "start_time": _config.starttime_iso,
+                }
             )
             + "\n"
         )

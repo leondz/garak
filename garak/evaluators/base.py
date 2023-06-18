@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
+import json
+
 from colorama import Fore, Back, Style
 
-from garak._config import args
+import garak._config
 
 
 class Evaluator:
@@ -11,7 +13,7 @@ class Evaluator:
     Provides eval + CLI output based on detector assessments of generator outputs
     that come from probe calls."""
 
-    def __init__():
+    def __init__(self):
         messages = []
         self.probename = ""
 
@@ -52,7 +54,21 @@ class Evaluator:
                 end="",
             )
         print()
-        if args.verbose > 0 and messages:
+
+        garak._config.reportfile.write(
+            json.dumps(
+                {
+                    "entry_type": "eval",
+                    "probe": self.probename,
+                    "detector": "detector." + test_name,
+                    "passed": sum(passes),
+                    "total": len(passes),
+                }
+            )
+            + "\n"
+        )
+
+        if garak._config.args.verbose > 0 and messages:
             for i in range(len(passes)):
                 if not passes[i]:
                     try:
