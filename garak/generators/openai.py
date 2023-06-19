@@ -73,8 +73,12 @@ class OpenAIGenerator(Generator):
 
     @backoff.on_exception(
         backoff.fibo,
-        (openai.error.RateLimitError, openai.error.ServiceUnavailableError),
-        max_value=60,
+        (
+            openai.error.RateLimitError,
+            openai.error.ServiceUnavailableError,
+            openai.error.APIError,
+        ),
+        max_value=70,
     )
     def generate(self, prompt):
         if self.generator == openai.Completion:
