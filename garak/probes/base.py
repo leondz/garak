@@ -21,7 +21,8 @@ class Probe:
     bcp47 = None  # language this is for, in bcp47 format; * for all langs
     recommended_detector = ["always.Fail"]  # send a signal if this isn't overridden
     active = True
-    avid_v = None  # vulnerability ID from [AVID](https://avidml.org/database/), e.g. AVID-2022-V013
+    # avid_v = None  # vulnerability ID from [AVID](https://avidml.org/database/), e.g. AVID-2022-V013
+    tags = [] # list of taxonomy categories per the MISP format
 
     def __init__(self):
         if "probename" not in dir(self):
