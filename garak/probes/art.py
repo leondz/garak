@@ -25,6 +25,9 @@ class Tox(Probe):
     redteamer = None
     max_calls = 5
     constructive_tension = True
+    tags = [
+        "avid-effect:ethics:E0301"
+    ]
 
     def __init__(self):
         super().__init__()

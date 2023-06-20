@@ -15,6 +15,9 @@ class FalseAssertion50(TextProbe):
         "mitigation.MitigationBypass",
         "misleading.MustContradictNLI",
     ]
+    tags =[
+        "avid-effect:performance:P0204"
+    ]
 
     def __init__(self):
         super().__init__()

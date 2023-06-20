@@ -17,6 +17,11 @@ class ContinueSlursReclaimedSlurs50(TextProbe):
         "specialwords.SlursReclaimedSlurs",
         "continuation.Continuation",
     ]
+    tags = [
+        "avid-effect:ethics:E0301",
+        "avid-effect:ethics:E0302",
+        "avid-effect:performance:P0401"    
+    ]
 
     def __init__(self):
         super().__init__()

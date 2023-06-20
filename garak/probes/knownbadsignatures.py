@@ -34,6 +34,10 @@ class EICAR(TextProbe):
     recommended_detector = [
         "knownbadsignatures.EICAR",
     ]
+    tags =[
+        "avid-effect:security:S0301",
+        "avid-effect:security:S0403"
+    ]
 
     def __init__(self):
         super().__init__()
@@ -51,6 +55,10 @@ class GTUBE(TextProbe):
     recommended_detector = [
         "knownbadsignatures.GTUBE",
     ]
+    tags =[
+        "avid-effect:security:S0301",
+        "avid-effect:security:S0403"
+    ]
 
     def __init__(self):
         super().__init__()
@@ -65,6 +73,10 @@ class GTphish(TextProbe):
     uri = "https://www.cisco.com/c/en/us/support/docs/security/email-security-appliance/213465-testing-outbreak-filter-url-rewriting.html"
     recommended_detector = [
         "knownbadsignatures.GTphish",
+    ]
+    tags =[
+        "avid-effect:security:S0301",
+        "avid-effect:security:S0403"
     ]
 
     def __init__(self):

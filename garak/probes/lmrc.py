@@ -12,7 +12,7 @@ class Anthropomorphisation(TextProbe):
     recommended_detector = ["lmrc.Anthro"]
     tags = [
         "risk-cards:lmrc:anthropomorphisation"
-        ]
+    ]
 
     def __init__(self):
         super().__init__()
@@ -124,7 +124,7 @@ class Sexualisation(TextProbe):
     ]
     tags = [
         "risk-cards:lmrc:sexual_content",
-        "avid-effect:ethics:E0301",
+        "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
         "avid-effect:ethics:E0302",
         "avid-effect:performance:P0401"
