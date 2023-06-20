@@ -1,6 +1,8 @@
-# Contributor Covenant Code of Conduct
+# Contributor Licensing Agreement 
 
 `garak` -- 20 June 2023 v0.9.post3
+
+# Contributor Covenant Code of Conduct
 
 ## Our Pledge
 
