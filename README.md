@@ -1,4 +1,4 @@
-# garak, an LLM vulnerability scanner
+# garak, an LLM vulnerability scanner 
 
 `garak` is a modular tool for probing LLMs for undesireable prompt responses
 
