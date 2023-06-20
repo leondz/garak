@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import re
 
 import openai
 import backoff
@@ -24,11 +25,8 @@ completion_models = (
 )
 chat_models = (
     "gpt-4",
-    "gpt-4-0314",
     "gpt-4-32k",
-    "gpt-4-32k-0314",
     "gpt-3.5-turbo",
-    "gpt-3.5-turbo-0301",
 )
 
 
@@ -57,6 +55,11 @@ class OpenAIGenerator(Generator):
             self.generator = openai.Completion
         elif self.name in chat_models:
             self.generator = openai.ChatCompletion
+        elif "-".join(self.name.split("-")[:-1]) in chat_models and re.match(
+            r"^.+-[01][0-9][0-3][0-9]$", self.name
+        ):  # handle model names -MMDDish suffix
+            self.generator = openai.ChatCompletion
+
         elif self.name == "":
             openai_model_list = sorted([m["id"] for m in openai.Model().list()["data"]])
             raise ValueError(
