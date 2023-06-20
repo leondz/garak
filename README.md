@@ -1,5 +1,5 @@
 # garak, an LLM vulnerability scanner
-
+ 
 `garak` is a modular tool for probing LLMs for undesireable prompt responses
 
 invoke with `python3 -m garak`
