@@ -57,8 +57,13 @@ class Local(Generator):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=UserWarning)
             try:
+                # workaround for pipeline to truncate the input
+                encoded_prompt = self.generator.tokenizer(prompt, truncation=True)
+                truncated_prompt = self.generator.tokenizer.decode(
+                    encoded_prompt["input_ids"], skip_special_tokens=True
+                )
                 raw_output = self.generator(
-                    prompt,
+                    truncated_prompt,
                     pad_token_id=self.generator.tokenizer.eos_token_id,
                     max_new_tokens=self.max_tokens,
                     num_return_sequences=self.generations,
