@@ -46,7 +46,8 @@ def enumerate_plugins(category: str = "probes") -> List[str]:
         ]
         + [root_plugin_classname]
     )
-    plugin_class_names = {}
+
+    plugin_class_names = []
 
     for module_filename in sorted(os.listdir(garak._config.basedir / category)):
         if not module_filename.endswith(".py"):
@@ -54,23 +55,22 @@ def enumerate_plugins(category: str = "probes") -> List[str]:
         if module_filename.startswith("__") or module_filename == "base.py":
             continue
         module_name = module_filename.replace(".py", "")
-        # print(category, 'module:', module_name)
         mod = importlib.import_module(f"garak.{category}.{module_name}")
-        module_entries = set([p for p in dir(mod) if not p.startswith("__")])
+        module_entries = set(
+            [entry for entry in dir(mod) if not entry.startswith("__")]
+        )
         module_entries = module_entries.difference(base_plugin_classnames)
         module_plugin_names = set()
         for module_entry in module_entries:
             obj = getattr(mod, module_entry)
             if inspect.isclass(obj):
                 if obj.__bases__[0].__name__ in base_plugin_classnames:
-                    module_plugin_names.add(module_entry)
+                    module_plugin_names.add((module_entry, obj.active))
 
-        # print(' >> ', ', '.join(module_plugin_names))
-        for module_plugin_name in sorted(module_plugin_names):
-            plugin_class_names[
-                module_plugin_name
-            ] = f"{category}.{module_name}.{module_plugin_name}"
-
+        for module_plugin_name, active in sorted(module_plugin_names):
+            plugin_class_names.append(
+                (f"{category}.{module_name}.{module_plugin_name}", active)
+            )
     return plugin_class_names
 
 

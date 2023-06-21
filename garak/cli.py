@@ -5,15 +5,17 @@ def main(arguments=[]) -> None:
     def print_plugins(prefix, color):
         from garak._plugins import enumerate_plugins
 
-        plugin_names = enumerate_plugins(category=prefix).values()
-        plugin_names = [n.replace(f"{prefix}.", "") for n in plugin_names]
-        module_names = set([n.split(".")[0] for n in plugin_names])
+        plugin_names = enumerate_plugins(category=prefix)
+        plugin_names = [(p.replace(f"{prefix}.", ""), a) for p, a in plugin_names]
+        module_names = set([(m.split(".")[0], True) for m, a in plugin_names])
         plugin_names += module_names
-        for plugin_name in sorted(plugin_names):
+        for plugin_name, active in sorted(plugin_names):
             print(f"{Style.BRIGHT}{color}{prefix}: {Style.RESET_ALL}", end="")
             print(plugin_name, end="")
             if "." not in plugin_name:
-                print(f" 🌟", end="")
+                print(" 🌟", end="")
+            if not active:
+                print(" 💤", end="")
             print()
 
     import datetime
@@ -198,15 +200,19 @@ def main(arguments=[]) -> None:
         generator.generations = _config.args.generations
 
         if _config.args.probes == "all":
-            probe_names = enumerate_plugins(category="probes").values()
+            probe_info = [
+                name
+                for name, active in enumerate_plugins(category="probes")
+                if active == True
+            ]
         else:
-            probe_names = []
+            probe_info = []
             for probe_clause in _config.args.probes.split(","):
                 if probe_clause.count(".") < 1:
                     probe_names += [
-                        p
-                        for p in enumerate_plugins(category="probes").values()
-                        if p.startswith(f"probes.{probe_clause}.")
+                        p[0]
+                        for p in enumerate_plugins(category="probes")
+                        if p[0].startswith(f"probes.{probe_clause}.")
                     ]
                 else:
                     probe_names += ["probes." + probe_clause]
@@ -217,15 +223,15 @@ def main(arguments=[]) -> None:
         if _config.args.detectors == "":
             pass
         elif _config.args.detectors == "all":
-            detector_names = enumerate_plugins(category="detectors").values()
+            detector_names = enumerate_plugins(category="detectors")
         else:
             detector_clauses = _config.args.detectors.split(",")
             for detector_clause in detector_clauses:
                 if detector_clause.count(".") < 1:
                     detector_names += [
-                        d
-                        for d in enumerate_plugins(category="detectors").values()
-                        if d.startswith(f"detectors.{detector_clause}.")
+                        d[0]
+                        for d in enumerate_plugins(category="detectors")
+                        if d[0].startswith(f"detectors.{detector_clause}.")
                     ]
                 else:
                     detector_names += ["detectors." + detector_clause]

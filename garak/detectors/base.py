@@ -19,6 +19,7 @@ class Detector:
     precision = 0.0
     recall = 0.0
     accuracy = None
+    active = True
 
     def __init__(self):
         if "name" not in dir(self):

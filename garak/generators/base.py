@@ -12,6 +12,7 @@ class Generator:
     generations = 10
     max_tokens = 150
     temperature = 0.7
+    active = True
 
     def __init__(self, name="", generations=10):
         if name:
