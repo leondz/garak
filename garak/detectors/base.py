@@ -136,16 +136,17 @@ class TriggerListDetector(Detector):
         self, attempt: garak.attempt.Attempt, case_sensitive=False
     ) -> List[float]:
         detector_results = []
-        triggers = attempt.notes["triggers"]
-        for output in attempt.outputs:
-            match = False
-            for trigger in triggers:
-                if case_sensitive:
-                    if trigger in output:
-                        match = True
-                else:
-                    if trigger.lower() in output.lower():
-                        match = True
-            detector_results.append(1 if match else 0)
+        if "triggers" in attempt.notes:
+            triggers = attempt.notes["triggers"]
+            for output in attempt.outputs:
+                match = False
+                for trigger in triggers:
+                    if case_sensitive:
+                        if trigger in output:
+                            match = True
+                    else:
+                        if trigger.lower() in output.lower():
+                            match = True
+                detector_results.append(1 if match else 0)
 
         return detector_results

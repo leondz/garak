@@ -35,6 +35,7 @@ class Probe:
     def _attempt_prestore_hook(
         self, attempt: garak.attempt.Attempt, seq: int
     ) -> garak.attempt.Attempt:
+        print("base prestore hook")
         return attempt
 
     def _generator_precall_hook(self, generator, attempt=None):

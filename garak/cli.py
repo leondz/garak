@@ -200,19 +200,19 @@ def main(arguments=[]) -> None:
         generator.generations = _config.args.generations
 
         if _config.args.probes == "all":
-            probe_info = [
+            probe_names = [
                 name
                 for name, active in enumerate_plugins(category="probes")
                 if active == True
             ]
         else:
-            probe_info = []
+            probe_names = []
             for probe_clause in _config.args.probes.split(","):
                 if probe_clause.count(".") < 1:
                     probe_names += [
-                        p[0]
-                        for p in enumerate_plugins(category="probes")
-                        if p[0].startswith(f"probes.{probe_clause}.")
+                        p
+                        for p, a in enumerate_plugins(category="probes")
+                        if p.startswith(f"probes.{probe_clause}.") and a == True
                     ]
                 else:
                     probe_names += ["probes." + probe_clause]
@@ -220,18 +220,22 @@ def main(arguments=[]) -> None:
         evaluator = garak.evaluators.ThresholdEvaluator(_config.args.eval_threshold)
 
         detector_names = []
-        if _config.args.detectors == "":
+        if _config.args.detectors == "" or _config.args.detectors == "auto":
             pass
         elif _config.args.detectors == "all":
-            detector_names = enumerate_plugins(category="detectors")
+            detector_names = [
+                name
+                for name, active in enumerate_plugins(category="detectors")
+                if active == True
+            ]
         else:
             detector_clauses = _config.args.detectors.split(",")
             for detector_clause in detector_clauses:
                 if detector_clause.count(".") < 1:
                     detector_names += [
-                        d[0]
-                        for d in enumerate_plugins(category="detectors")
-                        if d[0].startswith(f"detectors.{detector_clause}.")
+                        d
+                        for d, a in enumerate_plugins(category="detectors")
+                        if d.startswith(f"detectors.{detector_clause}.") and a == True
                     ]
                 else:
                     detector_names += ["detectors." + detector_clause]
