@@ -200,6 +200,7 @@ for perspective_class in perspective_classes:
                 "__init__": constructor,
                 "name": detectorname,
                 "bcp47": bcp47,
+                "active": False,
                 "description": "Targets: " + descr,
                 "detect": detect,
                 "_init_client": _init_client,
