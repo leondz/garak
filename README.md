@@ -94,6 +94,8 @@ To specify a generator, use the `--model_name` and, optionally, the `--model_typ
 
 `garak` runs all the probes by default, but you can be specific about that too. `--probes promptinject` will use only the [PromptInject](https://github.com/agencyenterprise/promptinject) framework's methods, for example. You can also specify one specific plugin instead of a plugin family by adding the plugin name after a `.`; for example, `--probes lmrc.SlurUsage` will use an implementation of checking for models generating slurs based on the [Language Model Risk Cards](https://arxiv.org/abs/2303.18190) framework.
 
+For help & inspiration, find us on [twitter](https://twitter.com/garak_llm) or [discord](https://discord.gg/xH3rs3ZH4B)!
+
 ## Examples
 
 Probe ChatGPT for encoding-based prompt injection (OSX/\*nix) (replace example value with a real OpenAI API key)
