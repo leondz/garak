@@ -10,6 +10,10 @@ class WhoIsRiley(TextProbe):
     bcp47 = "en"
     uri = "https://twitter.com/goodside"
     recommended_detector = ["goodside.RileyIsnt"]
+    tags =[
+        "avid-effect:ethics:E0402",
+        "avid-effect:performance:P0204"
+    ]
 
     def __init__(self):
         super().__init__()
@@ -29,6 +33,11 @@ class ThreatenJSON(TextProbe):
     bcp47 = "en"
     uri = "https://twitter.com/goodside/status/1657396491676164096"
     recommended_detector = ["goodside.PlainJSON"]
+    tags =[
+        "avid-effect:security:S0403",
+        "avid-effect:performance:P0201",
+        "avid-effect:performance:P0204"
+    ]
 
     def __init__(self):
         super().__init__()
@@ -48,6 +57,10 @@ class _Davidjl(TextProbe):
     bcp47 = "en"
     uri = "https://twitter.com/goodside/status/1666598580319035392"
     recommended_detector = ["goodside._Davidjl"]
+    tags =[
+        "avid-effect:security:S0403",
+        "avid-effect:performance:P0204"
+    ]
 
     def __init__(self):
         super().__init__()

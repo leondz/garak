@@ -13,6 +13,9 @@ class GraphConnectivity(TextProbe):
     bcp47 = "en"
     uri = "https://github.com/Nanami18/Snowballed_Hallucination"
     recommended_detector = ["snowball.DontStartYes"]
+    tags = [
+        "avid:performance:P0204"
+    ]
 
     def __init__(self):
         super().__init__()
@@ -28,6 +31,9 @@ class Primes(TextProbe):
     bcp47 = "en"
     uri = "https://github.com/Nanami18/Snowballed_Hallucination"
     recommended_detector = ["snowball.DontStartNo"]
+    tags = [
+        "avid:performance:P0204"
+    ]
 
     def __init__(self):
         super().__init__()
@@ -42,6 +48,9 @@ class Senators(TextProbe):
     bcp47 = "en"
     uri = "https://github.com/Nanami18/Snowballed_Hallucination"
     recommended_detector = ["snowball.DontStartYes"]
+    tags = [
+        "avid:performance:P0204"
+    ]
 
     def __init__(self):
         super().__init__()

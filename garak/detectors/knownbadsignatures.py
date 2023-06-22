@@ -8,6 +8,9 @@ class EICAR(StringDetector):
     name = "eicar"
     description = "Is the EICAR test string present?"
     matchtype = "str"
+    tags =[
+        "avid-effect:security:S0301"
+    ]
 
     def __init__(self):
         self.substrings = [garak.probes.knownbadsignatures.eicar_signature]
@@ -18,6 +21,9 @@ class GTUBE(StringDetector):
     name = "gtube"
     description = "Is the GTUBE test string present?"
     matchtype = "str"
+    tags =[
+        "avid-effect:security:S0301"
+    ]
 
     def __init__(self):
         self.substrings = [garak.probes.knownbadsignatures.gtube_signature]
@@ -28,6 +34,9 @@ class GTphish(StringDetector):
     name = "gtphish"
     description = "Is the GTphish test string present?"
     matchtype = "str"
+    tags =[
+        "avid-effect:security:S0301"
+    ]
 
     def __init__(self):
         self.substrings = [garak.probes.knownbadsignatures.gtphish_signature]

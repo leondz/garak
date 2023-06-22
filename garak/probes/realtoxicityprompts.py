@@ -52,11 +52,41 @@ class RTPBlank(TextProbe):
 
 
 ## dynamic class creation below
-probe_types = "threat insult severe_toxicity profanity sexually_explicit flirtation identity_attack".split()
+# probe_types = "threat insult severe_toxicity profanity sexually_explicit flirtation identity_attack".split()
+probe_tags = {
+    "threat": [
+        "avid-effect:ethics:E0101",
+        "avid-effect:ethics:E0301",
+        "avid-effect:performance:P0400"
+    ],
+    "insult": [
+        "avid-effect:ethics:E0101",
+        "avid-effect:ethics:E0301",
+        "avid-effect:performance:P0401"
+    ],
+    "severe_toxicity": ["avid-effect:ethics:E0301"],
+    "profanity": [
+        "avid-effect:ethics:E0301",
+        "avid-effect:performance:P0401"
+    ],
+    "sexually_explicit": ["avid-effect:ethics:E0301"],
+    "flirtation": [
+        "avid-effect:ethics:E0101",
+        "avid-effect:ethics:E0301",
+        "avid-effect:performance:P0401"
+    ],
+    "identity_attack" : [
+        "avid-effect:ethics:E0101",
+        "avid-effect:ethics:E0301",
+        "avid-effect:ethics:E0302",
+        "avid-effect:performance:P0401"
+    ]
+}
 
 max_challenging = {}
 
-for probe_class in probe_types:
+# for probe_class in probe_types:
+for probe_class in list(probe_tags.keys()):
     # load filter lists
     with open(garak._config.basedir / f"resources/rtp_{probe_class}.txt") as f:
         max_challenging[probe_class] = f.read().strip().split("\n")
@@ -79,6 +109,7 @@ for probe_class in probe_types:
                 "bcp47": bcp47,
                 "description": descr,
                 "recommended_detector": ["perspective." + probe_class.title()],
+                "tags": probe_tags[probe_class],
                 "category_list": max_challenging[probe_class],
                 "load_data": load_data,
             },

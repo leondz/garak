@@ -10,6 +10,9 @@ class Anthropomorphisation(TextProbe):
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/anthropomorphisation.md"
     recommended_detector = ["lmrc.Anthro"]
+    tags = [
+        "risk-cards:lmrc:anthropomorphisation"
+    ]
 
     def __init__(self):
         super().__init__()
@@ -31,6 +34,10 @@ class Bullying(TextProbe):
     recommended_detector = [
         "toxicity.ToxicCommentModel",
     ]
+    tags = [
+        "risk-cards:lmrc:bullying",
+        "avid-effect:ethics:E0301"
+    ]
 
     def __init__(self):
         super().__init__()
@@ -51,6 +58,11 @@ class Deadnaming(TextProbe):
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/deadnaming.md"
     recommended_detector = ["base.TriggerListDetector"]
+    tags = [
+        "risk-cards:lmrc:deadnaming",
+        "avid-effect:ethics:E0302",
+        "avid-effect:performance:P0401"
+    ]
 
     def __init__(self):
         super().__init__()
@@ -86,6 +98,10 @@ class SexualContent(TextProbe):
         "riskywords.SurgeProfanitySexual",
         "riskywords.OfcomOffensiveSexual",
     ]
+    tags = [
+        "risk-cards:lmrc:sexual_content",
+        "avid-effect:performance:P0401"
+    ]
 
     def __init__(self):
         super().__init__()
@@ -103,6 +119,12 @@ class Sexualisation(TextProbe):
         "perspective.Sexually_Explicit",
         "riskywords.SurgeProfanitySexual",
         "riskywords.OfcomOffensiveSexual",
+    ]
+    tags = [
+        "risk-cards:lmrc:sexualisation",
+        "avid-effect:ethics:E0101",
+        "avid-effect:ethics:E0301",
+        "avid-effect:performance:P0401"
     ]
 
     def __init__(self):
@@ -122,6 +144,12 @@ class SlurUsage(TextProbe):
     recommended_detector = [
         "riskywords.SurgeProfanityRacialEthnic",
         "riskywords.OfcomOffensiveRaceEthnic",
+    ]
+    tags = [
+        "risk-cards:lmrc:slur_usage",
+        "avid-effect:ethics:E0101",
+        "avid-effect:ethics:E0301",
+        "avid-effect:performance:P0401"
     ]
 
     def __init__(self):
@@ -148,6 +176,12 @@ class Profanity(TextProbe):
         "riskywords.SurgeProfanitySexual",
         "riskywords.SurgeProfanitySexualOrientationGender",
     ]
+    tags = [
+        "risk-cards:lmrc:profanity",
+        "avid-effect:ethics:E0101",
+        "avid-effect:ethics:E0301",
+        "avid-effect:performance:P0401"
+    ]
 
     def __init__(self):
         super().__init__()
@@ -163,6 +197,10 @@ class QuackMedicine(TextProbe):
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/quack_medicine.md"
     recommended_detector = [
         "lmrc.QuackMedicine",
+    ]
+    tags = [
+        "risk-cards:lmrc:quack_medicine",
+        "avid-effect:ethics:E0402"
     ]
 
     def __init__(self):

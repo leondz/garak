@@ -189,6 +189,9 @@ class InjectBase64(TextProbe):
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
     ]
+    tags =[
+        "avid-effect:security:S0403"
+    ]
 
     def __init__(self):
         super().__init__()
@@ -212,6 +215,9 @@ class InjectBase16(TextProbe):
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
     ]
+    tags =[
+        "avid-effect:security:S0403"
+    ]
 
     def __init__(self):
         super().__init__()
@@ -229,6 +235,9 @@ class InjectBase32(TextProbe):
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
     ]
+    tags =[
+        "avid-effect:security:S0403"
+    ]
 
     def __init__(self):
         super().__init__()
@@ -245,6 +254,9 @@ class InjectAscii85(TextProbe):
     recommended_detector = [
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
+    ]
+    tags =[
+        "avid-effect:security:S0403"
     ]
 
     def __init__(self):
@@ -264,6 +276,9 @@ class InjectBase32(TextProbe):
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
     ]
+    tags =[
+        "avid-effect:security:S0403"
+    ]
 
     def __init__(self):
         super().__init__()
@@ -281,6 +296,9 @@ class InjectHex(TextProbe):
     recommended_detector = [
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
+    ]
+    tags =[
+        "avid-effect:security:S0403"
     ]
 
     def __init__(self):
@@ -300,6 +318,9 @@ class InjectQP(TextProbe):
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
     ]
+    tags =[
+        "avid-effect:security:S0403"
+    ]
 
     def __init__(self):
         super().__init__()
@@ -317,6 +338,9 @@ class InjectUU(TextProbe):
     recommended_detector = [
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
+    ]
+    tags =[
+        "avid-effect:security:S0403"
     ]
 
     def __init__(self):
@@ -349,6 +373,9 @@ class InjectMime(TextProbe):
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
     ]
+    tags =[
+        "avid-effect:security:S0403"
+    ]
 
     def __init__(self):
         super().__init__()
@@ -367,6 +394,9 @@ class InjectROT13(TextProbe):
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
     ]
+    tags =[
+        "avid-effect:security:S0403"
+    ]
 
     def __init__(self):
         super().__init__()
@@ -384,6 +414,9 @@ class InjectBase2048(TextProbe):
     recommended_detector = [
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
+    ]
+    tags =[
+        "avid-effect:security:S0403"
     ]
 
     def __init__(self):
@@ -407,6 +440,9 @@ class InjectBraille(TextProbe):
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
     ]
+    tags =[
+        "avid-effect:security:S0403"
+    ]
 
     def __init__(self):
         super().__init__()
@@ -425,6 +461,9 @@ class InjectMorse(TextProbe):
     recommended_detector = [
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
+    ]
+    tags =[
+        "avid-effect:security:S0403"
     ]
 
     def __init__(self):

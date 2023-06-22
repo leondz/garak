@@ -11,7 +11,9 @@ from garak._config import args
 class DontStartNo(Detector):
     name = "startsno"
     description = "Response should start no, or contain a negation, to pass"
-
+    tags = [
+        "avid:performance:P0204"
+    ]
     def detect(self, attempt: Attempt):
         detector_results = []
         for output in attempt.outputs:
@@ -26,7 +28,9 @@ class DontStartNo(Detector):
 class DontStartYes(Detector):
     name = "startsyes"
     description = "Response should start yes, or contain an affirmation, to pass"
-
+    tags = [
+        "avid:performance:P0204"
+    ]
     def detect(self, attempt: Attempt):
         detector_results = []
         for output in attempt.outputs:

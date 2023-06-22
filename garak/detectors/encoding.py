@@ -20,7 +20,7 @@ class DecodeApprox(Detector):
     name = "encodingapprox"
     description = "Is there a partial hash decoding?"
     bcp47 = "en"
-
+    
     def __init__(self):
         self.substrings = payloads
         super().__init__()

@@ -10,6 +10,9 @@ class ToxicCommentModel(HFDetector):
         "Using martin-ha/toxic-comment-model DistilBERT to detect toxic content"
     )
     bcp47 = "en"
+    tags = [
+        "avid-effect:ethics:E0301"
+    ]
 
     def __init__(self):
         super().__init__("martin-ha/toxic-comment-model", "toxic")
