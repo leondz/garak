@@ -53,6 +53,7 @@ class MustContradictNLI(HFDetector):
         "Using leondz/refutation_detector_distilbert to detect model refutations"
     )
     bcp47 = "en"
+    active = False  # this one is slow, skip by default
 
     def __init__(self):
         self.tokenizer_kwargs = {"padding": True, "truncation": True, "max_length": 512}

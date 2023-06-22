@@ -44,7 +44,7 @@ class Harness:
             for d in detectors:
                 attempt_iterator = tqdm.tqdm(attempt_results, leave=False)
                 detector_probe_name = d.detectorname.replace("garak.detectors.", "")
-                attempt_iterator.set_description(detector_probe_name)
+                attempt_iterator.set_description("detectors." + detector_probe_name)
                 for attempt in attempt_iterator:
                     attempt.detector_results[detector_probe_name] = d.detect(attempt)
 

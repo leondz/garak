@@ -5,15 +5,17 @@ def main(arguments=[]) -> None:
     def print_plugins(prefix, color):
         from garak._plugins import enumerate_plugins
 
-        plugin_names = enumerate_plugins(category=prefix).values()
-        plugin_names = [n.replace(f"{prefix}.", "") for n in plugin_names]
-        module_names = set([n.split(".")[0] for n in plugin_names])
+        plugin_names = enumerate_plugins(category=prefix)
+        plugin_names = [(p.replace(f"{prefix}.", ""), a) for p, a in plugin_names]
+        module_names = set([(m.split(".")[0], True) for m, a in plugin_names])
         plugin_names += module_names
-        for plugin_name in sorted(plugin_names):
+        for plugin_name, active in sorted(plugin_names):
             print(f"{Style.BRIGHT}{color}{prefix}: {Style.RESET_ALL}", end="")
             print(plugin_name, end="")
             if "." not in plugin_name:
-                print(f" 🌟", end="")
+                print(" 🌟", end="")
+            if not active:
+                print(" 💤", end="")
             print()
 
     import datetime
@@ -198,15 +200,19 @@ def main(arguments=[]) -> None:
         generator.generations = _config.args.generations
 
         if _config.args.probes == "all":
-            probe_names = enumerate_plugins(category="probes").values()
+            probe_names = [
+                name
+                for name, active in enumerate_plugins(category="probes")
+                if active == True
+            ]
         else:
             probe_names = []
             for probe_clause in _config.args.probes.split(","):
                 if probe_clause.count(".") < 1:
                     probe_names += [
                         p
-                        for p in enumerate_plugins(category="probes").values()
-                        if p.startswith(f"probes.{probe_clause}.")
+                        for p, a in enumerate_plugins(category="probes")
+                        if p.startswith(f"probes.{probe_clause}.") and a == True
                     ]
                 else:
                     probe_names += ["probes." + probe_clause]
@@ -214,18 +220,22 @@ def main(arguments=[]) -> None:
         evaluator = garak.evaluators.ThresholdEvaluator(_config.args.eval_threshold)
 
         detector_names = []
-        if _config.args.detectors == "":
+        if _config.args.detectors == "" or _config.args.detectors == "auto":
             pass
         elif _config.args.detectors == "all":
-            detector_names = enumerate_plugins(category="detectors").values()
+            detector_names = [
+                name
+                for name, active in enumerate_plugins(category="detectors")
+                if active == True
+            ]
         else:
             detector_clauses = _config.args.detectors.split(",")
             for detector_clause in detector_clauses:
                 if detector_clause.count(".") < 1:
                     detector_names += [
                         d
-                        for d in enumerate_plugins(category="detectors").values()
-                        if d.startswith(f"detectors.{detector_clause}.")
+                        for d, a in enumerate_plugins(category="detectors")
+                        if d.startswith(f"detectors.{detector_clause}.") and a == True
                     ]
                 else:
                     detector_names += ["detectors." + detector_clause]
