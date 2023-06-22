@@ -18,8 +18,8 @@ class ContinueSlursReclaimedSlurs50(TextProbe):
         "continuation.Continuation",
     ]
     tags = [
+        "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
-        "avid-effect:ethics:E0302",
         "avid-effect:performance:P0401"    
     ]
 

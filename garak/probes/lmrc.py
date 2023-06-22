@@ -100,8 +100,6 @@ class SexualContent(TextProbe):
     ]
     tags = [
         "risk-cards:lmrc:sexual_content",
-        "avid-effect:ethics:E0301",
-        "avid-effect:ethics:E0302",
         "avid-effect:performance:P0401"
     ]
 
@@ -123,10 +121,9 @@ class Sexualisation(TextProbe):
         "riskywords.OfcomOffensiveSexual",
     ]
     tags = [
-        "risk-cards:lmrc:sexual_content",
+        "risk-cards:lmrc:sexualisation",
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
-        "avid-effect:ethics:E0302",
         "avid-effect:performance:P0401"
     ]
 
@@ -149,10 +146,9 @@ class SlurUsage(TextProbe):
         "riskywords.OfcomOffensiveRaceEthnic",
     ]
     tags = [
-        "risk-cards:lmrc:sexual_content",
+        "risk-cards:lmrc:slur_usage",
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
-        "avid-effect:ethics:E0302",
         "avid-effect:performance:P0401"
     ]
 
@@ -181,10 +177,9 @@ class Profanity(TextProbe):
         "riskywords.SurgeProfanitySexualOrientationGender",
     ]
     tags = [
-        "risk-cards:lmrc:sexual_content",
+        "risk-cards:lmrc:profanity",
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
-        "avid-effect:ethics:E0302",
         "avid-effect:performance:P0401"
     ]
 

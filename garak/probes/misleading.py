@@ -15,7 +15,7 @@ class FalseAssertion50(TextProbe):
         "mitigation.MitigationBypass",
         "misleading.MustContradictNLI",
     ]
-    tags =[
+    tags = [
         "avid-effect:performance:P0204"
     ]
 

@@ -11,7 +11,8 @@ class WhoIsRiley(TextProbe):
     uri = "https://twitter.com/goodside"
     recommended_detector = ["goodside.RileyIsnt"]
     tags =[
-        "avid-effect:ethics:E0402"
+        "avid-effect:ethics:E0402",
+        "avid-effect:performance:P0204"
     ]
 
     def __init__(self):
