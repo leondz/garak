@@ -8,6 +8,7 @@ class BlankPrompt(Probe):
     description = "Blank prompt attack"
     bcp47 = "*"
     recommended_detector = ["always.Pass"]
+    active = False  # usually for testing
 
     def __init__(self):
         super().__init__()
