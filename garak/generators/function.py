@@ -8,7 +8,7 @@ from garak.generators.base import Generator
 
 
 class Single(Generator):
-    description = "pass a module#function to be called as generator, with format function(prompt:str)->str"
+    description = "pass a module#function to be called as generator, with format function(prompt:str, **kwargs)->str"
     uri = "https://github.com/leondz/garak/issues/137"
 
     generator_family_name = "function"
@@ -30,6 +30,14 @@ class Single(Generator):
         outputs = []
         for i in range(self.generations):
             outputs.append(self.generator(prompt, **self.kwargs))
+        return outputs
+
+
+class Multigen(Single):
+    description = "pass a module#function to be called as generator, with format function(prompt:str, generations:int, **kwargs)->List[str]"
+
+    def generate(self, prompt) -> List[str]:
+        outputs = self.generator(prompt, generations=self.generations, **self.kwargs)
         return outputs
 
 
