@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import base64
-import quopri
 
 from garak.probes.base import TextProbe
 
@@ -189,9 +188,7 @@ class InjectBase64(TextProbe):
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
     ]
-    tags =[
-        "avid-effect:security:S0403"
-    ]
+    tags = ["avid-effect:security:S0403"]
 
     def __init__(self):
         super().__init__()
@@ -215,9 +212,7 @@ class InjectBase16(TextProbe):
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
     ]
-    tags =[
-        "avid-effect:security:S0403"
-    ]
+    tags = ["avid-effect:security:S0403"]
 
     def __init__(self):
         super().__init__()
@@ -235,9 +230,7 @@ class InjectBase32(TextProbe):
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
     ]
-    tags =[
-        "avid-effect:security:S0403"
-    ]
+    tags = ["avid-effect:security:S0403"]
 
     def __init__(self):
         super().__init__()
@@ -255,9 +248,7 @@ class InjectAscii85(TextProbe):
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
     ]
-    tags =[
-        "avid-effect:security:S0403"
-    ]
+    tags = ["avid-effect:security:S0403"]
 
     def __init__(self):
         super().__init__()
@@ -276,9 +267,7 @@ class InjectBase32(TextProbe):
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
     ]
-    tags =[
-        "avid-effect:security:S0403"
-    ]
+    tags = ["avid-effect:security:S0403"]
 
     def __init__(self):
         super().__init__()
@@ -297,9 +286,7 @@ class InjectHex(TextProbe):
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
     ]
-    tags =[
-        "avid-effect:security:S0403"
-    ]
+    tags = ["avid-effect:security:S0403"]
 
     def __init__(self):
         super().__init__()
@@ -318,9 +305,7 @@ class InjectQP(TextProbe):
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
     ]
-    tags =[
-        "avid-effect:security:S0403"
-    ]
+    tags = ["avid-effect:security:S0403"]
 
     def __init__(self):
         super().__init__()
@@ -339,9 +324,7 @@ class InjectUU(TextProbe):
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
     ]
-    tags =[
-        "avid-effect:security:S0403"
-    ]
+    tags = ["avid-effect:security:S0403"]
 
     def __init__(self):
         super().__init__()
@@ -373,12 +356,12 @@ class InjectMime(TextProbe):
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
     ]
-    tags =[
-        "avid-effect:security:S0403"
-    ]
+    tags = ["avid-effect:security:S0403"]
 
     def __init__(self):
         super().__init__()
+        import quopri
+
         encoding_funcs = [quopri.encodestring]
         encoding_name = "MIME"
 
@@ -394,9 +377,7 @@ class InjectROT13(TextProbe):
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
     ]
-    tags =[
-        "avid-effect:security:S0403"
-    ]
+    tags = ["avid-effect:security:S0403"]
 
     def __init__(self):
         super().__init__()
@@ -415,9 +396,7 @@ class InjectBase2048(TextProbe):
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
     ]
-    tags =[
-        "avid-effect:security:S0403"
-    ]
+    tags = ["avid-effect:security:S0403"]
 
     def __init__(self):
         super().__init__()
@@ -440,9 +419,7 @@ class InjectBraille(TextProbe):
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
     ]
-    tags =[
-        "avid-effect:security:S0403"
-    ]
+    tags = ["avid-effect:security:S0403"]
 
     def __init__(self):
         super().__init__()
@@ -462,9 +439,7 @@ class InjectMorse(TextProbe):
         "encoding.DecodeMatch",
         "encoding.DecodeApprox",
     ]
-    tags =[
-        "avid-effect:security:S0403"
-    ]
+    tags = ["avid-effect:security:S0403"]
 
     def __init__(self):
         super().__init__()
