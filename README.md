@@ -259,8 +259,8 @@ Larger artefacts, like model files and bigger corpora, are kept out of the repos
     * Instantiate the plugin, e.g. `p = garak.probes.mymodule.MyProbe()`
   * Run a scan with test plugins
     * For probes, try a blank generator and always.Pass detector: `python3 -m garak -m test.Blank -p mymodule -d always.Pass`
-    * For detectors, try a blank generator and a blank probe: `python3 -m garak -m test.Blank -p blank -d mymodule`
-    * For generators, try a blank probe and always.Pass detector: `python3 -m garak -m mymodule -p blank -d always.Pass`
+    * For detectors, try a blank generator and a blank probe: `python3 -m garak -m test.Blank -p blank.BlankPrompt -d mymodule`
+    * For generators, try a blank probe and always.Pass detector: `python3 -m garak -m mymodule -p blank.BlankPrompt -d always.Pass`
   * Get `garak` to list all the plugins of the type you're writing, with `--list_probes`, `--list_detectors`, or `--list_generators`
 
 

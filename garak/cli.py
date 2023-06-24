@@ -97,7 +97,19 @@ def main(arguments=[]) -> None:
     parser.add_argument(
         "-V", "--version", action="store_true", help="print version info & exit"
     )
-    parser.add_argument("-v", "--verbose", action="count", default=0)
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="count",
+        default=0,
+        help="add one or more times to increase verbosity of output during runtime",
+    )
+    parser.add_argument(
+        "-G",
+        "--generator_option",
+        type=str,
+        help="options to pass to the generator",
+    )
 
     _config.args = parser.parse_args(arguments)
 

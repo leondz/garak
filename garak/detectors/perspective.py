@@ -13,17 +13,13 @@ perspective_classes = [
         "name": "TOXICITY",
         "description": "A rude, disrespectful, or unreasonable comment that is likely to make people leave a discussion.",
         "langs": "ar,zh,cs,nl,en,fr,de,hi,hi-Latn,id,it,ja,ko,pl,pt,ru,es,sv",
-        "tags": [
-            "avid-effect:ethics:E0301"
-        ]
+        "tags": ["avid-effect:ethics:E0301"],
     },
     {
         "name": "SEVERE_TOXICITY",
         "description": "A very hateful, aggressive, disrespectful comment or otherwise very likely to make a user leave a discussion or give up on sharing their perspective. This attribute is much less sensitive to more mild forms of toxicity, such as comments that include positive uses of curse words.",
         "langs": "ar,zh,cs,nl,en,fr,de,hi,hi-Latn,id,it,ja,ko,pl,pt,ru,es,sv",
-        "tags": [
-            "avid-effect:ethics:E0301"
-        ]
+        "tags": ["avid-effect:ethics:E0301"],
     },
     {
         "name": "IDENTITY_ATTACK",
@@ -33,8 +29,8 @@ perspective_classes = [
             "avid-effect:ethics:E0101",
             "avid-effect:ethics:E0301",
             "avid-effect:ethics:E0302",
-            "avid-effect:performance:P0401"
-        ]
+            "avid-effect:performance:P0401",
+        ],
     },
     {
         "name": "INSULT",
@@ -43,17 +39,14 @@ perspective_classes = [
         "tags": [
             "avid-effect:ethics:E0101",
             "avid-effect:ethics:E0301",
-            "avid-effect:performance:P0401"
-        ]
+            "avid-effect:performance:P0401",
+        ],
     },
     {
         "name": "PROFANITY",
         "description": "Swear words, curse words, or other obscene or profane language.",
         "langs": "ar,zh,cs,nl,en,fr,de,hi,hi-Latn,id,it,ja,ko,pl,pt,ru,es,sv",
-        "tags": [
-            "avid-effect:ethics:E0301",
-            "avid-effect:performance:P0401"
-        ]
+        "tags": ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"],
     },
     {
         "name": "THREAT",
@@ -62,17 +55,14 @@ perspective_classes = [
         "tags": [
             "avid-effect:ethics:E0101",
             "avid-effect:ethics:E0301",
-            "avid-effect:performance:P0400"
-        ]
+            "avid-effect:performance:P0400",
+        ],
     },
     {
         "name": "TOXICITY_EXPERIMENTAL",
         "description": "A rude, disrespectful, or unreasonable comment that is likely to make people leave a discussion.",
         "langs": "en",
-        "tags": [
-            "avid-effect:ethics:E0301",
-            "avid-effect:performance:P0401"
-        ]
+        "tags": ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"],
     },
     {
         "name": "SEVERE_TOXICITY_EXPERIMENTAL",
@@ -81,8 +71,8 @@ perspective_classes = [
         "tags": [
             "avid-effect:ethics:E0301",
             "avid-effect:ethics:E0302",
-            "avid-effect:performance:P0401"
-        ]
+            "avid-effect:performance:P0401",
+        ],
     },
     {
         "name": "IDENTITY_ATTACK_EXPERIMENTAL",
@@ -92,43 +82,32 @@ perspective_classes = [
             "avid-effect:ethics:E0101",
             "avid-effect:ethics:E0301",
             "avid-effect:ethics:E0302",
-            "avid-effect:performance:P0401"
-        ]
+            "avid-effect:performance:P0401",
+        ],
     },
     {
         "name": "INSULT_EXPERIMENTAL",
         "description": "Insulting, inflammatory, or negative comment towards a person or a group of people.",
         "langs": "en",
-        "tags": [
-            "avid-effect:ethics:E0301",
-            "avid-effect:performance:P0401"
-        ]
+        "tags": ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"],
     },
     {
         "name": "PROFANITY_EXPERIMENTAL",
         "description": "Swear words, curse words, or other obscene or profane language.",
         "langs": "en",
-        "tags": [
-            "avid-effect:ethics:E0301",
-            "avid-effect:performance:P0401"
-        ]
+        "tags": ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"],
     },
     {
         "name": "THREAT_EXPERIMENTAL",
         "description": "Describes an intention to inflict pain, injury, or violence against an individual or group.",
         "langs": "en",
-        "tags": [
-            "avid-effect:ethics:E0301",
-            "avid-effect:performance:P0401"
-        ]
+        "tags": ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"],
     },
     {
         "name": "SEXUALLY_EXPLICIT",
         "description": "Contains references to sexual acts, body parts, or other lewd content.",
         "langs": "en",
-        "tags": [
-            "avid-effect:ethics:E0301"
-        ]
+        "tags": ["avid-effect:ethics:E0301"],
     },
     {
         "name": "FLIRTATION",
@@ -137,34 +116,26 @@ perspective_classes = [
         "tags": [
             "avid-effect:ethics:E0101",
             "avid-effect:ethics:E0301",
-            "avid-effect:performance:P0401"
-        ]
+            "avid-effect:performance:P0401",
+        ],
     },
     {
         "name": "ATTACK_ON_AUTHOR",
         "description": "Attack on the author of an article or post.",
         "langs": "en",
-        "tags": [
-            "avid-effect:ethics:E0301",
-            "avid-effect:performance:P0401"
-        ]
+        "tags": ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"],
     },
     {
         "name": "ATTACK_ON_COMMENTER",
         "description": "Attack on fellow commenter.",
         "langs": "en",
-        "tags": [
-            "avid-effect:ethics:E0301",
-            "avid-effect:performance:P0401"
-        ]
+        "tags": ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"],
     },
     {
         "name": "INCOHERENT",
         "description": "Difficult to understand, nonsensical.",
         "langs": "en",
-        "tags": [
-            "avid-effect:performance:P0204"
-        ]
+        "tags": ["avid-effect:performance:P0204"],
     },
     {
         "name": "INFLAMMATORY",
@@ -173,38 +144,32 @@ perspective_classes = [
         "tags": [
             "avid-effect:ethics:E0301",
             "avid-effect:ethics:E0302",
-            "avid-effect:performance:P0401"
-        ]
+            "avid-effect:performance:P0401",
+        ],
     },
     {
         "name": "LIKELY_TO_REJECT",
         "description": "Overall measure of the likelihood for the comment to be rejected according to the NYT's moderation.",
         "langs": "en",
+        "tags": [],
     },
     {
         "name": "OBSCENE",
         "description": "Obscene or vulgar language such as cursing.",
         "langs": "en",
-        "tags": [
-            "avid-effect:ethics:E0301",
-            "avid-effect:performance:P0401"
-        ]
+        "tags": ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"],
     },
     {
         "name": "SPAM",
         "description": "Irrelevant and unsolicited commercial content.",
         "langs": "en",
-        "tags": [
-            "avid-effect:performance:P0204"
-        ]
+        "tags": ["avid-effect:performance:P0204"],
     },
     {
         "name": "UNSUBSTANTIAL",
         "description": "Trivial or short comments",
         "langs": "en",
-        "tags": [
-            "avid-effect:performance:P0204"
-        ]
+        "tags": ["avid-effect:performance:P0204"],
     },
 ]
 
