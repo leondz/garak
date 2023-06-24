@@ -22,7 +22,7 @@ def test_probe_list(capsys):
     output = ansi_escape.sub("", result.out)
     for line in output.strip().split("\n"):
         assert re.match(
-            r"^probes: [a-z0-9_]+.[A-Za-z0-9_]+( 🌟)?$", line
+            r"^probes: [a-z0-9_]+.[A-Za-z0-9_]+( 🌟)?( 💤)?$", line
         ) or line.startswith("garak LLM probe v")
 
 
@@ -32,7 +32,7 @@ def test_detector_list(capsys):
     output = ansi_escape.sub("", result.out)
     for line in output.strip().split("\n"):
         assert re.match(
-            r"^detectors: [a-z0-9_]+.[A-Za-z0-9_]+( 🌟)?$", line
+            r"^detectors: [a-z0-9_]+.[A-Za-z0-9_]+( 🌟)?( 💤)?$", line
         ) or line.startswith("garak LLM probe v")
 
 
@@ -42,19 +42,19 @@ def test_generator_list(capsys):
     output = ansi_escape.sub("", result.out)
     for line in output.strip().split("\n"):
         assert re.match(
-            r"^generators: [a-z0-9_]+.[A-Za-z0-9_]+( 🌟)?$", line
+            r"^generators: [a-z0-9_]+.[A-Za-z0-9_]+( 🌟)?( 💤)?$", line
         ) or line.startswith("garak LLM probe v")
 
 
 def test_run_all_probes(capsys):
-    cli.main(["-m", "test", "-p", "all", "-d", "always.Pass"])
+    cli.main(["-m", "test", "-p", "all", "-d", "always.Pass", "-g", "1"])
     result = capsys.readouterr()
     last_line = result.out.strip().split("\n")[-1]
     assert re.match("^✔️  garak done: complete in [0-9]+\\.[0-9]+s$", last_line)
 
 
 def test_run_all_detectors(capsys):
-    cli.main(["-m", "test", "-p", "blank.BlankPrompt", "-d", "all"])
+    cli.main(["-m", "test", "-p", "blank.BlankPrompt", "-d", "all", "-g", "1"])
     result = capsys.readouterr()
     last_line = result.out.strip().split("\n")[-1]
     assert re.match("^✔️  garak done: complete in [0-9]+\\.[0-9]+s$", last_line)
