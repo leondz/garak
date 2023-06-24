@@ -33,7 +33,7 @@ class Single(Generator):
         return outputs
 
 
-class Multigen(Single):
+class Multiple(Single):
     description = "pass a module#function to be called as generator, with format function(prompt:str, generations:int, **kwargs)->List[str]"
 
     def generate(self, prompt) -> List[str]:
