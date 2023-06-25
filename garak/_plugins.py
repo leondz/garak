@@ -78,7 +78,7 @@ def load_plugin(path, break_on_fail=True):
     """load_plugin takes a path to a plugin class, and attempts to load that class.
     If successful, it returns an instance of that class.
 
-    :param path: The path to the class to be loaded, e.g. "probes.blank.BlankPrompt"
+    :param path: The path to the class to be loaded, e.g. "probes.test.Blank"
     :type path: str
     :param break_on_fail: Should we raise exceptions if there are problems with the load?
       (default is True)

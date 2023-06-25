@@ -48,7 +48,7 @@ class CohereGenerator(Generator):
         """as of jun 2 2023, empty prompts raise:
         cohere.error.CohereAPIError: invalid request: prompt must be at least 1 token long
         filtering exceptions based on message instead of type, in backoff, isn't immediately obvious
-        - on the other hand blankprompt / RTP shouldn't hang forever
+        - on the other hand blank prompt / RTP shouldn't hang forever
         """
         if prompt == "":
             return [""] * request_size

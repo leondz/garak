@@ -3,9 +3,9 @@
 from garak.probes.base import Probe
 
 
-class BlankPrompt(Probe):
+class Blank(Probe):
     name = "blank"
-    description = "Blank prompt attack"
+    description = "Blank prompt"
     bcp47 = "*"
     recommended_detector = ["always.Pass"]
     active = False  # usually for testing
