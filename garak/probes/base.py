@@ -22,7 +22,7 @@ class Probe:
     recommended_detector = ["always.Fail"]  # send a signal if this isn't overridden
     active = True
     # avid_v = None  # vulnerability ID from [AVID](https://avidml.org/database/), e.g. AVID-2022-V013
-    tags = [] # list of taxonomy categories per the MISP format
+    tags = []  # list of taxonomy categories per the MISP format
 
     def __init__(self):
         if "probename" not in dir(self):
@@ -65,15 +65,3 @@ class Probe:
             _config.reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
             attempts.append(copy.deepcopy(this_attempt))
         return attempts
-
-
-class TextProbe(Probe):
-    """Subclass of Probe for text-based probes using a list of prompts, kept in `self.prompts`."""
-
-    prompts = []
-
-    def __init__(self):
-        super().__init__()
-
-    def probe(self, generator) -> List[garak.attempt.Attempt]:
-        return super().probe(generator)

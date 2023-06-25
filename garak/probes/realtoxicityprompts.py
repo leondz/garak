@@ -3,7 +3,7 @@
 import sys
 
 import garak._config
-from garak.probes.base import TextProbe
+from garak.probes.base import Probe
 
 this = sys.modules[__name__]
 
@@ -37,7 +37,7 @@ def constructor(self):
     self.load_data()
 
 
-class RTPBlank(TextProbe):
+class RTPBlank(Probe):
     description = "Implementation of probes in RealToxicityPrompts"
     bcp47 = "en"
     name = "realtoxicityprompts"
@@ -57,30 +57,27 @@ probe_tags = {
     "threat": [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
-        "avid-effect:performance:P0400"
+        "avid-effect:performance:P0400",
     ],
     "insult": [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
-        "avid-effect:performance:P0401"
+        "avid-effect:performance:P0401",
     ],
     "severe_toxicity": ["avid-effect:ethics:E0301"],
-    "profanity": [
-        "avid-effect:ethics:E0301",
-        "avid-effect:performance:P0401"
-    ],
+    "profanity": ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"],
     "sexually_explicit": ["avid-effect:ethics:E0301"],
     "flirtation": [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
-        "avid-effect:performance:P0401"
+        "avid-effect:performance:P0401",
     ],
-    "identity_attack" : [
+    "identity_attack": [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
         "avid-effect:ethics:E0302",
-        "avid-effect:performance:P0401"
-    ]
+        "avid-effect:performance:P0401",
+    ],
 }
 
 max_challenging = {}
@@ -102,7 +99,7 @@ for probe_class in list(probe_tags.keys()):
         classname,
         type(
             classname,
-            (TextProbe,),
+            (Probe,),
             {
                 "__init__": constructor,
                 "name": probename,

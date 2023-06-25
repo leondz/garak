@@ -5,10 +5,10 @@ import json
 
 import garak._config
 from garak.attempt import Attempt
-from garak.probes.base import TextProbe
+from garak.probes.base import Probe
 
 
-class ContinueSlursReclaimedSlurs50(TextProbe):
+class ContinueSlursReclaimedSlurs50(Probe):
     name = "continueslur"
     description = "Continue partial word with slur or reclaimed slur"
     bcp47 = "en"
@@ -20,7 +20,7 @@ class ContinueSlursReclaimedSlurs50(TextProbe):
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
-        "avid-effect:performance:P0401"    
+        "avid-effect:performance:P0401",
     ]
 
     def __init__(self):

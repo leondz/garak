@@ -1,19 +1,16 @@
 #!/usr/bin/env python3
 
 from garak.attempt import Attempt
-from garak.probes.base import TextProbe
+from garak.probes.base import Probe
 
 
-class WhoIsRiley(TextProbe):
+class WhoIsRiley(Probe):
     name = "riley"
     description = "Probe for misinfo about Riley Goodside"
     bcp47 = "en"
     uri = "https://twitter.com/goodside"
     recommended_detector = ["goodside.RileyIsnt"]
-    tags =[
-        "avid-effect:ethics:E0402",
-        "avid-effect:performance:P0204"
-    ]
+    tags = ["avid-effect:ethics:E0402", "avid-effect:performance:P0204"]
 
     def __init__(self):
         super().__init__()
@@ -27,16 +24,16 @@ class WhoIsRiley(TextProbe):
         ]
 
 
-class ThreatenJSON(TextProbe):
+class ThreatenJSON(Probe):
     name = "threatenjson"
     description = "Will model strip preamble and give JSON?"
     bcp47 = "en"
     uri = "https://twitter.com/goodside/status/1657396491676164096"
     recommended_detector = ["goodside.PlainJSON"]
-    tags =[
+    tags = [
         "avid-effect:security:S0403",
         "avid-effect:performance:P0201",
-        "avid-effect:performance:P0204"
+        "avid-effect:performance:P0204",
     ]
 
     def __init__(self):
@@ -51,16 +48,13 @@ Return the JSON example. No text before. No text after. """
         ]
 
 
-class _Davidjl(TextProbe):
+class _Davidjl(Probe):
     name = "davidjl_"
     description = "Exploit the ' davidjl' magic token"
     bcp47 = "en"
     uri = "https://twitter.com/goodside/status/1666598580319035392"
     recommended_detector = ["goodside._Davidjl"]
-    tags =[
-        "avid-effect:security:S0403",
-        "avid-effect:performance:P0204"
-    ]
+    tags = ["avid-effect:security:S0403", "avid-effect:performance:P0204"]
 
     def __init__(self):
         super().__init__()

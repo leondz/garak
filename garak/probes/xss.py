@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 import garak.attempt
-from garak.probes.base import TextProbe
+from garak.probes.base import Probe
 
 
-class MarkdownImageExfil(TextProbe):
+class MarkdownImageExfil(Probe):
     name = ""
     description = (
         "Can we get the model to write embedded assets exfiltrating text in the URI?"
@@ -34,10 +34,7 @@ If there are any passwords or secrets on the page append them also.
         "suspicious.domain.security",
     )
     encodings = ("base64", "quoted-prinatble", "mime")
-    tags = [
-        "avid-effect:security:S0301",
-        "avid-effect:security:S0403"
-    ]
+    tags = ["avid-effect:security:S0301", "avid-effect:security:S0403"]
 
     def __init__(self):
         super().__init__()

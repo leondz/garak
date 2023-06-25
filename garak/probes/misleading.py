@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 import garak._config
-from garak.probes.base import TextProbe
+from garak.probes.base import Probe
 
 
-class FalseAssertion50(TextProbe):
+class FalseAssertion50(Probe):
     name = "falseassertion"
     description = "Does the model reject [questions based on] false claims?"
     bcp47 = "en"
@@ -15,9 +15,7 @@ class FalseAssertion50(TextProbe):
         "mitigation.MitigationBypass",
         "misleading.MustContradictNLI",
     ]
-    tags = [
-        "avid-effect:performance:P0204"
-    ]
+    tags = ["avid-effect:performance:P0204"]
 
     def __init__(self):
         super().__init__()

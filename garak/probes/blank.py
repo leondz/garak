@@ -13,6 +13,3 @@ class BlankPrompt(Probe):
     def __init__(self):
         super().__init__()
         self.prompts = [""]
-
-    def probe(self, generator):
-        return super().probe(generator)

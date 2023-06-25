@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
 
-from garak.probes.base import TextProbe
+from garak.probes.base import Probe
 import garak.attempt
 
 
-class Anthropomorphisation(TextProbe):
+class Anthropomorphisation(Probe):
     name = "anthro"
     description = "Providing output that encourages anthropomorphisation of AI systems"
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/anthropomorphisation.md"
     recommended_detector = ["lmrc.Anthro"]
-    tags = [
-        "risk-cards:lmrc:anthropomorphisation"
-    ]
+    tags = ["risk-cards:lmrc:anthropomorphisation"]
 
     def __init__(self):
         super().__init__()
@@ -26,7 +24,7 @@ class Anthropomorphisation(TextProbe):
         ]
 
 
-class Bullying(TextProbe):
+class Bullying(Probe):
     name = "bullying"
     description = "Generation of repeated threats, denigration"
     bcp47 = "en"
@@ -34,10 +32,7 @@ class Bullying(TextProbe):
     recommended_detector = [
         "toxicity.ToxicCommentModel",
     ]
-    tags = [
-        "risk-cards:lmrc:bullying",
-        "avid-effect:ethics:E0301"
-    ]
+    tags = ["risk-cards:lmrc:bullying", "avid-effect:ethics:E0301"]
 
     def __init__(self):
         super().__init__()
@@ -52,7 +47,7 @@ class Bullying(TextProbe):
         ]
 
 
-class Deadnaming(TextProbe):
+class Deadnaming(Probe):
     name = "deadnaming"
     description = "Mentioning a name that a person does not wish to be associated with"
     bcp47 = "en"
@@ -61,7 +56,7 @@ class Deadnaming(TextProbe):
     tags = [
         "risk-cards:lmrc:deadnaming",
         "avid-effect:ethics:E0302",
-        "avid-effect:performance:P0401"
+        "avid-effect:performance:P0401",
     ]
 
     def __init__(self):
@@ -88,7 +83,7 @@ class Deadnaming(TextProbe):
         return attempt
 
 
-class SexualContent(TextProbe):
+class SexualContent(Probe):
     name = "sexualcontent"
     description = "Content that discusses bodies and interactions in a sexual manner, or other sexually explicit material"
     bcp47 = "en"
@@ -98,10 +93,7 @@ class SexualContent(TextProbe):
         "riskywords.SurgeProfanitySexual",
         "riskywords.OfcomOffensiveSexual",
     ]
-    tags = [
-        "risk-cards:lmrc:sexual_content",
-        "avid-effect:performance:P0401"
-    ]
+    tags = ["risk-cards:lmrc:sexual_content", "avid-effect:performance:P0401"]
 
     def __init__(self):
         super().__init__()
@@ -110,7 +102,7 @@ class SexualContent(TextProbe):
         ]
 
 
-class Sexualisation(TextProbe):
+class Sexualisation(Probe):
     name = "sexualisation"
     description = "Causal or overt sexual objectification, reducing a person or group of people to sexual objects."
     bcp47 = "en"
@@ -124,7 +116,7 @@ class Sexualisation(TextProbe):
         "risk-cards:lmrc:sexualisation",
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
-        "avid-effect:performance:P0401"
+        "avid-effect:performance:P0401",
     ]
 
     def __init__(self):
@@ -136,7 +128,7 @@ class Sexualisation(TextProbe):
         ]
 
 
-class SlurUsage(TextProbe):
+class SlurUsage(Probe):
     name = "slurusage"
     description = "Using an identity-based slur in a non-reclaimed way - either directly or recommending the consumer to use in speech/action."
     bcp47 = "en"
@@ -149,7 +141,7 @@ class SlurUsage(TextProbe):
         "risk-cards:lmrc:slur_usage",
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
-        "avid-effect:performance:P0401"
+        "avid-effect:performance:P0401",
     ]
 
     def __init__(self):
@@ -159,7 +151,7 @@ class SlurUsage(TextProbe):
         ]
 
 
-class Profanity(TextProbe):
+class Profanity(Probe):
     name = "profanity"
     description = "Using profane words, especially when unprompted to do so."
     bcp47 = "en"
@@ -180,7 +172,7 @@ class Profanity(TextProbe):
         "risk-cards:lmrc:profanity",
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
-        "avid-effect:performance:P0401"
+        "avid-effect:performance:P0401",
     ]
 
     def __init__(self):
@@ -190,7 +182,7 @@ class Profanity(TextProbe):
         ]
 
 
-class QuackMedicine(TextProbe):
+class QuackMedicine(Probe):
     name = "quackmedicine"
     description = "Promoting non-scientific medicine."
     bcp47 = "en"
@@ -198,10 +190,7 @@ class QuackMedicine(TextProbe):
     recommended_detector = [
         "lmrc.QuackMedicine",
     ]
-    tags = [
-        "risk-cards:lmrc:quack_medicine",
-        "avid-effect:ethics:E0402"
-    ]
+    tags = ["risk-cards:lmrc:quack_medicine", "avid-effect:ethics:E0402"]
 
     def __init__(self):
         super().__init__()

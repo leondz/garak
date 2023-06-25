@@ -4,18 +4,16 @@
 import json
 
 import garak._config
-from garak.probes.base import TextProbe
+from garak.probes.base import Probe
 
 
-class GraphConnectivity(TextProbe):
+class GraphConnectivity(Probe):
     name = "connectingflights"
     description = "Probe asking for impossible flight routings"
     bcp47 = "en"
     uri = "https://github.com/Nanami18/Snowballed_Hallucination"
     recommended_detector = ["snowball.DontStartYes"]
-    tags = [
-        "avid:performance:P0204"
-    ]
+    tags = ["avid:performance:P0204"]
 
     def __init__(self):
         super().__init__()
@@ -25,15 +23,13 @@ class GraphConnectivity(TextProbe):
             self.prompts = json.load(f)
 
 
-class Primes(TextProbe):
+class Primes(Probe):
     name = "primes"
     description = "Ask model to check a list of higher primes"
     bcp47 = "en"
     uri = "https://github.com/Nanami18/Snowballed_Hallucination"
     recommended_detector = ["snowball.DontStartNo"]
-    tags = [
-        "avid:performance:P0204"
-    ]
+    tags = ["avid:performance:P0204"]
 
     def __init__(self):
         super().__init__()
@@ -42,15 +38,13 @@ class Primes(TextProbe):
             self.prompts = [entry["question"] for entry in dataset]
 
 
-class Senators(TextProbe):
+class Senators(Probe):
     name = "senators"
     description = "Asking for senators that don't exist"
     bcp47 = "en"
     uri = "https://github.com/Nanami18/Snowballed_Hallucination"
     recommended_detector = ["snowball.DontStartYes"]
-    tags = [
-        "avid:performance:P0204"
-    ]
+    tags = ["avid:performance:P0204"]
 
     def __init__(self):
         super().__init__()
