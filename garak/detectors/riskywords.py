@@ -33,9 +33,8 @@ class SurgeProfanitySexual(StringDetector):
     description = "Surge AI list: sexual anatomy / sexual acts"
     bcp47 = "en"
     matchtype = "word"
-    tags = [
-        "avid-effect:performance:P0401"
-    ]
+    tags = ["avid-effect:performance:P0401"]
+
     def __init__(self):
         substrings = surge_list["sexual anatomy / sexual acts"]
         super().__init__(substrings)
@@ -46,9 +45,8 @@ class SurgeProfanityBodilyFluids(StringDetector):
     description = "Surge AI list: bodily fluids / excrement"
     bcp47 = "en"
     matchtype = "word"
-    tags = [
-        "avid-effect:performance:P0401"
-    ]
+    tags = ["avid-effect:performance:P0401"]
+
     def __init__(self):
         substrings = surge_list["bodily fluids / excrement"]
         super().__init__(substrings)
@@ -62,8 +60,9 @@ class SurgeProfanitySexualOrientationGender(StringDetector):
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
-        "avid-effect:performance:P0401"
+        "avid-effect:performance:P0401",
     ]
+
     def __init__(self):
         substrings = surge_list["sexual orientation / gender"]
         super().__init__(substrings)
@@ -77,8 +76,9 @@ class SurgeProfanityRacialEthnic(StringDetector):
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
-        "avid-effect:performance:P0401"
+        "avid-effect:performance:P0401",
     ]
+
     def __init__(self):
         substrings = surge_list["racial / ethnic"]
         super().__init__(substrings)
@@ -92,7 +92,7 @@ class SurgeProfanityMentalDisability(StringDetector):
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
-        "avid-effect:performance:P0401"
+        "avid-effect:performance:P0401",
     ]
 
     def __init__(self):
@@ -108,8 +108,9 @@ class SurgeProfanityPhysicalDisability(StringDetector):
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
-        "avid-effect:performance:P0401"
+        "avid-effect:performance:P0401",
     ]
+
     def __init__(self):
         substrings = surge_list["physical disability"]
         super().__init__(substrings)
@@ -120,10 +121,7 @@ class SurgeProfanityPhysicalAttributes(StringDetector):
     description = "Surge AI list: physical attributes"
     bcp47 = "en"
     matchtype = "word"
-    tags = [
-        "avid-effect:ethics:E0301",
-        "avid-effect:performance:P0401"
-    ]
+    tags = ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"]
 
     def __init__(self):
         substrings = surge_list["physical attributes"]
@@ -135,10 +133,7 @@ class SurgeProfanityAnimalReferences(StringDetector):
     description = "Surge AI list: animal references"
     bcp47 = "en"
     matchtype = "word"
-    tags = [
-        "avid-effect:ethics:E0301",
-        "avid-effect:performance:P0401"
-    ]
+    tags = ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"]
 
     def __init__(self):
         substrings = surge_list["animal references"]
@@ -150,10 +145,7 @@ class SurgeProfanityReligious(StringDetector):
     description = "Surge AI list: religious offense"
     bcp47 = "en"
     matchtype = "word"
-    tags = [
-        "avid-effect:ethics:E0301",
-        "avid-effect:performance:P0401"
-    ]
+    tags = ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"]
 
     def __init__(self):
         substrings = surge_list["religious offense"]
@@ -169,7 +161,7 @@ class SurgeProfanityPolitical(StringDetector):
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
         "avid-effect:ethics:E0302",
-        "avid-effect:performance:P0401"
+        "avid-effect:performance:P0401",
     ]
 
     def __init__(self):
@@ -183,10 +175,7 @@ class OfcomOffensiveGeneral(StringDetector):
     description = f"OFCOM potentially offensive: {term}"
     bcp47 = "en"
     matchtype = "word"
-    tags = [
-        "avid-effect:ethics:E0301",
-        "avid-effect:performance:P0401"
-    ]
+    tags = ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"]
 
     def __init__(self):
         substrings = ofcom_list[self.term]
@@ -199,10 +188,8 @@ class OfcomOffensiveSexual(StringDetector):
     description = f"OFCOM potentially offensive: {term}"
     bcp47 = "en"
     matchtype = "word"
-    tags = [
-        "avid-effect:performance:P0401"
-    ]
-    
+    tags = ["avid-effect:performance:P0401"]
+
     def __init__(self):
         substrings = ofcom_list[self.term]
         super().__init__(substrings)
@@ -217,7 +204,7 @@ class OfcomOffensiveDiscriminatory(StringDetector):
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
-        "avid-effect:performance:P0401"
+        "avid-effect:performance:P0401",
     ]
 
     def __init__(self):
@@ -234,7 +221,7 @@ class OfcomOffensiveSexGender(StringDetector):
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
-        "avid-effect:performance:P0401"
+        "avid-effect:performance:P0401",
     ]
 
     def __init__(self):
@@ -251,7 +238,7 @@ class OfcomOffensiveMentalHealth(StringDetector):
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
-        "avid-effect:performance:P0401"
+        "avid-effect:performance:P0401",
     ]
 
     def __init__(self):
@@ -268,7 +255,7 @@ class OfcomOffensiveRaceEthnic(StringDetector):
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
-        "avid-effect:performance:P0401"
+        "avid-effect:performance:P0401",
     ]
 
     def __init__(self):
@@ -283,7 +270,7 @@ class LDNOOBW(StringDetector):
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
-        "avid-effect:performance:P0401"
+        "avid-effect:performance:P0401",
     ]
 
     def __init__(self):

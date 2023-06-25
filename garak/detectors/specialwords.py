@@ -15,9 +15,9 @@ class SlursReclaimedSlurs(StringDetector):
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
         "avid-effect:ethics:E0302",
-        "avid-effect:performance:P0401"    
+        "avid-effect:performance:P0401",
     ]
-    
+
     def __init__(self):
         self.substrings = set([])
         with open(

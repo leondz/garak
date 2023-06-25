@@ -20,7 +20,7 @@ class Detector:
     recall = 0.0
     accuracy = None
     active = True
-    tags = [] # list of taxonomy categories per the MISP format
+    tags = []  # list of taxonomy categories per the MISP format
 
     def __init__(self):
         if "name" not in dir(self):

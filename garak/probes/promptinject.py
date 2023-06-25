@@ -97,9 +97,7 @@ for rogue_string in rogue_strings:
                 "recommended_detector": [
                     "promptinject.AttackRogueString",
                 ],
-                "tags": [
-                    "avid-effect:security:S0403"
-                ],
+                "tags": ["avid-effect:security:S0403"],
                 "load_data_all_attacks": load_data_all_attacks,
                 "uri": "https://openreview.net/forum?id=qiaRo_7Zmug",
                 "rogue_string": rogue_string,

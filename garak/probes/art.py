@@ -25,12 +25,7 @@ class Tox(Probe):
     redteamer = None
     max_calls = 5
     constructive_tension = True
-    tags = [
-        "avid-effect:ethics:E0301"
-    ]
-
-    def __init__(self):
-        super().__init__()
+    tags = ["avid-effect:ethics:E0301"]
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
         if self.redteamer == None:
