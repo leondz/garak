@@ -27,7 +27,7 @@ class HFInternalServerError(Exception):
     pass
 
 
-class Local(Generator):
+class Pipeline(Generator):
     generator_family_name = "Hugging Face 🤗"
 
     def __init__(self, name, do_sample=True, generations=10, device=0):
@@ -37,7 +37,8 @@ class Local(Generator):
 
         from transformers import pipeline, set_seed
 
-        set_seed(args.seed)
+        if "seed" in dir(args):
+            set_seed(args.seed)
 
         import torch.cuda
 
@@ -174,4 +175,4 @@ class InferenceAPI(Generator):
         return self._call_api(prompt)
 
 
-default_class = "Local"
+default_class = "Pipeline"

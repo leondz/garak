@@ -13,7 +13,7 @@ from tqdm import tqdm
 import garak._config
 import garak.attempt
 from garak.probes.base import Probe
-from garak.generators.huggingface import Local
+from garak.generators.huggingface import Pipeline
 
 output_sep = "<||>"
 
@@ -29,7 +29,7 @@ class Tox(Probe):
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
         if self.redteamer == None:
-            self.redteamer = Local("leondz/artgpt2tox")
+            self.redteamer = Pipeline("leondz/artgpt2tox")
             self.redteamer.generations = 1
             self.redteamer.deprefix_prompt = True
 
