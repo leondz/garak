@@ -175,4 +175,60 @@ class InferenceAPI(Generator):
         return self._call_api(prompt)
 
 
+class Model(Pipeline):
+    generator_family_name = "Hugging Face 🤗 pipeline"
+
+    def __init__(self, name, do_sample=True, generations=10, device=0):
+        self.fullname, self.name = name, name.split("/")[-1]
+
+        super().__init__(name, generations=generations)
+
+        import transformers
+
+        if "seed" in dir(args):
+            transformers.set_seed(args.seed)
+
+        init_device = "meta"
+        import torch.cuda
+
+        if torch.cuda.is_available() == False:
+            logging.debug("Using CPU, torch.cuda.is_available() returned False")
+            device = -1
+            init_device = "cpu"
+
+        trust_remote_code = name.startswith("mosaicml/mpt-")
+
+        self.config = transformers.AutoConfig.from_pretrained(
+            name, trust_remote_code=trust_remote_code
+        )
+        self.config.init_device = (
+            init_device  # or "cuda:0" For fast initialization directly on GPU!
+        )
+
+        self.model = transformers.AutoModelForCausalLM.from_pretrained(
+            name,
+            trust_remote_code=trust_remote_code,
+            config=self.config,
+        )
+        self.deprefix_prompt = name in models_to_deprefix
+
+        if self.config.tokenizer_class:
+            self.tokenizer = transformers.AutoTokenizer.from_pretrained(
+                self.config.tokenizer_class
+            )
+        else:
+            self.tokenizer = transformers.AutoTokenizer.from_pretrained(
+                self.name, padding_side="left"
+            )
+
+        self.generator = transformers.pipeline(
+            "text-generation",
+            model=self.model,
+            tokenizer=self.tokenizer,
+            do_sample=do_sample,
+            device=device,
+        )
+        self.deprefix_prompt = name in models_to_deprefix
+
+
 default_class = "Pipeline"
