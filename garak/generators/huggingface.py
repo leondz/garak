@@ -28,7 +28,7 @@ class HFInternalServerError(Exception):
 
 
 class Pipeline(Generator):
-    generator_family_name = "Hugging Face 🤗"
+    generator_family_name = "Hugging Face 🤗 pipeline"
 
     def __init__(self, name, do_sample=True, generations=10, device=0):
         self.fullname, self.name = name, name.split("/")[-1]
@@ -176,7 +176,7 @@ class InferenceAPI(Generator):
 
 
 class Model(Pipeline):
-    generator_family_name = "Hugging Face 🤗 pipeline"
+    generator_family_name = "Hugging Face 🤗 model"
 
     def __init__(self, name, do_sample=True, generations=10, device=0):
         self.fullname, self.name = name, name.split("/")[-1]
