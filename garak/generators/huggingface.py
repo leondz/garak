@@ -181,7 +181,7 @@ class Model(Pipeline):
     def __init__(self, name, do_sample=True, generations=10, device=0):
         self.fullname, self.name = name, name.split("/")[-1]
 
-        super().__init__(name, generations=generations)
+        super(Pipeline, self).__init__(name, generations=generations)
 
         import transformers
 
@@ -196,17 +196,17 @@ class Model(Pipeline):
             device = -1
             init_device = "cpu"
 
-        trust_remote_code = name.startswith("mosaicml/mpt-")
+        trust_remote_code = self.fullname.startswith("mosaicml/mpt-")
 
         self.config = transformers.AutoConfig.from_pretrained(
-            name, trust_remote_code=trust_remote_code
+            self.fullname, trust_remote_code=trust_remote_code
         )
         self.config.init_device = (
             init_device  # or "cuda:0" For fast initialization directly on GPU!
         )
 
         self.model = transformers.AutoModelForCausalLM.from_pretrained(
-            name,
+            self.fullname,
             trust_remote_code=trust_remote_code,
             config=self.config,
         )
@@ -218,7 +218,7 @@ class Model(Pipeline):
             )
         else:
             self.tokenizer = transformers.AutoTokenizer.from_pretrained(
-                self.name, padding_side="left"
+                self.fullname, padding_side="left"
             )
 
         self.generator = transformers.pipeline(
@@ -228,7 +228,7 @@ class Model(Pipeline):
             do_sample=do_sample,
             device=device,
         )
-        self.deprefix_prompt = name in models_to_deprefix
+        self.deprefix_prompt = self.fullname in models_to_deprefix
 
 
 default_class = "Pipeline"
