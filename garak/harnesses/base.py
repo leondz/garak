@@ -14,6 +14,8 @@ import garak._config as _config
 class Harness:
     """Class to manage the whole process of probing, detecting and evaluating"""
 
+    active = True
+
     def __init__(self):
         logging.debug(f"harness run: {self}")
 

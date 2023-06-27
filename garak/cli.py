@@ -253,14 +253,14 @@ def main(arguments=[]) -> None:
                     detector_names += ["detectors." + detector_clause]
 
         if detector_names == []:
-            import garak.harness.probewise
+            import garak.harnesses.probewise
 
-            h = garak.harness.probewise.ProbewiseHarness()
+            h = garak.harnesses.probewise.ProbewiseHarness()
             h.run(generator, probe_names, evaluator)
         else:
-            import garak.harness.pxd
+            import garak.harnesses.pxd
 
-            h = garak.harness.pxd.PxD()
+            h = garak.harnesses.pxd.PxD()
             h.run(generator, probe_names, detector_names, evaluator)
 
         logging.info("run complete, ending")

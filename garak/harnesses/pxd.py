@@ -3,7 +3,7 @@
 import logging
 from colorama import Fore, Style
 
-from garak.harness.base import Harness
+from garak.harnesses.base import Harness
 
 import garak._plugins as _plugins
 

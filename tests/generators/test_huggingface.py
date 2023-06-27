@@ -25,7 +25,7 @@ def test_pipeline():
 
 
 def test_inference():
-    return  # so slow though
+    return  # slow w/o key
     g = garak.generators.huggingface.InferenceAPI("gpt2")
     assert g.name == "gpt2"
     assert g.generations == DEFAULT_GENERATIONS_QTY
