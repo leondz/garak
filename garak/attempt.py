@@ -24,17 +24,21 @@ class Attempt:
         self.outputs = []
         self.notes = {}
         self.detector_results = {}
+        self.goal = None
+        self.seq = -1
 
     def as_dict(self) -> dict:
         return {
+            "entry_type": "attempt",
             "uuid": str(self.uuid),
+            "seq": self.seq,
             "status": self.status,
             "probe_classname": self.probe_classname,
             "probe_params": self.probe_params,
             "targets": self.targets,
             "prompt": self.prompt,
             "outputs": list(self.outputs),
-            "notes": self.notes,
             "detector_results": self.detector_results,
-            "entry_type": "attempt",
+            "notes": self.notes,
+            "goal": self.goal,
         }

@@ -9,3 +9,5 @@ reportfile = None
 hitlogfile = None
 seed = 320
 run_id = None
+generator_model = None
+generator_name = None

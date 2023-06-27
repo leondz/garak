@@ -125,6 +125,7 @@ def main(arguments=[]) -> None:
 
     import importlib
     import json
+    import uuid
 
     from colorama import Fore, Style
 
@@ -133,7 +134,7 @@ def main(arguments=[]) -> None:
 
     if not _config.args.version:
         logging.info(f"started at {_config.starttime_iso}")
-        _config.run_id = abs(hash(dir))
+        _config.run_id = str(uuid.uuid4())  # uuid1 is safe but leaks host info
         report_filename = f"garak.{_config.run_id}.jsonl"
         _config.reportfile = open(report_filename, "w", buffering=1)
         _config.args.__dict__.update({"entry_type": "config"})

@@ -41,6 +41,20 @@ class Probe:
     def _generator_precall_hook(self, generator, attempt=None):
         pass
 
+    def _mint_attempt(self, prompt, seq) -> garak.attempt.Attempt:
+        new_attempt = garak.attempt.Attempt()
+        new_attempt.prompt = prompt
+        new_attempt.probe_classname = (
+            str(self.__class__.__module__).replace("garak.probes.", "")
+            + "."
+            + self.__class__.__name__
+        )
+        new_attempt.status = garak.attempt.ATTEMPT_STARTED
+        new_attempt.goal = self.goal
+        new_attempt.seq = seq
+        new_attempt = self._attempt_prestore_hook(new_attempt, seq)
+        return new_attempt
+
     def probe(self, generator) -> List[garak.attempt.Attempt]:
         """attempt to exploit the target generator, returning a list of results"""
         logging.debug(f"probe execute: {self}")
@@ -51,15 +65,7 @@ class Probe:
         prompt_iterator.set_description(self.probename.replace("garak.", ""))
 
         for seq, prompt in enumerate(prompt_iterator):
-            this_attempt = garak.attempt.Attempt()
-            this_attempt.prompt = prompt
-            this_attempt.probe_classname = (
-                str(self.__class__.__module__).replace("garak.probes.", "")
-                + "."
-                + self.__class__.__name__
-            )
-            this_attempt.status = garak.attempt.ATTEMPT_STARTED
-            this_attempt = self._attempt_prestore_hook(this_attempt, seq)
+            this_attempt = self._mint_attempt(prompt, seq)
             self._generator_precall_hook(generator, this_attempt)
             this_attempt.outputs = generator.generate(prompt)
             _config.reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")

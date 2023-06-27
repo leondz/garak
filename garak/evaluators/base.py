@@ -38,16 +38,21 @@ class Evaluator:
         detector_names = attempts[0].detector_results.keys()
 
         for detector in detector_names:
+            all_passes = []
+            all_outputs = []
             for attempt in attempts:
                 passes = [
                     1 if self.test(r) else 0
                     for r in map(float, attempt.detector_results[detector])
                 ]
-                self.print_results(detector, passes, attempt.outputs)
+                all_passes += passes
+                all_outputs += attempt.outputs
                 for idx, score in enumerate(attempt.detector_results[detector]):
                     if not self.test(score):  # if we don't pass
                         if not garak._config.hitlogfile:
-                            hitlog_filename = f"hitlog.{garak._config.run_id}.jsonl"
+                            hitlog_filename = (
+                                f"garak.{garak._config.run_id}.hitlog.jsonl"
+                            )
                             logging.info(f"hit log in {hitlog_filename}")
                             garak._config.hitlogfile = open(
                                 hitlog_filename, "w", buffering=1
@@ -59,20 +64,23 @@ class Evaluator:
                         garak._config.hitlogfile.write(
                             json.dumps(
                                 {
-                                    "goal": None,
+                                    "goal": attempt.goal,
                                     "prompt": attempt.prompt,
                                     "output": attempt.outputs[idx],
                                     "trigger": trigger,
                                     "score": score,
                                     "run_id": str(garak._config.run_id),
                                     "attempt_id": str(attempt.uuid),
-                                    "generator": None,
+                                    "attempt_seq": attempt.seq,
+                                    "attempt_idx": idx,
+                                    "generator": f"{garak._config.args.model_type} {garak._config.args.model_name}",
                                     "probe": self.probename,
                                     "detector": detector,
                                 }
                             )
                             + "\n"  # generator,probe,prompt,trigger,result,detector,score,run id,attemptid,
                         )
+            self.print_results(detector, all_passes, all_outputs)
 
     def print_results(self, detector_name, passes, messages):
         """Print the evaluator's summary"""
