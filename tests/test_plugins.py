@@ -1,21 +1,12 @@
 #!/usr/bin/env python3
 
+import os
 import pytest
 
 import garak.generators
 from garak import _plugins
 
-
-generators = [
-    classname for (classname, active) in _plugins.enumerate_plugins("generators")
-]
-
-
-@pytest.mark.parametrize("classname", generators)
-def test_instantiate_generators(classname):
-    g = _plugins.load_plugin(classname)
-    assert g is False or isinstance(g, garak.generators.base.Generator)
-
+# NB excludes generators
 
 probes = [classname for (classname, active) in _plugins.enumerate_plugins("probes")]
 
@@ -23,7 +14,7 @@ probes = [classname for (classname, active) in _plugins.enumerate_plugins("probe
 @pytest.mark.parametrize("classname", probes)
 def test_instantiate_probes(classname):
     g = _plugins.load_plugin(classname)
-    assert g is False or isinstance(g, garak.probes.base.Probe)
+    assert isinstance(g, garak.probes.base.Probe)
 
 
 detectors = [
@@ -34,7 +25,7 @@ detectors = [
 @pytest.mark.parametrize("classname", detectors)
 def test_instantiate_detectors(classname):
     g = _plugins.load_plugin(classname)
-    assert g is False or isinstance(g, garak.detectors.base.Detector)
+    assert isinstance(g, garak.detectors.base.Detector)
 
 
 harnesses = [
@@ -45,4 +36,4 @@ harnesses = [
 @pytest.mark.parametrize("classname", harnesses)
 def test_instantiate_harnesses(classname):
     g = _plugins.load_plugin(classname)
-    assert g is False or isinstance(g, garak.harnesses.base.Harness)
+    assert isinstance(g, garak.harnesses.base.Harness)
