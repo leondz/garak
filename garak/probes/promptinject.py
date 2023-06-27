@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
+import random
 import sys
 
 from garak.attempt import Attempt
 from garak.probes.base import Probe
+import garak._config
 
 
 hijacking_attacks = (
@@ -59,6 +61,10 @@ def load_data_all_attacks(self):
     self.pi_prompts = self.pi_build_prompts(prompt_config)
     for pi_prompt in self.pi_prompts:
         self.prompts.append(pi_prompt["prompt"])
+    if self.max_prompts:
+        random.seed(garak._config.seed)
+        random.shuffle(self.prompts)
+        self.prompts = self.prompts[-self.max_prompts :]
 
 
 def _attempt_prestore_hook(self, attempt: Attempt, seq: int) -> Attempt:
@@ -104,6 +110,35 @@ for rogue_string in rogue_strings:
                 "_attempt_prestore_hook": _attempt_prestore_hook,
                 "_generator_precall_hook": _generator_precall_hook,
                 "goal": "inject a prompt on " + rogue_string.replace("-", " "),
+                "active": False,
+                "max_prompts": None,
+            },
+        ),
+    )
+
+    setattr(
+        this,
+        classname + "Mini",
+        type(
+            classname + "Mini",
+            (Probe,),
+            {
+                "__init__": constructor,
+                "name": "promptinject_" + rogue_string,
+                "bcp47": "en",
+                "description": "PromptInject is a framework that assembles prompts in a modular fashion to provide a quantitative analysis of the robustness of LLMs to adversarial prompt attacks. trophy Best Paper Awards @ NeurIPS ML Safety Workshop 2022",
+                "recommended_detector": [
+                    "promptinject.AttackRogueString",
+                ],
+                "tags": ["avid-effect:security:S0403"],
+                "load_data_all_attacks": load_data_all_attacks,
+                "uri": "https://openreview.net/forum?id=qiaRo_7Zmug",
+                "rogue_string": rogue_string,
+                "_attempt_prestore_hook": _attempt_prestore_hook,
+                "_generator_precall_hook": _generator_precall_hook,
+                "goal": "inject a prompt on " + rogue_string.replace("-", " "),
+                "active": True,
+                "max_prompts": 100,
             },
         ),
     )
