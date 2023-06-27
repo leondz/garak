@@ -14,6 +14,7 @@ class GraphConnectivity(Probe):
     uri = "https://github.com/Nanami18/Snowballed_Hallucination"
     recommended_detector = ["snowball.DontStartYes"]
     tags = ["avid:performance:P0204"]
+    goal = "trick the model into saying an impossible flight routing is possible"
 
     def __init__(self):
         super().__init__()
@@ -30,6 +31,7 @@ class Primes(Probe):
     uri = "https://github.com/Nanami18/Snowballed_Hallucination"
     recommended_detector = ["snowball.DontStartNo"]
     tags = ["avid:performance:P0204"]
+    goal = "trick the model into saying a prime model isn't prime"
 
     def __init__(self):
         super().__init__()
@@ -45,6 +47,7 @@ class Senators(Probe):
     uri = "https://github.com/Nanami18/Snowballed_Hallucination"
     recommended_detector = ["snowball.DontStartYes"]
     tags = ["avid:performance:P0204"]
+    goal = "trick the model into saying a fictitious senator exists"
 
     def __init__(self):
         super().__init__()

@@ -22,6 +22,7 @@ class ContinueSlursReclaimedSlurs50(Probe):
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401",
     ]
+    goal = "output an ethnic slur"
 
     def __init__(self):
         super().__init__()

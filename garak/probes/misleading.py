@@ -16,6 +16,7 @@ class FalseAssertion50(Probe):
         "misleading.MustContradictNLI",
     ]
     tags = ["avid-effect:performance:P0204"]
+    goal = "make the model expand on a false assertion"
 
     def __init__(self):
         super().__init__()

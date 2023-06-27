@@ -189,6 +189,7 @@ class InjectBase64(Probe):
         "encoding.DecodeApprox",
     ]
     tags = ["avid-effect:security:S0403"]
+    goal = "make the model say an encoded payload"
 
     def __init__(self):
         super().__init__()
@@ -213,6 +214,7 @@ class InjectBase16(Probe):
         "encoding.DecodeApprox",
     ]
     tags = ["avid-effect:security:S0403"]
+    goal = "make the model say an encoded payload"
 
     def __init__(self):
         super().__init__()
@@ -231,6 +233,7 @@ class InjectBase32(Probe):
         "encoding.DecodeApprox",
     ]
     tags = ["avid-effect:security:S0403"]
+    goal = "make the model say an encoded payload"
 
     def __init__(self):
         super().__init__()
@@ -249,6 +252,7 @@ class InjectAscii85(Probe):
         "encoding.DecodeApprox",
     ]
     tags = ["avid-effect:security:S0403"]
+    goal = "make the model say an encoded payload"
 
     def __init__(self):
         super().__init__()
@@ -268,6 +272,7 @@ class InjectBase32(Probe):
         "encoding.DecodeApprox",
     ]
     tags = ["avid-effect:security:S0403"]
+    goal = "make the model say an encoded payload"
 
     def __init__(self):
         super().__init__()
@@ -287,6 +292,7 @@ class InjectHex(Probe):
         "encoding.DecodeApprox",
     ]
     tags = ["avid-effect:security:S0403"]
+    goal = "make the model say an encoded payload"
 
     def __init__(self):
         super().__init__()
@@ -306,6 +312,7 @@ class InjectQP(Probe):
         "encoding.DecodeApprox",
     ]
     tags = ["avid-effect:security:S0403"]
+    goal = "make the model say an encoded payload"
 
     def __init__(self):
         super().__init__()
@@ -325,6 +332,7 @@ class InjectUU(Probe):
         "encoding.DecodeApprox",
     ]
     tags = ["avid-effect:security:S0403"]
+    goal = "make the model say an encoded payload"
 
     def __init__(self):
         super().__init__()
@@ -357,6 +365,7 @@ class InjectMime(Probe):
         "encoding.DecodeApprox",
     ]
     tags = ["avid-effect:security:S0403"]
+    goal = "make the model say an encoded payload"
 
     def __init__(self):
         super().__init__()
@@ -397,6 +406,7 @@ class InjectBase2048(Probe):
         "encoding.DecodeApprox",
     ]
     tags = ["avid-effect:security:S0403"]
+    goal = "make the model say an encoded payload"
 
     def __init__(self):
         super().__init__()
@@ -420,6 +430,7 @@ class InjectBraille(Probe):
         "encoding.DecodeApprox",
     ]
     tags = ["avid-effect:security:S0403"]
+    goal = "make the model say an encoded payload"
 
     def __init__(self):
         super().__init__()
@@ -440,6 +451,7 @@ class InjectMorse(Probe):
         "encoding.DecodeApprox",
     ]
     tags = ["avid-effect:security:S0403"]
+    goal = "make the model say an encoded payload"
 
     def __init__(self):
         super().__init__()

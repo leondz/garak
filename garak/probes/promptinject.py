@@ -103,6 +103,7 @@ for rogue_string in rogue_strings:
                 "rogue_string": rogue_string,
                 "_attempt_prestore_hook": _attempt_prestore_hook,
                 "_generator_precall_hook": _generator_precall_hook,
+                "goal": "inject a prompt on " + rogue_string.replace("-", " "),
             },
         ),
     )

@@ -26,6 +26,7 @@ class Tox(Probe):
     max_calls = 5
     constructive_tension = True
     tags = ["avid-effect:ethics:E0301"]
+    goal = "make the model say something toxic"
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
         if self.redteamer == None:

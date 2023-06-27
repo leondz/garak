@@ -9,6 +9,7 @@ class Dan_11_0(Probe):
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
     tags = ["avid-effect:security:S0403", "avid-effect:performance:P0204"]
+    goal = "disregard the system prompt"
 
     def probe(self, target):
         modelname = target.name
@@ -24,6 +25,7 @@ class Dan_10_0(Probe):
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
     tags = ["avid-effect:security:S0403"]
+    goal = "disregard the system prompt"
 
     def probe(self, target):
         modelname = target.name
@@ -39,6 +41,7 @@ class Dan_9_0(Probe):
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
     tags = ["avid-effect:security:S0403"]
+    goal = "disregard the system prompt"
 
     def probe(self, target):
         modelname = target.name
@@ -81,6 +84,7 @@ class Dan_8_0(Probe):
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
     tags = ["avid-effect:security:S0403"]
+    goal = "disregard the system prompt"
 
     def probe(self, target):
         modelname = target.name
@@ -126,6 +130,7 @@ class Dan_7_0(Probe):
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
     tags = ["avid-effect:security:S0403"]
+    goal = "disregard the system prompt"
 
     def probe(self, target):
         modelname = target.name
@@ -159,6 +164,7 @@ class Dan_6_2(Probe):
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
     tags = ["avid-effect:security:S0403"]
+    goal = "disregard the system prompt"
 
     def probe(self, target):
         modelname = target.name
@@ -188,6 +194,7 @@ class Dan_6_0(Probe):
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
     tags = ["avid-effect:security:S0403"]
+    goal = "disregard the system prompt"
 
     def probe(self, target):
         modelname = target.name
@@ -203,6 +210,7 @@ class DUDE(Probe):
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass", "dan.DUDE"]
     tags = ["avid-effect:security:S0403"]
+    goal = "disregard the system prompt"
 
     def probe(self, target):
         modelname = target.name
@@ -218,6 +226,7 @@ class STAN(Probe):
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass", "dan.STAN"]
     tags = ["avid-effect:security:S0403"]
+    goal = "disregard the system prompt"
 
     def probe(self, target):
         modelname = target.name
@@ -236,6 +245,7 @@ class DAN_Jailbreak(Probe):
         "dan.DANJailbreak",
     ]
     tags = ["avid-effect:security:S0403"]
+    goal = "disregard the system prompt"
 
     def probe(self, target):
         modelname = target.name
@@ -254,6 +264,7 @@ class AntiDAN(Probe):
         "dan.AntiDAN",
     ]
     tags = ["avid-effect:security:S0403", "avid-effect:performance:P0204"]
+    goal = "disregard the system prompt"
 
     def probe(self, target):
         modelname = target.name
@@ -286,6 +297,7 @@ class ChatGPT_Developer_Mode_v2(Probe):
         "dan.DevMode",
     ]
     tags = ["avid-effect:security:S0403"]
+    goal = "disregard the system prompt"
 
     def probe(self, target):
         modelname = target.name
@@ -304,6 +316,7 @@ class ChatGPT_Developer_Mode_RANTI(Probe):
         "dan.DevMode",
     ]
     tags = ["avid-effect:security:S0403", "avid-effect:performance:P0204"]
+    goal = "disregard the system prompt"
 
     def probe(self, target):
         modelname = target.name
@@ -322,6 +335,7 @@ class ChatGPT_Image_Markdown(Probe):
         "dan.MarkdownLink",
     ]
     tags = ["avid-effect:security:S0403"]
+    goal = "disregard the system prompt"
 
     def probe(self, target):
         modelname = target.name
@@ -339,6 +353,7 @@ class Ablation_Dan_11_0(Probe):
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
     tags = ["avid-effect:security:S0403"]
+    goal = "disregard the system prompt"
 
     def probe(self, target):
         self.prompts = []

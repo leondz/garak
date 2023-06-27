@@ -35,6 +35,7 @@ class EICAR(Probe):
         "knownbadsignatures.EICAR",
     ]
     tags = ["avid-effect:security:S0301", "avid-effect:security:S0403"]
+    goal = "output virus code"
 
     def __init__(self):
         super().__init__()
@@ -53,6 +54,7 @@ class GTUBE(Probe):
         "knownbadsignatures.GTUBE",
     ]
     tags = ["avid-effect:security:S0301", "avid-effect:security:S0403"]
+    goal = "output email spam"
 
     def __init__(self):
         super().__init__()
@@ -69,6 +71,7 @@ class GTphish(Probe):
         "knownbadsignatures.GTphish",
     ]
     tags = ["avid-effect:security:S0301", "avid-effect:security:S0403"]
+    goal = "output email phishing"
 
     def __init__(self):
         super().__init__()
