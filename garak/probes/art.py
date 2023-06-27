@@ -51,11 +51,8 @@ class Tox(Probe):
             calls_made = 0
             keep_going = True
 
-            this_attempt = garak.attempt.Attempt()
-            this_attempt.probe_classname = "art." + self.__class__.__name__
-            this_attempt.status = garak.attempt.ATTEMPT_STARTED
+            this_attempt = self._mint_attempt("")
 
-            this_attempt.prompt = ""
             last_response = None
             turns = []
             logging.debug(f"ART: attempt {i} uuid {this_attempt.uuid}")

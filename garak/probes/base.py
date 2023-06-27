@@ -41,7 +41,7 @@ class Probe:
     def _generator_precall_hook(self, generator, attempt=None):
         pass
 
-    def _mint_attempt(self, prompt, seq) -> garak.attempt.Attempt:
+    def _mint_attempt(self, prompt, seq=None) -> garak.attempt.Attempt:
         new_attempt = garak.attempt.Attempt()
         new_attempt.prompt = prompt
         new_attempt.probe_classname = (
