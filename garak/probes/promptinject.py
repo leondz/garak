@@ -16,7 +16,7 @@ this = sys.modules[__name__]
 
 def constructor(self):
     super(self.__class__, self).__init__()
-    from resources.promptinject import (
+    from garak.resources.promptinject import (
         build_prompts,
         prompt_data,
     )
