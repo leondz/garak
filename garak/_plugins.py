@@ -64,7 +64,7 @@ def enumerate_plugins(category: str = "probes") -> List[str]:
         for module_entry in module_entries:
             obj = getattr(mod, module_entry)
             if inspect.isclass(obj):
-                if obj.__bases__[0].__name__ in base_plugin_classnames:
+                if obj.__bases__[-1].__name__ in base_plugin_classnames:
                     module_plugin_names.add((module_entry, obj.active))
 
         for module_plugin_name, active in sorted(module_plugin_names):
