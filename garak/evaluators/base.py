@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
 import json
+import logging
+from typing import List
 
 from colorama import Fore, Back, Style
 
 import garak._config
+import garak.attempt
 
 
 class Evaluator:
@@ -14,7 +17,6 @@ class Evaluator:
     that come from probe calls."""
 
     def __init__(self):
-        messages = []
         self.probename = ""
 
     def test(self, test_value: float) -> bool:
@@ -25,14 +27,54 @@ class Evaluator:
         :type test_value: float"""
         return False  # fail everything by default
 
-    def evaluate(self, scores, queries, probename=""):
-        """evaluate feedback from detectors"""
-        self.probename = probename.replace("garak.", "")
-        for test_name in sorted(scores.keys()):
-            passes = [1 if self.test(r) else 0 for r in map(float, scores[test_name])]
-            self.print_results(test_name, passes, queries)
+    def evaluate(self, attempts: List[garak.attempt.Attempt]) -> None:
+        """
+        evaluate feedback from detectors
+        expects a list of attempts that correspond to one probe
+        outputs results once per detector
+        """
 
-    def print_results(self, test_name, passes, messages):
+        self.probename = attempts[0].probe_classname
+        detector_names = attempts[0].detector_results.keys()
+
+        for detector in detector_names:
+            for attempt in attempts:
+                passes = [
+                    1 if self.test(r) else 0
+                    for r in map(float, attempt.detector_results[detector])
+                ]
+                self.print_results(detector, passes, attempt.outputs)
+                for idx, score in enumerate(attempt.detector_results[detector]):
+                    if not self.test(score):  # if we don't pass
+                        if not garak._config.hitlogfile:
+                            hitlog_filename = f"hitlog.{garak._config.run_id}.jsonl"
+                            logging.info(f"hit log in {hitlog_filename}")
+                            garak._config.hitlogfile = open(
+                                hitlog_filename, "w", buffering=1
+                            )
+
+                        trigger = None
+                        if "trigger" in attempt.notes:
+                            trigger = attempt.notes["trigger"]
+                        garak._config.hitlogfile.write(
+                            json.dumps(
+                                {
+                                    "goal": None,
+                                    "prompt": attempt.prompt,
+                                    "output": attempt.outputs[idx],
+                                    "trigger": trigger,
+                                    "score": score,
+                                    "run_id": str(garak._config.run_id),
+                                    "attempt_id": str(attempt.uuid),
+                                    "generator": None,
+                                    "probe": self.probename,
+                                    "detector": detector,
+                                }
+                            )
+                            + "\n"  # generator,probe,prompt,trigger,result,detector,score,run id,attemptid,
+                        )
+
+    def print_results(self, detector_name, passes, messages):
         """Print the evaluator's summary"""
         if len(passes):
             outcome = (
@@ -44,7 +86,7 @@ class Evaluator:
         else:
             outcome = Fore.LIGHTYELLOW_EX + "SKIP"
         print(
-            f"{self.probename:<50}{test_name:>50}: {Style.BRIGHT}{outcome}{Style.RESET_ALL}",
+            f"{self.probename:<50}{detector_name:>50}: {Style.BRIGHT}{outcome}{Style.RESET_ALL}",
             f" ok on {sum(passes):>4}/{len(passes):>4}",
             end="",
         )
@@ -60,7 +102,7 @@ class Evaluator:
                 {
                     "entry_type": "eval",
                     "probe": self.probename,
-                    "detector": "detector." + test_name,
+                    "detector": "detector." + detector_name,
                     "passed": sum(passes),
                     "total": len(passes),
                 }
