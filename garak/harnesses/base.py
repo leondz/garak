@@ -61,4 +61,4 @@ class Harness:
                 attempt.status = ATTEMPT_COMPLETE
                 _config.reportfile.write(json.dumps(attempt.as_dict()) + "\n")
 
-            evaluator.evaluate(eval_results, eval_outputs, probename=probe.probename)
+            evaluator.evaluate(attempt_results)

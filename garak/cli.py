@@ -125,6 +125,7 @@ def main(arguments=[]) -> None:
 
     import importlib
     import json
+    import uuid
 
     from colorama import Fore, Style
 
@@ -133,8 +134,8 @@ def main(arguments=[]) -> None:
 
     if not _config.args.version:
         logging.info(f"started at {_config.starttime_iso}")
-        report_uniqueish_id = abs(hash(dir))
-        report_filename = f"garak.{report_uniqueish_id}.jsonl"
+        _config.run_id = str(uuid.uuid4())  # uuid1 is safe but leaks host info
+        report_filename = f"garak.{_config.run_id}.jsonl"
         _config.reportfile = open(report_filename, "w", buffering=1)
         _config.args.__dict__.update({"entry_type": "config"})
         _config.reportfile.write(json.dumps(_config.args.__dict__) + "\n")
@@ -266,6 +267,8 @@ def main(arguments=[]) -> None:
         logging.info("run complete, ending")
         _config.reportfile.close()
         print(f"📜 report closed :) {report_filename}")
+        if _config.hitlogfile:
+            _config.hitlogfile.close()
 
         timetaken = (datetime.datetime.now() - _config.starttime).total_seconds()
 
