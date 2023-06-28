@@ -11,3 +11,4 @@ google-api-python-client>=2.0
 backoff>=2.1.1
 torch
 rapidfuzz
+jinja2
