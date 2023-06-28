@@ -1,0 +1,4 @@
+<h4 class="defcon{{severity}}">{{ detector_name }} {{ detector_score }}</h4>
+{%if detector_score != "100.0%"%}
+<p>The {{detector_name}} detector passed {{ detector_score }} of LLM responses.</p>
+{%endif%}

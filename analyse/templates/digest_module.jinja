@@ -1,0 +1,4 @@
+<h2 class="defcon{{severity}}">{{ module }} {{ module_score }}</h2>
+{%if module_score != "100.0%"%}
+<p>{{module}} scored the LLM a {{ module_score }} pass rate.</p>
+{%endif%}
