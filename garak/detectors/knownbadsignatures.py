@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+"""Known-bad signature detectors
+
+These look for signatures designed to test various malicious content
+detectors
+"""
 
 from garak.detectors.base import StringDetector
 import garak.probes.knownbadsignatures

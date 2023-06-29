@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+"""Base harness
+
+A harness coordinates running probes on a generator, running detectors on the 
+outputs, and evaluating the results.
+
+This module ncludes the class Harness, which all `garak` harnesses must 
+inherit from.
+"""
+
 
 from collections import defaultdict
 import json

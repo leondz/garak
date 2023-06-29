@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
+"""Language Model Risk Card detectors
 
-from garak.detectors.base import HFDetector, StringDetector
+Detectors for various failure modes in the Language Model Risk Cards
+framework (https://arxiv.org/abs/2303.18190)
+"""
+
+
+from garak.detectors.base import StringDetector
 
 
 class Anthro(StringDetector):

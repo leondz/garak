@@ -1,4 +1,14 @@
 #!/usr/bin/env python3
+"""Replicate generator interface
+
+Generator for https://replicate.com/
+
+Put your replicate key in an environment variable called
+REPLICATE_API_TOKEN. It's found on your Replicate account
+page, https://replicate.com/account.
+
+Text-output models are supported.
+"""
 
 import importlib
 import os

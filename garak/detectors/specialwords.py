@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""
+Specialwords detectors
+
+Matches terms in word lists
+"""
+
 
 import json
 

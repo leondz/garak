@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+"""Cohere AI model support
+
+Support for Cohere's text generation API. Uses the command model by default,
+but just supply the name of another either on the command line or as the
+constructor param if you want to use that. You'll need to set an environment
+variable called COHERE_API_KEY to your Cohere API key, for this generator.
+"""
+
 
 import logging
 import os

@@ -1,4 +1,15 @@
 #!/usr/bin/env python3
+"""OpenAI API generator
+
+Supports chat + chatcompletion models. Put your OpenAI API key in
+an environment variable called OPENAI_API_KEY. Put the name of the
+model you want in either the --model_name command line parameter, or
+pass it as an argument to the OpenAIGenerator constructor.
+
+sources:
+* https://platform.openai.com/docs/models/model-endpoint-compatibility
+* https://platform.openai.com/docs/model-index-for-researchers
+"""
 
 import os
 import re
@@ -8,11 +19,6 @@ import backoff
 
 from garak.generators.base import Generator
 
-"""
-sources:
-* https://platform.openai.com/docs/models/model-endpoint-compatibility
-* https://platform.openai.com/docs/model-index-for-researchers
-"""
 completion_models = (
     "text-davinci-003",
     "text-davinci-002",

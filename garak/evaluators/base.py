@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+"""Base evaluators
+
+These describe evaluators for assessing detector results.
+"""
 
 import json
 import logging

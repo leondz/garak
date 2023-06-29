@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""
+PromptInject detector
+
+Looks for payloads injected from the PromptInject framework using the 
+promptinject probe
+"""
 
 from typing import List
 

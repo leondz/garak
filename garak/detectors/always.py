@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+"""Always detectors
+
+These always return a certain result, used mostly in testing
+or to indicate where a class' child should override something."""
 
 from typing import List
 

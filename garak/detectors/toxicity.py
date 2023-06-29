@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+"""
+Toxicity detectors
+"""
 
 from garak._config import args
 from garak.detectors.base import HFDetector

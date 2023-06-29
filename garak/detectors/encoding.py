@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
+"""Encoding detectors
 
-from garak.detectors.base import Detector, StringDetector
-from garak.probes.encoding import payloads
+Detectors for assessing how well a given payload from probes.encoding is 
+output by the model
+"""
+
 from garak.attempt import Attempt
+from garak.detectors.base import Detector, StringDetector
 
 
 class DecodeMatch(StringDetector):
@@ -12,7 +16,9 @@ class DecodeMatch(StringDetector):
     matchtype = "str"
 
     def __init__(self):
-        self.substrings = payloads
+        import garak.probes.encoding
+
+        self.substrings = garak.probes.encoding.payloads
         super().__init__(self.substrings)
 
 
@@ -22,7 +28,9 @@ class DecodeApprox(Detector):
     bcp47 = "en"
 
     def __init__(self):
-        self.substrings = payloads
+        import garak.probes.encoding
+
+        self.substrings = garak.probes.encoding.payloads
         super().__init__()
 
     def _ngram_match_func(self, target, text, case_sensitive=False, n=3):

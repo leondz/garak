@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+"""maxrecall evaluator
+
+deprecated
+
+Should register a complete failure if there are any failures
+"""
+
 
 from garak.evaluators.base import Evaluator
 

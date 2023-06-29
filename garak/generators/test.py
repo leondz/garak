@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+"""Test generators
+
+These give simple system responses, intended for testing.
+"""
 
 from garak.generators.base import Generator
 

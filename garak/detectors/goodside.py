@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+"""Goodside detectors
+
+Broad range of detectors used to support the probes.goodside module
+"""
 
 import json
 import logging

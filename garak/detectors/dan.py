@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+"""DAN Detectors
+
+Detectors for guessing whether a DAN-family prompt has been successful """
 
 from garak.detectors.base import StringDetector
 

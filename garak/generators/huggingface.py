@@ -1,4 +1,19 @@
 #!/usr/bin/env python3
+"""Hugging Face generator
+
+Supports pipelines, inference API, and models.
+
+Not all models on HF Hub work well with pipelines; try a Model generator
+if there are problems. Otherwise, please let us know if it's still not working!
+
+ https://github.com/leondz/garak/issues
+
+If you use the inference API, it's recommended to put your Hugging Face API key
+in an environment variable called HF_INFERENCE_TOKEN , else the rate limiting can
+be quite strong. Find your Hugging Face Inference API Key here:
+
+ https://huggingface.co/docs/api-inference/quicktour
+"""
 
 import logging
 import re

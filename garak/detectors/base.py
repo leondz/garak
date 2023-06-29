@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+"""Base detectors.
+
+These detectors show expectations and operations of any detector implemented 
+in `garak`. `garak` detectors must inherit from a class in here."""
+
 
 import logging
 import re

@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+"""Probewise harness
+
+Selects detectors to run for each probe based on that probe's recommendations
+"""
 
 import logging
 from colorama import Fore, Style

@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+"""XSS detectors
+
+Detectors to match the probes.xss plugins
+"""
 
 import re
 

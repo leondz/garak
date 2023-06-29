@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+"""Misleading claim response detection
+
+Detectors that expect a refutation
+"""
+
 
 from typing import List
 

@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+"""Base Generator
+
+All `garak` generators must inherit from this.
+"""
 
 import logging
 from typing import List

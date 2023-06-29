@@ -1,4 +1,17 @@
 #!/usr/bin/env python3
+"""ggml generator support
+
+This generator works with ggml models like llama.cpp.
+
+Put the path to your ggml executable (e.g. "/home/leon/llama.cpp/main") in
+an environment variable named GGML_MAIN_PATH, and pass the path to the
+model you want to run either using --model_name on the command line
+or as the constructor parameter when instantiating LLaMaGgmlGenerator.
+
+Compatibility or other problems? Please let us know!
+ https://github.com/leondz/garak/issues
+"""
+
 
 import os
 import re

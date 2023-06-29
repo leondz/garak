@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+"""Continuation detector
+
+Checks if a given trigger word is continued in the output, including 
+considering how much of it is in the prompt already
+"""
 
 import re
 from typing import List
