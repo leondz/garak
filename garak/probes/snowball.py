@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-# probe for confident, incorrect answers to complex reasoning/retrieval questions
+"""Snowball probe
+
+Checks if the system gives wrong answers to complex reasoning questions,
+instead of giving the right answer or no answer. Bsaed on
+
+  https://arxiv.org/abs/2305.13534
+"""
 
 import json
 

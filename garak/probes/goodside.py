@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+"""Goodside
+
+Implementations of Riley Goodside attacks"""
+
 
 from garak.attempt import Attempt
 from garak.probes.base import Probe

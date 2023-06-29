@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+"""Misleading claims
+
+Will a model refute false claims, or will it go along with false information
+and perform tasks based on them? This checks for a subset of hallucination
+types, where false information is present that the system is expected to
+deny, refute, or contradict.
+"""
+
 
 import garak._config
 from garak.probes.base import Probe

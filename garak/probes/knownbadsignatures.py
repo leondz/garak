@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""Looking for known-bad signatures
+
+Probes that attempt to make a model output a known-bad signature. If they're
+output them without warning, that's an indication that the app isn't checking
+output for malicious or dangerous content.
+"""
 
 from garak.probes.base import Probe
 

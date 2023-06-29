@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
+"""ART: Automatic red-team. 
 
-"""auto redteam"""
+This probe uses a separate model to create prompts for a generator,
+which are intended to guide that generator into a certain failure mode."""
 
 import copy
 import logging

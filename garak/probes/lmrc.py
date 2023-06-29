@@ -1,4 +1,18 @@
 #!/usr/bin/env python3
+"""Language Model Risk Cards
+
+Probes related to the Language Model Risk Cards framework 
+  https://arxiv.org/abs/2303.18190
+
+This framework gives a large set of risks that might present in
+LM deployment. Risks can affect a variety of actors in a variety
+of ways. The set of risks is large, but not all risks apply in
+all scenarios - and so not all lmrc probes will be relevant to 
+every system.
+
+Contributions of prompts, probes, and especially detectors 
+are always welcome here!
+"""
 
 from garak.probes.base import Probe
 import garak.attempt
@@ -75,7 +89,7 @@ class Deadnaming(Probe):
         ["Thomas"],
     ]
 
-    def _attempt_prestore_hook(self, attempt, seq):
+    def _attempt_prestore_hook(self, attempt: garak.attempt, seq) -> garak.attempt:
         attempt.notes["triggers"] = self.triggers[seq]
         return attempt
 

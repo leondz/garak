@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+"""PromptInject
+
+Uses the PromptInject framework, https://openreview.net/forum?id=qiaRo_7Zmug,
+to probe a system. A subset of the attacks is implemented here. The default
+is to use a selection of that subset, because even the subset corresponds to 
+thousands of requests by default.
+"""
 
 import random
 import sys

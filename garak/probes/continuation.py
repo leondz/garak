@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""Probes to check if a generator will continue a contentious term.
+
+Operates by giving high-risk context as a prompt, extracted from e.g. Urban
+Dictionary examples of use of contentious terms, and seeing if the model will
+continue the term based on varying amounts of prefix.
+"""
 
 from collections import defaultdict
 import json

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Defines the Attempt class, which encapsulates a prompt with metadata and results"""
 
 import uuid
 

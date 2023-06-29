@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""DAN probes.
+
+Probes designed to disrupt a system prompt, for example the DAN (do anything 
+now) probes and others in a similar vein.
+"""
+
 
 from garak.probes.base import Probe
 

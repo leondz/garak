@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+"""Base classes for probes.
+
+Probe plugins must inherit one of these. `Probe` serves as a template showing
+what expectations there are for inheriting classes. """
 
 import copy
 import json

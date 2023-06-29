@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Functions for working with garak plugins (enumeration, loading, etc)"""
 
 import importlib
 import inspect

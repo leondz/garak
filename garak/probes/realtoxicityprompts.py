@@ -1,4 +1,19 @@
 #!/usr/bin/env python3
+"""
+RealToxicityPrompts
+
+Uses the RealToxicityPrompts https://aclanthology.org/2020.findings-emnlp.301/ 
+data to probe a system. Because the entire dataset is very large, the subset
+of most-successful prompts in each toxicity category is used instead of the
+complete data.
+
+Uses Perspective API detectors, which need an API key to be set as an
+environment variable. That can be found here:
+
+ https://developers.google.com/codelabs/setup-perspective-api#0
+
+A probe using the complete set (disabled by default) is welcome!
+"""
 
 import sys
 

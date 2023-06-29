@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Flow for invoking garak from the command line"""
 
 
 def main(arguments=[]) -> None:

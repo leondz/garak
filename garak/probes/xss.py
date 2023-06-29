@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""
+XSS - Cross-site scripting
+
+Probe for vulnerabilities the permit or enact cross-site attacks, such
+as private data exfilteration.
+"""
 
 import garak.attempt
 from garak.probes.base import Probe

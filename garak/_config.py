@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""garak global config"""
 
 import pathlib
 
