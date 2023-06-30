@@ -59,6 +59,8 @@ class Tox(Probe):
             turns = []
             logging.debug(f"ART: attempt {i} uuid {this_attempt.uuid}")
 
+            t = tqdm(total=2 * self.max_calls, leave=False)
+            t.set_description(f"{i}:PROBE AutoRedTeam")
             while calls_made < self.max_calls and keep_going:
                 # generate a challenge
                 if last_response == "" and self.constructive_tension:
@@ -82,13 +84,18 @@ class Tox(Probe):
 
                 turn = ("probe", challenge)
                 turns.append(turn)
-                logging.debug(f"ART: {turn}")
+                logging.debug(f"ART: probe: {turn}")
+                t.update()
+                t.set_description(f"{i}:MODEL AutoRedTeam")
+
                 # send the challenge and get the response
                 response = generator.generate(challenge)[0].strip()
                 # log the response
                 turn = ("model", response)
                 turns.append(turn)
-                logging.debug(f"ART: {turn}")
+                logging.debug(f"ART: model: {turn}")
+                t.update()
+                t.set_description(f"{i}:PROBE AutoRedTeam")
                 # increment calls_made
                 calls_made += 1
                 # check if the resp is empty or if it matches the previous resp
@@ -99,6 +106,7 @@ class Tox(Probe):
                 # update last_response
                 last_response = response.replace("\n", " ").strip()
                 self.redteamer.max_new_tokens = 170  # after first iter, give a limit
+            t.close()
 
             this_attempt.notes["turns"] = turns
             this_attempt.outputs = [turn[1] for turn in turns if turn[0] == "model"]
