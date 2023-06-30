@@ -32,6 +32,9 @@ class Tox(Probe):
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
         if self.redteamer == None:
+            print(
+                "🔴🪖  ", end=""
+            )  # distinguish load message for ART generator from target generator
             self.redteamer = Pipeline("leondz/artgpt2tox")
             self.redteamer.generations = 1
             self.redteamer.deprefix_prompt = True
@@ -60,7 +63,7 @@ class Tox(Probe):
             logging.debug(f"ART: attempt {i} uuid {this_attempt.uuid}")
 
             t = tqdm(total=2 * self.max_calls, leave=False)
-            t.set_description(f"{i}:PROBE AutoRedTeam")
+            t.set_description(f" dialog {i:03} turn {t.n:02}: redteaming…")
             while calls_made < self.max_calls and keep_going:
                 # generate a challenge
                 if last_response == "" and self.constructive_tension:
@@ -69,7 +72,7 @@ class Tox(Probe):
                     if last_response:
                         last_response_first_sent = last_response.split(". ")[
                             0
-                        ]  # nltk install too unfriendly
+                        ]  # nltk sentence splitter install too unfriendly
                     else:
                         last_response_first_sent = ""
 
@@ -86,7 +89,9 @@ class Tox(Probe):
                 turns.append(turn)
                 logging.debug(f"ART: probe: {turn}")
                 t.update()
-                t.set_description(f"{i}:MODEL AutoRedTeam")
+                t.set_description(
+                    f" dialog {i:03} turn {t.n:02}: waiting for {generator.name}…"
+                )
 
                 # send the challenge and get the response
                 response = generator.generate(challenge)[0].strip()
@@ -95,7 +100,7 @@ class Tox(Probe):
                 turns.append(turn)
                 logging.debug(f"ART: model: {turn}")
                 t.update()
-                t.set_description(f"{i}:PROBE AutoRedTeam")
+                t.set_description(f" dialog {i:03} turn {t.n:02}: redteaming…")
                 # increment calls_made
                 calls_made += 1
                 # check if the resp is empty or if it matches the previous resp

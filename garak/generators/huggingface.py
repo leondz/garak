@@ -68,7 +68,7 @@ class Pipeline(Generator):
             device=device,
         )
         self.deprefix_prompt = name in models_to_deprefix
-        if "deprefix" in args and args.deprefix == True:
+        if args and "deprefix" in args and args.deprefix == True:
             self.deprefix_prompt = True
 
     def generate(self, prompt):
