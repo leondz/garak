@@ -261,13 +261,16 @@ class Model(Generator):
             inputs = self.tokenizer(prompt, truncation=True, return_tensors="pt").to(
                 self.init_device
             )
-            print(inputs["input_ids"])
-            print(inputs["input_ids"].shape)
 
-            # try:
-            outputs = self.model.generate(
-                **inputs, generation_config=self.generation_config
-            )
+            try:
+                outputs = self.model.generate(
+                    **inputs, generation_config=self.generation_config
+                )
+            except IndexError as e:
+                if len(prompt) == 0:
+                    return [""] * self.generations
+                else:
+                    raise e
             text_output = self.tokenizer.batch_decode(
                 outputs, skip_special_tokens=True, device=self.device
             )

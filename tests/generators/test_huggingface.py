@@ -44,7 +44,7 @@ def test_model():
     g = garak.generators.huggingface.Model("gpt2")
     assert g.name == "gpt2"
     assert g.generations == DEFAULT_GENERATIONS_QTY
-    assert isinstance(g.generator, transformers.pipelines.text_generation.Pipeline)
+    assert isinstance(g, garak.generators.huggingface.Model)
     assert isinstance(g.model, transformers.PreTrainedModel)
     assert isinstance(g.tokenizer, transformers.PreTrainedTokenizerBase)
     assert isinstance(g.max_tokens, int)

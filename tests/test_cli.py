@@ -23,7 +23,7 @@ def test_probe_list(capsys):
     for line in output.strip().split("\n"):
         assert re.match(
             r"^probes: [a-z0-9_]+.[A-Za-z0-9_]+( 🌟)?( 💤)?$", line
-        ) or line.startswith("garak LLM probe v")
+        ) or line.startswith("garak LLM security probe v")
 
 
 def test_detector_list(capsys):
@@ -33,7 +33,7 @@ def test_detector_list(capsys):
     for line in output.strip().split("\n"):
         assert re.match(
             r"^detectors: [a-z0-9_]+.[A-Za-z0-9_]+( 🌟)?( 💤)?$", line
-        ) or line.startswith("garak LLM probe v")
+        ) or line.startswith("garak LLM security probe v")
 
 
 def test_generator_list(capsys):
@@ -43,7 +43,7 @@ def test_generator_list(capsys):
     for line in output.strip().split("\n"):
         assert re.match(
             r"^generators: [a-z0-9_]+.[A-Za-z0-9_]+( 🌟)?( 💤)?$", line
-        ) or line.startswith("garak LLM probe v")
+        ) or line.startswith("garak LLM security probe v")
 
 
 def test_run_all_probes(capsys):
