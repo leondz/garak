@@ -116,6 +116,12 @@ def main(arguments=[]) -> None:
         type=str,
         help="options to pass to the generator",
     )
+    parser.add_argument(
+        "--report_prefix",
+        type=str,
+        default="",
+        help="Specify an optional prefix for the report and hit logs",
+    )
 
     _config.args = parser.parse_args(arguments)
 
@@ -141,7 +147,10 @@ def main(arguments=[]) -> None:
     if not _config.args.version:
         logging.info(f"started at {_config.starttime_iso}")
         _config.run_id = str(uuid.uuid4())  # uuid1 is safe but leaks host info
-        report_filename = f"garak.{_config.run_id}.jsonl"
+        if not _config.args.report_prefix:
+            report_filename = f"garak.{_config.run_id}.report.jsonl"
+        else:
+            report_filename = _config.args.report_prefix + ".report.jsonl"
         _config.reportfile = open(report_filename, "w", buffering=1)
         _config.args.__dict__.update({"entry_type": "config"})
         _config.reportfile.write(json.dumps(_config.args.__dict__) + "\n")
@@ -151,6 +160,7 @@ def main(arguments=[]) -> None:
                     "entry_type": "init",
                     "garak_version": _config.version,
                     "start_time": _config.starttime_iso,
+                    "run": _config.run_id,
                 }
             )
             + "\n"

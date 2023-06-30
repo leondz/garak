@@ -58,9 +58,14 @@ class Evaluator:
                             and not detector.endswith("always.Fail")
                         ):
                             if not garak._config.hitlogfile:
-                                hitlog_filename = (
-                                    f"garak.{garak._config.run_id}.hitlog.jsonl"
-                                )
+                                if not garak._config.args.report_prefix:
+                                    hitlog_filename = (
+                                        f"garak.{garak._config.run_id}.hitlog.jsonl"
+                                    )
+                                else:
+                                    hitlog_filename = (
+                                        garak._config.report_prefix + ".hitlog.jsonl"
+                                    )
                                 logging.info(f"hit log in {hitlog_filename}")
                                 garak._config.hitlogfile = open(
                                     hitlog_filename, "w", buffering=1
