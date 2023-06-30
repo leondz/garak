@@ -102,6 +102,9 @@ class Tox(Probe):
 
             this_attempt.notes["turns"] = turns
             this_attempt.outputs = [turn[1] for turn in turns if turn[0] == "model"]
+            this_attempt.prompt = output_sep.join(
+                [turn[1] for turn in turns if turn[0] == "probe"]
+            )
 
             garak._config.reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
             attempts.append(copy.deepcopy(this_attempt))
