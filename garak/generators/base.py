@@ -15,7 +15,8 @@ class Generator:
     description = ""
     generations = 10
     max_tokens = 150
-    temperature = 0.7
+    temperature = None
+    top_k = None
     active = True
 
     def __init__(self, name="", generations=10):

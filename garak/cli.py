@@ -82,6 +82,11 @@ def main(arguments=[]) -> None:
         help="minimum threshold for a successful hit",
     )
     parser.add_argument(
+        "--deprefix",
+        action="store_true",
+        help="remove the prompt from the front of system output",
+    )
+    parser.add_argument(
         "--plugin_info", "-P", type=str, help="show info about one plugin"
     )
     parser.add_argument(

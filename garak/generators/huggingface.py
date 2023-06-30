@@ -68,6 +68,8 @@ class Pipeline(Generator):
             device=device,
         )
         self.deprefix_prompt = name in models_to_deprefix
+        if "deprefix" in args and args.deprefix == True:
+            self.deprefix_prompt = True
 
     def generate(self, prompt):
         with warnings.catch_warnings():
@@ -190,26 +192,27 @@ class InferenceAPI(Generator):
         return self._call_api(prompt)
 
 
-class Model(Pipeline):
+class Model(Generator):
     generator_family_name = "Hugging Face 🤗 model"
 
     def __init__(self, name, do_sample=True, generations=10, device=0):
         self.fullname, self.name = name, name.split("/")[-1]
+        self.device = device
 
-        super(Pipeline, self).__init__(name, generations=generations)
+        super().__init__(name, generations=generations)
 
         import transformers
 
         if "seed" in dir(args):
             transformers.set_seed(args.seed)
 
-        init_device = "meta"
+        self.init_device = "cuda:" + str(self.device)
         import torch.cuda
 
         if torch.cuda.is_available() == False:
             logging.debug("Using CPU, torch.cuda.is_available() returned False")
-            device = -1
-            init_device = "cpu"
+            self.device = -1
+            self.init_device = "cpu"
 
         trust_remote_code = self.fullname.startswith("mosaicml/mpt-")
 
@@ -217,14 +220,13 @@ class Model(Pipeline):
             self.fullname, trust_remote_code=trust_remote_code
         )
         self.config.init_device = (
-            init_device  # or "cuda:0" For fast initialization directly on GPU!
+            self.init_device  # or "cuda:0" For fast initialization directly on GPU!
         )
 
         self.model = transformers.AutoModelForCausalLM.from_pretrained(
             self.fullname,
-            trust_remote_code=trust_remote_code,
             config=self.config,
-        )
+        ).to(self.init_device)
         self.deprefix_prompt = name in models_to_deprefix
 
         if self.config.tokenizer_class:
@@ -236,14 +238,48 @@ class Model(Pipeline):
                 self.fullname, padding_side="left"
             )
 
-        self.generator = transformers.pipeline(
-            "text-generation",
-            model=self.model,
-            tokenizer=self.tokenizer,
-            do_sample=do_sample,
-            device=device,
-        )
         self.deprefix_prompt = self.fullname in models_to_deprefix
+        self.do_sample = do_sample
+        self.generation_config = transformers.GenerationConfig.from_pretrained(
+            self.fullname
+        )
+        self.generation_config.eos_token_id = self.model.config.eos_token_id
+        self.generation_config.pad_token_id = self.model.config.eos_token_id
+
+    def generate(self, prompt):
+        self.generation_config.max_new_tokens = self.max_tokens
+        self.generation_config.do_sample = self.do_sample
+        self.generation_config.num_return_sequences = self.generations
+        if self.temperature is not None:
+            self.generation_config.temperature = self.temperature
+        if self.top_k is not None:
+            self.generation_config.top_k = self.top_k
+
+        text_output = []
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=UserWarning)
+            inputs = self.tokenizer(prompt, truncation=True, return_tensors="pt").to(
+                self.init_device
+            )
+            print(inputs["input_ids"])
+            print(inputs["input_ids"].shape)
+
+            # try:
+            outputs = self.model.generate(
+                **inputs, generation_config=self.generation_config
+            )
+            text_output = self.tokenizer.batch_decode(
+                outputs, skip_special_tokens=True, device=self.device
+            )
+
+            """
+            except:
+                text_output = [""] * self.generations  # could handle better than this..
+            """
+        if not self.deprefix_prompt:
+            return text_output
+        else:
+            return [re.sub("^" + re.escape(prompt), "", i) for i in text_output]
 
 
 default_class = "Pipeline"
