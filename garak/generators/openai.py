@@ -86,6 +86,7 @@ class OpenAIGenerator(Generator):
             openai.error.RateLimitError,
             openai.error.ServiceUnavailableError,
             openai.error.APIError,
+            openai.error.Timeout,
         ),
         max_value=70,
     )
