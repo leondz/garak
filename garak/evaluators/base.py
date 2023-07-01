@@ -64,7 +64,8 @@ class Evaluator:
                                     )
                                 else:
                                     hitlog_filename = (
-                                        garak._config.report_prefix + ".hitlog.jsonl"
+                                        garak._config.args.report_prefix
+                                        + ".hitlog.jsonl"
                                     )
                                 logging.info(f"hit log in {hitlog_filename}")
                                 garak._config.hitlogfile = open(
