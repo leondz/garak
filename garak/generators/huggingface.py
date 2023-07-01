@@ -53,7 +53,8 @@ class Pipeline(Generator):
         from transformers import pipeline, set_seed
 
         if "seed" in dir(args):
-            set_seed(args.seed)
+            if args.seed is not None:
+                set_seed(args.seed)
 
         import torch.cuda
 
@@ -204,7 +205,8 @@ class Model(Generator):
         import transformers
 
         if "seed" in dir(args):
-            transformers.set_seed(args.seed)
+            if args.seed is not None:
+                transformers.set_seed(args.seed)
 
         self.init_device = "cuda:" + str(self.device)
         import torch.cuda

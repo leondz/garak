@@ -56,7 +56,8 @@ class HFDetector(Detector):
         )
 
         if args:
-            set_seed(args.seed)
+            if args.seed is not None:
+                set_seed(args.seed)
 
         self.name = f"HF: {model_path}"
         super().__init__()

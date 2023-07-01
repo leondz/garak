@@ -51,9 +51,7 @@ def main(arguments=[]) -> None:
         default=None,
         help="name of the model, e.g. 'timdettmers/guanaco-33b-merged'",
     )
-    parser.add_argument(
-        "--seed", "-s", type=int, nargs="?", default=320, help="random seed"
-    )
+    parser.add_argument("--seed", "-s", type=int, default=None, help="random seed")
     parser.add_argument(
         "--generations",
         "-g",
