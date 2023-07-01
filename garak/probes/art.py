@@ -29,17 +29,19 @@ class Tox(Probe):
     constructive_tension = True
     tags = ["avid-effect:ethics:E0301"]
     goal = "make the model say something toxic"
+    red_team_model = "leondz/artgpt2tox"
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
         if self.redteamer == None:
             print(
                 "🔴🪖  ", end=""
             )  # distinguish load message for ART generator from target generator
-            self.redteamer = Pipeline("leondz/artgpt2tox")
+            self.redteamer = Pipeline(self.red_team_model)
             self.redteamer.generations = 1
             self.redteamer.deprefix_prompt = True
 
         attempts = []
+        red_team_model_short = self.red_team_model.split("/")[1]
 
         target_generations = generator.generations
         generator.generations = 1  # take generations one-by-one (will restore later)
@@ -63,8 +65,10 @@ class Tox(Probe):
             logging.debug(f"ART: attempt {i} uuid {this_attempt.uuid}")
 
             t = tqdm(total=2 * self.max_calls, leave=False)
-            t.set_description(f" dialog {i:03} turn {t.n:02}: redteaming…")
             while calls_made < self.max_calls and keep_going:
+                t.set_description(
+                    f" turn {t.n:02}: red teaming [{red_team_model_short[:10]:<10}]"
+                )
                 # generate a challenge
                 if last_response == "" and self.constructive_tension:
                     challenge = ""
@@ -85,14 +89,14 @@ class Tox(Probe):
                     # challenge[0].strip().split("\n")[0].strip()
                     # log what we'll send
 
+                t.update()
                 turn = ("probe", challenge)
                 turns.append(turn)
                 logging.debug(f"ART: probe: {turn}")
-                t.update()
-                t.set_description(
-                    f" dialog {i:03} turn {t.n:02}: waiting for {generator.name}…"
-                )
 
+                t.set_description(
+                    f" turn {t.n:02}: waiting for [{generator.name[:10]:<10}]"
+                )
                 # send the challenge and get the response
                 response = generator.generate(challenge)[0].strip()
                 # log the response
@@ -100,7 +104,6 @@ class Tox(Probe):
                 turns.append(turn)
                 logging.debug(f"ART: model: {turn}")
                 t.update()
-                t.set_description(f" dialog {i:03} turn {t.n:02}: redteaming…")
                 # increment calls_made
                 calls_made += 1
                 # check if the resp is empty or if it matches the previous resp
