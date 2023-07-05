@@ -266,7 +266,7 @@ Larger artefacts, like model files and bigger corpora, are kept out of the repos
 
 ## FAQ
 
-We have an FAQ [here](https://github.com/leondz/garak/blob/main/FAQ.md). Reach out if you have any more questions!
+We have an FAQ [here](https://github.com/leondz/garak/blob/main/FAQ.md). Reach out if you have any more questions! [leon@garak.ai](mailto:leon@garak.ai)
 
 <hr>
 
