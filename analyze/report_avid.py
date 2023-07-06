@@ -22,7 +22,7 @@ with open(sys.argv[1], "r") as reportfile:
         elif record["entry_type"] == "config":
             meta = record
 if len(evals)==0:
-    ValueError("No evaluations to report!")
+    raise ValueError("No evaluations to report!")
 
 # preprocess
 for i in range(len(evals)):
@@ -53,8 +53,8 @@ report_template.references = [
         type = 'source',
         label = 'garak, an LLM vulnerability scanner',
         url = 'https://github.com/leondz/garak'
-        )
-    ]
+    )
+]
 report_template.reported_date = date.today()
 
 # now build all the reports
