@@ -33,6 +33,7 @@ dependencies = [
   "torch",
   "rapidfuzz",
   "jinja2",
+  "avidtools==0.1.1.1"
 ]
 
 [project.urls]
