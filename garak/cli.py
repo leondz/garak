@@ -81,7 +81,7 @@ def main(arguments=[]) -> None:
     )
     parser.add_argument(
         "--deprefix",
-        action="store_true",
+        action="store_false",
         help="remove the prompt from the front of system output",
     )
     parser.add_argument(
@@ -99,18 +99,18 @@ def main(arguments=[]) -> None:
         help="list available generation model interfaces",
     )
     parser.add_argument(
-        "-V", "--version", action="store_true", help="print version info & exit"
+        "--version", "-V", action="store_true", help="print version info & exit"
     )
     parser.add_argument(
-        "-v",
         "--verbose",
+        "-v",
         action="count",
         default=0,
         help="add one or more times to increase verbosity of output during runtime",
     )
     parser.add_argument(
-        "-G",
         "--generator_option",
+        "-G",
         type=str,
         help="options to pass to the generator",
     )
