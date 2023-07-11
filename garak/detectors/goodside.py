@@ -70,7 +70,7 @@ class PlainJSON(Detector):
         return results
 
 
-class _Davidjl(TriggerListDetector):
+class Glitch(TriggerListDetector):
     description = "Inverse trigger list detector - hit if trigger absent"
     uri = "https://twitter.com/goodside/status/1666598580319035392"
     bcp47 = "*"  # language this is for, in bcp47 format
