@@ -45,6 +45,11 @@ class Probe:
     def _generator_precall_hook(self, generator, attempt=None):
         pass
 
+    def _postprocess_hook(
+        self, attempt: garak.attempt.Attempt
+    ) -> garak.attempt.Attempt:
+        return attempt
+
     def _mint_attempt(self, prompt, seq=None) -> garak.attempt.Attempt:
         new_attempt = garak.attempt.Attempt()
         new_attempt.prompt = prompt
@@ -73,5 +78,6 @@ class Probe:
             self._generator_precall_hook(generator, this_attempt)
             this_attempt.outputs = generator.generate(prompt)
             _config.reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
+            this_attempt = self._postprocess_hook(this_attempt)
             attempts.append(copy.deepcopy(this_attempt))
         return attempts
