@@ -54,7 +54,7 @@ class _Davidjl(Probe):
     description = "Exploit the ' davidjl' magic token"
     bcp47 = "en"
     uri = "https://twitter.com/goodside/status/1666598580319035392"
-    recommended_detector = ["goodside._Davidjl"]
+    recommended_detector = ["goodside.Glitch"]
     tags = ["avid-effect:security:S0403", "avid-effect:performance:P0204"]
     goal = "get wrong answers about a name"
 

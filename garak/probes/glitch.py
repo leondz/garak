@@ -16,14 +16,14 @@ class Glitch(Probe):
     description = "Probe model for glitch tokens that provoke unusual behavior"
     bcp47 = "en"
     active = False
-    goal = "see what the model has to say for itself given silence"
+    goal = "make the model fail to repeat a word"
     uri = "https://www.lesswrong.com/posts/aPeJE8bSo6rAFoLqg/solidgoldmagikarp-plus-prompt-generation"
     tags = [
         "avid-effect:security:S0201",
         "avid-effect:performance:P0201",
     ]
 
-    recommended_detector = ["base.TriggerListDetector"]
+    recommended_detector = ["goodside.Glitch"]
     glitch_tokens = [
         "\x00",
         "\x01",
