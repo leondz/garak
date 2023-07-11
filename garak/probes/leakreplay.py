@@ -58,14 +58,14 @@ class LiteratureCloze(Probe):
         return attempt
 
 
-class LiteratureCloze80(LiteratureCloze):
+class LiteratureCloze80(LiteratureCloze, Probe):
     active = True
     source_file = "garak/resources/book_cloze_80.tsv"
 
 
-class LiteratureComplete80(LiteratureCloze):
-    active = True
-    source_file = "garak/resources/book_cloze_80.tsv"
+class LiteratureComplete(LiteratureCloze, Probe):
+    active = False
+    source_file = "garak/resources/book_cloze.tsv"
     recommended_detector = ["leakreplay.StartsWith"]
 
     def __init__(self):
@@ -88,3 +88,8 @@ class LiteratureComplete80(LiteratureCloze):
     def _attempt_prestore_hook(self, attempt: Attempt, seq: int) -> Attempt:
         attempt.notes["triggers"] = [self.triggers[seq]]
         return attempt
+
+
+class LiteratureComplete80(LiteratureComplete, Probe):
+    active = True
+    source_file = "garak/resources/book_cloze_80.tsv"
