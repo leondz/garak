@@ -20,6 +20,8 @@ class Evaluator:
     Provides eval + CLI output based on detector assessments of generator outputs
     that come from probe calls."""
 
+    _last_probe_printed = None
+
     def __init__(self):
         self.probename = ""
 
@@ -156,21 +158,24 @@ class Evaluator:
             failrate = 100 * (len(passes) - sum(passes)) / len(passes)
         else:
             outcome = Fore.LIGHTYELLOW_EX + "SKIP"
+
+        if self.probename != self._last_probe_printed:
+            print(f"{self.probename}")
+        self._last_probe_printed = self.probename
+        short_detector_name = detector_name.split(".")[-1]
         print(
-            f"{self.probename}\n",
-            f"   {detector_name}: {Style.BRIGHT}{outcome}{Style.RESET_ALL}\n",
-            f"      passed {sum(passes):>4}/{len(passes):>4}\n",
+            f"  {Style.BRIGHT}{outcome}{Style.RESET_ALL} score {sum(passes):>4}/{len(passes):>4} -- {short_detector_name:<20}"
         )
         if len(passes) and failrate > 0.0:
             print(
-                f"      {Fore.LIGHTRED_EX}failure rate:{Style.RESET_ALL} {failrate:.4g}%\n",
+                f"    {Fore.LIGHTRED_EX}failure rate:{Style.RESET_ALL} {failrate:.4g}%"
             )
 
         if garak._config.args.verbose > 0 and messages:
             for i in range(len(passes)):
                 if not passes[i]:
                     try:
-                        print("   ❌", messages[i].strip().replace("\n", " "))
+                        print("  ❌", messages[i].strip().replace("\n", " "))
                     except:
                         pass
 
