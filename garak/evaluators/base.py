@@ -162,6 +162,7 @@ class Evaluator:
         if self.probename != self._last_probe_printed:
             print(f"{self.probename}")
         self._last_probe_printed = self.probename
+
         short_detector_name = detector_name.split(".")[-1]
         print(
             f"  {Style.BRIGHT}{outcome}{Style.RESET_ALL} score {sum(passes):>4}/{len(passes):>4} -- {short_detector_name:<20}"

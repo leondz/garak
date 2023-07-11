@@ -84,9 +84,7 @@ def main(arguments=[]) -> None:
         action="store_false",
         help="remove the prompt from the front of system output",
     )
-    parser.add_argument(
-        "--plugin_info", "-P", type=str, help="show info about one plugin"
-    )
+    parser.add_argument("--plugin_info", type=str, help="show info about one plugin")
     parser.add_argument(
         "--list_probes", action="store_true", help="list available vulnerability probes"
     )
@@ -113,6 +111,12 @@ def main(arguments=[]) -> None:
         "-G",
         type=str,
         help="options to pass to the generator",
+    )
+    parser.add_argument(
+        "--probe_options",
+        "-P",
+        type=str,
+        help="options to pass to probes, formatted as a JSON dict",
     )
     parser.add_argument(
         "--report_prefix",
@@ -169,6 +173,12 @@ def main(arguments=[]) -> None:
             + "\n"
         )
         logging.info(f"reporting to {report_filename}")
+
+    if _config.args.probe_options:
+        try:
+            _config.probe_options = json.loads(_config.args.probe_options)
+        except Exception as e:
+            logging.warn("Failed to parse JSON probe_options:", e.args[0])
 
     if _config.args.version:
         pass
