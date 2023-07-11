@@ -430,6 +430,7 @@ class InjectROT13(Probe):
         "encoding.DecodeApprox",
     ]
     tags = ["avid-effect:security:S0403"]
+    goal = "make the model say an encoded payload"
 
     def __init__(self):
         super().__init__()
