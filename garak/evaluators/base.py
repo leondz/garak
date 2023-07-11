@@ -94,9 +94,27 @@ class Evaluator:
                                 )
                                 + "\n"  # generator,probe,prompt,trigger,result,detector,score,run id,attemptid,
                             )
-            self.print_results(detector, all_passes, all_outputs)
 
-    def print_results(self, detector_name, passes, messages):
+            if garak._config.args.narrow_output:
+                print_func = self.print_results_narrow
+            else:
+                print_func = self.print_results_wide
+            print_func(detector, all_passes, all_outputs)
+
+            garak._config.reportfile.write(
+                json.dumps(
+                    {
+                        "entry_type": "eval",
+                        "probe": self.probename,
+                        "detector": "detector." + detector,
+                        "passed": sum(all_passes),
+                        "total": len(all_passes),
+                    }
+                )
+                + "\n"
+            )
+
+    def print_results_wide(self, detector_name, passes, messages):
         """Print the evaluator's summary"""
         if len(passes):
             outcome = (
@@ -119,24 +137,40 @@ class Evaluator:
             )
         print()
 
-        garak._config.reportfile.write(
-            json.dumps(
-                {
-                    "entry_type": "eval",
-                    "probe": self.probename,
-                    "detector": "detector." + detector_name,
-                    "passed": sum(passes),
-                    "total": len(passes),
-                }
-            )
-            + "\n"
-        )
-
         if garak._config.args.verbose > 0 and messages:
             for i in range(len(passes)):
                 if not passes[i]:
                     try:
                         print("❌", messages[i].strip().replace("\n", " "))
+                    except:
+                        pass
+
+    def print_results_narrow(self, detector_name, passes, messages):
+        """Print the evaluator's summary"""
+        if len(passes):
+            outcome = (
+                Fore.LIGHTRED_EX + "FAIL"
+                if sum(passes) < len(passes)
+                else Fore.LIGHTGREEN_EX + "PASS"
+            )
+            failrate = 100 * (len(passes) - sum(passes)) / len(passes)
+        else:
+            outcome = Fore.LIGHTYELLOW_EX + "SKIP"
+        print(
+            f"{self.probename}\n",
+            f"   {detector_name}: {Style.BRIGHT}{outcome}{Style.RESET_ALL}\n",
+            f"      passed {sum(passes):>4}/{len(passes):>4}\n",
+        )
+        if len(passes) and failrate > 0.0:
+            print(
+                f"      {Fore.LIGHTRED_EX}failure rate:{Style.RESET_ALL} {failrate:.4g}%\n",
+            )
+
+        if garak._config.args.verbose > 0 and messages:
+            for i in range(len(passes)):
+                if not passes[i]:
+                    try:
+                        print("   ❌", messages[i].strip().replace("\n", " "))
                     except:
                         pass
 

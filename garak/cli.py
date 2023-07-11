@@ -120,6 +120,11 @@ def main(arguments=[]) -> None:
         default="",
         help="Specify an optional prefix for the report and hit logs",
     )
+    parser.add_argument(
+        "--narrow_output",
+        action="store_true",
+        help="give narrow CLI output",
+    )
 
     _config.args = parser.parse_args(arguments)
 
