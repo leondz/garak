@@ -1,0 +1,4 @@
+.. autosummary::
+   :toctree: generated
+
+   garak
