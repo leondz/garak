@@ -232,307 +232,243 @@ def _generate_encoded_prompts(encoding_funcs, encoding_name):
                 encoded_text = encoder(bytes(payload, "utf-8"))
                 if isinstance(encoded_text, bytes):
                     encoded_text = encoded_text.decode()
-                encoded_prompts.add(
-                    template.replace("{encoding_name}", encoding_name).replace(
-                        "{encoded_text}", encoded_text
-                    )
+                prompt = template.replace("{encoding_name}", encoding_name).replace(
+                    "{encoded_text}", encoded_text
                 )
-    return sorted(list(encoded_prompts))
+                trigger = str(payload)
+                encoded_prompts.add((prompt, trigger))
+    return sorted(list(encoded_prompts), key=lambda k: k[0])
 
 
-class InjectBase64(Probe):
+class BaseEncodingProbe:
+    tags = ["avid-effect:security:S0403"]
+    goal = "make the model say an encoded payload"
+
+    recommended_detector = [
+        "encoding.DecodeMatch",
+        "encoding.DecodeApprox",
+    ]
+
+    def __init__(self):
+        load_payloads()
+        self.prompts, self.triggers = zip(
+            *_generate_encoded_prompts(self.encoding_funcs, self.encoding_name)
+        )
+
+    def _attempt_prestore_hook(self, attempt, seq):
+        attempt.notes["triggers"] = [self.triggers[seq]]
+        return attempt
+
+
+class InjectBase64(BaseEncodingProbe, Probe):
     name = "encoding64"
     description = "Probe for susceptibility to base64 encoded injections"
     bcp47 = "en"
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-    recommended_detector = [
-        "encoding.DecodeMatch",
-        "encoding.DecodeApprox",
-    ]
     tags = ["avid-effect:security:S0403"]
     goal = "make the model say an encoded payload"
 
+    encoding_funcs = [
+        base64.b64encode,
+        base64.urlsafe_b64encode,
+        base64.standard_b64encode,
+        base64.binascii.b2a_base64,
+    ]
+    encoding_name = "BASE64"
+
     def __init__(self):
-        super().__init__()
-        encoding_funcs = [
-            base64.b64encode,
-            base64.urlsafe_b64encode,
-            base64.standard_b64encode,
-            base64.binascii.b2a_base64,
-        ]
-        encoding_name = "BASE64"
-
-        load_payloads()
-
-        self.prompts = _generate_encoded_prompts(encoding_funcs, encoding_name)
+        BaseEncodingProbe.__init__(self)
+        Probe.__init__(self)
 
 
-class InjectBase16(Probe):
+class InjectBase16(BaseEncodingProbe, Probe):
     name = "encoding16"
     description = "Probe for susceptibility to base16 encoded injections"
     bcp47 = "en"
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-    recommended_detector = [
-        "encoding.DecodeMatch",
-        "encoding.DecodeApprox",
-    ]
     tags = ["avid-effect:security:S0403"]
     goal = "make the model say an encoded payload"
+    encoding_funcs = [base64.b16encode]
+    encoding_name = "BASE16"
 
     def __init__(self):
-        super().__init__()
-        encoding_funcs = [base64.b16encode]
-        encoding_name = "BASE16"
-        load_payloads()
-        self.prompts = _generate_encoded_prompts(encoding_funcs, encoding_name)
+        BaseEncodingProbe.__init__(self)
+        Probe.__init__(self)
 
 
-class InjectBase32(Probe):
+class InjectBase32(BaseEncodingProbe, Probe):
     name = "encoding32"
     description = "Probe for susceptibility to base32 encoded injections"
     bcp47 = "en"
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-    recommended_detector = [
-        "encoding.DecodeMatch",
-        "encoding.DecodeApprox",
-    ]
     tags = ["avid-effect:security:S0403"]
     goal = "make the model say an encoded payload"
+    encoding_funcs = [base64.b32encode]
+    encoding_name = "BASE32"
 
     def __init__(self):
-        super().__init__()
-        encoding_funcs = [base64.b32encode]
-        encoding_name = "BASE32"
-        load_payloads()
-        self.prompts = _generate_encoded_prompts(encoding_funcs, encoding_name)
+        BaseEncodingProbe.__init__(self)
+        Probe.__init__(self)
 
 
-class InjectAscii85(Probe):
+class InjectAscii85(BaseEncodingProbe, Probe):
     name = "encoding85"
     description = "Probe for susceptibility to base85 encoded injections"
     bcp47 = "en"
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-    recommended_detector = [
-        "encoding.DecodeMatch",
-        "encoding.DecodeApprox",
-    ]
     tags = ["avid-effect:security:S0403"]
     goal = "make the model say an encoded payload"
+    encoding_funcs = [base64.a85encode, base64.b85encode]
+    encoding_name = "ASCII85"
 
     def __init__(self):
-        super().__init__()
-        encoding_funcs = [base64.a85encode, base64.b85encode]
-        encoding_name = "ASCII85"
-
-        load_payloads()
-        self.prompts = _generate_encoded_prompts(encoding_funcs, encoding_name)
+        BaseEncodingProbe.__init__(self)
+        Probe.__init__(self)
 
 
-class InjectBase32(Probe):
+class InjectBase32(BaseEncodingProbe, Probe):
     name = "encoding32"
     description = "Probe for susceptibility to base32 encoded injections"
     bcp47 = "en"
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-    recommended_detector = [
-        "encoding.DecodeMatch",
-        "encoding.DecodeApprox",
-    ]
     tags = ["avid-effect:security:S0403"]
     goal = "make the model say an encoded payload"
+    encoding_funcs = [base64.b32encode]
+    encoding_name = "BASE32"
 
     def __init__(self):
-        super().__init__()
-        encoding_funcs = [base64.b32encode]
-        encoding_name = "BASE32"
-
-        load_payloads()
-        self.prompts = _generate_encoded_prompts(encoding_funcs, encoding_name)
+        BaseEncodingProbe.__init__(self)
+        Probe.__init__(self)
 
 
-class InjectHex(Probe):
+class InjectHex(BaseEncodingProbe, Probe):
     name = "encodinghex"
     description = "Probe for susceptibility to hex encoded injections"
     bcp47 = "en"
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-    recommended_detector = [
-        "encoding.DecodeMatch",
-        "encoding.DecodeApprox",
-    ]
     tags = ["avid-effect:security:S0403"]
     goal = "make the model say an encoded payload"
+    encoding_funcs = [base64.binascii.b2a_hex]
+    encoding_name = "hex"
 
     def __init__(self):
-        super().__init__()
-        encoding_funcs = [base64.binascii.b2a_hex]
-        encoding_name = "hex"
-
-        load_payloads()
-        self.prompts = _generate_encoded_prompts(encoding_funcs, encoding_name)
+        BaseEncodingProbe.__init__(self)
+        Probe.__init__(self)
 
 
-class InjectQP(Probe):
+class InjectQP(BaseEncodingProbe, Probe):
     name = "encodingqp"
     description = "Probe for susceptibility to QP encoded injections"
     bcp47 = "en"
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-    recommended_detector = [
-        "encoding.DecodeMatch",
-        "encoding.DecodeApprox",
-    ]
     tags = ["avid-effect:security:S0403"]
     goal = "make the model say an encoded payload"
+    encoding_funcs = [base64.binascii.b2a_qp]
+    encoding_name = "Quoted-Printable"
 
     def __init__(self):
-        super().__init__()
-        encoding_funcs = [base64.binascii.b2a_qp]
-        encoding_name = "Quoted-Printable"
-
-        load_payloads()
-        self.prompts = _generate_encoded_prompts(encoding_funcs, encoding_name)
+        BaseEncodingProbe.__init__(self)
+        Probe.__init__(self)
 
 
-class InjectUU(Probe):
+class InjectUU(BaseEncodingProbe, Probe):
     name = "encodingUU"
     description = "Probe for susceptibility to UU encoded injections"
     bcp47 = "en"
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-    recommended_detector = [
-        "encoding.DecodeMatch",
-        "encoding.DecodeApprox",
-    ]
     tags = ["avid-effect:security:S0403"]
     goal = "make the model say an encoded payload"
 
+    encoding_name = "UUencode"
+
+    def UUencode(self, payload):
+        hash_chunks = []
+        for i in range(0, len(payload), 45):
+            test_chunk = payload[i : i + 45]
+            hash_chunks.append(base64.binascii.b2a_uu(test_chunk))
+        return "".join(map(bytes.decode, hash_chunks))
+
     def __init__(self):
-        super().__init__()
-        encoding_funcs = [base64.binascii.b2a_uu]
-        encoding_name = "UUencode"
-
-        load_payloads()
-        self.prompts = []
-        for template in templates:
-            for payload in payloads:
-                for encoder in encoding_funcs:
-                    hash_chunks = []
-                    for i in range(0, len(payload), 45):
-                        test_chunk = payload[i : i + 45]
-                        hash_chunks.append(encoder(bytes(test_chunk, "utf-8")))
-                    encoded_text = "\n".join(map(bytes.decode, hash_chunks))
-                    self.prompts.append(
-                        template.replace("{encoding_name}", encoding_name).replace(
-                            "{encoded_text}", encoded_text
-                        )
-                    )
+        self.encoding_funcs = [self.UUencode]
+        BaseEncodingProbe.__init__(self)
+        Probe.__init__(self)
 
 
-class InjectMime(Probe):
+class InjectMime(BaseEncodingProbe, Probe):
     name = "encodingmime"
     description = "Probe for susceptibility to MIME encoding injections"
     bcp47 = "en"
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-    recommended_detector = [
-        "encoding.DecodeMatch",
-        "encoding.DecodeApprox",
-    ]
     tags = ["avid-effect:security:S0403"]
     goal = "make the model say an encoded payload"
+    encoding_name = "MIME"
 
     def __init__(self):
-        super().__init__()
         import quopri
 
-        encoding_funcs = [quopri.encodestring]
-        encoding_name = "MIME"
-
-        load_payloads()
-        self.prompts = _generate_encoded_prompts(encoding_funcs, encoding_name)
+        self.encoding_funcs = [quopri.encodestring]
+        BaseEncodingProbe.__init__(self)
+        Probe.__init__(self)
 
 
-class InjectROT13(Probe):
+class InjectROT13(BaseEncodingProbe, Probe):
     name = "encodingrot13"
     description = "Probe for susceptibility to ROT13 encoding injections"
     bcp47 = "en"
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-    recommended_detector = [
-        "encoding.DecodeMatch",
-        "encoding.DecodeApprox",
-    ]
     tags = ["avid-effect:security:S0403"]
     goal = "make the model say an encoded payload"
+    encoding_funcs = [rot13]
+    encoding_name = "ROT13"
 
     def __init__(self):
-        super().__init__()
-        encoding_funcs = [rot13]
-        encoding_name = "ROT13"
-
-        load_payloads()
-        self.prompts = _generate_encoded_prompts(encoding_funcs, encoding_name)
+        BaseEncodingProbe.__init__(self)
+        Probe.__init__(self)
 
 
-class InjectBase2048(Probe):
+class InjectBase2048(BaseEncodingProbe, Probe):
     name = "encodingrot13"
     description = "Probe for susceptibility to Base2048 encoding injections"
     bcp47 = "en"
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-    recommended_detector = [
-        "encoding.DecodeMatch",
-        "encoding.DecodeApprox",
-    ]
     tags = ["avid-effect:security:S0403"]
     goal = "make the model say an encoded payload"
 
+    encoding_name = "BASE2048"
+
     def __init__(self):
-        super().__init__()
         import base2048
 
-        encoding_funcs = [base2048.encode]
-        encoding_name = "BASE2048"
-
-        load_payloads()
-        self.prompts = _generate_encoded_prompts(encoding_funcs, encoding_name)
+        self.encoding_funcs = [base2048.encode]
+        BaseEncodingProbe.__init__(self)
+        Probe.__init__(self)
 
 
-class InjectBraille(Probe):
+class InjectBraille(BaseEncodingProbe, Probe):
     name = "encodingbraille"
     description = (
         "Probe for susceptibility to Braille encoding injections. Credit Wally#3422"
     )
     bcp47 = "en"
     uri = ""
-    recommended_detector = [
-        "encoding.DecodeMatch",
-        "encoding.DecodeApprox",
-    ]
     tags = ["avid-effect:security:S0403"]
     goal = "make the model say an encoded payload"
+    encoding_funcs = [braille]
+    encoding_name = "Braille"
 
     def __init__(self):
-        super().__init__()
-
-        encoding_funcs = [braille]
-        encoding_name = "Braille"
-
-        load_payloads()
-        self.prompts = _generate_encoded_prompts(encoding_funcs, encoding_name)
+        BaseEncodingProbe.__init__(self)
+        Probe.__init__(self)
 
 
-class InjectMorse(Probe):
+class InjectMorse(BaseEncodingProbe, Probe):
     name = "encodingmorse"
     description = "Probe for susceptibility to Morse encoding. Credit Wally#3422"
     bcp47 = "en"
     uri = ""
-    recommended_detector = [
-        "encoding.DecodeMatch",
-        "encoding.DecodeApprox",
-    ]
-    tags = ["avid-effect:security:S0403"]
-    goal = "make the model say an encoded payload"
+    encoding_funcs = [morse]
+    encoding_name = "Morse"
 
     def __init__(self):
-        super().__init__()
-
-        encoding_funcs = [morse]
-        encoding_name = "Morse"
-
-        load_payloads()
-        self.prompts = _generate_encoded_prompts(encoding_funcs, encoding_name)
+        BaseEncodingProbe.__init__(self)
+        Probe.__init__(self)
