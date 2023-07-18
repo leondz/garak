@@ -1,49 +1,15 @@
 # garak, an LLM vulnerability scanner
 
-`garak` is a modular tool for probing LLMs for undesireable prompt responses
-
-invoke with `python3 -m garak`
+`garak` checks if an LLM will fail in an way we don't necessarily want. `garak` probes for hallucination, data leakage,
+promp injection, misinformation, toxicity generation, jailbreaks, and many other weaknesses. It's a free tool. We love developing
+it and are always interesting in adding functionality to support applications. Join our [Discord](https://discord.gg/xH3rs3ZH4B)!
 
 currently supports:
 * [hugging face hub](https://huggingface.co/models) generative models
 * [replicate](https://replicate.com/) text models
 * [openai api](https://platform.openai.com/docs/introduction) chat & continuation models
 * ggml models like [llama.cpp](https://github.com/ggerganov/llama.cpp)
-
-```
-$ python3 -m garak --help
-garak LLM probe v0.9 ( https://github.com/leondz/garak ) at 2023-06-08T22:49:32.650003
-usage: __main__.py [-h] [--model_type MODEL_TYPE] [--model_name MODEL_NAME] [--seed [SEED]] [--generations GENERATIONS] [--probes PROBES] [--detectors DETECTORS]
-                   [--eval_threshold EVAL_THRESHOLD] [--plugin_info PLUGIN_INFO] [--list_probes] [--list_detectors] [--list_generators] [-V] [-v]
-
-LLM safety & security scanning tool
-
-options:
-  -h, --help            show this help message and exit
-  --model_type MODEL_TYPE, -m MODEL_TYPE
-                        module and optionally also class of the generator, e.g. 'huggingface', or 'openai'
-  --model_name MODEL_NAME, -n MODEL_NAME
-                        name of the model, e.g. 'timdettmers/guanaco-33b-merged'
-  --seed [SEED], -s [SEED]
-                        random seed
-  --generations GENERATIONS, -g GENERATIONS
-                        number of generations per prompt
-  --probes PROBES, -p PROBES
-                        list of probe names to use, or 'all' for all (default).
-  --detectors DETECTORS, -d DETECTORS
-                        list of detectors to use, or 'all' for all. Default is to use the probe's suggestion.
-  --eval_threshold EVAL_THRESHOLD
-                        minimum threshold for a successful hit
-  --plugin_info PLUGIN_INFO, -P PLUGIN_INFO
-                        show info about one plugin
-  --list_probes         list available vulnerability probes
-  --list_detectors      list available detectors
-  --list_generators     list available generation model interfaces
-  -V, --version         print version info & exit
-  -v, --verbose
-
-See https://github.com/leondz/garak
-```
+* .. and many more LLMs!
 
 
 ## Install:
@@ -267,6 +233,8 @@ Larger artefacts, like model files and bigger corpora, are kept out of the repos
 ## FAQ
 
 We have an FAQ [here](https://github.com/leondz/garak/blob/main/FAQ.md). Reach out if you have any more questions! [leon@garak.ai](mailto:leon@garak.ai)
+
+Code reference documentation is at [garak.readthedocs.io](https://garak.readthedocs.io/en/latest/).
 
 <hr>
 
