@@ -3,6 +3,7 @@ garak.harnesses
 
 .. autosummary::
    :toctree: generated
+   :recursive:
 
    garak.harnesses
       garak.harnesses.base

@@ -3,6 +3,7 @@ garak.generators
 
 .. autosummary::
    :toctree: generated
+   :recursive:
 
    garak.generators
       garak.generators.base

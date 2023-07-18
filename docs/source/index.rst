@@ -6,8 +6,11 @@ It uses a huge range of probes to examine and query a large language model, simu
 attacks, and uses a range of detectors on the model's outputs to see if the model was 
 vulnerable to any of those attacks.
 
+This is the code reference documentation, especially useful for developers and people interested
+in how garak works. There is a separate `user guide <https://docs.garak.ai>`_ containing information
+on running garak and interpreting results.
 
-This is the code reference documentation. Join our `Discord <https://discord.gg/xH3rs3ZH4B>`_
+You can also join our `Discord <https://discord.gg/xH3rs3ZH4B>`_
 and follow us on `Twitter <https://twitter.com/garak_llm>`_!
 
 Check out the :doc:`usage` section for further information, including
@@ -23,6 +26,7 @@ Contents
 .. toctree::
 
    usage
+   contributing
    basic
    probes
    detectors

@@ -3,6 +3,7 @@ garak.probes
 
 .. autosummary::
    :toctree: generated
+   :recursive:
 
    garak.probes
       garak.probes.base

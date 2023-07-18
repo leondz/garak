@@ -3,6 +3,7 @@ garak.detectors
 
 .. autosummary::
    :toctree: generated
+   :recursive:
 
    garak.detectors
       garak.detectors.base

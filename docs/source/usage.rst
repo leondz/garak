@@ -8,6 +8,8 @@ Installation
 
 `garak` is a command-line tool. It's developed in Linux and OSX.
 
+Standard quick `pip` install
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To use garak, first install it using pip:
 
@@ -26,8 +28,10 @@ The standard pip version of `garak` is updated periodically. To get a fresher ve
     python -m pip install -U git+https://github.com/leondz/garak.git@main
 
 
-Clone from source
+For development: clone from `git`
 ^^^^^^^^^^^^^^^^^
+
+You can also clone the source and run `garak` directly. This works fine and is recommended for development.
 
 `garak` has its own dependencies. You can to install `garak` in its own Conda environment:
 
