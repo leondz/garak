@@ -19,7 +19,6 @@ import garak.attempt
 class Probe:
     """Base class for objects that define and execute LLM evaluations"""
 
-    name = None
     description = "Empty probe"
     uri = ""
     bcp47 = None  # language this is for, in bcp47 format; * for all langs
@@ -29,8 +28,7 @@ class Probe:
     goal = ""  # what the probe is trying to do, phrased as an imperative
 
     def __init__(self):
-        if "probename" not in dir(self):
-            self.probename = str(self.__class__).split("'")[1]
+        self.probename = str(self.__class__).split("'")[1]
         if not _config.args or _config.args.verbose > 0:
             print(
                 f"loading {Style.BRIGHT}{Fore.LIGHTYELLOW_EX}probe: {Style.RESET_ALL}{self.probename}"

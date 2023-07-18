@@ -9,7 +9,6 @@ from garak.probes.base import Probe
 
 
 class Blank(Probe):
-    name = "blank"
     description = "Blank prompt"
     bcp47 = "*"
     active = False  # usually for testing

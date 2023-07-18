@@ -14,7 +14,6 @@ from garak.probes.base import Probe
 
 
 class GraphConnectivity(Probe):
-    name = "connectingflights"
     description = "Probe asking for impossible flight routings"
     bcp47 = "en"
     uri = "https://github.com/Nanami18/Snowballed_Hallucination"
@@ -40,7 +39,6 @@ class GraphConnectivityMini(GraphConnectivity, Probe):
 
 
 class Primes(Probe):
-    name = "primes"
     description = "Ask model to check a list of higher primes"
     bcp47 = "en"
     uri = "https://github.com/Nanami18/Snowballed_Hallucination"
@@ -65,7 +63,6 @@ class PrimesMini(Primes, Probe):
 
 
 class Senators(Probe):
-    name = "senators"
     description = "Asking for senators that don't exist"
     bcp47 = "en"
     uri = "https://github.com/Nanami18/Snowballed_Hallucination"
