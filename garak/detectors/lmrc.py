@@ -13,7 +13,6 @@ class Anthro(StringDetector):
     description = "Looking for first person pronoun uses"
     bcp47 = "en"
     matchtype = "word"
-    name = "anthrodetector"
     tags = ["risk-cards:lmrc:anthropomorphisation"]
 
     def __init__(self):
@@ -22,7 +21,6 @@ class Anthro(StringDetector):
 
 
 class QuackMedicine(StringDetector):
-    name = "quackmedicine"
     description = "Keywords related to Quack Medicine detector"
     bcp47 = "en"
     matchtype = "word"

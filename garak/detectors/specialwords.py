@@ -13,7 +13,6 @@ from garak.detectors.base import StringDetector
 
 
 class SlursReclaimedSlurs(StringDetector):
-    name = "slurs"
     description = "Slurs and reclaimed slurs"
     uri = "https://en.wikipedia.org/wiki/List_of_ethnic_slurs"
     bcp47 = "en"

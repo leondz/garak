@@ -261,7 +261,6 @@ class BaseEncodingProbe:
 
 
 class InjectBase64(BaseEncodingProbe, Probe):
-    name = "encoding64"
     description = "Probe for susceptibility to base64 encoded injections"
     bcp47 = "en"
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
@@ -282,7 +281,6 @@ class InjectBase64(BaseEncodingProbe, Probe):
 
 
 class InjectBase16(BaseEncodingProbe, Probe):
-    name = "encoding16"
     description = "Probe for susceptibility to base16 encoded injections"
     bcp47 = "en"
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
@@ -297,7 +295,6 @@ class InjectBase16(BaseEncodingProbe, Probe):
 
 
 class InjectBase32(BaseEncodingProbe, Probe):
-    name = "encoding32"
     description = "Probe for susceptibility to base32 encoded injections"
     bcp47 = "en"
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
@@ -312,7 +309,6 @@ class InjectBase32(BaseEncodingProbe, Probe):
 
 
 class InjectAscii85(BaseEncodingProbe, Probe):
-    name = "encoding85"
     description = "Probe for susceptibility to base85 encoded injections"
     bcp47 = "en"
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
@@ -327,7 +323,6 @@ class InjectAscii85(BaseEncodingProbe, Probe):
 
 
 class InjectBase32(BaseEncodingProbe, Probe):
-    name = "encoding32"
     description = "Probe for susceptibility to base32 encoded injections"
     bcp47 = "en"
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
@@ -342,7 +337,6 @@ class InjectBase32(BaseEncodingProbe, Probe):
 
 
 class InjectHex(BaseEncodingProbe, Probe):
-    name = "encodinghex"
     description = "Probe for susceptibility to hex encoded injections"
     bcp47 = "en"
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
@@ -357,7 +351,6 @@ class InjectHex(BaseEncodingProbe, Probe):
 
 
 class InjectQP(BaseEncodingProbe, Probe):
-    name = "encodingqp"
     description = "Probe for susceptibility to QP encoded injections"
     bcp47 = "en"
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
@@ -372,7 +365,6 @@ class InjectQP(BaseEncodingProbe, Probe):
 
 
 class InjectUU(BaseEncodingProbe, Probe):
-    name = "encodingUU"
     description = "Probe for susceptibility to UU encoded injections"
     bcp47 = "en"
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
@@ -395,7 +387,6 @@ class InjectUU(BaseEncodingProbe, Probe):
 
 
 class InjectMime(BaseEncodingProbe, Probe):
-    name = "encodingmime"
     description = "Probe for susceptibility to MIME encoding injections"
     bcp47 = "en"
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
@@ -412,7 +403,6 @@ class InjectMime(BaseEncodingProbe, Probe):
 
 
 class InjectROT13(BaseEncodingProbe, Probe):
-    name = "encodingrot13"
     description = "Probe for susceptibility to ROT13 encoding injections"
     bcp47 = "en"
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
@@ -427,7 +417,6 @@ class InjectROT13(BaseEncodingProbe, Probe):
 
 
 class InjectBase2048(BaseEncodingProbe, Probe):
-    name = "encodingrot13"
     description = "Probe for susceptibility to Base2048 encoding injections"
     bcp47 = "en"
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
@@ -445,7 +434,6 @@ class InjectBase2048(BaseEncodingProbe, Probe):
 
 
 class InjectBraille(BaseEncodingProbe, Probe):
-    name = "encodingbraille"
     description = (
         "Probe for susceptibility to Braille encoding injections. Credit Wally#3422"
     )
@@ -462,7 +450,6 @@ class InjectBraille(BaseEncodingProbe, Probe):
 
 
 class InjectMorse(BaseEncodingProbe, Probe):
-    name = "encodingmorse"
     description = "Probe for susceptibility to Morse encoding. Credit Wally#3422"
     bcp47 = "en"
     uri = ""

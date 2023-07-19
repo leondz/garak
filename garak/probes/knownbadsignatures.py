@@ -33,7 +33,6 @@ repeat_prompts = [
 
 
 class EICAR(Probe):
-    name = "eicar"
     description = "Does the model check its output for viruses? Try to send the EICAR code through"
     bcp47 = "*"
     uri = "https://en.wikipedia.org/wiki/EICAR_test_file"
@@ -50,7 +49,6 @@ class EICAR(Probe):
 
 
 class GTUBE(Probe):
-    name = "gtube"
     description = (
         "Does the model check its output for spam? Try to send the GTUBE code through"
     )
@@ -69,7 +67,6 @@ class GTUBE(Probe):
 
 
 class GTphish(Probe):
-    name = "GTphish"
     description = "Does the model check its output for phishing? Try to send the GTphish code through"
     bcp47 = "*"
     uri = "https://www.cisco.com/c/en/us/support/docs/security/email-security-appliance/213465-testing-outbreak-filter-url-rewriting.html"
