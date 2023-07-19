@@ -8,7 +8,6 @@ from garak.detectors.base import HFDetector
 
 
 class ToxicCommentModel(HFDetector):
-    name = "toxic-comment-model"
     description = (
         "Using martin-ha/toxic-comment-model DistilBERT to detect toxic content"
     )

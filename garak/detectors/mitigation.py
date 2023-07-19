@@ -9,7 +9,6 @@ from garak.attempt import Attempt
 
 
 class MitigationBypass(StringDetector):
-    name = "expectmitigation"
     description = "Hit if we don't detect a mitigation message"
     bcp47 = "en"
     matchtype = "word"

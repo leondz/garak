@@ -33,7 +33,6 @@ with open(
 
 
 class SurgeProfanitySexual(StringDetector):
-    name = "sexualterms"
     description = "Surge AI list: sexual anatomy / sexual acts"
     bcp47 = "en"
     matchtype = "word"
@@ -45,7 +44,6 @@ class SurgeProfanitySexual(StringDetector):
 
 
 class SurgeProfanityBodilyFluids(StringDetector):
-    name = "bodilyfluids"
     description = "Surge AI list: bodily fluids / excrement"
     bcp47 = "en"
     matchtype = "word"
@@ -57,7 +55,6 @@ class SurgeProfanityBodilyFluids(StringDetector):
 
 
 class SurgeProfanitySexualOrientationGender(StringDetector):
-    name = "sexualorientationandgender"
     description = "Surge AI list: sexual orientation / gender"
     bcp47 = "en"
     matchtype = "word"
@@ -73,7 +70,6 @@ class SurgeProfanitySexualOrientationGender(StringDetector):
 
 
 class SurgeProfanityRacialEthnic(StringDetector):
-    name = "racialethnic"
     description = "Surge AI list: racial / ethnic"
     bcp47 = "en"
     matchtype = "word"
@@ -89,7 +85,6 @@ class SurgeProfanityRacialEthnic(StringDetector):
 
 
 class SurgeProfanityMentalDisability(StringDetector):
-    name = "mentaldisability"
     description = "Surge AI list: mental disability"
     bcp47 = "en"
     matchtype = "word"
@@ -105,7 +100,6 @@ class SurgeProfanityMentalDisability(StringDetector):
 
 
 class SurgeProfanityPhysicalDisability(StringDetector):
-    name = "physicaldisability"
     description = "Surge AI list: physical disability"
     bcp47 = "en"
     matchtype = "word"
@@ -121,7 +115,6 @@ class SurgeProfanityPhysicalDisability(StringDetector):
 
 
 class SurgeProfanityPhysicalAttributes(StringDetector):
-    name = "physicalattributes"
     description = "Surge AI list: physical attributes"
     bcp47 = "en"
     matchtype = "word"
@@ -133,7 +126,6 @@ class SurgeProfanityPhysicalAttributes(StringDetector):
 
 
 class SurgeProfanityAnimalReferences(StringDetector):
-    name = "animalreferences"
     description = "Surge AI list: animal references"
     bcp47 = "en"
     matchtype = "word"
@@ -145,7 +137,6 @@ class SurgeProfanityAnimalReferences(StringDetector):
 
 
 class SurgeProfanityReligious(StringDetector):
-    name = "religiousoffence"
     description = "Surge AI list: religious offense"
     bcp47 = "en"
     matchtype = "word"
@@ -157,7 +148,6 @@ class SurgeProfanityReligious(StringDetector):
 
 
 class SurgeProfanityPolitical(StringDetector):
-    name = "political"
     description = "Surge AI list: political"
     bcp47 = "en"
     matchtype = "word"
@@ -175,7 +165,6 @@ class SurgeProfanityPolitical(StringDetector):
 
 class OfcomOffensiveGeneral(StringDetector):
     term = "general"
-    name = f"ofcom{term}"
     description = f"OFCOM potentially offensive: {term}"
     bcp47 = "en"
     matchtype = "word"
@@ -188,7 +177,6 @@ class OfcomOffensiveGeneral(StringDetector):
 
 class OfcomOffensiveSexual(StringDetector):
     term = "sexual"
-    name = f"ofcom{term}"
     description = f"OFCOM potentially offensive: {term}"
     bcp47 = "en"
     matchtype = "word"
@@ -201,7 +189,6 @@ class OfcomOffensiveSexual(StringDetector):
 
 class OfcomOffensiveDiscriminatory(StringDetector):
     term = "discriminatory"
-    name = f"ofcom{term}"
     description = f"OFCOM potentially offensive: {term}"
     bcp47 = "en"
     matchtype = "word"
@@ -218,7 +205,6 @@ class OfcomOffensiveDiscriminatory(StringDetector):
 
 class OfcomOffensiveSexGender(StringDetector):
     term = "sexgender"
-    name = f"ofcom{term}"
     description = f"OFCOM potentially offensive: {term}"
     bcp47 = "en"
     matchtype = "word"
@@ -235,7 +221,6 @@ class OfcomOffensiveSexGender(StringDetector):
 
 class OfcomOffensiveMentalHealth(StringDetector):
     term = "mentalhealth"
-    name = f"ofcom{term}"
     description = f"OFCOM potentially offensive: {term}"
     bcp47 = "en"
     matchtype = "word"
@@ -252,7 +237,6 @@ class OfcomOffensiveMentalHealth(StringDetector):
 
 class OfcomOffensiveRaceEthnic(StringDetector):
     term = "raceethnic"
-    name = f"ofcom{term}"
     description = f"OFCOM potentially offensive: {term}"
     bcp47 = "en"
     matchtype = "word"
@@ -268,7 +252,6 @@ class OfcomOffensiveRaceEthnic(StringDetector):
 
 
 class LDNOOBW(StringDetector):
-    name = f"ldnoobw"
     description = f"List of Dirty, Naughty, Obscene, and Otherwise Bad Words (English)"
     bcp47 = "en"
     tags = [
