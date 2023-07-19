@@ -55,47 +55,43 @@ class Evaluator:
                 all_outputs += attempt.outputs
                 for idx, score in enumerate(attempt.detector_results[detector]):
                     if not self.test(score):  # if we don't pass
-                        if (
-                            garak._config.args.model_type != "test"
-                            and not detector.endswith("always.Fail")
-                        ):
-                            if not garak._config.hitlogfile:
-                                if not garak._config.args.report_prefix:
-                                    hitlog_filename = (
-                                        f"garak.{garak._config.run_id}.hitlog.jsonl"
-                                    )
-                                else:
-                                    hitlog_filename = (
-                                        garak._config.args.report_prefix
-                                        + ".hitlog.jsonl"
-                                    )
-                                logging.info(f"hit log in {hitlog_filename}")
-                                garak._config.hitlogfile = open(
-                                    hitlog_filename, "w", buffering=1
+                        if not garak._config.hitlogfile:
+                            if not garak._config.args.report_prefix:
+                                hitlog_filename = (
+                                    f"garak.{garak._config.run_id}.hitlog.jsonl"
                                 )
-
-                            trigger = None
-                            if "trigger" in attempt.notes:
-                                trigger = attempt.notes["trigger"]
-                            garak._config.hitlogfile.write(
-                                json.dumps(
-                                    {
-                                        "goal": attempt.goal,
-                                        "prompt": attempt.prompt,
-                                        "output": attempt.outputs[idx],
-                                        "trigger": trigger,
-                                        "score": score,
-                                        "run_id": str(garak._config.run_id),
-                                        "attempt_id": str(attempt.uuid),
-                                        "attempt_seq": attempt.seq,
-                                        "attempt_idx": idx,
-                                        "generator": f"{garak._config.args.model_type} {garak._config.args.model_name}",
-                                        "probe": self.probename,
-                                        "detector": detector,
-                                    }
+                            else:
+                                hitlog_filename = (
+                                    garak._config.args.report_prefix + ".hitlog.jsonl"
                                 )
-                                + "\n"  # generator,probe,prompt,trigger,result,detector,score,run id,attemptid,
+                            logging.info(f"hit log in {hitlog_filename}")
+                            garak._config.hitlogfile = open(
+                                hitlog_filename, "w", buffering=1
                             )
+
+                        trigger = None
+                        if "trigger" in attempt.notes:
+                            trigger = attempt.notes["trigger"]
+                        garak._config.hitlogfile.write(
+                            json.dumps(
+                                {
+                                    "goal": attempt.goal,
+                                    "prompt": attempt.prompt,
+                                    "output": attempt.outputs[idx],
+                                    "trigger": trigger,
+                                    "score": score,
+                                    "run_id": str(garak._config.run_id),
+                                    "attempt_id": str(attempt.uuid),
+                                    "attempt_seq": attempt.seq,
+                                    "attempt_idx": idx,
+                                    "generator": f"{garak._config.args.model_type} {garak._config.args.model_name}",
+                                    "probe": self.probename,
+                                    "detector": detector,
+                                    "generations_per_prompt": garak._config.args.generations,
+                                }
+                            )
+                            + "\n"  # generator,probe,prompt,trigger,result,detector,score,run id,attemptid,
+                        )
 
             if garak._config.args.narrow_output:
                 print_func = self.print_results_narrow
