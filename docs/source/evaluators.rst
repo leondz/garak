@@ -1,10 +1,9 @@
 garak.evaluators
-=====
+================
 
-.. autosummary::
-   :toctree: generated
-   :recursive:
+.. toctree::
+   :maxdepth: 2
 
    garak.evaluators
-      garak.evaluators.base
-      garak.evaluators.maxrecall
+   garak.evaluators.base
+   garak.evaluators.maxrecall

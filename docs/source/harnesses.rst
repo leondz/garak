@@ -1,11 +1,10 @@
 garak.harnesses
-=====
+===============
 
-.. autosummary::
-   :toctree: generated
-   :recursive:
+.. toctree::
+   :maxdepth: 2
 
    garak.harnesses
-      garak.harnesses.base
-      garak.harnesses.probewise
-      garak.harnesses.pxd
+   garak.harnesses.base
+   garak.harnesses.probewise
+   garak.harnesses.pxd
