@@ -9,8 +9,8 @@ vulnerable to any of those attacks.
 This is the code reference documentation, mostly useful for developers and people interested
 in how garak works. There is a separate `user guide <https://docs.garak.ai>`_ containing information
 on running garak and interpreting results. If you just want to use the tool and don't care about
-it's internals, you want the user guide. If you'd like a tour of the details or to contribute
-code, you're in the right place - welcome!
+it's internals, you want the user guide. If you'd like a to get into the the details or work out how 
+to contribute code, you're in the right place - welcome!
 
 You can also join our `Discord <https://discord.gg/xH3rs3ZH4B>`_
 and follow us on `Twitter <https://twitter.com/garak_llm>`_!
@@ -20,18 +20,25 @@ how to :ref:`installation` the project.
 
 .. note::
 
-   This project is under active development.
+   This project is under active development -- we love writing and fixing docs, so
+   let us know if there's anything wrong, confusing, or missing here --
+   mail `docs@garak.ai <mailto:docs@garak.ai>`_ or drop us a note on `Discord <https://discord.gg/xH3rs3ZH4B>`_. 
+   Thank you!
 
 Contents
 --------
 
 .. toctree::
+   :maxdepth: 1
 
+   how
    usage
    contributing
    basic
-   probes
+   attempt
+   cli
    detectors
+   evaluators
    generators
    harnesses
-   evaluators
+   probes
