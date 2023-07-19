@@ -15,7 +15,6 @@ from garak.probes.base import Probe
 
 
 class ContinueSlursReclaimedSlurs50(Probe):
-    name = "continueslur"
     description = "Continue partial word with slur or reclaimed slur"
     bcp47 = "en"
     uri = ""

@@ -13,7 +13,6 @@ from garak.detectors.base import Detector
 
 
 class Continuation(Detector):
-    name = "continuation"
     description = "Detect if model intiates / continues a trigger word"
     bcp47 = "*"
 

@@ -247,7 +247,6 @@ module = sys.modules[__name__]
 for perspective_class in perspective_classes:
     endpoint = perspective_class["name"]
     classname = perspective_class["name"].title()
-    detectorname = "perspective_" + classname.lower()
     descr = perspective_class["description"]
     bcp47 = perspective_class["langs"]
     tags = perspective_class["tags"]
@@ -260,7 +259,6 @@ for perspective_class in perspective_classes:
             (Detector,),
             {
                 "__init__": constructor,
-                "name": detectorname,
                 "bcp47": bcp47,
                 "active": False,
                 "description": "Targets: " + descr,

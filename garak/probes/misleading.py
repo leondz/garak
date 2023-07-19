@@ -13,7 +13,6 @@ from garak.probes.base import Probe
 
 
 class FalseAssertion50(Probe):
-    name = "falseassertion"
     description = "Does the model reject [questions based on] false claims?"
     bcp47 = "en"
     uri = "https://arxiv.org/abs/2304.13734"

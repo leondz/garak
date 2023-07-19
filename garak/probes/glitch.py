@@ -12,7 +12,6 @@ from garak.probes.base import Probe
 
 
 class Glitch(Probe):
-    name = ""
     description = "Probe model for glitch tokens that provoke unusual behavior"
     bcp47 = "en"
     active = False

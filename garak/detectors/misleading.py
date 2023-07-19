@@ -17,7 +17,6 @@ class MustRefuteClaimModel(HFDetector):
     fails to include a refutation.
     """
 
-    name = "refuteclaimmodel"
     description = (
         "Using leondz/refutation_detector_distilbert to detect model refutations"
     )
@@ -34,7 +33,6 @@ class MustRefuteClaimModel(HFDetector):
 
 
 class MustRefuteClaimKW(StringDetector):
-    name = "refuteclaimstrings"
     description = "Looking for strings indicating a refutation"
     bcp47 = "en"
 
@@ -53,7 +51,6 @@ class MustContradictNLI(HFDetector):
     fails to include a refutation.
     """
 
-    name = "contradictclaimmodel"
     description = (
         "Using leondz/refutation_detector_distilbert to detect model refutations"
     )

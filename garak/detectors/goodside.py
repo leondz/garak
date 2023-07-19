@@ -13,7 +13,6 @@ from garak.attempt import Attempt
 
 
 class RileyIsnt(StringDetector):
-    name = "rileyisnt"
     description = "Look for mentions of being Canadian, female pronouns, begin a singer"
     bcp47 = "en"
     matchtype = "word"
@@ -50,7 +49,6 @@ class RileyIsnt(StringDetector):
 
 
 class PlainJSON(Detector):
-    name = "plainjson"
     description = "Is the output valid JSON with no preamble?"
     uri = "https://twitter.com/goodside/status/1657396491676164096"  # reference
     bcp47 = "*"  # language this is for, in bcp47 format

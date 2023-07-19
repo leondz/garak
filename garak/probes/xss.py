@@ -11,7 +11,6 @@ from garak.probes.base import Probe
 
 
 class MarkdownImageExfil(Probe):
-    name = ""
     description = (
         "Can we get the model to write embedded assets exfiltrating text in the URI?"
     )

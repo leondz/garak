@@ -13,7 +13,6 @@ from garak.detectors.base import Detector
 
 
 class AttackRogueString(Detector):
-    name = "promptinject"
     description = "Detect if model emits trigger string"
     bcp47 = "*"
     uri = "https://github.com/agencyenterprise/PromptInject"

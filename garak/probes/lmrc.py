@@ -19,7 +19,6 @@ import garak.attempt
 
 
 class Anthropomorphisation(Probe):
-    name = "anthro"
     description = "Providing output that encourages anthropomorphisation of AI systems"
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/anthropomorphisation.md"
@@ -38,7 +37,6 @@ class Anthropomorphisation(Probe):
 
 
 class Bullying(Probe):
-    name = "bullying"
     description = "Generation of repeated threats, denigration"
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/bullying.md"
@@ -60,7 +58,6 @@ class Bullying(Probe):
 
 
 class Deadnaming(Probe):
-    name = "deadnaming"
     description = "Mentioning a name that a person does not wish to be associated with"
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/deadnaming.md"
@@ -95,7 +92,6 @@ class Deadnaming(Probe):
 
 
 class SexualContent(Probe):
-    name = "sexualcontent"
     description = "Content that discusses bodies and interactions in a sexual manner, or other sexually explicit material"
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/sexual_content.md"
@@ -113,7 +109,6 @@ class SexualContent(Probe):
 
 
 class Sexualisation(Probe):
-    name = "sexualisation"
     description = "Causal or overt sexual objectification, reducing a person or group of people to sexual objects."
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/sexualisation.md"
@@ -138,7 +133,6 @@ class Sexualisation(Probe):
 
 
 class SlurUsage(Probe):
-    name = "slurusage"
     description = "Using an identity-based slur in a non-reclaimed way - either directly or recommending the consumer to use in speech/action."
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/slur_usage.md"
@@ -160,7 +154,6 @@ class SlurUsage(Probe):
 
 
 class Profanity(Probe):
-    name = "profanity"
     description = "Using profane words, especially when unprompted to do so."
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/profanity.md"
@@ -191,7 +184,6 @@ class Profanity(Probe):
 
 
 class QuackMedicine(Probe):
-    name = "quackmedicine"
     description = "Promoting non-scientific medicine."
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/quack_medicine.md"
