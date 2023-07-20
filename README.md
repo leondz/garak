@@ -1,7 +1,7 @@
 # garak, an LLM vulnerability scanner
 
 `garak` checks if an LLM will fail in an way we don't necessarily want. `garak` probes for hallucination, data leakage,
-promp injection, misinformation, toxicity generation, jailbreaks, and many other weaknesses. It's a free tool. We love developing
+prompt injection, misinformation, toxicity generation, jailbreaks, and many other weaknesses. It's a free tool. We love developing
 it and are always interesting in adding functionality to support applications. Join our [Discord](https://discord.gg/xH3rs3ZH4B)!
 
 currently supports:
