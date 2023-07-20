@@ -4,9 +4,9 @@ Contributing
 Getting ready
 -------------
 
-The best and only way to code up a plugin is to start by forking garak and then cloning it to disk.
-You can use github's fork functionality to do this.
-Once you're done, make a pull request to the main report and describe what you've done -- and we'll take it from there!
+The best and only way to contribute to garak is to start by getting a copy of the source code.
+You can use github's fork function to do this.
+Once you're done, make a pull request to the main repo and describe what you've done -- and we'll take it from there!
 
 Developing your own plugins
 ---------------------------
