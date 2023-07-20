@@ -201,7 +201,7 @@ def detect(self, attempt):
     return detector_results
 
 
-@backoff.on_exception(backoff.fibo, Exception, max_value=70)
+@backoff.on_exception(backoff.fibo, Exception, max_value=50)
 def _get_perspective_response(self, text):
     if text == "":
         return 0.0
