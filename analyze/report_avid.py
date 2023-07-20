@@ -14,7 +14,8 @@ evals = []
 meta = None
 
 # load up a .jsonl output file, take in eval and config rows
-with open(sys.argv[1], "r") as reportfile:
+report_location = sys.argv[1]
+with open(report_location, "r") as reportfile:
     for line in reportfile:
         record = json.loads(line.strip())
         if record["entry_type"] == "eval":
@@ -26,15 +27,21 @@ if len(evals) == 0:
 
 # preprocess
 for i in range(len(evals)):
-    category, module_name, plugin_class_name = evals[i]["probe"].split(".")
-    mod = importlib.import_module(f"garak.{category}.{module_name}")
-    plugin_instance = getattr(mod, plugin_class_name)()
+    module_name, plugin_class_name = evals[i]["probe"].split(".")
+    mod = importlib.import_module(f"garak.probes.{module_name}")
+
     evals[i]["probe"] = f"{module_name}.{plugin_class_name}"
-    evals[i]["probe_tags"] = plugin_instance.tags
+    try:
+        plugin_instance = getattr(mod, plugin_class_name)()
+        evals[i]["probe_tags"] = plugin_instance.tags
+    except:
+        continue
 
 evals_df = pd.DataFrame.from_dict(evals)
 evals_df = evals_df.assign(score=lambda x: (x["passed"] / x["total"] * 100))
 probe_scores = evals_df[["probe", "score"]].groupby("probe").mean()
+
+evals_df.to_csv("evals.csv")
 
 # set up a generic report template
 report_template = Report()
@@ -60,8 +67,6 @@ for probe in probe_scores.index:
     report = report_template.copy()
     probe_data = evals_df.query(f"probe=='{probe}'")
 
-    print(probe)
-
     report.description = LangValue(
         lang="eng",
         value=f"The model {meta['model_name']} from {meta['model_type']} was evaluated by the Garak LLM Vunerability scanner using the probe `{probe}`.",
@@ -73,22 +78,26 @@ for probe in probe_scores.index:
         Metric(
             name="",
             detection_method=Detection(type=MethodEnum.thres, name="Count failed"),
-            results=probe_data[["detector", "passed", "total", "score"]].to_dict(),
+            results=probe_data[["detector", "passed", "total", "score"]].reset_index().to_dict(),
         )
     ]
-
-    tags_split = [tag.split(":") for tag in probe_data["probe_tags"][0]]
-    report.impact = Impact(
-        avid=AvidTaxonomy(
-            risk_domain=pd.Series([tag[1].title() for tag in tags_split])
-            .drop_duplicates()
-            .tolist(),  # unique values
-            sep_view=[SepEnum[tag[2]] for tag in tags_split],
-            lifecycle_view=[LifecycleEnum["L05"]],
-            taxonomy_version="",
+    all_tags = probe_data.iloc[0]["probe_tags"]
+    if all_tags == all_tags: # check for NaN
+        tags_split = [tag.split(":") for tag in all_tags if tag.startswith("avid")] # supports only avid taxonomy for now
+        report.impact = Impact(
+            avid=AvidTaxonomy(
+                risk_domain=pd.Series([tag[1].title() for tag in tags_split])
+                .drop_duplicates()
+                .tolist(),  # unique values
+                sep_view=[SepEnum[tag[2]] for tag in tags_split],
+                lifecycle_view=[LifecycleEnum["L05"]],
+                taxonomy_version="",
+            )
         )
-    )
     all_reports.append(report)
 
-for r in all_reports:
-    print(r.json(indent=4))
+
+# save final output
+write_location = report_location.replace(".report",".avid")
+with open(write_location, "w") as f:
+    f.writelines(r.json()+"\n" for r in all_reports)
