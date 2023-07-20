@@ -2,8 +2,8 @@ How garak runs
 ==============
 
 In a typical run, ``garak`` will read a model type (and optionally model name) 
-from the command line, then determine which ``probe``s and ``detector``s to run, 
-start up a ``generator``, and then pass these to a ``harness`` to do the probing; 
+from the command line, then determine which ``probe`` and ``detector`` plugins to run, 
+start up a ``generator``, and then pass these to a ``harness`` to manage the probing; 
 an ``evaluator`` deals with the results. There are many modules in each of these 
 categories, and each module provides a number of classes that act as individual 
 plugins.
