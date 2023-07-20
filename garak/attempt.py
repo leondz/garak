@@ -13,22 +13,56 @@ import uuid
 class Attempt:
     """A class defining objects that represent everything that constitutes
     a single attempt at evaluating an LLM.
+
+    :param status: The status of this attempt; ``ATTEMPT_NEW``, ``ATTEMPT_STARTED``, or ``ATTEMPT_COMPLETE``
+    :type status: int
+    :param prompt: The processed prompt that will presented to the generator
+    :type prompt: str
+    :param probe_classname: Name of the probe class that originated this ``Attempt``
+    :type probe_classname: str
+    :param probe_params: Non-default parameters logged by the probe
+    :type probe_params: dict, optional
+    :param targets: A list of target strings to be searched for in generator responses to this attempt's prompt
+    :type targets: List(str), optional
+    :param outputs: The outputs from the generator in response to the prompt
+    :type outputs: List(str)
+    :param notes: A free-form dictionary of notes accompanying the attempt
+    :type notes: dict
+    :param detector_results: A dictionary of detector scores, keyed by detector name, where each value is a list of scores corresponding to each of the generator output strings in ``outputs``
+    :type detector_results: dict
+    :param goal: Free-text simple description of the goal of this attempt, set by the originating probe
+    :type goal: str
+    :param seq: Sequence number (starting 0) set in :meth:`garak.probes.base.Probe.probe`, to allow matching individual prompts with lists of answers/targets or other post-hoc ordering and keying
+    :type seq: int
     """
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        status=ATTEMPT_NEW,
+        prompt=None,
+        probe_classname=None,
+        probe_params={},
+        targets=[],
+        outputs=[],
+        notes={},
+        detector_results={},
+        goal=None,
+        seq=-1,
+    ) -> None:
         self.uuid = uuid.uuid4()
-        self.status = ATTEMPT_NEW
-        self.prompt = None
-        self.probe_classname = None
-        self.probe_params = {}
-        self.targets = None
-        self.outputs = []
-        self.notes = {}
-        self.detector_results = {}
-        self.goal = None
-        self.seq = -1
+        self.status = status
+        self.prompt = prompt
+        self.probe_classname = probe_classname
+        self.probe_params = probe_params
+        self.targets = targets
+        self.outputs = outputs
+        self.notes = notes
+        self.detector_results = detector_results
+        self.goal = goal
+        self.seq = seq
 
     def as_dict(self) -> dict:
+        """Converts the attempt to a dictionary."""
         return {
             "entry_type": "attempt",
             "uuid": str(self.uuid),

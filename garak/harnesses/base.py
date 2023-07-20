@@ -30,13 +30,17 @@ class Harness:
 
     def run(self, model, probes, detectors, evaluator, announce_probe=True) -> None:
         """Core harness method
+
         :param model: an instantiated generator providing an interface to the model to be examined
-        :type model: garak.generator.Generator
+        :type model: garak.generators.Generator
+        :param probes: a list of probe instances to be run
         :type probes: List[garak.probes.base.Probe]
+        :param detectors: a list of detectors to use on the results of the probes
         :type detectors: List[garak.detectors.base.Detector]
-        :type evaluator: List[garak.evaluators.base.Evaluator]
-        :param announce_probe: Should be print probe loading messages?
-        :type announce_probe: bool
+        :param evaluator: an instantiated evaluator for judging detector results
+        :type evaluator: garak.evaluators.base.Evaluator
+        :param announce_probe: Should we print probe loading messages?
+        :type announce_probe: bool, optional
         """
         if not detectors:
             logging.warning("No detectors, nothing to do")

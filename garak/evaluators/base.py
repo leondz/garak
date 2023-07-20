@@ -30,7 +30,8 @@ class Evaluator:
         override this to customise how evaluator judges
 
         :param test_value: the value from the detector in 0.0-1.0
-        :type test_value: float"""
+        :type test_value: float
+        """
         return False  # fail everything by default
 
     def evaluate(self, attempts: List[garak.attempt.Attempt]) -> None:

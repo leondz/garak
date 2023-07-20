@@ -17,6 +17,22 @@ class ProbewiseHarness(Harness):
         super().__init__()
 
     def run(self, model, probenames, evaluator):
+        """Execute a probe-by-probe scan
+
+        Probes are executed in name order. For each probe, the detectors
+        recommended by that probe are loaded and used to provide scores
+        of the results. The detector(s) to be used are specified in the
+        probe's ``recommended_detectors`` value; see :class:`garak.probes.base.Probe`
+        for the defaults.
+
+        :param model: an instantiated generator providing an interface to the model to be examined
+        :type model: garak.generators.base.Generator
+        :param probenames: a list of probe instances to be run
+        :type probenames: List[garak.probes.base.Probe]
+        :param evaluator: an instantiated evaluator for judging detector results
+        :type evaluator: garak.evaluators.base.Evaluator
+        """
+
         probenames = sorted(probenames)
         print(
             f"🕵️  queue of {Style.BRIGHT}{Fore.LIGHTYELLOW_EX}probes:{Style.RESET_ALL} "

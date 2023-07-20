@@ -34,9 +34,23 @@ Contents
    how
    usage
    contributing
+
+Code reference
+^^^^^^^^^^^^^^
+
+.. toctree::
+   :maxdepth: 1
+
    basic
    attempt
    cli
+
+Plugin structure
+^^^^^^^^^^^^^^^^
+
+.. toctree::
+   :maxdepth: 1
+
    detectors
    evaluators
    generators
