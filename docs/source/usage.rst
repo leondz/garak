@@ -8,6 +8,8 @@ Installation
 
 `garak` is a command-line tool. It's developed in Linux and OSX.
 
+Friendly install instructions are at `<https://docs.garak.ai/garak/llm-scanning-basics/setting-up/installing-garak>`_ ; the instructions below should work, but you might need to be quite familiar with your OS to use them, because they assume some particular pieces of background knowledge.
+
 Standard quick `pip` install
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -37,7 +39,7 @@ You can also clone the source and run `garak` directly. This works fine and is r
 
 .. code-block:: console
 
-    conda create --name garak python>=3.9
+    conda create --name garak "python>=3.9"
     conda activate garak
     gh repo clone leondz/garak
     cd garak
