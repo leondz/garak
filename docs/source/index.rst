@@ -36,6 +36,7 @@ Contents
    how
    usage
    contributing
+   reporting
 
 Code reference
 ^^^^^^^^^^^^^^

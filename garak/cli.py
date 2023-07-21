@@ -129,6 +129,13 @@ def main(arguments=[]) -> None:
         action="store_true",
         help="give narrow CLI output",
     )
+    parser.add_argument(
+        "--report",
+        "-r",
+        type=str,
+        help="process garak report into a list of AVID reports",
+    )
+
 
     _config.args = parser.parse_args(arguments)
 
@@ -145,13 +152,13 @@ def main(arguments=[]) -> None:
     import importlib
     import json
     import uuid
-
+    import os
     from colorama import Fore, Style
 
     import garak.evaluators
     from garak._plugins import enumerate_plugins, load_plugin
 
-    if not _config.args.version:
+    if not _config.args.version and not _config.args.report:
         logging.info(f"started at {_config.starttime_iso}")
         _config.run_id = str(uuid.uuid4())  # uuid1 is safe but leaks host info
         if not _config.args.report_prefix:
@@ -303,6 +310,9 @@ def main(arguments=[]) -> None:
 
         print(f"✔️  garak done: complete in {timetaken:.2f}s")
         logging.info(f"garak done: complete in {timetaken:.2f}s")
+
+    elif _config.args.report:
+        os.system(f"analyze/report_avid.py -r {_config.args.report}")
 
     else:
         print("nothing to do 🤷  try --help")
