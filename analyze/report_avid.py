@@ -4,17 +4,33 @@
 import importlib
 import sys
 import json
+import argparse
 import pandas as pd
 
 from datetime import date
 from avidtools.datamodels.report import Report
 from avidtools.datamodels.components import *
+from garak import _config
 
 evals = []
 meta = None
 
+parser = argparse.ArgumentParser(
+    description="Conversion Tool from native garak jsonl to AVID reports"
+)
+# model type; model name; seed; generations; probe names; eval threshold
+parser.add_argument(
+    "--report",
+    "-r",
+    type=str,
+    help="location of garak report file",
+)
+_config.args = parser.parse_args(sys.argv[1:])
+_config.args.verbose = 0
+
 # load up a .jsonl output file, take in eval and config rows
-report_location = sys.argv[1]
+report_location = _config.args.report
+print(f"📜 Converting garak reports {report_location}")
 with open(report_location, "r") as reportfile:
     for line in reportfile:
         record = json.loads(line.strip())
@@ -23,7 +39,7 @@ with open(report_location, "r") as reportfile:
         elif record["entry_type"] == "config":
             meta = record
 if len(evals) == 0:
-    raise ValueError("No evaluations to report!")
+    raise ValueError("No evaluations to report 🤷")
 
 # preprocess
 for i in range(len(evals)):
@@ -96,8 +112,8 @@ for probe in probe_scores.index:
         )
     all_reports.append(report)
 
-
 # save final output
 write_location = report_location.replace(".report",".avid")
 with open(write_location, "w") as f:
     f.writelines(r.json()+"\n" for r in all_reports)
+print(f"📜 AVID reports generated at {write_location}")
