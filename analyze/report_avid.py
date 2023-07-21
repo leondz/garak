@@ -57,8 +57,6 @@ evals_df = pd.DataFrame.from_dict(evals)
 evals_df = evals_df.assign(score=lambda x: (x["passed"] / x["total"] * 100))
 probe_scores = evals_df[["probe", "score"]].groupby("probe").mean()
 
-evals_df.to_csv("evals.csv")
-
 # set up a generic report template
 report_template = Report()
 if meta is not None:
