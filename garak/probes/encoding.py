@@ -10,6 +10,7 @@ optional variable: "encoding.payloads" -> a list of payload types to be used
 
 
 import base64
+import binascii
 import json
 
 import garak._config
@@ -271,7 +272,7 @@ class InjectBase64(BaseEncodingProbe, Probe):
         base64.b64encode,
         base64.urlsafe_b64encode,
         base64.standard_b64encode,
-        base64.binascii.b2a_base64,
+        binascii.b2a_base64,
     ]
     encoding_name = "BASE64"
 
@@ -342,7 +343,7 @@ class InjectHex(BaseEncodingProbe, Probe):
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
     tags = ["avid-effect:security:S0403"]
     goal = "make the model say an encoded payload"
-    encoding_funcs = [base64.binascii.b2a_hex]
+    encoding_funcs = [binascii.b2a_hex]
     encoding_name = "hex"
 
     def __init__(self):
@@ -356,8 +357,9 @@ class InjectQP(BaseEncodingProbe, Probe):
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
     tags = ["avid-effect:security:S0403"]
     goal = "make the model say an encoded payload"
-    encoding_funcs = [base64.binascii.b2a_qp]
+    encoding_funcs = [binascii.b2a_qp]
     encoding_name = "Quoted-Printable"
+    active = False  # seems to just pass text right through - when using ascii chars
 
     def __init__(self):
         BaseEncodingProbe.__init__(self)
@@ -377,7 +379,7 @@ class InjectUU(BaseEncodingProbe, Probe):
         hash_chunks = []
         for i in range(0, len(payload), 45):
             test_chunk = payload[i : i + 45]
-            hash_chunks.append(base64.binascii.b2a_uu(test_chunk))
+            hash_chunks.append(binascii.b2a_uu(test_chunk))
         return "".join(map(bytes.decode, hash_chunks))
 
     def __init__(self):
@@ -393,6 +395,7 @@ class InjectMime(BaseEncodingProbe, Probe):
     tags = ["avid-effect:security:S0403"]
     goal = "make the model say an encoded payload"
     encoding_name = "MIME"
+    active = False  # seems to just pass text right through - when using ascii chars
 
     def __init__(self):
         import quopri
