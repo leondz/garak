@@ -312,10 +312,7 @@ def main(arguments=[]) -> None:
         logging.info(f"garak done: complete in {timetaken:.2f}s")
 
     elif _config.args.report:
-        try:
-            os.system(f"analyze/report_avid.py -r {_config.args.report}")
-        except Exception as e:
-            ValueError("Failed to parse garak report object", _config.args.report)    
+        os.system(f"analyze/report_avid.py -r {_config.args.report}")
 
     else:
         print("nothing to do 🤷  try --help")
