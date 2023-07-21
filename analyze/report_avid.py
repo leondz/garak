@@ -47,11 +47,8 @@ for i in range(len(evals)):
     mod = importlib.import_module(f"garak.probes.{module_name}")
 
     evals[i]["probe"] = f"{module_name}.{plugin_class_name}"
-    try:
-        plugin_instance = getattr(mod, plugin_class_name)()
-        evals[i]["probe_tags"] = plugin_instance.tags
-    except:
-        continue
+    plugin_instance = getattr(mod, plugin_class_name)()
+    evals[i]["probe_tags"] = plugin_instance.tags
 
 evals_df = pd.DataFrame.from_dict(evals)
 evals_df = evals_df.assign(score=lambda x: (x["passed"] / x["total"] * 100))
