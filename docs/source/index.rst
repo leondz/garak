@@ -59,3 +59,4 @@ Plugin structure
    generators
    harnesses
    probes
+   report
