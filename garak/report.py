@@ -33,15 +33,13 @@ class Report:
             records = [],
             metadata = None,
             evaluations = None,
-            scores = None,
-            write_location = ""
+            scores = None
     ):
         self.report_location = report_location
         self.records = records
         self.metadata = metadata
         self.evaluations = evaluations
         self.scores = scores
-        self.write_location = write_location
 
     def load(self):
         """
@@ -51,6 +49,7 @@ class Report:
             for line in reportfile:
                 record = json.loads(line.strip())
                 self.records.append(record)
+        return self
 
     def get_evaluations(self):
         """Extracts evaluation information from a garak report."""
@@ -76,6 +75,7 @@ class Report:
         evals_df = pd.DataFrame.from_dict(evals)
         self.evaluations = evals_df.assign(score=lambda x: (x["passed"] / x["total"] * 100))
         self.scores = self.evaluations[["probe", "score"]].groupby("probe").mean()
+        return self
 
     def export(self): # TODO: add html format
         """Writes out output in a specified format."""

@@ -319,9 +319,7 @@ def main(arguments=[]) -> None:
 
         report_location = _config.args.report
         print(f"📜 Converting garak reports {report_location}")
-        report = Report(_config.args.report)
-        report.load()
-        report.get_evaluations()
+        report = Report(_config.args.report).load().get_evaluations()
         report.export()
         print(f"📜 AVID reports generated at {report.write_location}")
 
