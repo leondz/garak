@@ -1,7 +1,7 @@
 Reporting
 ==========
 
-By default, `garak` outputs a JSONL file, with the name `garak.<uuid>.report.jsonl`, that stores outcomes from a scan. `garak` provides a CLI option to further structure this file for downstream consumption. The open data schema of AI vulnerability Database (`AVID <https://avidml.org>`_) is used for this purpose.
+By default, ``garak`` outputs a JSONL file, with the name ``garak.<uuid>.report.jsonl``, that stores outcomes from a scan. ``garak`` provides a CLI option to further structure this file for downstream consumption. The open data schema of AI vulnerability Database (`AVID <https://avidml.org>`_) is used for this purpose.
 
 The syntax for this is as follows:
 
@@ -12,7 +12,7 @@ The syntax for this is as follows:
 Examples
 ^^^^^^^^
 
-As an example, let's load up a `garak` report from scanning `gpt-3.5-turbo-0613`
+As an example, let's load up a ``garak`` report from scanning ``gpt-3.5-turbo-0613``.
 
 .. code-block:: console
 

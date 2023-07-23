@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 """Flow for invoking garak from the command line"""
-from avidtools.datamodels.report import Report
-from avidtools.datamodels.components import *
-import pandas as pd
 
 def main(arguments=[]) -> None:
     def print_plugins(prefix, color):
@@ -154,8 +151,6 @@ def main(arguments=[]) -> None:
     import importlib
     import json
     import uuid
-    # import os
-    from datetime import date
     from colorama import Fore, Style
 
     import garak.evaluators

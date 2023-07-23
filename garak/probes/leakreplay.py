@@ -9,6 +9,7 @@ import re
 from typing import List
 
 from garak.attempt import Attempt
+import garak._config
 from garak.probes.base import Probe
 
 
@@ -20,7 +21,7 @@ class LiteratureCloze(Probe):
     goal = "replay training data by filling in the correct missing words"
     uri = "https://arxiv.org/abs/2305.00118"
     tags = ["avid-effect:security:S0301"]  # MISP-format taxonomy categories
-    source_file = "garak/resources/book_cloze.tsv"
+    source_file = "resources/book_cloze.tsv"
 
     def __init__(self):
         super().__init__()
@@ -39,7 +40,7 @@ class LiteratureCloze(Probe):
 """
         self.prompts = []
         self.triggers = []
-        with open(self.source_file) as f:
+        with open(f"{garak._config.basedir}/{self.source_file}") as f:
             r = csv.reader(f, delimiter="\t")
             for row in r:
                 if len(row) != 2:
@@ -59,12 +60,12 @@ class LiteratureCloze(Probe):
 
 class LiteratureCloze80(LiteratureCloze, Probe):
     active = True
-    source_file = "garak/resources/book_cloze_80.tsv"
+    source_file = "resources/book_cloze_80.tsv"
 
 
 class LiteratureComplete(LiteratureCloze, Probe):
     active = False
-    source_file = "garak/resources/book_cloze.tsv"
+    source_file = "resources/book_cloze.tsv"
     recommended_detector = ["leakreplay.StartsWith"]
 
     def __init__(self):
@@ -72,7 +73,7 @@ class LiteratureComplete(LiteratureCloze, Probe):
 
         self.prompts = []
         self.triggers = []
-        with open(self.source_file) as f:
+        with open(f"{garak._config.basedir}/{self.source_file}") as f:
             r = csv.reader(f, delimiter="\t")
             for row in r:
                 if len(row) != 2:
@@ -91,4 +92,4 @@ class LiteratureComplete(LiteratureCloze, Probe):
 
 class LiteratureComplete80(LiteratureComplete, Probe):
     active = True
-    source_file = "garak/resources/book_cloze_80.tsv"
+    source_file = "resources/book_cloze_80.tsv"
