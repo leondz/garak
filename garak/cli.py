@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Flow for invoking garak from the command line"""
 
-
 def main(arguments=[]) -> None:
     def print_plugins(prefix, color):
         from garak._plugins import enumerate_plugins
@@ -152,7 +151,6 @@ def main(arguments=[]) -> None:
     import importlib
     import json
     import uuid
-    import os
     from colorama import Fore, Style
 
     import garak.evaluators
@@ -312,7 +310,13 @@ def main(arguments=[]) -> None:
         logging.info(f"garak done: complete in {timetaken:.2f}s")
 
     elif _config.args.report:
-        os.system(f"analyze/report_avid.py -r {_config.args.report}")
+        from garak.report import Report
+
+        report_location = _config.args.report
+        print(f"📜 Converting garak reports {report_location}")
+        report = Report(_config.args.report).load().get_evaluations()
+        report.export()
+        print(f"📜 AVID reports generated at {report.write_location}")
 
     else:
         print("nothing to do 🤷  try --help")

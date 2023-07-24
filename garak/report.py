@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Prints a report given a garak report in jsonl"""
+"""Defines the Report class and associated functions to process and export a native garak report"""
 
 import importlib
 import json
@@ -8,22 +8,51 @@ import pandas as pd
 from datetime import date
 import avidtools.datamodels.report as ar
 import avidtools.datamodels.components as ac
+import avidtools.datamodels.enums as ae
 
 # load up a .jsonl output file, take in eval and config rows
 class Report:
-    def __init__(self):
-        self.records = []
-        self.metadata = None
+    """A class defining a generic report object to store information in a garak report (typically named `garak.<uuid4>.report.jsonl`).
 
-    def load(self, report_location: str):
-
+    :param report_location: location where the file is stored.
+    :type report_location: str
+    :param records: list of raw json records in the report file
+    :type records: List[dict]
+    :param metadata: report metadata, storing information about scanned model
+    :type metadata: dict
+    :param evaluations: evaluation information at probe level
+    :type evaluations: pd.DataFrame
+    :param scores: average pass percentage per probe
+    :type scores: pd.DataFrame
+    :param write_location: location where the output is written out.
+    :type write_location: str
+    """
+    def __init__(
+            self,
+            report_location,
+            records = [],
+            metadata = None,
+            evaluations = None,
+            scores = None
+    ):
         self.report_location = report_location
-        with open(report_location, "r") as reportfile:
+        self.records = records
+        self.metadata = metadata
+        self.evaluations = evaluations
+        self.scores = scores
+
+    def load(self):
+        """
+        Loads a garak report.
+        """
+        with open(self.report_location, "r") as reportfile:
             for line in reportfile:
                 record = json.loads(line.strip())
                 self.records.append(record)
+        return self
 
     def get_evaluations(self):
+        """Extracts evaluation information from a garak report."""
         evals = []
 
         for record in self.records:
@@ -46,8 +75,10 @@ class Report:
         evals_df = pd.DataFrame.from_dict(evals)
         self.evaluations = evals_df.assign(score=lambda x: (x["passed"] / x["total"] * 100))
         self.scores = self.evaluations[["probe", "score"]].groupby("probe").mean()
+        return self
 
     def export(self): # TODO: add html format
+        """Writes out output in a specified format."""
 
         # set up a generic AVID report template
         report_template = ar.Report()
@@ -57,7 +88,7 @@ class Report:
                 deployer = [self.metadata["model_type"]],
                 artifacts = [
                     ac.Artifact(
-                        type = ArtifactTypeEnum.model,
+                        type = ae.ArtifactTypeEnum.model,
                         name = self.metadata["model_name"]
                     )
                 ],
@@ -82,16 +113,16 @@ class Report:
                 lang="eng",
                 value=f"The model {self.metadata['model_name']} from {self.metadata['model_type']} was evaluated by the Garak LLM Vunerability scanner using the probe `{probe}`.",
             )
-            report.problemtype = avid.components.Problemtype(
-                classof = ClassEnum.llm,
-                type = TypeEnum.measurement, 
+            report.problemtype = ac.Problemtype(
+                classof = ae.ClassEnum.llm,
+                type = ae.TypeEnum.measurement, 
                 description = report.description
             )
             report.metrics = [
                 ac.Metric(
                     name="",
-                    detection_method=avid.components.Detection(
-                        type=MethodEnum.thres,
+                    detection_method=ac.Detection(
+                        type=ae.MethodEnum.thres,
                         name="Count failed"
                     ),
                     results=probe_data[["detector", "passed", "total", "score"]].reset_index().to_dict(),
@@ -103,14 +134,14 @@ class Report:
                 report.impact = ac.Impact(
                     avid = ac.AvidTaxonomy(
                         risk_domain = pd.Series([tag[1].title() for tag in tags_split]).drop_duplicates().tolist(),  # unique values
-                        sep_view = [SepEnum[tag[2]] for tag in tags_split],
-                        lifecycle_view = [LifecycleEnum["L05"]],
+                        sep_view = [ae.SepEnum[tag[2]] for tag in tags_split],
+                        lifecycle_view = [ae.LifecycleEnum["L05"]],
                         taxonomy_version = "",
                     )
                 )
             all_reports.append(report)
 
         # save final output
-        write_location = self.report_location.replace(".report",".avid")
-        with open(write_location, "w") as f:
+        self.write_location = self.report_location.replace(".report",".avid")
+        with open(self.write_location, "w") as f:
             f.writelines(r.json()+"\n" for r in all_reports)
