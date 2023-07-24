@@ -7,23 +7,44 @@ Selects detectors to run for each probe based on that probe's recommendations
 import logging
 from colorama import Fore, Style
 
+from garak.detectors.base import Detector
 from garak.harnesses.base import Harness
 
 import garak._plugins as _plugins
+import garak._config as _config
 
 
 class ProbewiseHarness(Harness):
     def __init__(self):
         super().__init__()
 
+    def _load_detector(self, detector_name: str) -> Detector:
+        detector = _plugins.load_plugin(
+            "detectors." + detector_name, break_on_fail=False
+        )
+        if detector:
+            return detector
+        else:
+            print(f" detector load failed: {detector_name}, skipping >>")
+            logging.error(f" detector load failed: {detector_name}, skipping >>")
+        return False
+
     def run(self, model, probenames, evaluator):
         """Execute a probe-by-probe scan
 
         Probes are executed in name order. For each probe, the detectors
         recommended by that probe are loaded and used to provide scores
-        of the results. The detector(s) to be used are specified in the
-        probe's ``recommended_detectors`` value; see :class:`garak.probes.base.Probe`
-        for the defaults.
+        of the results. The detector(s) to be used are determined with the
+        following formula:
+        * if the probe specifies a ``primary_detector``; ``_config.args`` is
+        set; and ``_config.args.extended_detectors`` is true; the union of
+        ``primary_detector`` and ``extended_detectors`` are used.
+        * if the probe specifices a ``primary_detector`` and ``_config.args.extended_detectors``
+        if false, or ``_config.args`` is not set, then only the detector in
+        ``primary_detector`` is used.
+        * if the probe does not specify ``primary_detector`` value, or this is
+        ``None``, then detectors are queued based on the from the probe's
+        ``recommended_detectors`` value; see :class:`garak.probes.base.Probe` for the defaults.
 
         :param model: an instantiated generator providing an interface to the model to be examined
         :type model: garak.generators.base.Generator
@@ -49,17 +70,24 @@ class ProbewiseHarness(Harness):
             if not probe:
                 continue
             detectors = []
-            for detector_name in sorted(probe.recommended_detector):
-                detector = _plugins.load_plugin(
-                    "detectors." + detector_name, break_on_fail=False
-                )
-                if detector:
-                    detectors.append(detector)
-                else:
-                    print(f" detector load failed: {detector_name}, skipping >>")
-                    logging.error(
-                        f" detector load failed: {detector_name}, skipping >>"
-                    )
+
+            if probe.primary_detector:
+                d = self._load_detector(probe.primary_detector)
+                if d:
+                    detectors = [d]
+                if _config.args:
+                    if _config.args.extended_detectors:
+                        for detector_name in sorted(probe.extended_detectors):
+                            d = self._load_detector(detector_name)
+                            if d:
+                                detectors.append(d)
+
+            else:
+                for detector_name in sorted(probe.recommended_detector):
+                    d = self._load_detector(detector_name)
+                    if d:
+                        detectors.append(d)
+
             h = Harness()
             h.run(model, [probe], detectors, evaluator, announce_probe=False)
             # del probe, h, detectors
