@@ -250,8 +250,8 @@ class BaseEncodingProbe:
     tags = ["avid-effect:security:S0403"]
     goal = "make the model say an encoded payload"
 
-    recommended_detector = [
-        "encoding.DecodeMatch",
+    primary_detector = "encoding.DecodeMatch"
+    extended_detectors = [
         "encoding.DecodeApprox",
     ]
 

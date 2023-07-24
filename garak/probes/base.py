@@ -22,10 +22,14 @@ class Probe:
     description = "Empty probe"
     uri = ""
     bcp47 = None  # language this is for, in bcp47 format; * for all langs
-    recommended_detector = ["always.Fail"]  # send a signal if this isn't overridden
+    recommended_detector = [
+        "always.Fail"
+    ]  # the detectors that should be run for this probe. always.Fail is chosen as default to send a signal if this isn't overridden
     active = True
     tags = []  # MISP-format taxonomy categories
     goal = ""  # what the probe is trying to do, phrased as an imperative
+    primary_detector = None  # str default detector to run, if the primary/extended way of doing it is to be used (should be a string formatted like recommended_detector above)
+    extended_detectors = []  # optional extended detectors
 
     def __init__(self):
         self.probename = str(self.__class__).split("'")[1]

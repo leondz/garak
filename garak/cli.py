@@ -139,6 +139,11 @@ def main(arguments=[]) -> None:
         type=str,
         help="process garak report into a list of AVID reports",
     )
+    parser.add_argument(
+        "--extended_detectors",
+        action="store_true",
+        help="If detectors aren't specified on the command line, should we run all detectors? (default is just the primary detector, if given, else everything)",
+    )
 
     _config.args = parser.parse_args(arguments)
 
