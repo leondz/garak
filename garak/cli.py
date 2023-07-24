@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Flow for invoking garak from the command line"""
 
+
 def main(arguments=[]) -> None:
     def print_plugins(prefix, color):
         from garak._plugins import enumerate_plugins
@@ -134,7 +135,6 @@ def main(arguments=[]) -> None:
         type=str,
         help="process garak report into a list of AVID reports",
     )
-
 
     _config.args = parser.parse_args(arguments)
 

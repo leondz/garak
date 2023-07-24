@@ -89,12 +89,16 @@ for probe in probe_scores.index:
         Metric(
             name="",
             detection_method=Detection(type=MethodEnum.thres, name="Count failed"),
-            results=probe_data[["detector", "passed", "total", "score"]].reset_index().to_dict(),
+            results=probe_data[["detector", "passed", "total", "score"]]
+            .reset_index()
+            .to_dict(),
         )
     ]
     all_tags = probe_data.iloc[0]["probe_tags"]
-    if all_tags == all_tags: # check for NaN
-        tags_split = [tag.split(":") for tag in all_tags if tag.startswith("avid")] # supports only avid taxonomy for now
+    if all_tags == all_tags:  # check for NaN
+        tags_split = [
+            tag.split(":") for tag in all_tags if tag.startswith("avid")
+        ]  # supports only avid taxonomy for now
         report.impact = Impact(
             avid=AvidTaxonomy(
                 risk_domain=pd.Series([tag[1].title() for tag in tags_split])
@@ -108,7 +112,7 @@ for probe in probe_scores.index:
     all_reports.append(report)
 
 # save final output
-write_location = report_location.replace(".report",".avid")
+write_location = report_location.replace(".report", ".avid")
 with open(write_location, "w") as f:
-    f.writelines(r.json()+"\n" for r in all_reports)
+    f.writelines(r.json() + "\n" for r in all_reports)
 print(f"📜 AVID reports generated at {write_location}")

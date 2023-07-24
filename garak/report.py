@@ -10,6 +10,7 @@ import avidtools.datamodels.report as ar
 import avidtools.datamodels.components as ac
 import avidtools.datamodels.enums as ae
 
+
 # load up a .jsonl output file, take in eval and config rows
 class Report:
     """A class defining a generic report object to store information in a garak report (typically named `garak.<uuid4>.report.jsonl`).
@@ -27,13 +28,9 @@ class Report:
     :param write_location: location where the output is written out.
     :type write_location: str
     """
+
     def __init__(
-            self,
-            report_location,
-            records = [],
-            metadata = None,
-            evaluations = None,
-            scores = None
+        self, report_location, records=[], metadata=None, evaluations=None, scores=None
     ):
         self.report_location = report_location
         self.records = records
@@ -73,23 +70,24 @@ class Report:
             evals[i]["probe_tags"] = plugin_instance.tags
 
         evals_df = pd.DataFrame.from_dict(evals)
-        self.evaluations = evals_df.assign(score=lambda x: (x["passed"] / x["total"] * 100))
+        self.evaluations = evals_df.assign(
+            score=lambda x: (x["passed"] / x["total"] * 100)
+        )
         self.scores = self.evaluations[["probe", "score"]].groupby("probe").mean()
         return self
 
-    def export(self): # TODO: add html format
+    def export(self):  # TODO: add html format
         """Writes out output in a specified format."""
 
         # set up a generic AVID report template
         report_template = ar.Report()
         if self.metadata is not None:
             report_template.affects = ac.Affects(
-                developer = [],
-                deployer = [self.metadata["model_type"]],
-                artifacts = [
+                developer=[],
+                deployer=[self.metadata["model_type"]],
+                artifacts=[
                     ac.Artifact(
-                        type = ae.ArtifactTypeEnum.model,
-                        name = self.metadata["model_name"]
+                        type=ae.ArtifactTypeEnum.model, name=self.metadata["model_name"]
                     )
                 ],
             )
@@ -114,34 +112,39 @@ class Report:
                 value=f"The model {self.metadata['model_name']} from {self.metadata['model_type']} was evaluated by the Garak LLM Vunerability scanner using the probe `{probe}`.",
             )
             report.problemtype = ac.Problemtype(
-                classof = ae.ClassEnum.llm,
-                type = ae.TypeEnum.measurement, 
-                description = report.description
+                classof=ae.ClassEnum.llm,
+                type=ae.TypeEnum.measurement,
+                description=report.description,
             )
             report.metrics = [
                 ac.Metric(
                     name="",
                     detection_method=ac.Detection(
-                        type=ae.MethodEnum.thres,
-                        name="Count failed"
+                        type=ae.MethodEnum.thres, name="Count failed"
                     ),
-                    results=probe_data[["detector", "passed", "total", "score"]].reset_index().to_dict(),
+                    results=probe_data[["detector", "passed", "total", "score"]]
+                    .reset_index()
+                    .to_dict(),
                 )
             ]
             all_tags = probe_data.iloc[0]["probe_tags"]
-            if all_tags == all_tags: # check for NaN
-                tags_split = [tag.split(":") for tag in all_tags if tag.startswith("avid")] # supports only avid taxonomy for now
+            if all_tags == all_tags:  # check for NaN
+                tags_split = [
+                    tag.split(":") for tag in all_tags if tag.startswith("avid")
+                ]  # supports only avid taxonomy for now
                 report.impact = ac.Impact(
-                    avid = ac.AvidTaxonomy(
-                        risk_domain = pd.Series([tag[1].title() for tag in tags_split]).drop_duplicates().tolist(),  # unique values
-                        sep_view = [ae.SepEnum[tag[2]] for tag in tags_split],
-                        lifecycle_view = [ae.LifecycleEnum["L05"]],
-                        taxonomy_version = "",
+                    avid=ac.AvidTaxonomy(
+                        risk_domain=pd.Series([tag[1].title() for tag in tags_split])
+                        .drop_duplicates()
+                        .tolist(),  # unique values
+                        sep_view=[ae.SepEnum[tag[2]] for tag in tags_split],
+                        lifecycle_view=[ae.LifecycleEnum["L05"]],
+                        taxonomy_version="",
                     )
                 )
             all_reports.append(report)
 
         # save final output
-        self.write_location = self.report_location.replace(".report",".avid")
+        self.write_location = self.report_location.replace(".report", ".avid")
         with open(self.write_location, "w") as f:
-            f.writelines(r.json()+"\n" for r in all_reports)
+            f.writelines(r.json() + "\n" for r in all_reports)
