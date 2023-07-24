@@ -84,7 +84,11 @@ def main(arguments=[]) -> None:
         action="store_false",
         help="remove the prompt from the front of system output",
     )
-    parser.add_argument("--plugin_info", type=str, help="show info about one plugin")
+    parser.add_argument(
+        "--plugin_info",
+        type=str,
+        help="show info about one plugin; format as type.plugin.class, e.g. probes.lmrc.Profanity",
+    )
     parser.add_argument(
         "--list_probes", action="store_true", help="list available vulnerability probes"
     )
@@ -149,6 +153,7 @@ def main(arguments=[]) -> None:
     logging.info(f"invoked with arguments {_config.args}")
 
     import importlib
+    import inspect
     import json
     import uuid
     from colorama import Fore, Style
@@ -193,16 +198,22 @@ def main(arguments=[]) -> None:
         try:
             plugin = load_plugin(_config.args.plugin_info)
             print(f"Info on {_config.args.plugin_info}:")
-            priority_fields = ["name", "description"]
+            priority_fields = ["description"]
+            skip_fields = ["prompts", "triggers"]
             # print the attribs it has
             for v in priority_fields:
-                print(f"{v:>45}:", vars(plugin)[v])
-            for v in sorted(vars(plugin)):
-                if v in priority_fields:
+                print(f"{v:>35}:", getattr(plugin, v))
+            for v in sorted(dir(plugin)):
+                if v in priority_fields or v in skip_fields:
                     continue
-                print(f"{v:>45}:", vars(plugin)[v])
+                if v.startswith("_") or inspect.ismethod(getattr(plugin, v)):
+                    continue
+                print(f"{v:>35}:", getattr(plugin, v))
 
-        except:
+        except ValueError as e:
+            print(e)
+        except Exception as e:
+            print(e)
             print(
                 f"Plugin {_config.args.plugin_info} not found. Try --list_probes, or --list_detectors."
             )
