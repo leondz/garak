@@ -20,6 +20,7 @@ for a specific vulnerability or failure mode.
    garak.probes.lmrc
    garak.probes.malwaregen
    garak.probes.misleading
+   garak.probes.packagehallucination
    garak.probes.promptinject
    garak.probes.realtoxicityprompts
    garak.probes.snowball

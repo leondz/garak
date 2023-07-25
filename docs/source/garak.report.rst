@@ -1,5 +1,5 @@
-garak.probes
-================
+garak.report
+============
 
 .. automodule:: garak.report
    :members:
