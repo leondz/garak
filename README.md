@@ -11,6 +11,11 @@ currently supports:
 * ggml models like [llama.cpp](https://github.com/ggerganov/llama.cpp)
 * .. and many more LLMs!
 
+## User guide
+### > See our user guide! [docs.garak.ai](https://docs.garak.ai/)
+
+<hr>
+
 
 ## Install:
 
