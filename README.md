@@ -7,7 +7,7 @@ it and are always interested in adding functionality to support applications.
 ## Get started
 ### > See our user guide! [docs.garak.ai](https://docs.garak.ai/)
 ### > Join our [Discord](https://discord.gg/xH3rs3ZH4B)!
-### > Project site: [garak.ai](https://garak.ai/)
+### > Project links & home: [garak.ai](https://garak.ai/)
 
 <hr>
 
