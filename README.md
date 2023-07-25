@@ -2,7 +2,16 @@
 
 `garak` checks if an LLM will fail in an way we don't necessarily want. `garak` probes for hallucination, data leakage,
 prompt injection, misinformation, toxicity generation, jailbreaks, and many other weaknesses. It's a free tool. We love developing
-it and are always interested in adding functionality to support applications. Join our [Discord](https://discord.gg/xH3rs3ZH4B)!
+it and are always interested in adding functionality to support applications. 
+
+## Get started
+### > See our user guide! [docs.garak.ai](https://docs.garak.ai/)
+### > Join our [Discord](https://discord.gg/xH3rs3ZH4B)!
+### > Project site: [garak.ai](https://garak.ai/)
+
+<hr>
+
+## LLM support
 
 currently supports:
 * [hugging face hub](https://huggingface.co/models) generative models
@@ -10,12 +19,6 @@ currently supports:
 * [openai api](https://platform.openai.com/docs/introduction) chat & continuation models
 * ggml models like [llama.cpp](https://github.com/ggerganov/llama.cpp)
 * .. and many more LLMs!
-
-## User guide
-### > See our user guide! [docs.garak.ai](https://docs.garak.ai/)
-
-<hr>
-
 
 ## Install:
 
