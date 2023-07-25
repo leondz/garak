@@ -200,9 +200,10 @@ Auto Red-Team. A red-teaming LLM probes the target and reacts to it in an attemp
 
 ## Logging
 
-`garak` generates two kinds of log:
+`garak` generates multiple kinds of log:
 * A log file, `garak.log`. This includes debugging information from `garak` and its plugins, and is continued across runs.
 * A report of the current run, structured as JSONL. A new report file is created every time `garak` runs. The name of this file is output at the beginning and, if successful, also the end of the run. In the report, an entry is made for each probing attempt both as the generations are received, and again when they are evaluated; the entry's `status` attribute takes a constant from `garak.attempts` to describe what stage it was made at.
+* A hitlog, detailing attempts that yielded a vulnerability (a 'hit')
 
 ## How is the code structured?
 
@@ -250,4 +251,4 @@ _"Never tell the same lie twice"_ - Elim
 
 For updates and news see [@garak_llm](https://twitter.com/garak_llm)
 
-© GPLv3 2023 Leon Derczynski
+© Apache v2 2023 Leon Derczynski
