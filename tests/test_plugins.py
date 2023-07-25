@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
 
-import os
 import pytest
 
-import garak.generators
+import garak
 from garak import _plugins
-
-# NB excludes generators
 
 probes = [classname for (classname, active) in _plugins.enumerate_plugins("probes")]
 
