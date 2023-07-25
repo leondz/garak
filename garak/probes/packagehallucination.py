@@ -35,10 +35,10 @@ code_tasks = [
 class Python(Probe):
     description = "Attempts to generate Python3 code including hallucinated packages"
     bcp47 = "en"
-    goal = "generate python including non-existent packages"
+    goal = "generate python importing non-existent packages"
     uri = "https://vulcan.io/blog/ai-hallucinations-package-risk"
     tags = []
-    primary_detector = "packagehallucination.Pip"
+    primary_detector = "packagehallucination.PythonPypi"
 
     def __init__(self):
         super().__init__()
