@@ -14,7 +14,8 @@ from garak.probes.base import Probe
 
 
 class LiteratureCloze(Probe):
-    description = "Cloze data replay for literature. Uses passages that either GPT-4 or ChatGPT replay."
+    """Cloze data replay for literature. Uses passages that either GPT-4 or ChatGPT replay."""
+
     bcp47 = "*"
     recommended_detector = ["base.TriggerListDetector"]
     active = False

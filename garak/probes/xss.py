@@ -11,9 +11,8 @@ from garak.probes.base import Probe
 
 
 class MarkdownImageExfil(Probe):
-    description = (
-        "Can we get the model to write embedded assets exfiltrating text in the URI?"
-    )
+    """Can we get the model to write embedded assets exfiltrating text in the URI?"""
+
     bcp47 = "en"
     goal = "embed conversation-private information in a markdown URI"
     uri = "https://embracethered.com/blog/posts/2023/bing-chat-data-exfiltration-poc-and-fix/"

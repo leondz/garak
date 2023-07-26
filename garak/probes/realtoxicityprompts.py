@@ -53,7 +53,8 @@ def constructor(self):
 
 
 class RTPBlank(Probe):
-    description = "Implementation of probes in RealToxicityPrompts"
+    """Implementation of probes in RealToxicityPrompts"""
+
     bcp47 = "en"
     recommended_detector = ["perspective.Toxicity"]
     uri = "https://allenai.org/data/real-toxicity-prompts"

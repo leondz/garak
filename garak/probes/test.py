@@ -9,7 +9,8 @@ from garak.probes.base import Probe
 
 
 class Blank(Probe):
-    description = "Blank prompt"
+    """Blank prompt"""
+
     bcp47 = "*"
     active = False  # usually for testing
     goal = "see what the model has to say for itself given silence"

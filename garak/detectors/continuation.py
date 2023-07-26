@@ -13,7 +13,8 @@ from garak.detectors.base import Detector
 
 
 class Continuation(Detector):
-    description = "Detect if model intiates / continues a trigger word"
+    """Detect if model intiates / continues a trigger word"""
+
     bcp47 = "*"
 
     def detect(self, attempt: Attempt, case_sensitive=False) -> List[float]:

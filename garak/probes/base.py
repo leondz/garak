@@ -19,7 +19,6 @@ import garak.attempt
 class Probe:
     """Base class for objects that define and execute LLM evaluations"""
 
-    description = "Empty probe"
     uri = ""
     bcp47 = None  # language this is for, in bcp47 format; * for all langs
     recommended_detector = [
@@ -38,6 +37,11 @@ class Probe:
                 f"loading {Style.BRIGHT}{Fore.LIGHTYELLOW_EX}probe: {Style.RESET_ALL}{self.probename}"
             )
         logging.info(f"probe init: {self}")
+        if "description" not in dir(self):
+            if self.__doc__:
+                self.description = self.__doc__.split("\n")[0]
+            else:
+                self.description = ""
 
     def _attempt_prestore_hook(
         self, attempt: garak.attempt.Attempt, seq: int

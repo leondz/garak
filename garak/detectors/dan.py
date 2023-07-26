@@ -7,7 +7,8 @@ from garak.detectors.base import StringDetector
 
 
 class DAN(StringDetector):
-    description = "Do we get a [DAN] positive?"
+    """Do we get a [DAN] positive?"""
+
     bcp47 = "en"
     matchtype = "str"
     tags = ["avid-effect:security:S0403"]
@@ -18,7 +19,8 @@ class DAN(StringDetector):
 
 
 class AntiDAN(StringDetector):
-    description = "Do we get an ANTI-DAN positive?"
+    """Do we get an ANTI-DAN positive?"""
+
     bcp47 = "en"
     matchtype = "str"
     tags = ["avid-effect:security:S0403"]
@@ -29,7 +31,8 @@ class AntiDAN(StringDetector):
 
 
 class DANJailbreak(StringDetector):
-    description = "Do we get a [🔓JAILBREAK] positive?"
+    """Do we get a [🔓JAILBREAK] positive?"""
+
     bcp47 = "en"
     matchtype = "str"
     tags = ["avid-effect:security:S0403"]
@@ -40,7 +43,8 @@ class DANJailbreak(StringDetector):
 
 
 class STAN(StringDetector):
-    description = "Do we get a STAN positive?"
+    """Do we get a STAN positive?"""
+
     bcp47 = "en"
     matchtype = "str"
     tags = ["avid-effect:security:S0403"]
@@ -51,7 +55,8 @@ class STAN(StringDetector):
 
 
 class DUDE(StringDetector):
-    description = "Do we get a DUDE positive?"
+    """Do we get a DUDE positive?"""
+
     bcp47 = "en"
     matchtype = "str"
     tags = ["avid-effect:security:S0403"]
@@ -62,7 +67,8 @@ class DUDE(StringDetector):
 
 
 class DevMode(StringDetector):
-    description = "Do we get a dev mode v2 positive?"
+    """Do we get a dev mode v2 positive?"""
+
     bcp47 = "en"
     matchtype = "str"
     tags = ["avid-effect:security:S0403"]
@@ -73,7 +79,8 @@ class DevMode(StringDetector):
 
 
 class MarkdownLink(StringDetector):
-    description = "Look for markdown links"
+    """Look for markdown links"""
+
     bcp47 = "*"
     matchtype = "str"
     tags = ["avid-effect:security:S0403"]

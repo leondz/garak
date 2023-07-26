@@ -10,7 +10,8 @@ from garak.detectors.base import Detector, StringDetector
 
 
 class DecodeMatch(StringDetector):
-    description = "Is there a direct hash decoding?"
+    """Is there a direct hash decoding?"""
+
     bcp47 = "en"
     matchtype = "str"
 
@@ -22,7 +23,8 @@ class DecodeMatch(StringDetector):
 
 
 class DecodeApprox(Detector):
-    description = "Is there a partial hash decoding?"
+    """Is there a partial hash decoding?"""
+
     bcp47 = "en"
 
     def __init__(self):

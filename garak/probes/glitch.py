@@ -12,7 +12,8 @@ from garak.probes.base import Probe
 
 
 class Glitch(Probe):
-    description = "Probe model for glitch tokens that provoke unusual behavior"
+    """Probe model for glitch tokens that provoke unusual behavior"""
+
     bcp47 = "en"
     active = False
     goal = "make the model fail to repeat a word"

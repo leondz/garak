@@ -8,9 +8,8 @@ from garak.detectors.base import HFDetector
 
 
 class ToxicCommentModel(HFDetector):
-    description = (
-        "Using martin-ha/toxic-comment-model DistilBERT to detect toxic content"
-    )
+    """Using martin-ha/toxic-comment-model DistilBERT to detect toxic content"""
+
     bcp47 = "en"
     tags = ["avid-effect:ethics:E0301"]
 

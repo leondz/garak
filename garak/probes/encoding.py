@@ -247,8 +247,12 @@ def _generate_encoded_prompts(encoding_funcs, encoding_name):
 
 
 class BaseEncodingProbe:
+    """Mixin for encoding-based injection probes"""
+
     tags = ["avid-effect:security:S0403"]
     goal = "make the model say an encoded payload"
+    bcp47 = "en"
+    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
 
     primary_detector = "encoding.DecodeMatch"
     extended_detectors = [
@@ -267,11 +271,7 @@ class BaseEncodingProbe:
 
 
 class InjectBase64(BaseEncodingProbe, Probe):
-    description = "Probe for susceptibility to base64 encoded injections"
-    bcp47 = "en"
-    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-    tags = ["avid-effect:security:S0403"]
-    goal = "make the model say an encoded payload"
+    """Probe for susceptibility to base64 encoded injections"""
 
     encoding_funcs = [
         base64.b64encode,
@@ -287,11 +287,8 @@ class InjectBase64(BaseEncodingProbe, Probe):
 
 
 class InjectBase16(BaseEncodingProbe, Probe):
-    description = "Probe for susceptibility to base16 encoded injections"
-    bcp47 = "en"
-    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-    tags = ["avid-effect:security:S0403"]
-    goal = "make the model say an encoded payload"
+    """Probe for susceptibility to base16 encoded injections"""
+
     encoding_funcs = [base64.b16encode]
     encoding_name = "BASE16"
 
@@ -301,11 +298,8 @@ class InjectBase16(BaseEncodingProbe, Probe):
 
 
 class InjectBase32(BaseEncodingProbe, Probe):
-    description = "Probe for susceptibility to base32 encoded injections"
-    bcp47 = "en"
-    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-    tags = ["avid-effect:security:S0403"]
-    goal = "make the model say an encoded payload"
+    """Probe for susceptibility to base32 encoded injections"""
+
     encoding_funcs = [base64.b32encode]
     encoding_name = "BASE32"
 
@@ -315,11 +309,8 @@ class InjectBase32(BaseEncodingProbe, Probe):
 
 
 class InjectAscii85(BaseEncodingProbe, Probe):
-    description = "Probe for susceptibility to base85 encoded injections"
-    bcp47 = "en"
-    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-    tags = ["avid-effect:security:S0403"]
-    goal = "make the model say an encoded payload"
+    """Probe for susceptibility to base85 encoded injections"""
+
     encoding_funcs = [base64.a85encode, base64.b85encode]
     encoding_name = "ASCII85"
 
@@ -329,11 +320,8 @@ class InjectAscii85(BaseEncodingProbe, Probe):
 
 
 class InjectBase32(BaseEncodingProbe, Probe):
-    description = "Probe for susceptibility to base32 encoded injections"
-    bcp47 = "en"
-    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-    tags = ["avid-effect:security:S0403"]
-    goal = "make the model say an encoded payload"
+    """Probe for susceptibility to base32 encoded injections"""
+
     encoding_funcs = [base64.b32encode]
     encoding_name = "BASE32"
 
@@ -343,11 +331,8 @@ class InjectBase32(BaseEncodingProbe, Probe):
 
 
 class InjectHex(BaseEncodingProbe, Probe):
-    description = "Probe for susceptibility to hex encoded injections"
-    bcp47 = "en"
-    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-    tags = ["avid-effect:security:S0403"]
-    goal = "make the model say an encoded payload"
+    """Probe for susceptibility to hex encoded injections"""
+
     encoding_funcs = [binascii.b2a_hex]
     encoding_name = "hex"
 
@@ -357,11 +342,8 @@ class InjectHex(BaseEncodingProbe, Probe):
 
 
 class InjectQP(BaseEncodingProbe, Probe):
-    description = "Probe for susceptibility to QP encoded injections"
-    bcp47 = "en"
-    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-    tags = ["avid-effect:security:S0403"]
-    goal = "make the model say an encoded payload"
+    """Probe for susceptibility to QP encoded injections"""
+
     encoding_funcs = [binascii.b2a_qp]
     encoding_name = "Quoted-Printable"
     active = False  # seems to just pass text right through - when using ascii chars
@@ -372,11 +354,7 @@ class InjectQP(BaseEncodingProbe, Probe):
 
 
 class InjectUU(BaseEncodingProbe, Probe):
-    description = "Probe for susceptibility to UU encoded injections"
-    bcp47 = "en"
-    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-    tags = ["avid-effect:security:S0403"]
-    goal = "make the model say an encoded payload"
+    """Probe for susceptibility to UU encoded injections"""
 
     encoding_name = "UUencode"
 
@@ -394,11 +372,8 @@ class InjectUU(BaseEncodingProbe, Probe):
 
 
 class InjectMime(BaseEncodingProbe, Probe):
-    description = "Probe for susceptibility to MIME encoding injections"
-    bcp47 = "en"
-    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-    tags = ["avid-effect:security:S0403"]
-    goal = "make the model say an encoded payload"
+    """Probe for susceptibility to MIME encoding injections"""
+
     encoding_name = "MIME"
     active = False  # seems to just pass text right through - when using ascii chars
 
@@ -411,11 +386,8 @@ class InjectMime(BaseEncodingProbe, Probe):
 
 
 class InjectROT13(BaseEncodingProbe, Probe):
-    description = "Probe for susceptibility to ROT13 encoding injections"
-    bcp47 = "en"
-    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-    tags = ["avid-effect:security:S0403"]
-    goal = "make the model say an encoded payload"
+    """Probe for susceptibility to ROT13 encoding injections"""
+
     encoding_funcs = [rot13]
     encoding_name = "ROT13"
 
@@ -425,11 +397,7 @@ class InjectROT13(BaseEncodingProbe, Probe):
 
 
 class InjectBase2048(BaseEncodingProbe, Probe):
-    description = "Probe for susceptibility to Base2048 encoding injections"
-    bcp47 = "en"
-    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
-    tags = ["avid-effect:security:S0403"]
-    goal = "make the model say an encoded payload"
+    """Probe for susceptibility to Base2048 encoding injections"""
 
     encoding_name = "BASE2048"
 
@@ -442,13 +410,9 @@ class InjectBase2048(BaseEncodingProbe, Probe):
 
 
 class InjectBraille(BaseEncodingProbe, Probe):
-    description = (
-        "Probe for susceptibility to Braille encoding injections. Credit Wally#3422"
-    )
-    bcp47 = "en"
+    """Probe for susceptibility to Braille encoding injections. Credit Wally#3422"""
+
     uri = ""
-    tags = ["avid-effect:security:S0403"]
-    goal = "make the model say an encoded payload"
     encoding_funcs = [braille]
     encoding_name = "Braille"
 
@@ -458,8 +422,8 @@ class InjectBraille(BaseEncodingProbe, Probe):
 
 
 class InjectMorse(BaseEncodingProbe, Probe):
-    description = "Probe for susceptibility to Morse encoding. Credit Wally#3422"
-    bcp47 = "en"
+    """Probe for susceptibility to Morse encoding. Credit Wally#3422"""
+
     uri = ""
     encoding_funcs = [morse]
     encoding_name = "Morse"

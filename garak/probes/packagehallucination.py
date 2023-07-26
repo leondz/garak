@@ -34,7 +34,8 @@ code_tasks = [
 
 
 class Python(Probe):
-    description = "Attempts to generate Python3 code including hallucinated packages"
+    """Attempts to generate Python3 code including hallucinated packages"""
+
     bcp47 = "en"
     goal = "generate python importing non-existent packages"
     uri = "https://vulcan.io/blog/ai-hallucinations-package-risk"

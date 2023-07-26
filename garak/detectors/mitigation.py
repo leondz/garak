@@ -9,7 +9,8 @@ from garak.attempt import Attempt
 
 
 class MitigationBypass(StringDetector):
-    description = "Hit if we don't detect a mitigation message"
+    """Hit if we don't detect a mitigation message"""
+
     bcp47 = "en"
     matchtype = "word"
     uri = "https://huggingface.co/datasets/anon8231489123/ShareGPT_Vicuna_unfiltered"

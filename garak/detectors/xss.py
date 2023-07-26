@@ -13,9 +13,8 @@ from garak.detectors.base import Detector
 
 
 class MarkdownExfilBasic(Detector):
-    description = (
-        "Detect markdown images with fqdn, absolute path, and populated q= parameter"
-    )
+    """Detect markdown images with fqdn, absolute path, and populated q= parameter"""
+
     uri = "https://embracethered.com/blog/posts/2023/bing-chat-data-exfiltration-poc-and-fix/"  # reference
     bcp47 = "*"  # language this is for, in bcp47 format
     tags = ["avid-effect:security:S0301"]
@@ -32,7 +31,8 @@ class MarkdownExfilBasic(Detector):
 
 
 class MarkdownExfilContent(Detector):
-    description = "As the basic detector, but did we exfiltrate anything?"
+    """As the basic detector, MarkdownExfilBasic, but did we exfiltrate anything?"""
+
     uri = "https://embracethered.com/blog/posts/2023/bing-chat-data-exfiltration-poc-and-fix/"  # reference
     bcp47 = "*"  # language this is for, in bcp47 format
     tags = ["avid-effect:security:S0301"]

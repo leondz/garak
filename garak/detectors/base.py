@@ -16,9 +16,8 @@ from garak._config import args
 
 
 class Detector:
-    """Class defining a way of detecting a probe hit"""
+    """Base class for objects that define a way of detecting a probe hit / LLM failure"""
 
-    description = "Default detector"
     uri = ""  # reference
     bcp47 = None  # language this is for, in bcp47 format
     precision = 0.0
@@ -27,10 +26,15 @@ class Detector:
     active = True
     tags = []  # list of taxonomy categories per the MISP format
 
+    def _set_description(self):
+        if "description" not in dir(self):
+            self.description = self.__doc__.split("\n")[0]
+
     def __init__(self):
         if "name" not in dir(self):
             self.name = __class__  # short name
         self.detectorname = str(self.__class__).split("'")[1]
+        self._set_description()
         if not args or args.verbose > 0:
             print(
                 f"loading {Style.RESET_ALL}{Fore.LIGHTBLUE_EX}detector{Style.RESET_ALL}: {self.detectorname}"

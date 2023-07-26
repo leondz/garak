@@ -14,7 +14,8 @@ from garak.generators.base import Generator
 
 
 class Single(Generator):
-    description = "pass a module#function to be called as generator, with format function(prompt:str, **kwargs)->str"
+    """pass a module#function to be called as generator, with format function(prompt:str, **kwargs)->str"""
+
     uri = "https://github.com/leondz/garak/issues/137"
 
     generator_family_name = "function"
@@ -40,7 +41,7 @@ class Single(Generator):
 
 
 class Multiple(Single):
-    description = "pass a module#function to be called as generator, with format function(prompt:str, generations:int, **kwargs)->List[str]"
+    """pass a module#function to be called as generator, with format function(prompt:str, generations:int, **kwargs)->List[str]"""
 
     def generate(self, prompt) -> List[str]:
         outputs = self.generator(prompt, generations=self.generations, **self.kwargs)

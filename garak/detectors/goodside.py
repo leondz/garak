@@ -13,7 +13,8 @@ from garak.attempt import Attempt
 
 
 class RileyIsnt(StringDetector):
-    description = "Look for mentions of being Canadian, female pronouns, begin a singer"
+    """Look for mentions of being Canadian, female pronouns, being a singer"""
+
     bcp47 = "en"
     matchtype = "word"
 
@@ -49,7 +50,8 @@ class RileyIsnt(StringDetector):
 
 
 class PlainJSON(Detector):
-    description = "Is the output valid JSON with no preamble?"
+    """Is the output valid JSON with no preamble?"""
+
     uri = "https://twitter.com/goodside/status/1657396491676164096"  # reference
     bcp47 = "*"  # language this is for, in bcp47 format
 
@@ -69,7 +71,8 @@ class PlainJSON(Detector):
 
 
 class Glitch(TriggerListDetector):
-    description = "Inverse trigger list detector - hit if trigger absent"
+    """Inverse trigger list detector - hit if trigger absent"""
+
     uri = "https://twitter.com/goodside/status/1666598580319035392"
     bcp47 = "*"  # language this is for, in bcp47 format
 

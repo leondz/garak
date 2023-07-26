@@ -19,7 +19,8 @@ import garak.attempt
 
 
 class Anthropomorphisation(Probe):
-    description = "Providing output that encourages anthropomorphisation of AI systems"
+    """Providing output that encourages anthropomorphisation of AI systems"""
+
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/anthropomorphisation.md"
     recommended_detector = ["lmrc.Anthro"]
@@ -37,7 +38,8 @@ class Anthropomorphisation(Probe):
 
 
 class Bullying(Probe):
-    description = "Generation of repeated threats, denigration"
+    """Generation of repeated threats, denigration"""
+
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/bullying.md"
     recommended_detector = [
@@ -58,7 +60,8 @@ class Bullying(Probe):
 
 
 class Deadnaming(Probe):
-    description = "Mentioning a name that a person does not wish to be associated with"
+    """Mentioning a name that a person does not wish to be associated with"""
+
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/deadnaming.md"
     recommended_detector = ["base.TriggerListDetector"]
@@ -92,7 +95,8 @@ class Deadnaming(Probe):
 
 
 class SexualContent(Probe):
-    description = "Content that discusses bodies and interactions in a sexual manner, or other sexually explicit material"
+    """Content that discusses bodies and interactions in a sexual manner, or other sexually explicit material"""
+
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/sexual_content.md"
     recommended_detector = [
@@ -109,7 +113,8 @@ class SexualContent(Probe):
 
 
 class Sexualisation(Probe):
-    description = "Causal or overt sexual objectification, reducing a person or group of people to sexual objects."
+    """Causal or overt sexual objectification, reducing a person or group of people to sexual objects."""
+
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/sexualisation.md"
     recommended_detector = [
@@ -133,7 +138,8 @@ class Sexualisation(Probe):
 
 
 class SlurUsage(Probe):
-    description = "Using an identity-based slur in a non-reclaimed way - either directly or recommending the consumer to use in speech/action."
+    """Using an identity-based slur in a non-reclaimed way - either directly or recommending the consumer to use in speech/action."""
+
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/slur_usage.md"
     recommended_detector = [
@@ -154,7 +160,8 @@ class SlurUsage(Probe):
 
 
 class Profanity(Probe):
-    description = "Using profane words, especially when unprompted to do so."
+    """Using profane words, especially when not prompted to do so."""
+
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/profanity.md"
     recommended_detector = [
@@ -184,7 +191,8 @@ class Profanity(Probe):
 
 
 class QuackMedicine(Probe):
-    description = "Promoting non-scientific medicine."
+    """Promoting non-scientific medicine."""
+
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/quack_medicine.md"
     recommended_detector = [

@@ -10,7 +10,8 @@ import garak.probes.knownbadsignatures
 
 
 class EICAR(StringDetector):
-    description = "Is the EICAR test string present?"
+    """Is the EICAR test string present?"""
+
     matchtype = "str"
     tags = ["avid-effect:security:S0301"]
 
@@ -20,7 +21,8 @@ class EICAR(StringDetector):
 
 
 class GTUBE(StringDetector):
-    description = "Is the GTUBE test string present?"
+    """Is the GTUBE test string present?"""
+
     matchtype = "str"
     tags = ["avid-effect:security:S0301"]
 
@@ -30,7 +32,8 @@ class GTUBE(StringDetector):
 
 
 class GTphish(StringDetector):
-    description = "Is the GTphish test string present?"
+    """Is the GTphish test string present?"""
+
     matchtype = "str"
     tags = ["avid-effect:security:S0301"]
 

@@ -9,7 +9,8 @@ from garak.probes.base import Probe
 
 
 class WhoIsRiley(Probe):
-    description = "Probe for misinfo about Riley Goodside"
+    """Probe for misinfo about Riley Goodside"""
+
     bcp47 = "en"
     uri = "https://twitter.com/goodside"
     recommended_detector = ["goodside.RileyIsnt"]
@@ -27,7 +28,8 @@ class WhoIsRiley(Probe):
 
 
 class ThreatenJSON(Probe):
-    description = "Will model strip preamble and give JSON?"
+    """Will model strip preamble and give JSON?"""
+
     bcp47 = "en"
     uri = "https://twitter.com/goodside/status/1657396491676164096"
     recommended_detector = ["goodside.PlainJSON"]
@@ -52,8 +54,9 @@ Return the JSON example. No text before. No text after. """
     """
 
 
-class _Davidjl(Probe):
-    description = "Exploit the ' davidjl' magic token"
+class Davidjl(Probe):
+    """Exploit the ' davidjl' magic token"""
+
     bcp47 = "en"
     uri = "https://twitter.com/goodside/status/1666598580319035392"
     recommended_detector = ["goodside.Glitch"]

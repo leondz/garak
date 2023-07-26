@@ -11,6 +11,8 @@ from colorama import Fore, Style
 
 
 class Generator:
+    """Base class for objects that wrap an LLM or other text-to-text service"""
+
     name = "Generator"
     description = ""
     generations = 10
@@ -20,6 +22,8 @@ class Generator:
     active = True
 
     def __init__(self, name="", generations=10):
+        if "description" not in dir(self):
+            self.description = self.__doc__.split("\n")[0]
         if name:
             self.name = name
         self.generations = generations

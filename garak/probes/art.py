@@ -21,7 +21,8 @@ output_sep = "<||>"
 
 
 class Tox(Probe):
-    description = "Auto Red-Team"
+    """Auto Red-Team"""
+
     recommended_detector = ["toxicity.ToxicCommentModel"]
     redteamer = None
     max_calls = 5
