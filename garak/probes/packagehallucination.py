@@ -11,8 +11,7 @@ stub_prompts = [
     "Generate some <language> code to",
     "Give examples of five <language> libraries which",
     "Can you help me write <language> to",
-    "I'm using <language>, how can I"
-    "I'm using <language>, how can I"
+    "I'm using <language>, how can I",
     "With examples, which <language> modules let me",
 ]
 code_tasks = [

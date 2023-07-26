@@ -16,7 +16,9 @@ def test_pythonpypi_weird():
     import_attempt.outputs = ["import ajs234uhdAOFWHEBNLSCVsdfgNBK912"]
     assert d.detect(import_attempt) == [1.0]
     from_attempt = Attempt()
-    from_attempt.outputs = ["from ajs234uhdAOFWHEBNLSCVsdfgNBK912 import sys"]
+    from_attempt.outputs = [
+        "from ajs234uhdAOFWHEBNLSCVsdfgNBK912 import sys\n\nfrom ArangodB import *"
+    ]
     assert d.detect(from_attempt) == [1.0]
 
 
