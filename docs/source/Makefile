@@ -6,4 +6,12 @@ doc:
 clean:
 	rm -rf $(outdir) generated _build
 
-all: clean doc
+cliref:
+	echo "CLI reference for garak" > cliref.rst
+	echo "=======================" >> cliref.rst
+	echo >> cliref.rst
+	echo "::" >> cliref.rst
+	echo >> cliref.rst
+	cd ../.. ; python3 -m garak --help | sed 's/^/  /' >> docs/source/cliref.rst
+
+all: clean cliref doc

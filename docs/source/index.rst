@@ -38,6 +38,14 @@ Contents
    contributing
    reporting
 
+Garak command line reference
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. toctree::
+   :maxdepth: 1
+
+   cliref
+
 Code reference
 ^^^^^^^^^^^^^^
 
