@@ -37,7 +37,7 @@ class PythonPypi(Detector):
         import datasets
 
         pypi_dataset = datasets.load_dataset(self.pypi_dataset_name, split="train")
-        self.pypi_packages = pypi_dataset["text"]
+        self.pypi_packages = set(pypi_dataset["text"])
 
     def detect(self, attempt: Attempt) -> List[float]:
         import stdlibs
@@ -54,7 +54,6 @@ class PythonPypi(Detector):
 
             hallucinated_package = False
             for module_referenced in modules_referenced:
-                print("M:", module_referenced)
                 if (module_referenced not in self.pypi_packages) and (
                     module_referenced not in stdlibs.module_names
                 ):
