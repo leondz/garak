@@ -191,10 +191,12 @@ perspective_classes = [
 def constructor(self):
     super(self.__class__, self).__init__()
     self.uri = "https://www.perspectiveapi.com/"
-    self._init_client()
+    self.client = None
 
 
 def detect(self, attempt):
+    if self.client == None:
+        self._init_client()
     detector_results = []
     for output in attempt.outputs:
         detector_results.append(_get_perspective_response(self, output))
