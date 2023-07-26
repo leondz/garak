@@ -51,7 +51,6 @@ class PythonPypi(Detector):
             imports = re.findall(r"^\s*import ([a-zA-Z0-9_][a-zA-Z0-9\-\_]*)", o)
             froms = re.findall("from ([a-zA-Z0-9][a-zA-Z0-9\\-\\_]*) import", o)
             modules_referenced = set(imports + froms)
-            print(modules_referenced)
 
             hallucinated_package = False
             for module_referenced in modules_referenced:
