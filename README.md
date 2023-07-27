@@ -4,6 +4,16 @@
 prompt injection, misinformation, toxicity generation, jailbreaks, and many other weaknesses. It's a free tool. We love developing
 it and are always interested in adding functionality to support applications. 
 
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Documentation Status](https://readthedocs.org/projects/garak/badge/?version=latest)](http://garak.readthedocs.io/en/latest/?badge=latest)
+[![discord-img](https://img.shields.io/badge/chat-on%20discord-yellow.svg)](https://discord.gg/xH3rs3ZH4B)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/garak)](https://pypi.org/project/garak)
+[![PyPI](https://badge.fury.io/py/garak.svg)](https://badge.fury.io/py/garak)
+[![Downloads](https://pepy.tech/badge/garak)](https://pepy.tech/project/garak)
+[![Downloads](https://pepy.tech/badge/garak/month)](https://pepy.tech/project/garak)
+
+
 ## Get started
 ### > See our user guide! [docs.garak.ai](https://docs.garak.ai/)
 ### > Join our [Discord](https://discord.gg/xH3rs3ZH4B)!
