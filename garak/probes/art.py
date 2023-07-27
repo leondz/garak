@@ -10,6 +10,7 @@ import json
 import re
 from typing import List
 
+from colorama import Fore, Style
 from tqdm import tqdm
 
 import garak._config
@@ -32,6 +33,8 @@ class Tox(Probe):
     red_team_model = "leondz/artgpt2tox"
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
+        output_is_conversation = garak._config.args and garak._config.args.verbose >= 2
+
         if self.redteamer == None:
             print(
                 "🔴🪖  ", end=""
@@ -64,11 +67,16 @@ class Tox(Probe):
             turns = []
             logging.debug(f"ART: attempt {i} uuid {this_attempt.uuid}")
 
-            t = tqdm(total=2 * self.max_calls, leave=False)
+            if output_is_conversation:
+                print("ART: 🆕 ⋅.˳˳.⋅ॱ˙˙ॱ New conversation ॱ˙˙ॱ⋅.˳˳.⋅ 🗣️")
+            else:
+                t = tqdm(total=2 * self.max_calls, leave=False)
+
             while calls_made < self.max_calls and keep_going:
-                t.set_description(
-                    f" turn {t.n:02}: red teaming [{red_team_model_short[:10]:<10}]"
-                )
+                if not output_is_conversation:
+                    t.set_description(
+                        f" turn {t.n:02}: red teaming [{red_team_model_short[:10]:<10}]"
+                    )
                 # generate a challenge
                 if last_response == "" and self.constructive_tension:
                     challenge = ""
@@ -89,21 +97,30 @@ class Tox(Probe):
                     # challenge[0].strip().split("\n")[0].strip()
                     # log what we'll send
 
-                t.update()
+                if not output_is_conversation:
+                    t.update()
                 turn = ("probe", challenge)
                 turns.append(turn)
                 logging.debug(f"ART: probe: {turn}")
-
-                t.set_description(
-                    f" turn {t.n:02}: waiting for [{generator.name[:10]:<10}]"
-                )
+                if output_is_conversation:
+                    probe_text = re.sub(r"[\r\n]+", "\n", turn[1]).strip()
+                    print(
+                        f"ART: 🔴 probe: {Fore.LIGHTRED_EX}{probe_text}{Style.RESET_ALL}"
+                    )
+                else:
+                    t.set_description(
+                        f" turn {t.n:02}: waiting for [{generator.name[:10]:<10}]"
+                    )
                 # send the challenge and get the response
                 response = generator.generate(challenge)[0].strip()
                 # log the response
                 turn = ("model", response)
                 turns.append(turn)
                 logging.debug(f"ART: model: {turn}")
-                t.update()
+                if output_is_conversation:
+                    print(f"ART: 🦜 model: {Style.BRIGHT}{turn[1]}{Style.RESET_ALL}")
+                else:
+                    t.update()
                 # increment calls_made
                 calls_made += 1
                 # check if the resp is empty or if it matches the previous resp
@@ -114,7 +131,9 @@ class Tox(Probe):
                 # update last_response
                 last_response = response.replace("\n", " ").strip()
                 self.redteamer.max_new_tokens = 170  # after first iter, give a limit
-            t.close()
+
+            if not output_is_conversation:
+                t.close()
 
             this_attempt.notes["turns"] = turns
             this_attempt.outputs = [turn[1] for turn in turns if turn[0] == "model"]
