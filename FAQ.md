@@ -1,5 +1,12 @@
 # garak LLM probe: Frequently Asked Questions
 
+
+## How do I pronounce garak?
+
+Good question! Emphasis on the first bit, GA-rak. 
+
+Both 'a's like a in English hat, or à in French, or æ in IPA.
+
 ## What's this tool for?
 
 `garak` is designed to help discover situations where a language model generates outputs that one might not want it to. If you know `nmap` or `metasplot` for traditional netsec/infosec analysis, then `garak` aims to operate in a similar space for language models.
