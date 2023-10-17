@@ -1,0 +1,114 @@
+import argparse
+import cmd2
+import sys
+import garak._config
+from garak._plugins import enumerate_plugins
+
+
+HELP_MESSAGE = """Welcome to Garak! Please choose from the following options:
+help: print this message
+quit: exit the program
+list [probes, detectors, generators]: list probes, detectors, or generators
+set [model type, model name]: set the target model type or target model name
+plugin_info <plugin name>: show information about one plugin
+generator_options: specify options to pass to the generator
+probe_options: options to pass to probes in JSON dict
+probe <probe name>: execute the specified probe against the target model 
+"""
+
+
+def print_plugins(prefix, color):
+    plugin_names = enumerate_plugins(category=prefix)
+    plugin_names = [(p.replace(f"{prefix}.", ""), a) for p, a in plugin_names]
+    module_names = set([(m.split(".")[0], True) for m, a in plugin_names])
+    plugin_names += module_names
+    for plugin_name, active in sorted(plugin_names):
+        print(f"{Style.BRIGHT}{color}{prefix}: {Style.RESET_ALL}", end="")
+        print(plugin_name, end="")
+        if "." not in plugin_name:
+            print(" 🌟", end="")
+        if not active:
+            print(" 💤", end="")
+        print()
+
+
+class GarakState:
+    """ Class responsible for managing targets and probes """
+    def __init__(self):
+        target_type = None
+        target_model = None
+        probe = None
+        detector = None
+        generator = None
+
+
+class GarakCommands(cmd2.CommandSet):
+    def __init__(self):
+        """ Initialize the Garak Commands object. """
+        super().__init__()
+
+    def show_help(self):
+        print(HELP_MESSAGE)
+
+    def exit_garak(self):
+        print("Thanks for hacking!")
+        sys.exit(0)
+
+    def list_probes(self):
+        print_plugins("probes", Fore.LIGHTYELLOW_EX)
+
+    def list_detectors(self):
+        print_plugins("detectors", Fore.LIGHTBLUE_EX)
+
+    def list_generators(self):
+        print_plugins("generators", Fore.LIGHTMAGENTA_EX)
+
+    @cmd2.with_argparser()
+    def set_target_type()
+
+
+class GarakTerminal(cmd2.Cmd):
+    """ Terminal class for Interactive Garak CLI """
+    _cmd = None
+
+    def __init__(self):
+        super().__init__(allow_cli_args=False, auto_load_commands=False)
+        self.state = GarakState()
+        self.propmt = "garak> "
+
+    def default(self, command: str) -> None:
+        """ Execute when a command isn't recognized """
+        print(f"Command {command} does not exist.\n")
+        return
+    
+    def postcmd(self, stop, line):
+        """ Set the prompt to reflect interaction changes. """
+        target_type = self.state.target_type
+        target_model = self.state.target_model
+        active_probe = self.state.probe
+        if not target_type or not target_model:
+            self.prompt = "counterfit> "
+            return
+        if not active_probe:
+            self.prompt = f"{target_type}: {target_model}> "
+        else:
+            self.prompt = f"{target_type}: {target_model}>{active_probe}> "
+
+        self._load_garak()
+        return stop
+    
+    def _load_garak(self):
+        if self._cmd:
+            self.unregister_command_set(self._cmd)
+        self._cmd = GarakCommands()
+        self.register_command_set(self._cmd)
+
+
+def interactive_mode():
+    """
+    Launch garak in interactive mode. Allows users to explore and use garak without CLI flags.
+    """
+
+
+
+        

@@ -144,6 +144,11 @@ def main(arguments=[]) -> None:
         action="store_true",
         help="If detectors aren't specified on the command line, should we run all detectors? (default is just the primary detector, if given, else everything)",
     )
+    parser.add_argument(
+        "--interactive",
+        action="store_true",
+        help="Launch garak in interactive mode"
+    )
 
     _config.args = parser.parse_args(arguments)
 
@@ -157,6 +162,7 @@ def main(arguments=[]) -> None:
 
     logging.info(f"invoked with arguments {_config.args}")
 
+    import sys
     import importlib
     import inspect
     import json
@@ -165,6 +171,7 @@ def main(arguments=[]) -> None:
 
     import garak.evaluators
     from garak._plugins import enumerate_plugins, load_plugin
+    from garak.interactive import interactive_mode
 
     if not _config.args.version and not _config.args.report:
         logging.info(f"started at {_config.starttime_iso}")
@@ -188,6 +195,14 @@ def main(arguments=[]) -> None:
             + "\n"
         )
         logging.info(f"reporting to {report_filename}")
+
+    if _config.args.interactive:
+        try:
+            interactive_mode()
+        except Exception as e:
+            logging.error(e)
+            print(e)
+            sys.exit(1)
 
     if _config.args.probe_options:
         try:
