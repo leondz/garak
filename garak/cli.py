@@ -145,9 +145,9 @@ def main(arguments=[]) -> None:
         help="If detectors aren't specified on the command line, should we run all detectors? (default is just the primary detector, if given, else everything)",
     )
     parser.add_argument(
-        "--interactive",
+        "--interactive.py",
         action="store_true",
-        help="Launch garak in interactive mode"
+        help="Launch garak in interactive.py mode"
     )
 
     _config.args = parser.parse_args(arguments)
