@@ -73,26 +73,26 @@ def autodan_generate(model_name: str, prompt: str, target: str, out_path: str, a
     """
     Execute base AutoDAN generation
     Args:
-        model_name ():
-        prompt():
-        target ():
-        out_path ():
-        api_key ():
-        device ():
-        num_steps ():
-        batch_size ():
-        num_elites ():
-        crossover_rate ():
-        num_points ():
-        mutation_rate ():
-        hierarchical ():
-        init_prompt_path ():
-        reference_path ():
-        low_memory ():
-        random_seed ():
+        model_name (str): Name of model to load
+        prompt(str): Malicious instruction to model
+        target (str): Output we wish the model to return
+        out_path (str): Path to write generated AutoDAN string
+        api_key (str): OpenAI API key
+        device (str): What device to run models on (cpu or cuda:{device_id})
+        num_steps (int): How many steps to optimize over
+        batch_size (int): Batch size for model
+        num_elites (int): How many elite strings to pass to the next iteration of the GA
+        crossover_rate (float): Probability of performing crossover
+        num_points (int): How many points in an input to perform crossover on
+        mutation_rate (float): Probability of mutating a parent string
+        hierarchical (bool): Whether ot use hierarchical GA
+        init_prompt_path (str): Path to initial prompts
+        reference_path (str): Path to reference prompt tensors
+        low_memory (bool): Whether to use low memory
+        random_seed (int): Random seed, if used.
 
     Returns:
-
+        None
     """
     if random_seed is not None:
         np.random.seed(random_seed)

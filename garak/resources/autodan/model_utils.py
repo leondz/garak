@@ -22,7 +22,7 @@ def generate(model, tokenizer, input_ids, assistant_role_slice, gen_config=None)
         gen_config (transformers.GenerationConfig): Generation configuration
 
     Returns:
-
+        Torch tensor of output ids
     """
     if gen_config is None:
         gen_config = model.generation_config
@@ -105,9 +105,8 @@ def load_model_and_tokenizer(model_path: str, tokenizer_path=None, device='cuda:
         tokenizer_path (str): Path to tokenizer (OPTIONAL)
         device (str): What device to run the model on.
         **kwargs (dict): Additional keyword arguments to pass to the model loader.
-
     Returns:
-
+        model and tokenizer specified by path
     """
     # TODO: Is `trust_remote_code=True` a safe default?
     model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.float16, trust_remote_code=True,
