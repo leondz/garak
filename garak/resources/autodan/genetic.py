@@ -3,7 +3,7 @@ import numpy as np
 import torch
 import random
 import openai
-from tqdm import tqdm
+import os
 import re
 import nltk
 from nltk.corpus import stopwords, wordnet
@@ -13,13 +13,47 @@ import sys
 import time
 from logging import getLogger
 from typing import Tuple
+from garak.generators.openai import OpenAIGenerator
 
 logger = getLogger(__name__)
 
 
+class MutationGenerator(OpenAIGenerator):
+    def __init__(self, name, generations=10):
+        """
+        Initialize MutationGenerator class. Superclassing OpenAI Generator to allow multiple messages.
+        Args:
+            name (str): Model name
+            generations (int): Number of generations
+        """
+        super().__init__(name, generations=generations)
+
+    def generate_completion(self, messages: list):
+        response = self.generator.create(
+            model=self.name,
+            messages=messages,
+            temperature=self.temperature,
+            top_p=self.top_p,
+            n=self.generations,
+            stop=self.stop,
+            max_tokens=self.max_tokens,
+            presence_penalty=self.presence_penalty,
+            frequency_penalty=self.frequency_penalty,
+        )
+        return response
+
+
+openai.api_key = os.getenv("OPENAI_API_KEY", default=None)
+if openai.api_key is None:
+    USE_OPENAI = False
+else:
+    USE_OPENAI = True
+    mutation_generator = MutationGenerator("gpt-3.5-turbo")
+
+
 # TODO: Could probably clean up the inputs here by using imports.
 def autodan_ga(control_prefixes: list, score_list: list, num_elites: int, batch_size: int, crossover_rate=0.5,
-               num_points=5, mutation=0.01, api_key=None, reference=None, if_softmax=True, if_api=True) -> list:
+               num_points=5, mutation=0.01, reference=None, if_softmax=True, if_api=USE_OPENAI) -> list:
     """
     Genetic algorithm for creating AutoDAN samples.
     Args:
@@ -30,7 +64,6 @@ def autodan_ga(control_prefixes: list, score_list: list, num_elites: int, batch_
         crossover_rate (float): Rate to perform crossover operation on parents
         num_points (int): Number of points to perform crossover
         mutation (float): Rate to perform mutation on offspring
-        api_key (str): OpenAI API key
         reference (list): List of pregenerated reference prompts
         if_softmax (bool): Whether to use softmax weighting for roulette selection
         if_api (bool): Whether to use API
@@ -51,8 +84,7 @@ def autodan_ga(control_prefixes: list, score_list: list, num_elites: int, batch_
 
     # Step 4: Apply crossover and mutation to the selected parents
     mutated_offspring = apply_crossover_and_mutation(parents_list, crossover_probability=crossover_rate,
-                                                     num_points=num_points, mutation_rate=mutation, api_key=api_key,
-                                                     reference=reference, if_api=if_api)
+                                                     num_points=num_points, mutation_rate=mutation, if_api=if_api)
 
     # Combine elites with the mutated offspring
     next_generation = elites + mutated_offspring
@@ -62,7 +94,7 @@ def autodan_ga(control_prefixes: list, score_list: list, num_elites: int, batch_
 
 
 def autodan_hga(word_dict, control_prefixes, score_list, num_elites, batch_size, crossover_rate=0.5,
-                mutation_rate=0.01, api_key=None, reference=None, if_api=True) -> list:
+                mutation_rate=0.01, if_api=USE_OPENAI) -> Tuple[list, dict]:
     """
     Hierarchical genetic algorithm for AutoDAN sample generation
     Args:
@@ -73,15 +105,13 @@ def autodan_hga(word_dict, control_prefixes, score_list, num_elites, batch_size,
         batch_size (int): Total size of batch to pass to next iteration
         crossover_rate (float): Rate to perform crossover
         mutation_rate (float): Rate to perform mutation
-        api_key (str): OpenAI API key
-        reference (list): List of pregenerated reference prompts
-        if_api (bool): Whether to use API
+        if_api (bool): Whether to use OpenAI API
 
     Returns:
         Tuple of next generation parents and word dictionary.
     """
     score_list = [-x for x in score_list]
-    # Step 1: Sort the score_list and get corresponding control_suffixs
+    # Step 1: Sort the score_list and get corresponding control_suffixes
     sorted_indices = sorted(range(len(score_list)), key=lambda k: score_list[k], reverse=True)
     sorted_control_suffixes = [control_prefixes[i] for i in sorted_indices]
 
@@ -94,7 +124,7 @@ def autodan_hga(word_dict, control_prefixes, score_list, num_elites, batch_size,
 
     # Step 4: Apply word replacement with roulette wheel selection
     offspring = apply_word_replacement(word_dict, parents_list, crossover_rate)
-    offspring = apply_gpt_mutation(offspring, mutation_rate, api_key, reference, if_api)
+    offspring = apply_gpt_mutation(offspring, mutation_rate, if_api=if_api)
 
     # Combine elites with the mutated offspring
     next_generation = elites + offspring
@@ -130,7 +160,7 @@ def roulette_wheel_selection(data_list: list, score_list: list, num_selected: in
 
 
 def apply_crossover_and_mutation(selected_data: list, crossover_probability=0.5, num_points=3, mutation_rate=0.01,
-                                 api_key=None, reference=None, if_api=True) -> list:
+                                 if_api=USE_OPENAI) -> list:
     """
     Perform crossover and mutation on selected parents.
 
@@ -139,17 +169,11 @@ def apply_crossover_and_mutation(selected_data: list, crossover_probability=0.5,
         crossover_probability (float): Probability of performing crossover operation on selected parents.
         num_points (int): Number of points to perform crossover.
         mutation_rate (float): How frequently to apply gpt mutation to offspring.
-        api_key (str): API key to use if using e.g. OpenAI
-        reference (list): List of pregenerated reference prompts
         if_api (bool): Whether to use API
 
     Returns:
         A list of crossed over and mutated children
     """
-    if api_key is None and reference is None:
-        logger.error("No API key and no reference set specified")
-        raise Exception("Must specify either an API key or reference set")
-
     offspring = []
 
     for i in range(0, len(selected_data), 2):
@@ -164,7 +188,7 @@ def apply_crossover_and_mutation(selected_data: list, crossover_probability=0.5,
             offspring.append(parent1)
             offspring.append(parent2)
 
-    mutated_offspring = apply_gpt_mutation(offspring, mutation_rate, api_key, reference, if_api)
+    mutated_offspring = apply_gpt_mutation(offspring, mutation_rate, if_api=if_api)
 
     return mutated_offspring
 
@@ -210,19 +234,15 @@ def crossover(str1: str, str2: str, num_points: int) -> Tuple[str, str]:
     return ' '.join(new_str1), ' '.join(new_str2)
 
 
-def gpt_mutate(sentence: str, api_key=None) -> str:
+def gpt_mutate(sentence: str) -> str:
     """
     Call OpenAI API to mutate input sentences
     Args:
         sentence (str): Sentence to be mutated
-        api_key (str): OpenAI API key
 
     Returns:
         Mutated string
     """
-    assert api_key is not None, "Must specify API key to use OpenAI API."
-
-    openai.api_key = api_key
     system_msg = 'You are a helpful and creative assistant who writes well.'
     user_message = (f"Please revise the following sentence with no changes to its length and only output "
                     f"the revised version, the sentences are: \n '{sentence}'.")
@@ -231,10 +251,8 @@ def gpt_mutate(sentence: str, api_key=None) -> str:
     while not received:
         try:
             # TODO: Make the model configurable.
-            response = openai.ChatCompletion.create(model="gpt-4",
-                                                    messages=[{"role": "system", "content": system_msg},
-                                                              {"role": "user", "content": user_message}],
-                                                    temperature=1, top_p=0.9)
+            response = mutation_generator.generate_completion(messages=[{"role": "system", "content": system_msg},
+                                                                        {"role": "user", "content": user_message}])
             revised_sentence = response["choices"][0]["message"]["content"].replace('\n', '')
             received = True
         except Exception as e:
@@ -258,7 +276,7 @@ def gpt_mutate(sentence: str, api_key=None) -> str:
     return revised_sentence
 
 
-def apply_gpt_mutation(offspring: list, mutation_rate=0.01, api_key=None, reference=None, if_api=True) -> list:
+def apply_gpt_mutation(offspring: list, mutation_rate=0.01, reference: list = None, if_api=USE_OPENAI) -> list:
     # TODO: Allow for use of local models in lieu of OpenAI
     """
     Use OpenAI or reference corpus to apply mutation.
@@ -266,9 +284,8 @@ def apply_gpt_mutation(offspring: list, mutation_rate=0.01, api_key=None, refere
     Args:
         offspring (list): list of offspring to apply mutation to
         mutation_rate (float): How frequently to mutate offspring using GPT or reference corpus
-        api_key (str): OpenAI API key
-        reference (list): List of pregenerated reference prompts
-        if_api (bool): Whether to use API
+        reference (list): List of pregenerated prompts
+        if_api (bool): Whether to use OpenAI API
 
     Returns:
         List of mutated offspring
@@ -276,40 +293,14 @@ def apply_gpt_mutation(offspring: list, mutation_rate=0.01, api_key=None, refere
     if if_api:
         for i in range(len(offspring)):
             if random.random() < mutation_rate:
-                if api_key is None:
-                    offspring[i] = random.choice(reference[len(offspring):])
-                else:
-                    offspring[i] = gpt_mutate(offspring[i], api_key)
+                offspring[i] = gpt_mutate(offspring[i])
     else:
         for i in range(len(offspring)):
             if random.random() < mutation_rate:
-                offspring[i] = replace_with_synonyms(offspring[i])
-    return offspring
-
-
-# TODO: We can probably merge this with the function above.
-def apply_init_gpt_mutation(offspring: list, mutation_rate=0.01, api_key=None, if_api=True) -> list:
-    """
-    Use OpenAI or reference corpus to apply mutation.
-
-    Args:
-        offspring (list): list of offspring to apply mutation to
-        mutation_rate (float): How frequently to mutate offspring using GPT or reference corpus
-        api_key (str): OpenAI API key
-        if_api (bool): Whether to use API
-
-    Returns:
-        List of mutated offspring
-    Returns:
-
-    """
-    for i in tqdm(range(len(offspring)), desc='initializing...'):
-        if if_api:
-            if random.random() < mutation_rate:
-                offspring[i] = gpt_mutate(offspring[i], api_key)
-        else:
-            if random.random() < mutation_rate:
-                offspring[i] = replace_with_synonyms(offspring[i])
+                if reference is not None:
+                    offspring[i] = random.choice(reference[(len(offspring)):])
+                else:
+                    offspring[i] = replace_with_synonyms(offspring[i])
     return offspring
 
 
@@ -473,109 +464,69 @@ def join_words_with_punctuation(words: list) -> str:
     return sentence
 
 
-def get_score_autodan(tokenizer, conv_template, instruction, target, model, device, test_controls=None, crit=None):
+def get_score_autodan(generator, conv_template, instruction, target, test_controls=None, crit=None, low_memory=False):
     """
     Get AutoDAN score for the instruction
     Args:
-        tokenizer (): Tokenizer for associated model
-        conv_template (ConversationTemplate): Conversation template for the targeted model
+        generator (garak.generators.huggingface.Model): Generator for model
+        conv_template (Conversation): Conversation template for the model
         instruction (str): Instruction to be given to the model
         target (str): Target output
-        model (): Generation model
-        device (str): Device to run on (cuda or cpu)
         test_controls (list): List of test jailbreak strings
-        crit (): Loss function for the generator
+        crit (torch.nn.Loss): Loss function for the generator
 
     Returns:
         Torch tensor of losses
     """
     # Convert all test_controls to token ids and find the max length
+    losses = []
     input_ids_list = []
     target_slices = []
     for item in test_controls:
-        suffix_manager = AutoDanPrefixManager(tokenizer=tokenizer,
+        prefix_manager = AutoDanPrefixManager(generator=generator,
                                               conv_template=conv_template,
                                               instruction=instruction,
                                               target=target,
                                               adv_string=item)
-        input_ids = suffix_manager.get_input_ids(adv_string=item).to(device)
-        input_ids_list.append(input_ids)
-        target_slices.append(suffix_manager._target_slice)
+        input_ids = prefix_manager.get_input_ids(adv_string=item).to(generator.device)
+        if not low_memory:
+            input_ids_list.append(input_ids)
+            target_slices.append(prefix_manager._target_slice)
 
-    # Pad all token ids to the max length
-    pad_tok = 0
-    for ids in input_ids_list:
-        while pad_tok in ids:
-            pad_tok += 1
+            # Pad all token ids to the max length
+            pad_tok = 0
+            for ids in input_ids_list:
+                while pad_tok in ids:
+                    pad_tok += 1
 
-    # Find the maximum length of input_ids in the list
-    max_input_length = max([ids.size(0) for ids in input_ids_list])
+            # Find the maximum length of input_ids in the list
+            max_input_length = max([ids.size(0) for ids in input_ids_list])
 
-    # Pad each input_ids tensor to the maximum length
-    padded_input_ids_list = []
-    for ids in input_ids_list:
-        pad_length = max_input_length - ids.size(0)
-        padded_ids = torch.cat([ids, torch.full((pad_length,), pad_tok, device=device)], dim=0)
-        padded_input_ids_list.append(padded_ids)
+            # Pad each input_ids tensor to the maximum length
+            padded_input_ids_list = []
+            for ids in input_ids_list:
+                pad_length = max_input_length - ids.size(0)
+                padded_ids = torch.cat([ids, torch.full((pad_length,), pad_tok, device=generator.device)], dim=0)
+                padded_input_ids_list.append(padded_ids)
 
-    # Stack the padded input_ids tensors
-    input_ids_tensor = torch.stack(padded_input_ids_list, dim=0)
+            # Stack the padded input_ids tensors
+            input_ids = torch.stack(padded_input_ids_list, dim=0)
 
-    attn_mask = (input_ids_tensor != pad_tok).type(input_ids_tensor.dtype)
+            attn_mask = (input_ids != pad_tok).type(input_ids.dtype)
+
+        else:
+            target_slices = prefix_manager._target_slice
 
     # Forward pass and compute loss
-    logits = forward(model=model, input_ids=input_ids_tensor, attention_mask=attn_mask, batch_size=len(test_controls))
-    losses = []
+    logits = forward(generator=generator, input_ids=input_ids, attention_mask=attn_mask, batch_size=len(test_controls))
+
     for idx, target_slice in enumerate(target_slices):
         loss_slice = slice(target_slice.start - 1, target_slice.stop - 1)
         logits_slice = logits[idx, loss_slice, :].unsqueeze(0).transpose(1, 2)
-        targets = input_ids_tensor[idx, loss_slice].unsqueeze(0)
+        targets = input_ids[idx, loss_slice].unsqueeze(0)
         loss = crit(logits_slice, targets)
         losses.append(loss)
 
-    del input_ids_list, target_slices, input_ids_tensor, attn_mask
-    gc.collect()
-    return torch.stack(losses)
-
-
-def get_score_autodan_low_memory(tokenizer, conv_template, instruction, target, model, device, test_controls=None,
-                                 crit=None):
-    """
-    Lower memory usage scoring function
-
-    Args:
-        tokenizer (): Tokenizer for associated model
-        conv_template (ConversationTemplate): Conversation template for the targeted model
-        instruction (str): Instruction to be given to the model
-        target (str): Target output
-        model (): Generation model
-        device (str): Device to run on (cuda or cpu)
-        test_controls (list): List of test jailbreak strings
-        crit (): Loss function for the generator
-
-    Returns:
-        Torch tensor of losses
-    """
-    losses = []
-    for item in test_controls:
-        suffix_manager = AutoDanPrefixManager(tokenizer=tokenizer,
-                                              conv_template=conv_template,
-                                              instruction=instruction,
-                                              target=target,
-                                              adv_string=item)
-        input_ids = suffix_manager.get_input_ids(adv_string=item).to(device)
-        input_ids_tensor = torch.stack([input_ids], dim=0)
-
-        # Forward pass and compute loss
-        logits = forward(model=model, input_ids=input_ids_tensor, attention_mask=None, batch_size=len(test_controls))
-
-        target_slice = suffix_manager._target_slice
-        loss_slice = slice(target_slice.start - 1, target_slice.stop - 1)
-        logits_slice = logits[0, loss_slice, :].unsqueeze(0).transpose(1, 2)
-        targets = input_ids_tensor[0, loss_slice].unsqueeze(0)
-        loss = crit(logits_slice, targets)
-        losses.append(loss)
-
-    del input_ids_tensor
+    del input_ids_list, target_slices, input_ids, attn_mask
     gc.collect()
     return torch.stack(losses)

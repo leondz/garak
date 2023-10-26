@@ -2,12 +2,13 @@ import gc
 import numpy as np
 import torch
 import torch.nn as nn
-from genetic import get_score_autodan, get_score_autodan_low_memory, autodan_ga, autodan_hga, apply_init_gpt_mutation
-from model_utils import (AutoDanPrefixManager, load_conversation_template, load_model_and_tokenizer,
-                         check_for_attack_success)
+from genetic import get_score_autodan, autodan_ga, autodan_hga, apply_gpt_mutation
+from model_utils import AutoDanPrefixManager, load_conversation_template, check_for_attack_success
 import argparse
 import os
 from logging import getLogger
+from garak.generators import Generator
+from garak.generators.huggingface import Model
 
 logger = getLogger(__name__)
 
@@ -65,20 +66,18 @@ test_prefixes = [
 ]
 
 
-def autodan_generate(model_name: str, prompt: str, target: str, out_path: str, api_key: str = "", device: str = "cpu",
-                     num_steps: int = 100, batch_size: int = 64, num_elites: int = 20, crossover_rate: float = 0.5,
-                     num_points: int = 5, mutation_rate: float = 0.1, hierarchical: bool = False,
+def autodan_generate(generator: Generator, prompt: str, target: str, out_path: str, num_steps: int = 100,
+                     batch_size: int = 64, num_elites: int = 20, crossover_rate: float = 0.5, num_points: int = 5,
+                     mutation_rate: float = 0.1, hierarchical: bool = False,
                      init_prompt_path: str = "./autodan_init.txt", reference_path: str = "./prompt_group.pth",
                      low_memory: bool = False, random_seed: int = None):
     """
     Execute base AutoDAN generation
     Args:
-        model_name (str): Name of model to load
+        generator (garak.generators.Generator): Loaded Garak generator
         prompt(str): Malicious instruction to model
         target (str): Output we wish the model to return
         out_path (str): Path to write generated AutoDAN string
-        api_key (str): OpenAI API key
-        device (str): What device to run models on (cpu or cuda:{device_id})
         num_steps (int): How many steps to optimize over
         batch_size (int): Batch size for model
         num_elites (int): How many elite strings to pass to the next iteration of the GA
@@ -94,34 +93,38 @@ def autodan_generate(model_name: str, prompt: str, target: str, out_path: str, a
     Returns:
         None
     """
+    if not isinstance(generator, Model):
+        msg = "AutoDAN generation currently only supports HuggingFace models."
+        logger.error(msg)
+        raise TypeError(msg)
+
     if random_seed is not None:
         np.random.seed(random_seed)
         torch.manual_seed(random_seed)
         torch.cuda.manual_seed_all(random_seed)
 
+    device = generator.device
+
     adv_string_init = open(init_prompt_path, 'r').readlines()[0]
 
-    # TODO: refactor to use Garak Generators
-    model, tokenizer = load_model_and_tokenizer(model_name,
-                                                device=device,
-                                                low_cpu_mem_usage=True,
-                                                use_cache=False)
-    conv_template = load_conversation_template(model_name)
+    conv_template = load_conversation_template(generator.name)
     crit = nn.CrossEntropyLoss(reduction='mean')
 
-    prefix_manager = AutoDanPrefixManager(tokenizer=tokenizer,
+    prefix_manager = AutoDanPrefixManager(generator=generator,
                                           conv_template=conv_template,
                                           instruction=prompt,
                                           target=target,
                                           adv_string=adv_string_init)
+
+    # Feel like this could just be text instead of storing it as tensors.
     if os.path.exists(reference_path):
         reference = torch.load(reference_path, map_location='cpu')
     else:
         init_prompts = [adv_string_init] * batch_size * 2  # suggested
-        reference = apply_init_gpt_mutation(init_prompts, mutation_rate=1, api_key=api_key)
+        reference = apply_gpt_mutation(init_prompts, mutation_rate=1)
         torch.save(reference, reference_path)
 
-    # you should adjust this part based on the initial handcrafted prompt you use #
+    # TODO: Have this support references other than ChatGPT.
     for o in range(len(reference)):
         reference[o] = reference[o].replace('ChatGPT', conv_template.name)
         reference[o] = reference[o].replace('chatGPT', conv_template.name)
@@ -135,31 +138,19 @@ def autodan_generate(model_name: str, prompt: str, target: str, out_path: str, a
 
     for j in range(num_steps):
         with torch.no_grad():
-            if low_memory:
-                losses = get_score_autodan_low_memory(
-                    tokenizer=tokenizer,
-                    conv_template=conv_template, instruction=prompt, target=target,
-                    model=model,
-                    device=device,
-                    test_controls=new_adv_prefixes,
-                    crit=crit)
-            else:
-                losses = get_score_autodan(
-                    tokenizer=tokenizer,
-                    conv_template=conv_template, instruction=prompt, target=target,
-                    model=model,
-                    device=device,
-                    test_controls=new_adv_prefixes,
-                    crit=crit)
+            losses = get_score_autodan(
+                generator=generator,
+                conv_template=conv_template, instruction=prompt, target=target,
+                test_controls=new_adv_prefixes,
+                crit=crit,
+                low_memory=low_memory)
             score_list = losses.cpu().numpy().tolist()
 
             best_new_adv_prefix_id = losses.argmin()
             best_new_adv_prefix = new_adv_prefixes[best_new_adv_prefix_id]
 
             adv_prefix = best_new_adv_prefix
-            success, gen_str = check_for_attack_success(model, tokenizer,
-                                                        prefix_manager.get_input_ids(adv_string=adv_prefix).to(device),
-                                                        prefix_manager._assistant_role_slice, test_prefixes)
+            success, gen_str = check_for_attack_success(adv_prefix, test_prefixes)
             if success:
                 logger.info(f"Found a successful AutoDAN prompt!\n{adv_prefix}\nWriting to {out_path}.")
                 with open(out_path, "w+") as f:
