@@ -74,6 +74,13 @@ def main(arguments=[]) -> None:
         help="list of detectors to use, or 'all' for all. Default is to use the probe's suggestion.",
     )
     parser.add_argument(
+        "--buff",
+        "-b",
+        type=str,
+        default="",
+        help="buff to use",
+    )
+    parser.add_argument(
         "--eval_threshold",
         type=float,
         default=0.5,
@@ -99,6 +106,11 @@ def main(arguments=[]) -> None:
         "--list_generators",
         action="store_true",
         help="list available generation model interfaces",
+    )
+    parser.add_argument(
+        "--list_buffs",
+        action="store_true",
+        help="list available buffs/fuzzes",
     )
     parser.add_argument(
         "--version", "-V", action="store_true", help="print version info & exit"
@@ -228,6 +240,9 @@ def main(arguments=[]) -> None:
     elif _config.args.list_detectors:
         print_plugins("detectors", Fore.LIGHTBLUE_EX)
 
+    elif _config.args.list_buffs:
+        print_plugins("buffs", Fore.LIGHTGREEN_EX)
+
     elif _config.args.list_generators:
         print_plugins("generators", Fore.LIGHTMAGENTA_EX)
 
@@ -306,13 +321,21 @@ def main(arguments=[]) -> None:
         if detector_names == []:
             import garak.harnesses.probewise
 
-            h = garak.harnesses.probewise.ProbewiseHarness()
-            h.run(generator, probe_names, evaluator)
+            probewise_h = garak.harnesses.probewise.ProbewiseHarness()
+            probewise_h.run(
+                generator, probe_names, evaluator, buffs=[_config.args.buff]
+            )
         else:
             import garak.harnesses.pxd
 
-            h = garak.harnesses.pxd.PxD()
-            h.run(generator, probe_names, detector_names, evaluator)
+            pxd_h = garak.harnesses.pxd.PxD()
+            pxd_h.run(
+                generator,
+                probe_names,
+                detector_names,
+                evaluator,
+                buffs=[_config.args.buff],
+            )
 
         logging.info("run complete, ending")
         _config.reportfile.close()

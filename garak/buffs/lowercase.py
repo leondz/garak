@@ -28,6 +28,8 @@ from garak.buffs.base import Buff
 class Lowercase(Buff):
     """Lowercasing buff"""
 
-    def transform(self, attempt: garak.attempt.Attempt) -> garak.attempt.Attempt:
+    def transform(
+        self, attempt: garak.attempt.Attempt
+    ) -> Iterable[garak.attempt.Attempt]:
         attempt.prompt = attempt.prompt.lower()
-        return attempt
+        yield attempt

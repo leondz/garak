@@ -23,7 +23,10 @@ between probes and a generator. Buffs must inherit this base class.
 implemented buffs. """
 
 from collections.abc import Iterable
+import logging
 from typing import List
+
+from colorama import Fore, Style
 
 import garak.attempt
 
@@ -42,10 +45,13 @@ class Buff:
     active = True
 
     def __init__(self) -> None:
-        pass
+        print(
+            f"🦾 loading {Style.BRIGHT}{Fore.LIGHTGREEN_EX}buff: {Style.RESET_ALL}{self.__class__.__name__}"
+        )
+        logging.info(f"buff init: {self}")
 
     def _derive_new_attempt(
-        source_attempt: garak.attempt.Attempt, seq=-1
+        self, source_attempt: garak.attempt.Attempt, seq=-1
     ) -> garak.attempt.Attempt:
         new_attempt = garak.attempt.Attempt(
             status=source_attempt.status,
@@ -60,8 +66,12 @@ class Buff:
             seq=seq,
         )
         new_attempt.notes["buff_creator"] = self.__class__.__name__
-        new_attempt.notes["buff_source_attempt_uuid"] = source_attempt.uuid
+        new_attempt.notes["buff_source_attempt_uuid"] = str(
+            source_attempt.uuid
+        )  ## UUIDs don't serialise nice
         new_attempt.notes["buff_source_seq"] = source_attempt.seq
+
+        return new_attempt
 
     def transform(
         self, attempt: garak.attempt.Attempt
@@ -80,4 +90,4 @@ class Buff:
             for new_attempt in new_attempts:
                 for transformed_new_attempt in self.transform(new_attempt):
                     # transform can returns multiple results
-                    yield transform(new_attempt)
+                    yield transformed_new_attempt

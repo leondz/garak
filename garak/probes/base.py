@@ -57,7 +57,13 @@ class Probe:
     def _buff_hook(
         self, attempts: Iterable[garak.attempt.Attempt]
     ) -> Iterable[garak.attempt.Attempt]:
-        pass
+        if "buffs" not in dir(_config):
+            return attempts
+        buffed_attempts = []
+        for buff in _config.buffs:
+            for buffed_attempt in buff.buff(attempts):
+                buffed_attempts.append(buffed_attempt)
+        return buffed_attempts
 
     def _postprocess_hook(
         self, attempt: garak.attempt.Attempt
@@ -89,7 +95,7 @@ class Probe:
             attempts_todo.append(self._mint_attempt(prompt, seq))
 
         # buff hook
-        pass
+        attempts_todo = self._buff_hook(attempts_todo)
 
         # iterate through attempts
         attempts_completed = []
