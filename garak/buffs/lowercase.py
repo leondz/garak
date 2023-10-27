@@ -24,12 +24,10 @@ from typing import List
 import garak.attempt
 from garak.buffs.base import Buff
 
+
 class Lowercase(Buff):
-    """ Lowercasing buff """
+    """Lowercasing buff"""
 
-    def buff(source_attempts: List[garak.attempt.Attempt]) -> Iterable[garak.attempt.Attempt]:
-        for source_attempt in source_attempts:
-            lowercase_attempt = self._derive_new_attempt(attempt)
-            lowercase_attempt.prompt = lowercase_attempt.prompt.lower()
-            yield lowercase_attempt
-
+    def transform(self, attempt: garak.attempt.Attempt) -> garak.attempt.Attempt:
+        attempt.prompt = attempt.prompt.lower()
+        return attempt

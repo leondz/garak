@@ -27,7 +27,7 @@ def enumerate_plugins(category: str = "probes", skip_base_classes=True) -> List[
     :type category: str
     """
 
-    if category not in ("probes", "detectors", "generators", "harnesses"):
+    if category not in ("probes", "detectors", "generators", "harnesses", "buffs"):
         raise ValueError("Not a recognised plugin type:", category)
 
     base_mod = importlib.import_module(f"garak.{category}.base")

@@ -27,8 +27,9 @@ from typing import List
 
 import garak.attempt
 
+
 class Buff:
-    """ Base class for a buff.
+    """Base class for a buff.
 
     A buff should take as input a list of attempts, and return
     a list of events. It should be able to return a generator.
@@ -37,28 +38,46 @@ class Buff:
     """
 
     uri = ""
-    bcp47 = None # set of languages this buff should be constrained to
+    bcp47 = None  # set of languages this buff should be constrained to
     active = True
 
     def __init__(self) -> None:
         pass
 
-    def _derive_new_attempt(source_attempt: garak.attempt.Attempt) -> garak.attempt.Attempt:
+    def _derive_new_attempt(
+        source_attempt: garak.attempt.Attempt, seq=-1
+    ) -> garak.attempt.Attempt:
         new_attempt = garak.attempt.Attempt(
-            status = source_attempt.status,
-            prompt = source_attempt.prompt,
-            probe_classname = source_attempt.probe_classname,
-            probe_params = source_attempt.probe_params,
-            targets = source_attempt.targets,
-            outputs = source_attempt.outputs,
-            notes = source_attempt.notes,
-            detector_results = source_attempt.detector_results,
-            goal = source_attempt.goal,
-            seq = source_attempt.seq,
+            status=source_attempt.status,
+            prompt=source_attempt.prompt,
+            probe_classname=source_attempt.probe_classname,
+            probe_params=source_attempt.probe_params,
+            targets=source_attempt.targets,
+            outputs=source_attempt.outputs,
+            notes=source_attempt.notes,
+            detector_results=source_attempt.detector_results,
+            goal=source_attempt.goal,
+            seq=seq,
         )
-        new_attempt.notes['buff_source_attempt_id'] = source_attempt.uuid
-        new_attempt.notes['buff_creator'] = self.__class__.__name__
+        new_attempt.notes["buff_creator"] = self.__class__.__name__
+        new_attempt.notes["buff_source_attempt_uuid"] = source_attempt.uuid
+        new_attempt.notes["buff_source_seq"] = source_attempt.seq
 
-    def buff(source_attempts: List[garak.attempt.Attempt]) -> Iterable[garak.attempt.Attempt]:
+    def transform(
+        self, attempt: garak.attempt.Attempt
+    ) -> Iterable[garak.attempt.Attempt]:
+        yield attempt
+
+    def buff(
+        self, source_attempts: List[garak.attempt.Attempt]
+    ) -> Iterable[garak.attempt.Attempt]:
         for source_attempt in source_attempts:
-            yield self._derive_new_attempt(source_attempt)
+            # create one or more untransformed new attempts
+            new_attempts = []
+            new_attempts.append(
+                self._derive_new_attempt(source_attempt, source_attempt.seq)
+            )
+            for new_attempt in new_attempts:
+                for transformed_new_attempt in self.transform(new_attempt):
+                    # transform can returns multiple results
+                    yield transform(new_attempt)
