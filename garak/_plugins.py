@@ -10,7 +10,7 @@ from typing import List
 import garak._config
 
 
-def enumerate_plugins(category: str = "probes") -> List[str]:
+def enumerate_plugins(category: str = "probes", skip_base_classes=True) -> List[str]:
     """A function for listing all modules & plugins of the specified kind.
 
     garak's plugins are organised into four packages - probes, detectors, generators
@@ -53,14 +53,17 @@ def enumerate_plugins(category: str = "probes") -> List[str]:
     for module_filename in sorted(os.listdir(garak._config.basedir / category)):
         if not module_filename.endswith(".py"):
             continue
-        if module_filename.startswith("__") or module_filename == "base.py":
+        if module_filename.startswith("__"):
+            continue
+        if module_filename == "base.py" and skip_base_classes:
             continue
         module_name = module_filename.replace(".py", "")
         mod = importlib.import_module(f"garak.{category}.{module_name}")
         module_entries = set(
             [entry for entry in dir(mod) if not entry.startswith("__")]
         )
-        module_entries = module_entries.difference(base_plugin_classnames)
+        if skip_base_classes:
+            module_entries = module_entries.difference(base_plugin_classnames)
         module_plugin_names = set()
         for module_entry in module_entries:
             obj = getattr(mod, module_entry)

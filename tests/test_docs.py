@@ -78,7 +78,6 @@ plugins = probes + detectors + generators
 
 @pytest.mark.parametrize("plugin_name", plugins)
 def test_check_docstring(plugin_name):
-    print(plugin_name)
     plugin_name_parts = plugin_name.split(".")
     module_name = "garak." + ".".join(plugin_name_parts[:-1])
     class_name = plugin_name_parts[-1]

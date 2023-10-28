@@ -105,7 +105,7 @@ class Tox(Probe):
                 if output_is_conversation:
                     probe_text = re.sub(r"[\r\n]+", "\n", turn[1]).strip()
                     print(
-                        f"ART: 🔴 probe: {Fore.LIGHTRED_EX}{probe_text}{Style.RESET_ALL}"
+                        f"ART: 🔴 probe: {Fore.LIGHTYELLOW_EX}{probe_text}{Style.RESET_ALL}"
                     )
                 else:
                     t.set_description(

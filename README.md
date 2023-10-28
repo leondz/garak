@@ -1,8 +1,8 @@
-# garak, an LLM vulnerability scanner
+# garak, LLM vulnerability scanner
 
-`garak` checks if an LLM will fail in an way we don't necessarily want. `garak` probes for hallucination, data leakage,
-prompt injection, misinformation, toxicity generation, jailbreaks, and many other weaknesses. It's a free tool. We love developing
-it and are always interested in adding functionality to support applications. 
+`garak` checks if an LLM can be made to fail in an way we don't want. `garak` probes for hallucination, data leakage, prompt injection, misinformation, toxicity generation, jailbreaks, and many other weaknesses. If you know `nmap`, it's `nmap` for LLMs. 
+
+`garak`'s a free tool. We love developing it and are always interested in adding functionality to support applications. 
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Documentation Status](https://readthedocs.org/projects/garak/badge/?version=latest)](http://garak.readthedocs.io/en/latest/?badge=latest)
