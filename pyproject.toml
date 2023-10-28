@@ -35,7 +35,7 @@ dependencies = [
   "torch",
   "rapidfuzz",
   "jinja2",
-  "avidtools==0.1.1.1",
+  "avidtools==0.1.1.2",
   "stdlibs"
 ]
 
