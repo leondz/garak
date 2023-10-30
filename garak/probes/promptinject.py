@@ -81,6 +81,7 @@ def _attempt_prestore_hook(self, attempt: Attempt, seq: int) -> Attempt:
 
 
 def _generator_precall_hook(self, generator, attempt):
+    """apply PromptInject model inference parameters to probe"""
     map_attribs = (
         "temperature top_p frequency_penalty presence_penalty max_tokens".split()
     )

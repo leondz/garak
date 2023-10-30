@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+# SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 """Base classes for probes.
 
 Probe plugins must inherit one of these. `Probe` serves as a template showing
@@ -7,6 +11,7 @@ what expectations there are for inheriting classes. """
 import copy
 import json
 import logging
+from collections.abc import Iterable
 from typing import List
 
 from colorama import Fore, Style
@@ -49,7 +54,20 @@ class Probe:
         return attempt
 
     def _generator_precall_hook(self, generator, attempt=None):
+        """function to be overloaded if a probe wants to take actions between
+        attempt generation and posing prompts to the model"""
         pass
+
+    def _buff_hook(
+        self, attempts: Iterable[garak.attempt.Attempt]
+    ) -> Iterable[garak.attempt.Attempt]:
+        if "buffs" not in dir(_config):
+            return attempts
+        buffed_attempts = []
+        for buff in _config.buffs:
+            for buffed_attempt in buff.buff(attempts):
+                buffed_attempts.append(buffed_attempt)
+        return buffed_attempts
 
     def _postprocess_hook(
         self, attempt: garak.attempt.Attempt
@@ -74,16 +92,24 @@ class Probe:
         """attempt to exploit the target generator, returning a list of results"""
         logging.debug(f"probe execute: {self}")
 
-        attempts = []
+        # build list of attempts
+        attempts_todo = []
         prompts = list(self.prompts)
-        prompt_iterator = tqdm(prompts, leave=False)
-        prompt_iterator.set_description(self.probename.replace("garak.", ""))
+        for seq, prompt in enumerate(prompts):
+            attempts_todo.append(self._mint_attempt(prompt, seq))
 
-        for seq, prompt in enumerate(prompt_iterator):
-            this_attempt = self._mint_attempt(prompt, seq)
+        # buff hook
+        attempts_todo = self._buff_hook(attempts_todo)
+
+        # iterate through attempts
+        attempts_completed = []
+        attempt_iterator = tqdm(attempts_todo, leave=False)
+        attempt_iterator.set_description(self.probename.replace("garak.", ""))
+
+        for this_attempt in attempt_iterator:
             self._generator_precall_hook(generator, this_attempt)
             this_attempt.outputs = generator.generate(prompt)
             _config.reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
             this_attempt = self._postprocess_hook(this_attempt)
-            attempts.append(copy.deepcopy(this_attempt))
-        return attempts
+            attempts_completed.append(copy.deepcopy(this_attempt))
+        return attempts_completed
