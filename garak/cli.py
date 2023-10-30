@@ -7,22 +7,6 @@
 
 
 def main(arguments=[]) -> None:
-    def print_plugins(prefix, color):
-        from garak._plugins import enumerate_plugins
-
-        plugin_names = enumerate_plugins(category=prefix)
-        plugin_names = [(p.replace(f"{prefix}.", ""), a) for p, a in plugin_names]
-        module_names = set([(m.split(".")[0], True) for m, a in plugin_names])
-        plugin_names += module_names
-        for plugin_name, active in sorted(plugin_names):
-            print(f"{Style.BRIGHT}{color}{prefix}: {Style.RESET_ALL}", end="")
-            print(plugin_name, end="")
-            if "." not in plugin_name:
-                print(" 🌟", end="")
-            if not active:
-                print(" 💤", end="")
-            print()
-
     import datetime
 
     from garak import __version__, __description__, _config
@@ -163,47 +147,22 @@ def main(arguments=[]) -> None:
 
     _config.args = parser.parse_args(arguments)
 
+    import garak.command as command
+
     import logging
 
-    logging.basicConfig(
-        filename="garak.log",
-        level=logging.DEBUG,
-        format="%(asctime)s  %(levelname)s  %(message)s",
-    )
-
-    logging.info(f"invoked with arguments {_config.args}")
+    command.start_logging()
 
     import importlib
-    import inspect
     import json
     import uuid
     from colorama import Fore, Style
 
-    import garak.evaluators
+    import garak.evaluators  # why is this line so high up? maybe eval/plugin too tightly coupled?
     from garak._plugins import enumerate_plugins, load_plugin
 
     if not _config.args.version and not _config.args.report:
-        logging.info(f"started at {_config.starttime_iso}")
-        _config.run_id = str(uuid.uuid4())  # uuid1 is safe but leaks host info
-        if not _config.args.report_prefix:
-            report_filename = f"garak.{_config.run_id}.report.jsonl"
-        else:
-            report_filename = _config.args.report_prefix + ".report.jsonl"
-        _config.reportfile = open(report_filename, "w", buffering=1)
-        _config.args.__dict__.update({"entry_type": "config"})
-        _config.reportfile.write(json.dumps(_config.args.__dict__) + "\n")
-        _config.reportfile.write(
-            json.dumps(
-                {
-                    "entry_type": "init",
-                    "garak_version": _config.version,
-                    "start_time": _config.starttime_iso,
-                    "run": _config.run_id,
-                }
-            )
-            + "\n"
-        )
-        logging.info(f"reporting to {report_filename}")
+        command.start_run()
 
     if _config.args.probe_options:
         try:
@@ -215,40 +174,19 @@ def main(arguments=[]) -> None:
         pass
 
     elif _config.args.plugin_info:
-        # load plugin
-        try:
-            plugin = load_plugin(_config.args.plugin_info)
-            print(f"Info on {_config.args.plugin_info}:")
-            priority_fields = ["description"]
-            skip_fields = ["prompts", "triggers"]
-            # print the attribs it has
-            for v in priority_fields:
-                print(f"{v:>35}:", getattr(plugin, v))
-            for v in sorted(dir(plugin)):
-                if v in priority_fields or v in skip_fields:
-                    continue
-                if v.startswith("_") or inspect.ismethod(getattr(plugin, v)):
-                    continue
-                print(f"{v:>35}:", getattr(plugin, v))
+        command.plugin_info(_config.args.plugin_info)
 
-        except ValueError as e:
-            print(e)
-        except Exception as e:
-            print(e)
-            print(
-                f"Plugin {_config.args.plugin_info} not found. Try --list_probes, or --list_detectors."
-            )
     elif _config.args.list_probes:
-        print_plugins("probes", Fore.LIGHTYELLOW_EX)
+        command.print_probes()
 
     elif _config.args.list_detectors:
-        print_plugins("detectors", Fore.LIGHTBLUE_EX)
+        command.print_detectors()
 
     elif _config.args.list_buffs:
-        print_plugins("buffs", Fore.LIGHTGREEN_EX)
+        command.print_buffs()
 
     elif _config.args.list_generators:
-        print_plugins("generators", Fore.LIGHTMAGENTA_EX)
+        command.print_generators()
 
     elif _config.args.model_type:
         if (
@@ -258,7 +196,7 @@ def main(arguments=[]) -> None:
             message = f"⚠️  Model type '{_config.args.model_type}' also needs a model name\n You can set one with e.g. --model_name \"billwurtz/gpt-1.0\""
             logging.error(message)
             raise ValueError(message)
-        print(f"📜 reporting to {report_filename}")
+        print(f"📜 reporting to {_config.report_filename}")
         generator_module_name = _config.args.model_type.split(".")[0]
         generator_mod = importlib.import_module(
             "garak.generators." + generator_module_name
@@ -322,35 +260,18 @@ def main(arguments=[]) -> None:
                 else:
                     detector_names += ["detectors." + detector_clause]
 
-        if detector_names == []:
-            import garak.harnesses.probewise
-
-            probewise_h = garak.harnesses.probewise.ProbewiseHarness()
-            probewise_h.run(
-                generator, probe_names, evaluator, buffs=[_config.args.buff]
-            )
+        if _config.args.buff:
+            buffs = [_config.args.buff]
         else:
-            import garak.harnesses.pxd
+            buffs = []
 
-            pxd_h = garak.harnesses.pxd.PxD()
-            pxd_h.run(
-                generator,
-                probe_names,
-                detector_names,
-                evaluator,
-                buffs=[_config.args.buff],
-            )
+        if detector_names == []:
+            command.probewise_run(generator, probe_names, evaluator, buffs)
 
-        logging.info("run complete, ending")
-        _config.reportfile.close()
-        print(f"📜 report closed :) {report_filename}")
-        if _config.hitlogfile:
-            _config.hitlogfile.close()
+        else:
+            command.pxd_run(generator, probe_names, detector_names, evaluator, buffs)
 
-        timetaken = (datetime.datetime.now() - _config.starttime).total_seconds()
-
-        print(f"✔️  garak done: complete in {timetaken:.2f}s")
-        logging.info(f"garak done: complete in {timetaken:.2f}s")
+        command.end_run()
 
     elif _config.args.report:
         from garak.report import Report
