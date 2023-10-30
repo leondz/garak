@@ -281,6 +281,16 @@ def main(arguments=[]) -> None:
             )
         generator.generations = _config.args.generations
 
+        if _config.args.generate_autodan:
+            from garak.resources.autodan import autodan_generate
+            try:
+                prompt = _config.probe_options["prompt"]
+                target = _config.probe_options["target"]
+            except Exception as e:
+                print("AutoDAN generation requires --prompt_options with a .json containing a `prompt` and `target` "
+                      "string")
+            autodan_generate(generator=generator, prompt=prompt, target=target)
+
         if _config.args.probes == "all":
             probe_names = [
                 name
