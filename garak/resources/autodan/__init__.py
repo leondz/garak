@@ -3,4 +3,4 @@
 # Paper can be found at: https://arxiv.org/abs/2310.04451
 
 # Resources we want to expose
-from autodan import autodan_generate, autodan_parser
+from garak.resources.autodan.autodan import autodan_generate, autodan_parser

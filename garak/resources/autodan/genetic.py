@@ -8,7 +8,7 @@ import re
 import nltk
 from nltk.corpus import stopwords, wordnet
 from collections import defaultdict, OrderedDict
-from model_utils import AutoDanPrefixManager, forward
+from garak.resources.autodan.model_utils import AutoDanPrefixManager, forward
 import sys
 import time
 from logging import getLogger
@@ -16,6 +16,16 @@ from typing import Tuple
 from garak.generators.openai import OpenAIGenerator
 
 logger = getLogger(__name__)
+
+# TODO: Refactor into setup.py
+try:
+    _ = stopwords.words('english')
+    _ = nltk.word_tokenize("This is a normal English sentence")
+    _ = wordnet.synsets("word")
+except LookupError as e:
+    nltk.download("stopwords")
+    nltk.download('punkt')
+    nltk.download("wordnet")
 
 
 class MutationGenerator(OpenAIGenerator):
@@ -53,7 +63,7 @@ else:
 
 # TODO: Could probably clean up the inputs here by using imports.
 def autodan_ga(control_prefixes: list, score_list: list, num_elites: int, batch_size: int, crossover_rate=0.5,
-               num_points=5, mutation=0.01, reference=None, if_softmax=True, if_api=USE_OPENAI) -> list:
+               num_points=5, mutation=0.01, if_softmax=True, if_api=USE_OPENAI) -> list:
     """
     Genetic algorithm for creating AutoDAN samples.
     Args:
@@ -64,7 +74,6 @@ def autodan_ga(control_prefixes: list, score_list: list, num_elites: int, batch_
         crossover_rate (float): Rate to perform crossover operation on parents
         num_points (int): Number of points to perform crossover
         mutation (float): Rate to perform mutation on offspring
-        reference (list): List of pregenerated reference prompts
         if_softmax (bool): Whether to use softmax weighting for roulette selection
         if_api (bool): Whether to use API
 
@@ -482,13 +491,14 @@ def get_score_autodan(generator, conv_template, instruction, target, test_contro
     losses = []
     input_ids_list = []
     target_slices = []
+    device = generator.device if generator.device >= 0 else "cpu"
     for item in test_controls:
         prefix_manager = AutoDanPrefixManager(generator=generator,
                                               conv_template=conv_template,
                                               instruction=instruction,
                                               target=target,
                                               adv_string=item)
-        input_ids = prefix_manager.get_input_ids(adv_string=item).to(generator.device)
+        input_ids = prefix_manager.get_input_ids(adv_string=item).to(device)
         if not low_memory:
             input_ids_list.append(input_ids)
             target_slices.append(prefix_manager._target_slice)
@@ -506,7 +516,7 @@ def get_score_autodan(generator, conv_template, instruction, target, test_contro
             padded_input_ids_list = []
             for ids in input_ids_list:
                 pad_length = max_input_length - ids.size(0)
-                padded_ids = torch.cat([ids, torch.full((pad_length,), pad_tok, device=generator.device)], dim=0)
+                padded_ids = torch.cat([ids, torch.full((pad_length,), pad_tok, device=device)], dim=0)
                 padded_input_ids_list.append(padded_ids)
 
             # Stack the padded input_ids tensors

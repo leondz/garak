@@ -171,7 +171,7 @@ class AutoDanPrefixManager:
             else:
                 self._system_slice = slice(
                     None,
-                    encoding.char_to_token(len(self.conv_template.system))
+                    encoding.char_to_token(len(self.conv_template.system_message))
                 )
                 self._user_role_slice = slice(
                     encoding.char_to_token(prompt.find(self.conv_template.roles[0])),
