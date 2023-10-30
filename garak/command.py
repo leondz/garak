@@ -51,6 +51,24 @@ def start_run():
     logging.info(f"reporting to {_config.report_filename}")
 
 
+def end_run():
+    import datetime
+    import logging
+
+    import garak._config as _config
+
+    logging.info("run complete, ending")
+    _config.reportfile.close()
+    print(f"📜 report closed :) {_config.report_filename}")
+    if _config.hitlogfile:
+        _config.hitlogfile.close()
+
+    timetaken = (datetime.datetime.now() - _config.starttime).total_seconds()
+
+    print(f"✔️  garak done: complete in {timetaken:.2f}s")
+    logging.info(f"garak done: complete in {timetaken:.2f}s")
+
+
 def print_plugins(prefix: str, color):
     from colorama import Fore, Style
 
@@ -138,5 +156,14 @@ def probewise_run(generator, probe_names, evaluator, buffs):
     probewise_h.run(generator, probe_names, evaluator, buffs)
 
 
-def pxd_run():
-    pass
+def pxd_run(generator, probe_names, detector_names, evaluator, buffs):
+    import garak.harnesses.pxd
+
+    pxd_h = garak.harnesses.pxd.PxD()
+    pxd_h.run(
+        generator,
+        probe_names,
+        detector_names,
+        evaluator,
+        buffs,
+    )

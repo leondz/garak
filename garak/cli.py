@@ -154,7 +154,6 @@ def main(arguments=[]) -> None:
     command.start_logging()
 
     import importlib
-    import inspect
     import json
     import uuid
     from colorama import Fore, Style
@@ -267,32 +266,12 @@ def main(arguments=[]) -> None:
             buffs = []
 
         if detector_names == []:
-            command.probewise_run(
-                generator, probe_names, evaluator, buffs
-            )
+            command.probewise_run(generator, probe_names, evaluator, buffs)
 
         else:
-            import garak.harnesses.pxd
+            command.pxd_run(generator, probe_names, detector_names, evaluator, buffs)
 
-            pxd_h = garak.harnesses.pxd.PxD()
-            pxd_h.run(
-                generator,
-                probe_names,
-                detector_names,
-                evaluator,
-                buffs,
-            )
-
-        logging.info("run complete, ending")
-        _config.reportfile.close()
-        print(f"📜 report closed :) {_config.report_filename}")
-        if _config.hitlogfile:
-            _config.hitlogfile.close()
-
-        timetaken = (datetime.datetime.now() - _config.starttime).total_seconds()
-
-        print(f"✔️  garak done: complete in {timetaken:.2f}s")
-        logging.info(f"garak done: complete in {timetaken:.2f}s")
+        command.end_run()
 
     elif _config.args.report:
         from garak.report import Report

@@ -98,7 +98,6 @@ class Probe:
         for seq, prompt in enumerate(prompts):
             attempts_todo.append(self._mint_attempt(prompt, seq))
 
-
         # buff hook
         attempts_todo = self._buff_hook(attempts_todo)
 
