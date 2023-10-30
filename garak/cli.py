@@ -145,9 +145,13 @@ def main(arguments=[]) -> None:
         help="If detectors aren't specified on the command line, should we run all detectors? (default is just the primary detector, if given, else everything)",
     )
     parser.add_argument(
-        "--interactive.py",
+        "--interactive",
         action="store_true",
-        help="Launch garak in interactive.py mode"
+        help="Launch garak in interactive mode"
+    )
+    parser.add_argument("--generate_autodan",
+                        action="store_true",
+                        help="Generate autodan prompts"
     )
 
     _config.args = parser.parse_args(arguments)
