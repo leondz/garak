@@ -111,7 +111,7 @@ def main(arguments=[]) -> None:
         help="add one or more times to increase verbosity of output during runtime",
     )
     parser.add_argument(
-        "--generator_option",
+        "--generator_options",
         "-G",
         type=str,
         help="options to pass to the generator",
@@ -169,6 +169,12 @@ def main(arguments=[]) -> None:
             _config.probe_options = json.loads(_config.args.probe_options)
         except Exception as e:
             logging.warn("Failed to parse JSON probe_options:", e.args[0])
+
+    if _config.args.generator_options:
+        try:
+            _config.generator_options = json.loads(_config.args.generator_options)
+        except Exception as e:
+            logging.warn("Failed to parse JSON generator_options:", e.args[0])
 
     if _config.args.version:
         pass

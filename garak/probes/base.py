@@ -109,7 +109,9 @@ class Probe:
         for this_attempt in attempt_iterator:
             self._generator_precall_hook(generator, this_attempt)
             this_attempt.outputs = generator.generate(prompt)
-            _config.reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
+            d = this_attempt.as_dict()
+            print(d)
+            _config.reportfile.write(json.dumps(d) + "\n")
             this_attempt = self._postprocess_hook(this_attempt)
             attempts_completed.append(copy.deepcopy(this_attempt))
         return attempts_completed
