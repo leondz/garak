@@ -61,7 +61,7 @@ class Probe:
     def _buff_hook(
         self, attempts: Iterable[garak.attempt.Attempt]
     ) -> Iterable[garak.attempt.Attempt]:
-        if "buffs" not in dir(_config):
+        if "buffs" not in dir(_config) or len(_config.buffs) == 0:
             return attempts
         buffed_attempts = []
         for buff in _config.buffs:
