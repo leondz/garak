@@ -732,7 +732,7 @@ class MultiPromptAttack(object):
             if loss < best_loss:
                 best_loss = loss
                 best_control = control
-            print('Current Loss:', loss, 'Best Loss:', best_loss)
+            logger.info('Current Loss:', loss, 'Best Loss:', best_loss)
 
             if self.logfile is not None and (i + 1 + anneal_from) % test_steps == 0:
                 last_control = self.control_str
@@ -827,7 +827,7 @@ class MultiPromptAttack(object):
             for i, tag in enumerate(['id_id', 'id_od', 'od_id', 'od_od']):
                 if total_tests[i] > 0:
                     output_str += f"({tag}) | Passed {n_passed[i]:>3}/{total_tests[i]:<3} | EM {n_em[i]:>3}/{total_tests[i]:<3} | Loss {n_loss[i]:.4f}\n"
-            print((
+            logger.debug((
                 f"\n====================================================\n"
                 f"Step {step_num:>4}/{n_steps:>4} ({runtime:.4} s)\n"
                 f"{output_str}"
@@ -1070,7 +1070,7 @@ class ProgressiveMultiPromptAttack(object):
                             control_weight += 0.01
                             loss = np.infty
                             if verbose:
-                                print(f"Control weight increased to {control_weight:.5}")
+                                logger.debug(f"Control weight increased to {control_weight:.5}")
                         else:
                             stop_inner_on_success = False
 
@@ -1247,7 +1247,7 @@ class IndividualPromptAttack(object):
         stop_inner_on_success = stop_on_success
 
         for i in range(len(self.goals)):
-            print(f"Goal {i + 1}/{len(self.goals)}")
+            logger.info(f"Goal {i + 1}/{len(self.goals)}")
 
             attack = self.managers['MPA'](
                 self.goals[i:i + 1],
@@ -1459,8 +1459,10 @@ class EvaluateAttack(object):
                     test_total_em.append(curr_em)
                     test_total_outputs.append(all_outputs)
 
-                if verbose: print(
-                    f"{mode} Step {step + 1}/{len(controls)} | Jailbroken {sum(curr_jb)}/{len(all_outputs)} | EM {sum(curr_em)}/{len(all_outputs)}")
+                if verbose:
+                    logger.debug(f"{mode} Step {step + 1}/{len(controls)} | "
+                                 f"Jailbroken {sum(curr_jb)}/{len(all_outputs)} | "
+                                 f"EM {sum(curr_em)}/{len(all_outputs)}")
 
             prev_control = control
 
@@ -1468,15 +1470,15 @@ class EvaluateAttack(object):
 
 
 class ModelWorker(object):
-
-    def __init__(self, model_path, model_kwargs, tokenizer, conv_template, device):
-        self.model = AutoModelForCausalLM.from_pretrained(
-            model_path,
-            torch_dtype=torch.float16,
-            trust_remote_code=True,
-            **model_kwargs
-        ).to(device).eval()
-        self.tokenizer = tokenizer
+    def __init__(self, generator, conv_template):
+        """
+        Worker for running against models
+        Args:
+            generator (garak.generators.Generator): Generator to run against
+            conv_template (fschat.Conversation): Conversation template
+        """
+        self.model = generator.model
+        self.tokenizer = generator.tokenizer
         self.conv_template = conv_template
         self.tasks = mp.JoinableQueue()
         self.results = mp.JoinableQueue()
@@ -1512,7 +1514,7 @@ class ModelWorker(object):
             args=(self.model, self.tasks, self.results)
         )
         self.process.start()
-        print(f"Started worker {self.process.pid} for model {self.model.name_or_path}")
+        logger.info(f"Started worker {self.process.pid} for model {self.model.name_or_path}")
         return self
 
     def stop(self):
@@ -1527,7 +1529,7 @@ class ModelWorker(object):
         return self
 
 
-def get_workers(params, eval=False):
+def get_workers(params, evaluate=False):
     tokenizers = []
     for i in range(len(params.tokenizer_paths)):
         tokenizer = AutoTokenizer.from_pretrained(
@@ -1550,7 +1552,7 @@ def get_workers(params, eval=False):
             tokenizer.pad_token = tokenizer.eos_token
         tokenizers.append(tokenizer)
 
-    print(f"Loaded {len(tokenizers)} tokenizers")
+    logger.debug(f"Loaded {len(tokenizers)} tokenizers")
 
     raw_conv_templates = [
         get_conversation_template(template)
@@ -1565,7 +1567,7 @@ def get_workers(params, eval=False):
             conv.sep2 = conv.sep2.strip()
         conv_templates.append(conv)
 
-    print(f"Loaded {len(conv_templates)} conversation templates")
+    logger.debug(f"Loaded {len(conv_templates)} conversation templates")
     workers = [
         ModelWorker(
             params.model_paths[i],
@@ -1576,50 +1578,72 @@ def get_workers(params, eval=False):
         )
         for i in range(len(params.model_paths))
     ]
-    if not eval:
+    if not evaluate:
         for worker in workers:
             worker.start()
 
     num_train_models = getattr(params, 'num_train_models', len(workers))
-    print('Loaded {} train models'.format(num_train_models))
-    print('Loaded {} test models'.format(len(workers) - num_train_models))
+    logger.debug('Loaded {} train models'.format(num_train_models))
+    logger.debug('Loaded {} test models'.format(len(workers) - num_train_models))
 
     return workers[:num_train_models], workers[num_train_models:]
 
 
-def get_goals_and_targets(params):
-    train_goals = getattr(params, 'goals', [])
-    train_targets = getattr(params, 'targets', [])
-    test_goals = getattr(params, 'test_goals', [])
-    test_targets = getattr(params, 'test_targets', [])
-    offset = getattr(params, 'data_offset', 0)
+def get_goals_and_targets(goals: list[str], targets: list[str], test_goals: list[str], test_targets: list[str],
+                          offset: int, **kwargs):
+    """
+    Get goals and targets for GCG attack.
 
-    if params.train_data:
-        train_data = pd.read_csv(params.train_data)
-        train_targets = train_data['target'].tolist()[offset:offset + params.n_train_data]
+    Args:
+        goals (list[str]): List of training goal strings
+        targets (list: [str]): List of training target strings
+        test_goals (list[str]): List of test goal strings
+        test_targets (list[str]): List of test target strings
+        offset (int): Offset to read data from
+    Optional Kwargs:
+        train_data (str): Path to CSV of training data
+        n_train_data(int): Number of training examples to use
+        test_data (str): Path to CSV of test data
+        n_test_data (int): Number of test examples to use (Will use train_data if test_data is not specified.)
+
+    Returns:
+        Tuple of goals, targets, test_goals, test_targets
+    """
+
+    if "train_data" in kwargs:
+        train_data = pd.read_csv(kwargs["train_data"])
+        targets = train_data['target'].tolist()[offset:offset + kwargs["n_train_data"]]
         if 'goal' in train_data.columns:
-            train_goals = train_data['goal'].tolist()[offset:offset + params.n_train_data]
+            goals = train_data['goal'].tolist()[offset:offset + kwargs["n_train_data"]]
         else:
-            train_goals = [""] * len(train_targets)
-        if params.test_data and params.n_test_data > 0:
-            test_data = pd.read_csv(params.test_data)
-            test_targets = test_data['target'].tolist()[offset:offset + params.n_test_data]
+            goals = [""] * len(targets)
+        if "test_data" in kwargs:
+            test_data = pd.read_csv(kwargs["test_data"])
+            if "n_test_data" in kwargs:
+                n_test_data = kwargs["n_test_data"]
+            else:
+                n_test_data = len(test_data)
+            test_targets = test_data['target'].tolist()[offset:offset + n_test_data]
             if 'goal' in test_data.columns:
-                test_goals = test_data['goal'].tolist()[offset:offset + params.n_test_data]
+                test_goals = test_data['goal'].tolist()[offset:offset + n_test_data]
             else:
                 test_goals = [""] * len(test_targets)
-        elif params.n_test_data > 0:
+        elif "n_test_data" in kwargs:
             test_targets = train_data['target'].tolist()[
-                           offset + params.n_train_data:offset + params.n_train_data + params.n_test_data]
+                           offset + kwargs["n_train_data"]:offset + kwargs["n_train_data"] + kwargs["n_test_data"]]
             if 'goal' in train_data.columns:
+                if "n_train_data" in kwargs:
+                    n_train_data = kwargs["n_train_data"]
+                else:
+                    n_train_data = 0
                 test_goals = train_data['goal'].tolist()[
-                             offset + params.n_train_data:offset + params.n_train_data + params.n_test_data]
+                             offset + n_train_data:offset + n_train_data + kwargs["n_test_data"]]
             else:
                 test_goals = [""] * len(test_targets)
 
-    assert len(train_goals) == len(train_targets)
+    assert len(goals) == len(targets)
     assert len(test_goals) == len(test_targets)
-    print('Loaded {} train goals'.format(len(train_goals)))
-    print('Loaded {} test goals'.format(len(test_goals)))
+    logger.debug('Loaded {} train goals'.format(len(goals)))
+    logger.debug('Loaded {} test goals'.format(len(test_goals)))
 
-    return train_goals, train_targets, test_goals, test_targets
+    return goals, targets, test_goals, test_targets
