@@ -9,6 +9,7 @@ Generic Module for REST API connections
 """
 
 import json
+import os
 import requests
 from typing import List
 
@@ -24,12 +25,12 @@ class RestGenerator(Generator):
 
     Expects the following options from _config.generator_options:
     * headers - dict
-    * req_template - a string where $KEY is replaced by env var REST_API_TOKEN
+    * req_template - a string where $KEY is replaced by env var REST_API_KEY
                      and $INPUT is replaced by the prompt
     * response - dict {response_json: True, response_json_field: "text"}
     """
 
-    generator_family_name = "Rest"
+    generator_family_name = "REST"
 
     def __init__(self, uri, generations=10):
         self.name = uri
@@ -37,7 +38,7 @@ class RestGenerator(Generator):
         self.seed = garak._config.seed
         self.headers = {}
         self.method = "POST"
-        self.req_template = ""
+        self.req_template = "$INPUT"
         self.support_multi_generation = False
         self.response_json = False
         self.response_json_field = "text"
@@ -46,8 +47,8 @@ class RestGenerator(Generator):
 
         if "generator_options" in dir(garak._config):
             for field in (
-                "response_json",
                 "headers",
+                "response_json",
                 "req_template",
                 "method",
                 "response_timeout",
@@ -64,13 +65,24 @@ class RestGenerator(Generator):
                     "response_json_field"
                 ]
 
+        self.rest_api_key = os.getenv("REST_API_KEY", default="")
+
         super().__init__(uri, generations=generations)
+
+    def _populate_template(self, text: str, input: str) -> str:
+        return text.replace("$KEY", self.rest_api_key).replace("$INPUT", input)
 
     @backoff.on_exception(backoff.fibo, IOError, max_value=70)
     def _call_api(self, prompt):
+        request_data = self._populate_template(self.req_template, prompt)
+
+        request_headers = dict(self.headers)
+        for k, v in self.headers.items():
+            request_headers[k] = self._populate_template(v, prompt)
+
         resp = requests.post(
             self.name,
-            data=self.req_template,
+            data=request_data,
             headers=self.headers,
             timeout=self.request_timeout,
         )
