@@ -142,7 +142,7 @@ class RestGenerator(Generator):
             for i in generation_iterator:
                 result = self._call_api(prompt)
                 if result is not None:
-                    outputs.append()
+                    outputs.append(result)
         return outputs
 
 
