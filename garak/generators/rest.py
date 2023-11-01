@@ -9,6 +9,7 @@ Generic Module for REST API connections
 """
 
 import json
+import logging
 import os
 import requests
 from typing import List
@@ -33,8 +34,8 @@ class RestGenerator(Generator):
     generator_family_name = "REST"
 
     def __init__(self, uri, generations=10):
+        self.uri = uri
         self.name = uri
-        self.fullname = f"REST {self.name}"
         self.seed = garak._config.seed
         self.headers = {}
         self.method = "POST"
@@ -44,6 +45,7 @@ class RestGenerator(Generator):
         self.response_json_field = "text"
         self.request_timeout = 10  # seconds
         self.ratelimit_codes = [429]
+        self.escape_function = self._json_escape
 
         if "generator_options" in dir(garak._config):
             for field in (
@@ -57,6 +59,11 @@ class RestGenerator(Generator):
                 if field in garak._config.generator_options:
                     setattr(self, field, garak._config.generator_options[field])
 
+            if "req_template_json_object" in garak._config.generator_options:
+                self.req_template = json.dumps(
+                    garak._config.generator_options["req_template_json_object"]
+                )
+
             if (
                 self.response_json
                 and "response_json_field" in garak._config.generator_options
@@ -65,12 +72,28 @@ class RestGenerator(Generator):
                     "response_json_field"
                 ]
 
-        self.rest_api_key = os.getenv("REST_API_KEY", default="")
+            if "name" in garak._config.generator_options:
+                self.name = garak._config.generator_options["name"]
+
+        self.fullname = f"REST {self.name}"
+
+        self.rest_api_key = os.getenv("REST_API_KEY", default=None)
 
         super().__init__(uri, generations=generations)
 
+    def _json_escape(self, text: str) -> str:
+        return json.dumps(text)[1:-1]
+
     def _populate_template(self, text: str, input: str) -> str:
-        return text.replace("$KEY", self.rest_api_key).replace("$INPUT", input)
+        if "$KEY" in text:
+            if self.rest_api_key is None:
+                raise ValueError(
+                    "REST configuation specified API key but REST_API_KEY env var isn't set"
+                )
+            text = text.replace("$KEY", self.rest_api_key)
+        return text.replace("$INPUT", self.escape_function(input))
+
+    #        return text.replace("$INPUT", input)
 
     @backoff.on_exception(backoff.fibo, IOError, max_value=70)
     def _call_api(self, prompt):
@@ -83,29 +106,33 @@ class RestGenerator(Generator):
         resp = requests.post(
             self.name,
             data=request_data,
-            headers=self.headers,
+            headers=request_headers,
             timeout=self.request_timeout,
         )
         if resp.status_code in self.ratelimit_codes:
             raise IOError(f"Rate limited: {resp.status_code} - {resp.reason}")
         elif str(resp.status_code)[0] == "3":
             raise ConnectionError(
-                f"URI redirection: {resp.status_code} - {resp.reason}"
+                f"REST URI redirection: {resp.status_code} - {resp.reason}"
             )
         elif str(resp.status_code)[0] == "4":
             raise ConnectionError(
-                f"URI client error: {resp.status_code} - {resp.reason}"
+                f"REST URI client error: {resp.status_code} - {resp.reason}"
             )
         elif str(resp.status_code)[0] == "5":
             raise ConnectionError(
-                f"URI server error: {resp.status_code} - {resp.reason}"
+                f"REST URI server error: {resp.status_code} - {resp.reason}"
             )
 
         if not self.response_json:
             return str(resp.content)
         else:
-            response_object = json.loads(resp.content)
-            return response_object[self.response_json_field]
+            try:
+                response_object = json.loads(resp.content)
+                return response_object[self.response_json_field]
+            except json.decoder.JSONDecodeError as e:
+                logging.warning("REST endpoint didn't return good JSON %s", str(e))
+                return None
 
     def generate(self, prompt) -> List[str]:
         outputs = []
@@ -113,7 +140,9 @@ class RestGenerator(Generator):
         generation_iterator.set_description("REST " + self.fullname[5:][-50:])
         if not self.support_multi_generation:
             for i in generation_iterator:
-                outputs.append(self._call_api(prompt))
+                result = self._call_api(prompt)
+                if result is not None:
+                    outputs.append()
         return outputs
 
 

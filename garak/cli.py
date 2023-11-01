@@ -184,6 +184,7 @@ def main(arguments=[]) -> None:
             _config.probe_options = json.loads(probe_options_json)
         except json.decoder.JSONDecodeError as e:
             logging.warning("Failed to parse JSON probe_options: %s", {e.args[0]})
+            raise e
 
     if _config.args.generator_option_file or _config.args.generator_options:
         if _config.args.generator_option_file:
@@ -195,6 +196,7 @@ def main(arguments=[]) -> None:
             _config.generator_options = json.loads(generator_options_json)
         except json.decoder.JSONDecodeError as e:
             logging.warning("Failed to parse JSON generator_options: %s", {e.args[0]})
+            raise e
 
     if _config.args.version:
         pass
