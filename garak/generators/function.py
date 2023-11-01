@@ -9,7 +9,6 @@ model name on the command line, or as the parameter to the constructor.
 import importlib
 from typing import List
 
-import garak._config
 from garak.generators.base import Generator
 
 

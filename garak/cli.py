@@ -110,15 +110,27 @@ def main(arguments=[]) -> None:
         default=0,
         help="add one or more times to increase verbosity of output during runtime",
     )
-    parser.add_argument(
-        "--generator_option",
+    generator_args = parser.add_mutually_exclusive_group()
+    generator_args.add_argument(
+        "--generator_option_file",
         "-G",
+        type=str,
+        help="path to JSON file containing options to pass to generator",
+    )
+    generator_args.add_argument(
+        "--generator_options",
         type=str,
         help="options to pass to the generator",
     )
-    parser.add_argument(
-        "--probe_options",
+    probe_args = parser.add_mutually_exclusive_group()
+    probe_args.add_argument(
+        "--probe_option_file",
         "-P",
+        type=str,
+        help="path to JSON file containing options to pass to probes",
+    )
+    probe_args.add_argument(
+        "--probe_options",
         type=str,
         help="options to pass to probes, formatted as a JSON dict",
     )
@@ -155,20 +167,36 @@ def main(arguments=[]) -> None:
 
     import importlib
     import json
-    import uuid
-    from colorama import Fore, Style
 
     import garak.evaluators  # why is this line so high up? maybe eval/plugin too tightly coupled?
-    from garak._plugins import enumerate_plugins, load_plugin
+    from garak._plugins import enumerate_plugins
 
     if not _config.args.version and not _config.args.report:
         command.start_run()
 
-    if _config.args.probe_options:
+    if _config.args.probe_option_file or _config.args.probe_options:
+        if _config.args.probe_option_file:
+            with open(_config.args.probe_option_file, encoding="utf-8") as f:
+                probe_options_json = f.read().strip()
+        elif _config.args.probe_options:
+            probe_options_json = _config.args.probe_options
         try:
-            _config.probe_options = json.loads(_config.args.probe_options)
-        except Exception as e:
-            logging.warn("Failed to parse JSON probe_options:", e.args[0])
+            _config.probe_options = json.loads(probe_options_json)
+        except json.decoder.JSONDecodeError as e:
+            logging.warning("Failed to parse JSON probe_options: %s", {e.args[0]})
+            raise e
+
+    if _config.args.generator_option_file or _config.args.generator_options:
+        if _config.args.generator_option_file:
+            with open(_config.args.generator_option_file, encoding="utf-8") as f:
+                generator_options_json = f.read().strip()
+        elif _config.args.generator_options:
+            generator_options_json = _config.args.generator_options
+        try:
+            _config.generator_options = json.loads(generator_options_json)
+        except json.decoder.JSONDecodeError as e:
+            logging.warning("Failed to parse JSON generator_options: %s", {e.args[0]})
+            raise e
 
     if _config.args.version:
         pass
