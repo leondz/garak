@@ -40,12 +40,13 @@ class RestGenerator(Generator):
         self.headers = {}
         self.method = "POST"
         self.req_template = "$INPUT"
-        self.support_multi_generation = False
+        self.support_multi_generation = False  # not implemented in first version
         self.response_json = False
         self.response_json_field = "text"
         self.request_timeout = 10  # seconds
         self.ratelimit_codes = [429]
         self.escape_function = self._json_escape
+        self.retry_5xx = True
 
         if "generator_options" in dir(garak._config):
             for field in (
@@ -82,21 +83,40 @@ class RestGenerator(Generator):
         super().__init__(uri, generations=generations)
 
     def _json_escape(self, text: str) -> str:
+        """JSON escape a string"""
+        # trim first & last "
         return json.dumps(text)[1:-1]
 
-    def _populate_template(self, text: str, input: str) -> str:
+    def _populate_template(
+        self, text: str, input: str, json_escape_key: bool = False
+    ) -> str:
+        """Replace template placeholders with values
+
+        Interesting values are:
+        * $KEY - the API key set as an object variable
+        * $INPUT - the prompt text
+        """
         if "$KEY" in text:
             if self.rest_api_key is None:
                 raise ValueError(
                     "REST configuation specified API key but REST_API_KEY env var isn't set"
                 )
-            text = text.replace("$KEY", self.rest_api_key)
+            if json_escape_key:
+                text = text.replace("$KEY", self.escape_function(self.rest_api_key))
+            else:
+                text = text.replace("$KEY", self.rest_api_key)
         return text.replace("$INPUT", self.escape_function(input))
 
     #        return text.replace("$INPUT", input)
 
     @backoff.on_exception(backoff.fibo, IOError, max_value=70)
     def _call_api(self, prompt):
+        """Individual call to get a rest from the REST API
+
+        :param prompt: the input to be plcaed into the request template and sent to the endpoint
+        :type prompt: str
+        """
+
         request_data = self._populate_template(self.req_template, prompt)
 
         request_headers = dict(self.headers)
@@ -120,9 +140,11 @@ class RestGenerator(Generator):
                 f"REST URI client error: {resp.status_code} - {resp.reason}"
             )
         elif str(resp.status_code)[0] == "5":
-            raise ConnectionError(
-                f"REST URI server error: {resp.status_code} - {resp.reason}"
-            )
+            error_msg = f"REST URI server error: {resp.status_code} - {resp.reason}"
+            if self.retry_5xx:
+                raise IOError(error_msg)
+            else:
+                raise ConnectionError(error_msg)
 
         if not self.response_json:
             return str(resp.content)
@@ -131,7 +153,11 @@ class RestGenerator(Generator):
                 response_object = json.loads(resp.content)
                 return response_object[self.response_json_field]
             except json.decoder.JSONDecodeError as e:
-                logging.warning("REST endpoint didn't return good JSON %s", str(e))
+                logging.warning(
+                    "REST endpoint didn't return good JSON %s: got |%s|",
+                    str(e),
+                    resp.content,
+                )
                 return None
 
     def generate(self, prompt) -> List[str]:
@@ -143,6 +169,10 @@ class RestGenerator(Generator):
                 result = self._call_api(prompt)
                 if result is not None:
                     outputs.append(result)
+        else:
+            raise NotImplementedError(
+                "Multiple generation per REST API call isn't implemented yet"
+            )
         return outputs
 
 
