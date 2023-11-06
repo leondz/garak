@@ -132,7 +132,7 @@ class RestGenerator(Generator):
         if resp.status_code in self.ratelimit_codes:
             raise IOError(f"Rate limited: {resp.status_code} - {resp.reason}")
         elif str(resp.status_code)[0] == "3":
-            raise ConnectionError(
+            raise NotImplementedError(
                 f"REST URI redirection: {resp.status_code} - {resp.reason}"
             )
         elif str(resp.status_code)[0] == "4":
