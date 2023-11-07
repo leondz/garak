@@ -14,4 +14,5 @@ rapidfuzz
 jinja2
 avidtools==0.1.1.2
 stdlibs
-langchain
+langchain>=0.0.300
+nemollm>=0.3.0
