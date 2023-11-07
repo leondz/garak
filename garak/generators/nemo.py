@@ -20,7 +20,7 @@ class NeMoGenerator(Generator):
     generator_family_name = "NeMo"
     temperature = 1
     top_p = 1.0
-    repetition_penalty = 1
+    repetition_penalty = 1.1  # between 1 and 2 incl., or none
 
     def __init__(self, name=None, generations=10):
         self.name = name
@@ -59,6 +59,11 @@ class NeMoGenerator(Generator):
         max_value=70,
     )
     def _call_api(self, prompt):
+        # avoid:
+        #    doesn't match schema #/components/schemas/CompletionRequestBody: Error at "/prompt": minimum string length is 1
+        if prompt == "":
+            return ""
+
         response = self.nemo.generate(
             model=self.name,
             prompt=prompt,
@@ -67,7 +72,7 @@ class NeMoGenerator(Generator):
             random_seed=self.seed,
             top_p=1.0,
             top_k=2,
-            stop=["\n"],
+            # stop=["\n"],
             repetition_penalty=self.repetition_penalty,
             beam_search_diversity_rate=0.0,
             beam_width=1,
