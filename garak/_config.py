@@ -12,4 +12,5 @@ seed = None
 run_id = None
 generator_model = None
 generator_name = None
-probe_options = None
+probe_options = {}
+generator_options = {}
