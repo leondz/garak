@@ -65,8 +65,15 @@ class NeMoGenerator(Generator):
             tokens_to_generate=self.max_tokens,
             temperature=self.temperature,
             random_seed=self.seed,
+            top_p=1.0,
+            top_k=2,
+            stop=["\n"],
+            repetition_penalty=self.repetition_penalty,
+            beam_search_diversity_rate=0.0,
+            beam_width=1,
+            length_penalty=1.0,
         )
-        return response
+        return response["text"]
 
     def generate(self, prompt):
         outputs = []
