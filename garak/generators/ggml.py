@@ -21,7 +21,7 @@ import garak._config
 from garak.generators.base import Generator
 
 
-class LLaMaGgmlGenerator(Generator):
+class GgmlGenerator(Generator):
     repeat_penalty = 1.1
     presence_penalty = 0.0
     frequency_penalty = 0.0
@@ -79,4 +79,4 @@ class LLaMaGgmlGenerator(Generator):
         return outputs
 
 
-default_class = "LLaMaGgmlGenerator"
+default_class = "GgmlGenerator"
