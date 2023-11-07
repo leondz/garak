@@ -36,7 +36,8 @@ dependencies = [
   "rapidfuzz",
   "jinja2",
   "avidtools==0.1.1.2",
-  "stdlibs"
+  "stdlibs",
+  "langchain"
 ]
 
 [project.urls]
