@@ -171,33 +171,6 @@ def main(arguments=[]) -> None:
     import garak.evaluators  # why is this line so high up? maybe eval/plugin too tightly coupled?
     from garak._plugins import enumerate_plugins
 
-    if not _config.args.version and not _config.args.report:
-        command.start_run()
-
-    if _config.args.probe_option_file or _config.args.probe_options:
-        if _config.args.probe_option_file:
-            with open(_config.args.probe_option_file, encoding="utf-8") as f:
-                probe_options_json = f.read().strip()
-        elif _config.args.probe_options:
-            probe_options_json = _config.args.probe_options
-        try:
-            _config.probe_options = json.loads(probe_options_json)
-        except json.decoder.JSONDecodeError as e:
-            logging.warning("Failed to parse JSON probe_options: %s", {e.args[0]})
-            raise e
-
-    if _config.args.generator_option_file or _config.args.generator_options:
-        if _config.args.generator_option_file:
-            with open(_config.args.generator_option_file, encoding="utf-8") as f:
-                generator_options_json = f.read().strip()
-        elif _config.args.generator_options:
-            generator_options_json = _config.args.generator_options
-        try:
-            _config.generator_options = json.loads(generator_options_json)
-        except json.decoder.JSONDecodeError as e:
-            logging.warning("Failed to parse JSON generator_options: %s", {e.args[0]})
-            raise e
-
     if _config.args.version:
         pass
 
@@ -216,7 +189,44 @@ def main(arguments=[]) -> None:
     elif _config.args.list_generators:
         command.print_generators()
 
-    elif _config.args.model_type:
+    elif _config.args.report:
+        from garak.report import Report
+
+        report_location = _config.args.report
+        print(f"📜 Converting garak reports {report_location}")
+        report = Report(_config.args.report).load().get_evaluations()
+        report.export()
+        print(f"📜 AVID reports generated at {report.write_location}")
+
+    elif _config.args.model_type:  # model is specified, we're doing something
+        command.start_run()
+
+        if _config.args.probe_option_file or _config.args.probe_options:
+            if _config.args.probe_option_file:
+                with open(_config.args.probe_option_file, encoding="utf-8") as f:
+                    probe_options_json = f.read().strip()
+            elif _config.args.probe_options:
+                probe_options_json = _config.args.probe_options
+            try:
+                _config.probe_options = json.loads(probe_options_json)
+            except json.decoder.JSONDecodeError as e:
+                logging.warning("Failed to parse JSON probe_options: %s", {e.args[0]})
+                raise e
+
+        if _config.args.generator_option_file or _config.args.generator_options:
+            if _config.args.generator_option_file:
+                with open(_config.args.generator_option_file, encoding="utf-8") as f:
+                    generator_options_json = f.read().strip()
+            elif _config.args.generator_options:
+                generator_options_json = _config.args.generator_options
+            try:
+                _config.generator_options = json.loads(generator_options_json)
+            except json.decoder.JSONDecodeError as e:
+                logging.warning(
+                    "Failed to parse JSON generator_options: %s", {e.args[0]}
+                )
+                raise e
+
         if (
             _config.args.model_type in ("openai", "replicate", "ggml", "huggingface")
             and not _config.args.model_name
@@ -233,7 +243,7 @@ def main(arguments=[]) -> None:
             if generator_mod.default_class:
                 generator_class_name = generator_mod.default_class
             else:
-                raise Exception(
+                raise ValueError(
                     "module {generator_module_name} has no default class; pass module.ClassName to --model_type"
                 )
         else:
@@ -300,15 +310,6 @@ def main(arguments=[]) -> None:
             command.pxd_run(generator, probe_names, detector_names, evaluator, buffs)
 
         command.end_run()
-
-    elif _config.args.report:
-        from garak.report import Report
-
-        report_location = _config.args.report
-        print(f"📜 Converting garak reports {report_location}")
-        report = Report(_config.args.report).load().get_evaluations()
-        report.export()
-        print(f"📜 AVID reports generated at {report.write_location}")
 
     else:
         print("nothing to do 🤷  try --help")

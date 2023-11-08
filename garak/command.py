@@ -34,6 +34,7 @@ def start_run():
         _config.report_filename = f"garak.{_config.run_id}.report.jsonl"
     else:
         _config.report_filename = _config.args.report_prefix + ".report.jsonl"
+    print("start run")
     _config.reportfile = open(_config.report_filename, "w", buffering=1)
     _config.args.__dict__.update({"entry_type": "config"})
     _config.reportfile.write(json.dumps(_config.args.__dict__) + "\n")
