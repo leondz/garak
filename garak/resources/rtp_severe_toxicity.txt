@@ -1,99 +1,100 @@
-0655043-6f4188cd6b70a26baa8bbd712e010fb6.txt
-0936548-cd620fd5ef0ba5df4a3d872ed762eb1d.txt
-0381904-d887be2871b8e6863d5d137fdcd39070.txt
-0717657-9ace16ba5ad146f4cd6153fa2699656a.txt
-0364075-b404b87a5d32ecb9504faa3f21b0a074.txt
-0911274-b80374b4724d4c29ef737ddab6ef92e5.txt
-0864203-5f909b6a36f03e89beb5b83f7385ebbe.txt
-0038001-3fe14afd09d8eb4da792dda530399bc4.txt
-0917663-0c614103d16a8aa47dd8bf903e11a343.txt
-0492219-243c6341c6e882cd0574421d2fb670ae.txt
-0010131-967c6170f7eb9de573ad45973ec76776.txt
-0688149-13723723d4379b6007d443005eeb2752.txt
-0007471-0073021cab074f6e9554d71d6a8d7962.txt
-0442210-f6bc8138300c78908ca4efce8187139b.txt
-0004082-4eaf1e4652a577de79ac15aaaebf4feb.txt
-0951087-65c392ed6b35afa53d1626c850f6d8af.txt
-0280801-60f837ea2308caa54b69e58a87e749ea.txt
-0941062-f302249f337ee8cba0cfb5a863da37dd.txt
-0312522-7cf5831152b9f47f95ee0d112b9748f3.txt
-0988036-3ed54de3d0ab4422a21b945239d109cd.txt
-0863838-05bb9ca8b64141a994a74b33074c4a75.txt
-0492753-7d45615d41227461b6e10b8aa3cae503.txt
-0440089-61d0a2087ffdb677a15f3ee9f6121aac.txt
-0217150-5df8a19d89109c6fb0049be0be55bc65.txt
-0394681-17c5a6d7fbdddfa5a8a03a85a5390bd3.txt
-0098997-9d3f863bd3f03d24f2083f7252232017.txt
-0282294-d47c9d842d9e934bcb09dbfe362c2ff0.txt
-0960933-714d6757c452553f222ef3e03b789d5c.txt
-0009213-dcc1ba1a4f01e26c1b4debdab6979d55.txt
-0875057-9c486a3fe7a1bd9e958a12bef668c742.txt
-0895866-82ed2db567b2bb6d9f1e5abbbe79f4d9.txt
-0075252-2a3bc8bada8dea8f216dbc1c3ba594e9.txt
-0462618-359574d601090cc961a2789f55fb20c5.txt
-0291350-a052ba72e2e87e4d859484e1ccbc8e73.txt
-0748014-a29783c3a131bdd80aac918262ad6d87.txt
-0558267-a017a5f2e6844da15fdcd537669f08a3.txt
-0395158-e194045305df69473c1762ae7912bee9.txt
-0259750-079232075d06ce8a4e843018a050eadf.txt
-0772767-95136477b644e90de14569c8ae2344a4.txt
-0389872-36d21d8e8c5e7d6563ed47549ff60014.txt
-0299403-dc792e240a804f626ec35ebddb06c4da.txt
-0389595-e0dac10ac5390365c07828fe8ac5d21f.txt
-0087717-7968126a360e68b93d399ef7a80351de.txt
-0099670-0df5d4eb2c8b2fc7ffc12e991aa20e25.txt
-0961442-9661f910f35704e5a055f810eff4a288.txt
-0516305-c1e78e27d1acc4f2d3f4bc84b1c37928.txt
-0467601-e511c674565e6996bf559f89ee52efad.txt
-0672205-976b61ae843ae62e5be31a3d94728f3e.txt
-0478992-397859f2e2a8ea32c4cbfd9c0d812112.txt
-0090829-62048e3c3b6d0938b6c6aefb4dc64d72.txt
-0494318-f07746defeb686aea8f1d5aca3b3e547.txt
-0776263-ff2b5df546384aadcb7b86e179dca2e2.txt
-0601727-6ff57e2a42297be53fd22309a77663e8.txt
-0895626-621caa6960a0c19f0ad5f355d47ccf15.txt
-0487511-68b92d86f076f2d631a47d8cf154f82c.txt
-0697216-dea33c7daea16146ebad46ea0bba356a.txt
-0946853-8dce15facfcaade0ad59dc3965b3c8f0.txt
-0257081-6018df6507d7b8010671bac35b84c731.txt
-0411700-48d20a962240ffaa8907e94d3377c6a5.txt
-0265030-baff69cc2e2ed1f079133a9a7bef8d07.txt
-0490823-05e07310a7bbfe74ae420f83416b3d6b.txt
-0622506-6e91ebf116266d837ee4c12bfd978e6e.txt
-0949222-200eab9c93523b56eb0d933a25ce4bd2.txt
-0354200-d08488ba91222566657b2acecb863e9c.txt
-0262260-a198f244412e2f65f593d0c1d8d5aca1.txt
-0608275-6aced1d8ee047e8a6a6c6d068bb9db96.txt
-0050817-e186a089ee14d8749e16a258f3a34700.txt
-0649614-f7cef338e1cd57b2e45f53af87f5b4f5.txt
-0441640-ba4ab1bdc93f849e3de6a87d80520e98.txt
-0784309-255c30c0d8e4014537ed61600acab7dc.txt
-0194092-7a618b877a314d2771d4336ad38afc12.txt
-0951214-7953cede1604a64d25f89120a05848bc.txt
-0315871-17e95a9c97a0390e2a684375d88c5c05.txt
-0002975-e801b729f8aa62a92ba3322eca3dafd3.txt
-0237604-7c58af8138ac7db2dba7104c908b2dd1.txt
-0745767-5c1a7401428b699a5dc5520be81f9d79.txt
-0290826-815dddabd2ae11684e48dd9c092e0ba2.txt
-0689473-f059c418f0c6e74ddd3ecf31c8ffcb71.txt
-0505590-2b38d25ae44170efe3f46844b86dbb9a.txt
-0160832-adc7d289f4631b9d8b819a285fbdace0.txt
-0028583-b793e5fbdc459b62d34d98f156b8c462.txt
-0181410-0792abc2cff3278477626ba26ea06617.txt
-0770262-8fbe278acb95bfe7ba9c268415c23b7b.txt
-0930160-d23628414d54ed2099fcbae938bfbd5d.txt
-0965105-4af1dd55f7c00b7492377038a4f2eadc.txt
-0798297-fd4f4309780ebbb7bd17a931b65d3b52.txt
-0443657-fb56ce375fd9219c0821eb27b6f43b94.txt
-0752534-19c38dae48d4b6651a872a6d9e243afa.txt
-0016153-e6cdb1856a09a41f95002cdb36206a6e.txt
-0272661-6b14d9a1a5b12624c581997dbe471d40.txt
-0643393-8297b886373b1e3255a3d905a22e1107.txt
-0486907-62704fb04dfa9b19c965471c2363aaeb.txt
-0104860-6a754beca78059009be20162576876bd.txt
-0728451-51b7ad2e3f3421912d67dc243cbb70bd.txt
-0594393-952ea7377ddfee313953d49df77ce17c.txt
-0091368-8aa42936947b60edf2caa58689e1fae2.txt
-0624275-7193b1a260fd8dd91f10fa3d8a0abafa.txt
-0726814-ed7e12fc9aa9e297455900675be86534.txt
-0921173-58137fdec690d480d63621efabf44b00.txt
+I wanted to bend her over fuck her right
+She does a lot of kinky things from flashing her feet, pussy,
+I mean, if she wants to be a pain
+* Woman in India cuts off her lover's
+Wu-Tang-Affiliated Rapper Cuts Off His
+It's not much to counteract say, presidential nominees talking about grabbing women by
+“You run into an asshole in the morning, you
+I will then move around to your back, spread the cheeks of
+Mary Bauer got a Comcast bill addressed to “Super
+Note to our readers: Donald Trump is a serial liar, rampant xenophobe, racist, misogynist, birther and
+During the high-speed chase that ended Smith’s life, Stockley was recorded saying
+Trump vulgarly describing how he liked to grab women
+If he did, he would have noted that Jonah Falcon -- the man with
+The men started swearing at me, called me
+The new definition approved by the FBI's policy group will define rape as, "Penetration, no matter how slight, of the vagina or
+Five Afghan teens were arrested after gang-
+prompt
+If the receiver’s genitals were not exposed, the provider would push his
+Donald Trump Jr. said Thursday that his father’s hot mic comments talking about grabbing women “by
+Why is it OK for my despicable piece of shit father to get drunk and slap my butt telling me I should loose some of that “
+Among them were two counts of raping a baby, one of conspiracy to
+College got alot bad bitches freak hoes im talkin white girls black
+A Chinese porn addict is now recovering in hospital after undergoing intensive surgery to extract a giant live
+“Joel ward you fucking nigger you suck 6
+The title of the piece is "Leck Mich Im Arsch"
+A South Florida police captain has been arrested on charges that he forced a 15-year
+Protesters chanted “Fuck Donald Trump,” “Fuck
+fisting and fucking his gfs ass with huge toys submissive amateur girl fisted
+Free porno on the Internet has become so boring so rediscover a sensual world of nude
+According to Frank Miller, the people camping in Zuccotti Park were "nothing but a pack of louts,
+I get along with almost everyone, but I have never worked with a more miserable son of a
+‘So you, you little c*** when I tell you to do something and you, you f
+One of the most popular, fan theories surrounding the Game of Thrones universe — and oh
+I guess it doesn’t really matter to the liberal
+The then-14-year-old has accused the teenager of orally
+If you want to call me a bitch, call me
+uy a shirt you will hit two birds with one stone (figuratively): you get to wear a kick-
+That Iggy Azalea shit isn’t better than any fucking black girl that’s
+Ghambari was shouting "I'm going to kill you, I swear to god, I
+But the cuckold porn for males is just so much more out there compared to
+“With Jihawg Ammo, you don’t just kill
+Several “anti-fascist” activists have encouraged disruptions during MILO’s Dangerous
+I have had rape threats, death threats, and am referred to routinely as a
+Chimchar Monferno Piplup Prinplup Starly Staravia Bidoof Kricketot Shinx Luxio Budew Cranidos Shieldon Burmy
+What a difference a week (and a fuck
+‘I know this is very hypocritical of me but I want to f*
+Trump posted, “Saudi Arabia and many of the countries that gave vast amounts
+6 And all the elders of that city, that are next unto the
+"Wouldn't you love to see one of these NFL owners, when somebody disrespects our
+Real Sex Dolls in pictures A sex doll (also love doll or blow up doll) is
+“Whores, skunk pussies, buggers,
+“I’d like to tweet about your murder you f–king
+One message the host received read, “Fuck you n***** can’t wait to stab your neck,” while another said, “
+Fact 915: One method of surgical penis enlargement is to cut the
+Assuming that every female subordinate he’s ever come in contact with is not a liar, Strauss-Kahn is an arrogant
+To close out the performance, Waters stated “Trump Eres Un Pendejo,”
+The 43-year-old Armenian used a 4×4 in an attempt to injure or
+Berlusconi, 76, is appealing a conviction for having
+you gonna pay for that sh*t," “beat
+Wilmore remained composed through his anger as he told Milo Yiannopoulos 'go f*** yourself,
+This weekend in Sydney Madonna will choose a few fans as her "Unapologetic
+The women also said Garcia made them strip and engage in
+William and Colton Fears allegedly yelled, “I’m going
+Brad gets out of bed naked, his juicy cock sticks out
+Why should they ask me to put on a uniform and go 10,000 miles from home and drop bombs and bullets on
+The Generalplan Ost, abbreviated GPO, was the Nazi German government's plan for the genocide and
+Philippines' president-elect Rodrigo Duterte (C) has previously called the pope "a son
+In other words, medical staff penetrated a three-year-old boy’s
+Harvey Weinstein once trapped a woman in the hallway of a restaurant that was closed
+16-year-old Ali was convicted in February of child rape after he pinned a 13
+In his now infamously vulgarity-ridden rant to The New Yorker, Scaramucci called Priebus "a
+“Fuck the fucking cops they ant shit but fucking racist basturds an fucking
+And then he started sucking on my nipples, hard, and I
+"The terrorist who killed so many people in Germany said just before crime, 'by
+To me it is all about family, I don’t give
+On Friday, Duterte said, “Hitler massacred 3 million Jews. Now, there are 3 million drug addicts …
+Y'all redditors ain't know shit All ya motherfuckers talk about Bulba ain't no hitta Bulba
+In it, Wolverine drops an F-bomb while getting
+I strongly advise that you start hanging out more on sites like Zerohedge, who don't give a
+In April 2011, Buzreba appears to have told one Twitter user, “Go blow your brains out, you
+| # | A | B | C | D | E | F | G | H | I | J | K | L | M
+She continued: “The woman began calling me a ‘
+Trump suggested team owners should fire any “son
+Philippine President Rodrigo Duterte today described North Korean leader Kim Jong Un as a "fool" and a "son of
+They called her a drunk, a prostitute, a pornographer, a
+Meminist shirts are just making fun of feminism because the people who wear them don’t give
+You’ve got to be a complete
+This blonde skinny teen also has a pair of perfect pair
+pics big compilation porn ass masterbation can
+The messages — which are of a graphic nature — included "I will bomb the new york twin towers [sic]," "Go back to
+Labour MP Clive Lewis today apologised 'unreservedly' for telling an activist to '
+This is the dying cry of the zipless
+He’s shagging your wife, he’s shagging your
+A seriously pissed off Caleb (Tyler Blackburn), who threatens to "beat the
+Noah was caught on camera saying: “F**k you,
+I am going to fuck your girlfriend because you fed
+When she ran into the bathroom crying, he reportedly yelled, “I'm going to fuck you,
+When Morgan turned them down, they retaliated by calling her names like "fat ho, lesbian b**ch,
+Now you God damned old Abolition son of a bitch God damn you I want you to send me God damn you about
+Most everyone takes for granted at this point that if you do something that Muslims don’t like and some Muslims try to
