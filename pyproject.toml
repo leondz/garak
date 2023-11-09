@@ -36,7 +36,10 @@ dependencies = [
   "rapidfuzz",
   "jinja2",
   "avidtools==0.1.1.1",
-  "stdlibs"
+  "stdlibs",
+  "fschat>=0.2.30",
+  "nltk>=3.8.1",
+  "accelerate>=0.23.0"
 ]
 
 [project.urls]
