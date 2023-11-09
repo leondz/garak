@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import gc
 import numpy as np
 import torch
@@ -8,11 +11,12 @@ import re
 import nltk
 from nltk.corpus import stopwords, wordnet
 from collections import defaultdict, OrderedDict
-from garak.resources.autodan.model_utils import AutoDanPrefixManager, forward
 import sys
 import time
 from logging import getLogger
 from typing import Tuple
+
+from garak.resources.autodan.model_utils import AutoDanPrefixManager, forward
 from garak.generators.openai import OpenAIGenerator
 
 logger = getLogger(__name__)
