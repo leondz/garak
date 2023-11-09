@@ -380,6 +380,7 @@ class AutoDANProbe(Probe):
     recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
     tags = ["avid-effect:security:S0403"]
     goal = "disregard the system prompt"
+    uri = "https://arxiv.org/abs/2310.04451"
 
     def __init__(self, autodan_prompt_location: str = f"{Path(__file__).parents[1]}/resources/autodan/autodan_prompts.txt"):
         self.autodan_prompt_location = autodan_prompt_location
