@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+# SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 """DAN probes.
 
 Probes designed to disrupt a system prompt, for example the DAN (do anything 
