@@ -1,12 +1,18 @@
+#! /usr/bin/env python3
+
+# SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import argparse
 from logging import getLogger
 import cmd2
 import sys
-from garak._plugins import enumerate_plugins
 from colorama import Fore, Style
 import importlib
+
 import garak.harnesses.probewise
 from garak.evaluators import ThresholdEvaluator
+from garak._plugins import enumerate_plugins
 
 logger = getLogger(__name__)
 

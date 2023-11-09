@@ -287,7 +287,7 @@ def main(arguments=[]) -> None:
                 prompt = _config.probe_options["prompt"]
                 target = _config.probe_options["target"]
             except Exception as e:
-                print("AutoDAN generation requires --prompt_options with a .json containing a `prompt` and `target` "
+                print("AutoDAN generation requires --probe_options with a .json containing a `prompt` and `target` "
                       "string")
             autodan_generate(generator=generator, prompt=prompt, target=target)
 
