@@ -176,7 +176,7 @@ class GCGMultiPromptAttack(MultiPromptAttack):
                             control_weight * self.prompts[k][i].control_loss(logit, id).mean(dim=-1).to(main_device)
                             for k, (logit, id) in enumerate(zip(logits, ids))
                         ])
-                    del logits, ids;
+                    del logits, ids
                     gc.collect()
 
                     if verbose:
@@ -188,7 +188,7 @@ class GCGMultiPromptAttack(MultiPromptAttack):
             batch_idx = min_idx % batch_size
             next_control, cand_loss = control_cands[model_idx][batch_idx], loss[min_idx]
 
-        del control_cands, loss;
+        del control_cands, loss
         gc.collect()
 
         print('Current length:', len(self.workers[0].tokenizer(next_control).input_ids[1:]))

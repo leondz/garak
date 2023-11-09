@@ -1475,7 +1475,7 @@ class ModelWorker(object):
         Worker for running against models
         Args:
             generator (garak.generators.Generator): Generator to run against
-            conv_template (fschat.Conversation): Conversation template
+            conv_template (fastchat.Conversation): Conversation template
         """
         self.model = generator.model
         self.tokenizer = generator.tokenizer
@@ -1529,35 +1529,28 @@ class ModelWorker(object):
         return self
 
 
-def get_workers(params, evaluate=False):
-    tokenizers = []
-    for i in range(len(params.tokenizer_paths)):
-        tokenizer = AutoTokenizer.from_pretrained(
-            params.tokenizer_paths[i],
-            trust_remote_code=True,
-            **params.tokenizer_kwargs[i]
-        )
-        if 'oasst-sft-6-llama-30b' in params.tokenizer_paths[i]:
-            tokenizer.bos_token_id = 1
-            tokenizer.unk_token_id = 0
-        if 'guanaco' in params.tokenizer_paths[i]:
-            tokenizer.eos_token_id = 2
-            tokenizer.unk_token_id = 0
-        if 'llama-2' in params.tokenizer_paths[i]:
-            tokenizer.pad_token = tokenizer.unk_token
-            tokenizer.padding_side = 'left'
-        if 'falcon' in params.tokenizer_paths[i]:
-            tokenizer.padding_side = 'left'
-        if not tokenizer.pad_token:
-            tokenizer.pad_token = tokenizer.eos_token
-        tokenizers.append(tokenizer)
+def get_workers(model_names: list, n_train_models=1, evaluate=False):
+    """
+    Get workers for GCG generation and testing
 
-    logger.debug(f"Loaded {len(tokenizers)} tokenizers")
+    Parameters
+    ----------
+    model_names : List of model names to load
+    n_train_models : Number of models to use for training
+    evaluate : Boolean -- is the worker being used for eval. Will prevent starting the workers.
 
-    raw_conv_templates = [
-        get_conversation_template(template)
-        for template in params.conversation_templates
-    ]
+    Returns
+    -------
+    tuple of train workers and test workers.
+
+    """
+    generators = list()
+    for model_name in model_names:
+        generators.append(Model(model_name))
+
+    print(f"Loaded {len(generators)} generators")
+
+    raw_conv_templates = [ get_conversation_template(model_name) for model_name in model_names]
     conv_templates = []
     for conv in raw_conv_templates:
         if conv.name == 'zero_shot':
@@ -1567,26 +1560,16 @@ def get_workers(params, evaluate=False):
             conv.sep2 = conv.sep2.strip()
         conv_templates.append(conv)
 
-    logger.debug(f"Loaded {len(conv_templates)} conversation templates")
-    workers = [
-        ModelWorker(
-            params.model_paths[i],
-            params.model_kwargs[i],
-            tokenizers[i],
-            conv_templates[i],
-            params.devices[i]
-        )
-        for i in range(len(params.model_paths))
-    ]
+    print(f"Loaded {len(conv_templates)} conversation templates")
+    workers = [ModelWorker(generator, conv_template) for generator, conv_template in zip(generators, conv_templates)]
     if not evaluate:
         for worker in workers:
             worker.start()
 
-    num_train_models = getattr(params, 'num_train_models', len(workers))
-    logger.debug('Loaded {} train models'.format(num_train_models))
-    logger.debug('Loaded {} test models'.format(len(workers) - num_train_models))
+    print('Loaded {} train models'.format(n_train_models))
+    print('Loaded {} test models'.format(len(workers) - n_train_models))
 
-    return workers[:num_train_models], workers[num_train_models:]
+    return workers[:n_train_models], workers[n_train_models:]
 
 
 def get_goals_and_targets(goals: list[str], targets: list[str], test_goals: list[str], test_targets: list[str],
