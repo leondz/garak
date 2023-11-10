@@ -13,6 +13,7 @@ sources:
 
 import os
 import re
+from typing import List
 
 import openai
 import backoff
@@ -37,12 +38,14 @@ chat_models = (
 
 
 class OpenAIGenerator(Generator):
+    supports_multiple_generations = True
+    generator_family_name = "OpenAI"
+
     temperature = 0.7
     top_p = 1.0
     frequency_penalty = 0.0
     presence_penalty = 0.0
     stop = ["#", ";"]
-    generator_family_name = "OpenAI"
 
     def __init__(self, name, generations=10):
         self.name = name
@@ -51,8 +54,8 @@ class OpenAIGenerator(Generator):
         super().__init__(name, generations=generations)
 
         openai.api_key = os.getenv("OPENAI_API_KEY", default=None)
-        if openai.api_key == None:
-            raise Exception(
+        if openai.api_key is None:
+            raise ValueError(
                 'Put the OpenAI API key in the OPENAI_API_KEY environment variable (this was empty)\n \
                 e.g.: export OPENAI_API_KEY="sk-123XXXXXXXXXXXX"'
             )
@@ -90,7 +93,7 @@ class OpenAIGenerator(Generator):
         ),
         max_value=70,
     )
-    def generate(self, prompt):
+    def _call_model(self, prompt: str) -> List[str]:
         if self.generator == openai.Completion:
             response = self.generator.create(
                 model=self.name,
@@ -104,6 +107,7 @@ class OpenAIGenerator(Generator):
                 stop=self.stop,
             )
             return [c["text"] for c in response["choices"]]
+
         elif self.generator == openai.ChatCompletion:
             response = self.generator.create(
                 model=self.name,
@@ -117,9 +121,10 @@ class OpenAIGenerator(Generator):
                 frequency_penalty=self.frequency_penalty,
             )
             return [c["message"]["content"] for c in response["choices"]]
+
         else:
             raise ValueError(
-                f"Unsupported model at generation time in generators/openai.py - please add a clause!"
+                "Unsupported model at generation time in generators/openai.py - please add a clause!"
             )
 
 

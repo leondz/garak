@@ -88,6 +88,9 @@ class RestGenerator(Generator):
 
     This will load up the default RestGenerator and use the details in the
     JSON file to connect to the LLM endpoint.
+
+    If you need something more flexible, add a new module or class and inherit
+    from RestGenerator :)
     """
 
     generator_family_name = "REST"
@@ -99,7 +102,7 @@ class RestGenerator(Generator):
         self.headers = {}
         self.method = "post"
         self.req_template = "$INPUT"
-        self.support_multi_generation = False  # not implemented yet
+        self.supports_multiple_generations = False  # not implemented yet
         self.response_json = False
         self.response_json_field = "text"
         self.request_timeout = 10  # seconds
@@ -141,7 +144,7 @@ class RestGenerator(Generator):
 
         if self.uri is None:
             raise ValueError(
-                "No REST endpoint URI definition found in either JSON or in --model_name. Please specify one."
+                "No REST endpoint URI definition found in either constructor param, JSON, or --model_name. Please specify one."
             )
 
         self.fullname = f"REST {self.name}"
@@ -197,8 +200,8 @@ class RestGenerator(Generator):
         return output.replace("$INPUT", self.escape_function(text))
 
     # we'll overload IOError as the rate limit exception
-    @backoff.on_exception(backoff.fibo, BufferError, max_value=70)
-    def _call_api(self, prompt):
+    @backoff.on_exception(backoff.fibo, RESTRateLimitError, max_value=70)
+    def _call_model(self, prompt):
         """Individual call to get a rest from the REST API
 
         :param prompt: the input to be placed into the request template and sent to the endpoint
@@ -218,7 +221,9 @@ class RestGenerator(Generator):
             timeout=self.request_timeout,
         )
         if resp.status_code in self.ratelimit_codes:
-            raise BufferError(f"Rate limited: {resp.status_code} - {resp.reason}")
+            raise RESTRateLimitError(
+                f"Rate limited: {resp.status_code} - {resp.reason}"
+            )
 
         elif str(resp.status_code)[0] == "3":
             raise NotImplementedError(
@@ -250,21 +255,6 @@ class RestGenerator(Generator):
                 resp.content,
             )
             return None
-
-    def generate(self, prompt) -> List[str]:
-        outputs = []
-        generation_iterator = tqdm.tqdm(list(range(self.generations)), leave=False)
-        generation_iterator.set_description("REST " + self.fullname[5:][-50:])
-        if not self.support_multi_generation:
-            for _i in generation_iterator:
-                result = self._call_api(prompt)
-                if result is not None:
-                    outputs.append(result)
-        else:
-            raise NotImplementedError(
-                "Multiple generation per REST API call isn't implemented yet"
-            )
-        return outputs
 
 
 default_class = "RestGenerator"

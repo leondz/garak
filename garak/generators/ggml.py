@@ -28,6 +28,7 @@ class GgmlGenerator(Generator):
     top_k = 40
     top_p = 0.95
     temperature = 0.8
+    exception_on_failure = True
 
     generator_family_name = "ggml"
 
@@ -37,7 +38,7 @@ class GgmlGenerator(Generator):
         self.seed = garak._config.seed
         super().__init__(name, generations=generations)
 
-    def _call_ggml(self, prompt):
+    def _call_model(self, prompt):
         command = [
             self.path_to_ggml_main,
             "-m",
@@ -65,18 +66,14 @@ class GgmlGenerator(Generator):
         if garak._config.args.verbose > 1:
             print("GGML invoked with", command)
         result = subprocess.run(
-            command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            check=self.exception_on_failure,
         )
         output = result.stdout.decode("utf-8")
         output = re.sub("^" + re.escape(prompt.lstrip()), "", output.lstrip())
         return output
-
-    def generate(self, prompt):
-        outputs = []
-        for g in range(self.generations):
-            output = self._call_ggml(prompt)
-            outputs.append(output)
-        return outputs
 
 
 default_class = "GgmlGenerator"
