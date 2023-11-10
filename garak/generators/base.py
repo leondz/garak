@@ -10,6 +10,8 @@ from typing import List, Union
 from colorama import Fore, Style
 import tqdm
 
+import garak._config
+
 
 class Generator:
     """Base class for objects that wrap an LLM or other text-to-text service"""
@@ -64,14 +66,34 @@ class Generator:
 
         self._pre_generate_hook()
 
+        outputs = []
+
         if self.supports_multiple_generations:
             outputs = self._call_model(prompt)
 
         else:
-            outputs = []
-            generation_iterator = tqdm.tqdm(list(range(self.generations)), leave=False)
-            generation_iterator.set_description(self.fullname[:55])
-            for i in generation_iterator:
-                outputs.append(self._call_model(prompt))
+            if (
+                garak._config.args.parallel_requests
+                and isinstance(garak._config.args.parallel_requests, int)
+                and garak._config.args.parallel_requests > 1
+            ):
+                from multiprocessing import Pool
+
+                bar = tqdm.tqdm(total=self.generations, leave=False)
+                bar.set_description(self.fullname[:55])
+                with Pool(garak._config.args.parallel_requests) as pool:
+                    for result in pool.imap_unordered(
+                        self._call_model, [prompt] * self.generations
+                    ):
+                        outputs.append(result)
+                        bar.update(1)
+
+            else:
+                generation_iterator = tqdm.tqdm(
+                    list(range(self.generations)), leave=False
+                )
+                generation_iterator.set_description(self.fullname[:55])
+                for i in generation_iterator:
+                    outputs.append(self._call_model(prompt))
 
         return outputs

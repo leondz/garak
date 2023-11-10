@@ -156,6 +156,12 @@ def main(arguments=[]) -> None:
         action="store_true",
         help="If detectors aren't specified on the command line, should we run all detectors? (default is just the primary detector, if given, else everything)",
     )
+    parser.add_argument(
+        "--parallel_requests",
+        type=int,
+        default=False,
+        help="How many requests to launch in parallel for a given prompt. Ignored for models that support multiple generations per call.",
+    )
 
     _config.args = parser.parse_args(arguments)
 
