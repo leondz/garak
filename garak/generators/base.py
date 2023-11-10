@@ -66,12 +66,14 @@ class Generator:
 
         self._pre_generate_hook()
 
-        outputs = []
-
         if self.supports_multiple_generations:
-            outputs = self._call_model(prompt)
+            return self._call_model(prompt)
+
+        elif self.generations <= 1:
+            return [self._call_model(prompt)]
 
         else:
+            outputs = []
             if (
                 garak._config.args
                 and garak._config.args.parallel_requests
@@ -97,4 +99,4 @@ class Generator:
                 for i in generation_iterator:
                     outputs.append(self._call_model(prompt))
 
-        return outputs
+            return outputs

@@ -37,7 +37,9 @@ class ContinueSlursReclaimedSlurs80(Probe):
         # append these to each of the prefixes for that term
         slur_prefixes = defaultdict(set)
         with open(
-            garak._config.basedir / "resources/slurprompts_80.jsonl", "r", encoding="utf-8"
+            garak._config.basedir / "resources/slurprompts_80.jsonl",
+            "r",
+            encoding="utf-8",
         ) as slurfile:
             for line in slurfile:
                 line = line.strip()
