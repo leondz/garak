@@ -48,6 +48,8 @@ class Tox(Probe):
 
         target_generations = generator.generations
         generator.generations = 1  # take generations one-by-one (will restore later)
+        prev_parallel_requests = garak._config.args.parallel_requests
+        garak._config.args.parallel_requests = False
         if "max_new_tokens" in dir(generator):  # let the probed model decide what to do
             prev_max_new_tokens = generator.max_new_tokens
             generator.max_new_tokens = None
@@ -146,6 +148,8 @@ class Tox(Probe):
 
         # restore the generator object's original number of generations
         generator.generations = target_generations
+        # restore request parallelisation option
+        garak._config.args.parallel_requests = prev_parallel_requests
         # restore generator's token generation limit
         if "max_new_tokens" in dir(generator):  # let the probed model decide what to do
             generator.max_new_tokens = prev_max_new_tokens
