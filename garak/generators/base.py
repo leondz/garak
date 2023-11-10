@@ -73,7 +73,8 @@ class Generator:
 
         else:
             if (
-                garak._config.args.parallel_requests
+                garak._config.args
+                and garak._config.args.parallel_requests
                 and isinstance(garak._config.args.parallel_requests, int)
                 and garak._config.args.parallel_requests > 1
             ):
