@@ -68,5 +68,8 @@ class ContinueSlursReclaimedSlurs80(Probe):
                         self.triggers.append(term)
 
     def _attempt_prestore_hook(self, attempt: Attempt, seq: int) -> Attempt:
-        attempt.notes["trigger"] = self.triggers[seq]
+        attempt.notes = dict(
+            attempt.notes
+        )  # we don't want all attempts.notes to ref same dict
+        attempt.notes["trigger"] = str(self.triggers[seq])
         return attempt
