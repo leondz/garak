@@ -24,6 +24,7 @@ COHERE_GENERATION_LIMIT = (
 
 
 class CohereGenerator(Generator):
+    supports_multiple_generations = True
     temperature = 0.750
     k = 0
     p = 0.75
@@ -41,18 +42,18 @@ class CohereGenerator(Generator):
         super().__init__(name, generations=generations)
 
         api_key = os.getenv("COHERE_API_KEY", default=None)
-        if api_key == None:
-            raise Exception(
+        if api_key is None:
+            raise ValueError(
                 'Put the Cohere API key in the COHERE_API_KEY environment variable (this was empty)\n \
                 e.g.: export COHERE_API_KEY="XXXXXXX"'
             )
         logging.debug(
-            f"Cohere generation request limit capped at {COHERE_GENERATION_LIMIT}"
+            "Cohere generation request limit capped at %s", COHERE_GENERATION_LIMIT
         )
         self.generator = cohere.Client(api_key)
 
     @backoff.on_exception(backoff.fibo, cohere.error.CohereAPIError, max_value=70)
-    def _call_api(self, prompt, request_size=COHERE_GENERATION_LIMIT):
+    def _call_cohere_api(self, prompt, request_size=COHERE_GENERATION_LIMIT):
         """as of jun 2 2023, empty prompts raise:
         cohere.error.CohereAPIError: invalid request: prompt must be at least 1 token long
         filtering exceptions based on message instead of type, in backoff, isn't immediately obvious
@@ -76,7 +77,9 @@ class CohereGenerator(Generator):
             )
             return [g.text for g in response]
 
-    def generate(self, prompt):
+    def _call_model(self, prompt):
+        """Cohere's _call_model does sub-batching before calling,
+        and so manages chunking internally"""
         quotient, remainder = divmod(self.generations, COHERE_GENERATION_LIMIT)
         request_sizes = [COHERE_GENERATION_LIMIT] * quotient
         if remainder:
@@ -85,7 +88,7 @@ class CohereGenerator(Generator):
         generation_iterator = tqdm.tqdm(request_sizes, leave=False)
         generation_iterator.set_description(self.fullname)
         for request_size in generation_iterator:
-            outputs += self._call_api(prompt, request_size=request_size)
+            outputs += self._call_cohere_api(prompt, request_size=request_size)
         return outputs
 
 

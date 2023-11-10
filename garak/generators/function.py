@@ -16,8 +16,8 @@ class Single(Generator):
     """pass a module#function to be called as generator, with format function(prompt:str, **kwargs)->str"""
 
     uri = "https://github.com/leondz/garak/issues/137"
-
     generator_family_name = "function"
+    supports_multiple_generations = False
 
     def __init__(self, name="", **kwargs):  # name="", generations=self.generations):
         gen_module_name, gen_function_name = name.split("#")
@@ -32,19 +32,17 @@ class Single(Generator):
 
         super().__init__(name, generations=self.generations)
 
-    def generate(self, prompt) -> List[str]:
-        outputs = []
-        for i in range(self.generations):
-            outputs.append(self.generator(prompt, **self.kwargs))
-        return outputs
+    def _call_model(self, prompt: str) -> str:
+        return self.generator(prompt, **self.kwargs)
 
 
 class Multiple(Single):
     """pass a module#function to be called as generator, with format function(prompt:str, generations:int, **kwargs)->List[str]"""
 
-    def generate(self, prompt) -> List[str]:
-        outputs = self.generator(prompt, generations=self.generations, **self.kwargs)
-        return outputs
+    supports_multiple_generations = True
+
+    def _call_model(self, prompt) -> List[str]:
+        return self.generator(prompt, generations=self.generations, **self.kwargs)
 
 
 default_class = "Single"

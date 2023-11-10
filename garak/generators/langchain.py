@@ -58,19 +58,14 @@ class LangChainLLMGenerator(Generator):
 
         self.generator = llm
 
-    def generate(self, prompt):
+    def _call_model(self, prompt: str) -> str:
         """
         Continuation generation method for LangChain LLM integrations.
 
         This calls invoke once per generation; invoke() seems to have the best
         support across LangChain LLM integrations.
         """
-        outputs = []
-        generation_iterator = tqdm.tqdm(list(range(self.generations)), leave=False)
-        generation_iterator.set_description(self.fullname[:55])
-        for i in generation_iterator:
-            outputs.append(self.generator.invoke(prompt))
-        return outputs
+        return self.generator.invoke(prompt)
 
 
 default_class = "LangChainLLMGenerator"

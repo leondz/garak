@@ -26,16 +26,19 @@ class ReplicateGenerator(Generator):
     temperature = 1
     top_p = 1.0
     repetition_penalty = 1
+    supports_multiple_generations = False
 
     def __init__(self, name, generations=10):
         self.name = name
         self.fullname = f"Replicate {self.name}"
-        self.seed = garak._config.seed
+        self.seed = 320
+        if garak._config.seed:
+            self.seed = garak._config.seed
 
         super().__init__(name, generations=generations)
 
-        if os.getenv("REPLICATE_API_TOKEN", default=None) == None:
-            raise Exception(
+        if os.getenv("REPLICATE_API_TOKEN", default=None) is None:
+            raise ValueError(
                 'Put the Replicate API token in the REPLICATE_API_TOKEN environment variable (this was empty)\n \
                 e.g.: export REPLICATE_API_TOKEN="r8-123XXXXXXXXXXXX"'
             )
@@ -44,7 +47,7 @@ class ReplicateGenerator(Generator):
     @backoff.on_exception(
         backoff.fibo, replicate.exceptions.ReplicateError, max_value=70
     )
-    def _call_api(self, prompt):
+    def _call_model(self, prompt):
         response_iterator = self.replicate.run(
             self.name,
             input={
@@ -57,16 +60,6 @@ class ReplicateGenerator(Generator):
             },
         )
         return "".join(response_iterator)
-
-    def generate(self, prompt):
-        outputs = []
-        generation_iterator = tqdm.tqdm(list(range(self.generations)), leave=False)
-        generation_iterator.set_description(
-            self.fullname[:55]
-        )  # replicate names are long incl. hash
-        for i in generation_iterator:
-            outputs.append(self._call_api(prompt))
-        return outputs
 
 
 default_class = "ReplicateGenerator"

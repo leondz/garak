@@ -4,20 +4,24 @@
 These give simple system responses, intended for testing.
 """
 
+from typing import List
+
 from garak.generators.base import Generator
 
 
 class Blank(Generator):
+    supports_multiple_generations = True
     generator_family_name = "Blank"
 
-    def generate(self, prompt):
+    def _call_model(self, prompt: str) -> List[str]:
         return [""] * self.generations
 
 
 class Repeat(Generator):
+    supports_multiple_generations = True
     generator_family_name = "Repeat"
 
-    def generate(self, prompt):
+    def _call_model(self, prompt: str) -> List[str]:
         return [prompt] * self.generations
 
 

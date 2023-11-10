@@ -17,6 +17,7 @@ from garak.generators.base import Generator
 
 
 class NeMoGenerator(Generator):
+    supports_multiple_generations = False
     generator_family_name = "NeMo"
     temperature = 1
     top_p = 1.0
@@ -58,7 +59,7 @@ class NeMoGenerator(Generator):
         (nemollm.error.ServerSideError, nemollm.error.TooManyRequestsError),
         max_value=70,
     )
-    def _call_api(self, prompt):
+    def _call_model(self, prompt):
         # avoid:
         #    doesn't match schema #/components/schemas/CompletionRequestBody: Error at "/prompt": minimum string length is 1
         if prompt == "":
@@ -79,16 +80,6 @@ class NeMoGenerator(Generator):
             length_penalty=1.0,
         )
         return response["text"]
-
-    def generate(self, prompt):
-        outputs = []
-        generation_iterator = tqdm.tqdm(list(range(self.generations)), leave=False)
-        generation_iterator.set_description(
-            self.fullname[:55]
-        )  # replicate names are long incl. hash
-        for i in generation_iterator:
-            outputs.append(self._call_api(prompt))
-        return outputs
 
 
 default_class = "NeMoGenerator"
