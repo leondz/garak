@@ -10,7 +10,6 @@ import os
 
 import backoff
 import nemollm
-import tqdm
 
 import garak._config
 from garak.generators.base import Generator
@@ -24,7 +23,7 @@ class NeMoGenerator(Generator):
     top_k = 2
     repetition_penalty = 1.1  # between 1 and 2 incl., or none
     beam_search_diversity_rate = 0.0
-    beam_width = 2
+    beam_width = 1
     length_penalty = 1
     guardrail = None  # NotImplemented in library
 

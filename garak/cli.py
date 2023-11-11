@@ -160,7 +160,13 @@ def main(arguments=[]) -> None:
         "--parallel_requests",
         type=int,
         default=False,
-        help="How many requests to launch in parallel for a given prompt. Ignored for models that support multiple generations per call.",
+        help="How many generator requests to launch in parallel for a given prompt. Ignored for models that support multiple generations per call.",
+    )
+    parser.add_argument(
+        "--parallel_attempts",
+        type=int,
+        default=False,
+        help="How many probe attempts to launch in parallel.",
     )
 
     _config.args = parser.parse_args(arguments)
