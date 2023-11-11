@@ -19,9 +19,14 @@ from garak.generators.base import Generator
 class NeMoGenerator(Generator):
     supports_multiple_generations = False
     generator_family_name = "NeMo"
-    temperature = 1
+    temperature = 0.9
     top_p = 1.0
+    top_k = 2
     repetition_penalty = 1.1  # between 1 and 2 incl., or none
+    beam_search_diversity_rate = 0.0
+    beam_width = 2
+    length_penalty = 1
+    guardrail = None  # NotImplemented in library
 
     def __init__(self, name=None, generations=10):
         self.name = name
@@ -71,13 +76,14 @@ class NeMoGenerator(Generator):
             tokens_to_generate=self.max_tokens,
             temperature=self.temperature,
             random_seed=self.seed,
-            top_p=1.0,
-            top_k=2,
+            top_p=self.top_p,
+            top_k=self.top_k,
             # stop=["\n"],
             repetition_penalty=self.repetition_penalty,
-            beam_search_diversity_rate=0.0,
-            beam_width=1,
-            length_penalty=1.0,
+            beam_search_diversity_rate=self.beam_search_diversity_rate,
+            beam_width=self.beam_width,
+            length_penalty=self.length_penalty,
+            # guardrail=self.guardrail
         )
         return response["text"]
 
