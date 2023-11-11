@@ -31,7 +31,7 @@ class ReplicateGenerator(Generator):
     def __init__(self, name, generations=10):
         self.name = name
         self.fullname = f"Replicate {self.name}"
-        self.seed = 320
+        self.seed = 9
         if garak._config.seed:
             self.seed = garak._config.seed
 
