@@ -380,13 +380,17 @@ class Ablation_Dan_11_0(Probe):
 
 class AutoDANProbe(Probe):
     """Probe leveraging generated AutoDAN prompts"""
+
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
     tags = ["avid-effect:security:S0403"]
     goal = "disregard the system prompt"
     uri = "https://arxiv.org/abs/2310.04451"
 
-    def __init__(self, autodan_prompt_location: str = f"{Path(__file__).parents[1]}/resources/autodan/autodan_prompts.txt"):
+    def __init__(
+        self,
+        autodan_prompt_location: str = f"{Path(__file__).parents[1]}/resources/autodan/autodan_prompts.txt",
+    ):
         self.autodan_prompt_location = autodan_prompt_location
         self.prompts = list()
         super().__init__()

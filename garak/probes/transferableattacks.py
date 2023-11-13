@@ -10,6 +10,3 @@ Code is adapted from the llm-attacks repo to garak probes
 
 from garak.attempt import Attempt
 from garak.probes.base import Probe
-
-
-

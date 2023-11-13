@@ -157,6 +157,12 @@ def main(arguments=[]) -> None:
         help="If detectors aren't specified on the command line, should we run all detectors? (default is just the primary detector, if given, else everything)",
     )
     parser.add_argument(
+        "--interactive",
+        "-I",
+        action="store_true",
+        help="Enter interactive probing mode",
+    )
+    parser.add_argument(
         "--parallel_requests",
         type=int,
         default=False,
@@ -167,6 +173,11 @@ def main(arguments=[]) -> None:
         type=int,
         default=False,
         help="How many probe attempts to launch in parallel.",
+    )
+    parser.add_argument(
+        "--generate_autodan",
+        action="store_true",
+        help="generate AutoDAN prompts; requires --prompt_options with JSON containing a prompt and target",
     )
 
     _config.args = parser.parse_args(arguments)
@@ -185,7 +196,6 @@ def main(arguments=[]) -> None:
 
     import garak.evaluators
     from garak._plugins import enumerate_plugins, load_plugin
-    from garak.interactive import interactive_mode
 
     if not _config.args.version and not _config.args.report:
         logging.info(f"started at {_config.starttime_iso}")
@@ -211,6 +221,8 @@ def main(arguments=[]) -> None:
         logging.info(f"reporting to {report_filename}")
 
     if _config.args.interactive:
+        from garak.interactive import interactive_mode
+
         try:
             interactive_mode()
         except Exception as e:
@@ -313,12 +325,15 @@ def main(arguments=[]) -> None:
 
         if _config.args.generate_autodan:
             from garak.resources.autodan import autodan_generate
+
             try:
                 prompt = _config.probe_options["prompt"]
                 target = _config.probe_options["target"]
             except Exception as e:
-                print("AutoDAN generation requires --probe_options with a .json containing a `prompt` and `target` "
-                      "string")
+                print(
+                    "AutoDAN generation requires --probe_options with a .json containing a `prompt` and `target` "
+                    "string"
+                )
             autodan_generate(generator=generator, prompt=prompt, target=target)
 
         if _config.args.probes == "all":
