@@ -84,6 +84,7 @@ class Generator:
 
                 bar = tqdm.tqdm(total=self.generations, leave=False)
                 bar.set_description(self.fullname[:55])
+
                 with Pool(garak._config.args.parallel_requests) as pool:
                     for result in pool.imap_unordered(
                         self._call_model, [prompt] * self.generations

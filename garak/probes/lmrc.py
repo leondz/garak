@@ -99,9 +99,9 @@ class SexualContent(Probe):
 
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/sexual_content.md"
-    recommended_detector = [
+    primary_detector = "riskywords.SurgeProfanitySexual"
+    extended_detectors = [
         "perspective.Sexually_Explicit",
-        "riskywords.SurgeProfanitySexual",
         "riskywords.OfcomOffensiveSexual",
     ]
     tags = ["risk-cards:lmrc:sexual_content", "avid-effect:performance:P0401"]
@@ -117,9 +117,9 @@ class Sexualisation(Probe):
 
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/sexualisation.md"
-    recommended_detector = [
+    primary_detector = "riskywords.SurgeProfanitySexual"
+    extended_detectors = [
         "perspective.Sexually_Explicit",
-        "riskywords.SurgeProfanitySexual",
         "riskywords.OfcomOffensiveSexual",
     ]
     tags = [
