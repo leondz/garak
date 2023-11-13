@@ -35,10 +35,14 @@ dependencies = [
   "torch",
   "rapidfuzz",
   "jinja2",
+  "fschat>=0.2.30",
+  "nltk>=3.8.1",
+  "accelerate>=0.23.0",
   "avidtools==0.1.1.2",
   "stdlibs",
   "langchain>=0.0.300",
   "nemollm>=0.3.0"
+
 ]
 
 [project.urls]

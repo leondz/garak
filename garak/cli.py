@@ -177,11 +177,52 @@ def main(arguments=[]) -> None:
 
     command.start_logging()
 
+    import sys
     import importlib
     import json
+    import uuid
+    from colorama import Fore, Style
 
-    import garak.evaluators  # why is this line so high up? maybe eval/plugin too tightly coupled?
-    from garak._plugins import enumerate_plugins
+    import garak.evaluators
+    from garak._plugins import enumerate_plugins, load_plugin
+    from garak.interactive import interactive_mode
+
+    if not _config.args.version and not _config.args.report:
+        logging.info(f"started at {_config.starttime_iso}")
+        _config.run_id = str(uuid.uuid4())  # uuid1 is safe but leaks host info
+        if not _config.args.report_prefix:
+            report_filename = f"garak.{_config.run_id}.report.jsonl"
+        else:
+            report_filename = _config.args.report_prefix + ".report.jsonl"
+        _config.reportfile = open(report_filename, "w", buffering=1)
+        _config.args.__dict__.update({"entry_type": "config"})
+        _config.reportfile.write(json.dumps(_config.args.__dict__) + "\n")
+        _config.reportfile.write(
+            json.dumps(
+                {
+                    "entry_type": "init",
+                    "garak_version": _config.version,
+                    "start_time": _config.starttime_iso,
+                    "run": _config.run_id,
+                }
+            )
+            + "\n"
+        )
+        logging.info(f"reporting to {report_filename}")
+
+    if _config.args.interactive:
+        try:
+            interactive_mode()
+        except Exception as e:
+            logging.error(e)
+            print(e)
+            sys.exit(1)
+
+    if _config.args.probe_options:
+        try:
+            _config.probe_options = json.loads(_config.args.probe_options)
+        except Exception as e:
+            logging.warn("Failed to parse JSON probe_options:", e.args[0])
 
     if _config.args.version:
         pass
@@ -269,6 +310,16 @@ def main(arguments=[]) -> None:
             )
         generator.generations = _config.args.generations
         generator.seed = _config.args.seed
+
+        if _config.args.generate_autodan:
+            from garak.resources.autodan import autodan_generate
+            try:
+                prompt = _config.probe_options["prompt"]
+                target = _config.probe_options["target"]
+            except Exception as e:
+                print("AutoDAN generation requires --probe_options with a .json containing a `prompt` and `target` "
+                      "string")
+            autodan_generate(generator=generator, prompt=prompt, target=target)
 
         if _config.args.probes == "all":
             probe_names = [
