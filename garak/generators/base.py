@@ -34,7 +34,7 @@ class Generator:
             self.description = self.__doc__.split("\n")[0]
         if name:
             self.name = name
-        if not self.fullname:
+        if "fullname" not in dir(self):
             self.fullname = name
         self.generations = generations
         if not self.generator_family_name:
