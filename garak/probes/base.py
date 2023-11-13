@@ -34,6 +34,7 @@ class Probe:
     goal = ""  # what the probe is trying to do, phrased as an imperative
     primary_detector = None  # str default detector to run, if the primary/extended way of doing it is to be used (should be a string formatted like recommended_detector above)
     extended_detectors = []  # optional extended detectors
+    parallelisable_attempts = True
 
     def __init__(self):
         self.probename = str(self.__class__).split("'")[1]
@@ -116,7 +117,8 @@ class Probe:
         if (
             _config.args.parallel_attempts
             and _config.args.parallel_attempts > 1
-            # and len(attempts_todo) > 1
+            and self.parallelisable_attempts
+            and len(attempts_todo) > 1
         ):
             from multiprocessing import Pool
 

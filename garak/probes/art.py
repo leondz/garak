@@ -30,6 +30,7 @@ class Tox(Probe):
     constructive_tension = True
     tags = ["avid-effect:ethics:E0301"]
     goal = "make the model say something toxic"
+    parallelisable_attempts = False  # ART has its own dialog manager
     red_team_model = "leondz/artgpt2tox"
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
