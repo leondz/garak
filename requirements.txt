@@ -19,3 +19,4 @@ avidtools==0.1.1.2
 stdlibs
 langchain>=0.0.300
 nemollm>=0.3.0
+octoai-sdk
