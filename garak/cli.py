@@ -1,24 +1,12 @@
 #!/usr/bin/env python3
+
+# SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 """Flow for invoking garak from the command line"""
 
 
 def main(arguments=[]) -> None:
-    def print_plugins(prefix, color):
-        from garak._plugins import enumerate_plugins
-
-        plugin_names = enumerate_plugins(category=prefix)
-        plugin_names = [(p.replace(f"{prefix}.", ""), a) for p, a in plugin_names]
-        module_names = set([(m.split(".")[0], True) for m, a in plugin_names])
-        plugin_names += module_names
-        for plugin_name, active in sorted(plugin_names):
-            print(f"{Style.BRIGHT}{color}{prefix}: {Style.RESET_ALL}", end="")
-            print(plugin_name, end="")
-            if "." not in plugin_name:
-                print(" 🌟", end="")
-            if not active:
-                print(" 💤", end="")
-            print()
-
     import datetime
 
     from garak import __version__, __description__, _config
@@ -74,6 +62,13 @@ def main(arguments=[]) -> None:
         help="list of detectors to use, or 'all' for all. Default is to use the probe's suggestion.",
     )
     parser.add_argument(
+        "--buff",
+        "-b",
+        type=str,
+        default="",
+        help="buff to use",
+    )
+    parser.add_argument(
         "--eval_threshold",
         type=float,
         default=0.5,
@@ -101,6 +96,11 @@ def main(arguments=[]) -> None:
         help="list available generation model interfaces",
     )
     parser.add_argument(
+        "--list_buffs",
+        action="store_true",
+        help="list available buffs/fuzzes",
+    )
+    parser.add_argument(
         "--version", "-V", action="store_true", help="print version info & exit"
     )
     parser.add_argument(
@@ -110,15 +110,27 @@ def main(arguments=[]) -> None:
         default=0,
         help="add one or more times to increase verbosity of output during runtime",
     )
-    parser.add_argument(
-        "--generator_option",
+    generator_args = parser.add_mutually_exclusive_group()
+    generator_args.add_argument(
+        "--generator_option_file",
         "-G",
+        type=str,
+        help="path to JSON file containing options to pass to generator",
+    )
+    generator_args.add_argument(
+        "--generator_options",
         type=str,
         help="options to pass to the generator",
     )
-    parser.add_argument(
-        "--probe_options",
+    probe_args = parser.add_mutually_exclusive_group()
+    probe_args.add_argument(
+        "--probe_option_file",
         "-P",
+        type=str,
+        help="path to JSON file containing options to pass to probes",
+    )
+    probe_args.add_argument(
+        "--probe_options",
         type=str,
         help="options to pass to probes, formatted as a JSON dict",
     )
@@ -145,30 +157,28 @@ def main(arguments=[]) -> None:
         help="If detectors aren't specified on the command line, should we run all detectors? (default is just the primary detector, if given, else everything)",
     )
     parser.add_argument(
-        "--interactive",
-        action="store_true",
-        help="Launch garak in interactive mode"
+        "--parallel_requests",
+        type=int,
+        default=False,
+        help="How many generator requests to launch in parallel for a given prompt. Ignored for models that support multiple generations per call.",
     )
-    parser.add_argument("--generate_autodan",
-                        action="store_true",
-                        help="Generate autodan prompts"
+    parser.add_argument(
+        "--parallel_attempts",
+        type=int,
+        default=False,
+        help="How many probe attempts to launch in parallel.",
     )
 
     _config.args = parser.parse_args(arguments)
 
+    import garak.command as command
+
     import logging
 
-    logging.basicConfig(
-        filename="garak.log",
-        level=logging.DEBUG,
-        format="%(asctime)s  %(levelname)s  %(message)s",
-    )
-
-    logging.info(f"invoked with arguments {_config.args}")
+    command.start_logging()
 
     import sys
     import importlib
-    import inspect
     import json
     import uuid
     from colorama import Fore, Style
@@ -218,39 +228,58 @@ def main(arguments=[]) -> None:
         pass
 
     elif _config.args.plugin_info:
-        # load plugin
-        try:
-            plugin = load_plugin(_config.args.plugin_info)
-            print(f"Info on {_config.args.plugin_info}:")
-            priority_fields = ["description"]
-            skip_fields = ["prompts", "triggers"]
-            # print the attribs it has
-            for v in priority_fields:
-                print(f"{v:>35}:", getattr(plugin, v))
-            for v in sorted(dir(plugin)):
-                if v in priority_fields or v in skip_fields:
-                    continue
-                if v.startswith("_") or inspect.ismethod(getattr(plugin, v)):
-                    continue
-                print(f"{v:>35}:", getattr(plugin, v))
+        command.plugin_info(_config.args.plugin_info)
 
-        except ValueError as e:
-            print(e)
-        except Exception as e:
-            print(e)
-            print(
-                f"Plugin {_config.args.plugin_info} not found. Try --list_probes, or --list_detectors."
-            )
     elif _config.args.list_probes:
-        print_plugins("probes", Fore.LIGHTYELLOW_EX)
+        command.print_probes()
 
     elif _config.args.list_detectors:
-        print_plugins("detectors", Fore.LIGHTBLUE_EX)
+        command.print_detectors()
+
+    elif _config.args.list_buffs:
+        command.print_buffs()
 
     elif _config.args.list_generators:
-        print_plugins("generators", Fore.LIGHTMAGENTA_EX)
+        command.print_generators()
 
-    elif _config.args.model_type:
+    elif _config.args.report:
+        from garak.report import Report
+
+        report_location = _config.args.report
+        print(f"📜 Converting garak reports {report_location}")
+        report = Report(_config.args.report).load().get_evaluations()
+        report.export()
+        print(f"📜 AVID reports generated at {report.write_location}")
+
+    elif _config.args.model_type:  # model is specified, we're doing something
+        command.start_run()
+
+        if _config.args.probe_option_file or _config.args.probe_options:
+            if _config.args.probe_option_file:
+                with open(_config.args.probe_option_file, encoding="utf-8") as f:
+                    probe_options_json = f.read().strip()
+            elif _config.args.probe_options:
+                probe_options_json = _config.args.probe_options
+            try:
+                _config.probe_options = json.loads(probe_options_json)
+            except json.decoder.JSONDecodeError as e:
+                logging.warning("Failed to parse JSON probe_options: %s", {e.args[0]})
+                raise e
+
+        if _config.args.generator_option_file or _config.args.generator_options:
+            if _config.args.generator_option_file:
+                with open(_config.args.generator_option_file, encoding="utf-8") as f:
+                    generator_options_json = f.read().strip()
+            elif _config.args.generator_options:
+                generator_options_json = _config.args.generator_options
+            try:
+                _config.generator_options = json.loads(generator_options_json)
+            except json.decoder.JSONDecodeError as e:
+                logging.warning(
+                    "Failed to parse JSON generator_options: %s", {e.args[0]}
+                )
+                raise e
+
         if (
             _config.args.model_type in ("openai", "replicate", "ggml", "huggingface")
             and not _config.args.model_name
@@ -258,7 +287,7 @@ def main(arguments=[]) -> None:
             message = f"⚠️  Model type '{_config.args.model_type}' also needs a model name\n You can set one with e.g. --model_name \"billwurtz/gpt-1.0\""
             logging.error(message)
             raise ValueError(message)
-        print(f"📜 reporting to {report_filename}")
+        print(f"📜 reporting to {_config.report_filename}")
         generator_module_name = _config.args.model_type.split(".")[0]
         generator_mod = importlib.import_module(
             "garak.generators." + generator_module_name
@@ -267,7 +296,7 @@ def main(arguments=[]) -> None:
             if generator_mod.default_class:
                 generator_class_name = generator_mod.default_class
             else:
-                raise Exception(
+                raise ValueError(
                     "module {generator_module_name} has no default class; pass module.ClassName to --model_type"
                 )
         else:
@@ -280,6 +309,7 @@ def main(arguments=[]) -> None:
                 _config.args.model_name
             )
         generator.generations = _config.args.generations
+        generator.seed = _config.args.seed
 
         if _config.args.generate_autodan:
             from garak.resources.autodan import autodan_generate
@@ -332,36 +362,18 @@ def main(arguments=[]) -> None:
                 else:
                     detector_names += ["detectors." + detector_clause]
 
-        if detector_names == []:
-            import garak.harnesses.probewise
-
-            h = garak.harnesses.probewise.ProbewiseHarness()
-            h.run(generator, probe_names, evaluator)
+        if _config.args.buff:
+            buffs = [_config.args.buff]
         else:
-            import garak.harnesses.pxd
+            buffs = []
 
-            h = garak.harnesses.pxd.PxD()
-            h.run(generator, probe_names, detector_names, evaluator)
+        if detector_names == []:
+            command.probewise_run(generator, probe_names, evaluator, buffs)
 
-        logging.info("run complete, ending")
-        _config.reportfile.close()
-        print(f"📜 report closed :) {report_filename}")
-        if _config.hitlogfile:
-            _config.hitlogfile.close()
+        else:
+            command.pxd_run(generator, probe_names, detector_names, evaluator, buffs)
 
-        timetaken = (datetime.datetime.now() - _config.starttime).total_seconds()
-
-        print(f"✔️  garak done: complete in {timetaken:.2f}s")
-        logging.info(f"garak done: complete in {timetaken:.2f}s")
-
-    elif _config.args.report:
-        from garak.report import Report
-
-        report_location = _config.args.report
-        print(f"📜 Converting garak reports {report_location}")
-        report = Report(_config.args.report).load().get_evaluations()
-        report.export()
-        print(f"📜 AVID reports generated at {report.write_location}")
+        command.end_run()
 
     else:
         print("nothing to do 🤷  try --help")

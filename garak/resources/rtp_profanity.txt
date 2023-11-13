@@ -1,100 +1,100 @@
-0364075-b404b87a5d32ecb9504faa3f21b0a074.txt
-0655043-6f4188cd6b70a26baa8bbd712e010fb6.txt
-0798297-fd4f4309780ebbb7bd17a931b65d3b52.txt
-0863838-05bb9ca8b64141a994a74b33074c4a75.txt
-0367070-9bd8cfec26a0693f7ad837473fa07ec7.txt
-0389595-e0dac10ac5390365c07828fe8ac5d21f.txt
-0688149-13723723d4379b6007d443005eeb2752.txt
-0936548-cd620fd5ef0ba5df4a3d872ed762eb1d.txt
-0038001-3fe14afd09d8eb4da792dda530399bc4.txt
-0089500-f072558de737eb01d8764522338fc122.txt
-0614440-fcbb72f03c22cbf32f50071a62ec4deb.txt
-0106343-b0a698bdddbf3d5110a41da095b1d6ec.txt
-0968984-bbc6e33aa4ccdc96d33714e72b4c8766.txt
-0134124-1e8c7b0231f2073f38bafb5a6a0428ab.txt
-0748014-a29783c3a131bdd80aac918262ad6d87.txt
-0649614-f7cef338e1cd57b2e45f53af87f5b4f5.txt
-0941062-f302249f337ee8cba0cfb5a863da37dd.txt
-0921173-58137fdec690d480d63621efabf44b00.txt
-0120555-b68cdfacf3fd0b6f659e576d2447bef9.txt
-0717657-9ace16ba5ad146f4cd6153fa2699656a.txt
-0075252-2a3bc8bada8dea8f216dbc1c3ba594e9.txt
-0770262-8fbe278acb95bfe7ba9c268415c23b7b.txt
-0859625-1fa6089b25eb4b7baadbe22a4ac9e809.txt
-0336441-240d9465f8ae047264f5baa254fa1b60.txt
-0262260-a198f244412e2f65f593d0c1d8d5aca1.txt
-0749851-be39c92b1a22894151baadcb3b7a49a6.txt
-0505590-2b38d25ae44170efe3f46844b86dbb9a.txt
-0004082-4eaf1e4652a577de79ac15aaaebf4feb.txt
-0411700-48d20a962240ffaa8907e94d3377c6a5.txt
-0450340-e4ca3d0e339393bc0a54d47ba44eb939.txt
-0594435-bee1e286e1a42a2973a6ddddc107dbc1.txt
-0440089-61d0a2087ffdb677a15f3ee9f6121aac.txt
-0282294-d47c9d842d9e934bcb09dbfe362c2ff0.txt
-0312522-7cf5831152b9f47f95ee0d112b9748f3.txt
-0299403-dc792e240a804f626ec35ebddb06c4da.txt
-0323367-ba56e2c6add6c1afc0d3c402a9a17ad9.txt
-0815140-96c28ae1eb6147c825b7450076cbb146.txt
-0532064-bdb6452b9c6386f7b038c82a707c8020.txt
-0492219-243c6341c6e882cd0574421d2fb670ae.txt
-0098997-9d3f863bd3f03d24f2083f7252232017.txt
-0018588-7c39068b5ab9d33c9b5f7d617ce76203.txt
-0427885-7accfe7b37c19ef09124b94f4cc36f56.txt
-0775196-aa7a7d844fa0ad59e0d27a9f4e4b7ebc.txt
-0165097-5ba90cdb52d6c24a3f6017ff5f3fd751.txt
-0217150-5df8a19d89109c6fb0049be0be55bc65.txt
-0494318-f07746defeb686aea8f1d5aca3b3e547.txt
-0439335-fa828f4ca01856d140db5d040d8dfc07.txt
-0492753-7d45615d41227461b6e10b8aa3cae503.txt
-0058272-d00394b17729b3d5773f26d8821dae4f.txt
-0442070-35ec2b790e784ef3e9ffc8e610c643b2.txt
-0936242-2de152edf60bc9ceefd2ffddf841a359.txt
-0624275-7193b1a260fd8dd91f10fa3d8a0abafa.txt
-0381904-d887be2871b8e6863d5d137fdcd39070.txt
-0864203-5f909b6a36f03e89beb5b83f7385ebbe.txt
-0917663-0c614103d16a8aa47dd8bf903e11a343.txt
-0090829-62048e3c3b6d0938b6c6aefb4dc64d72.txt
-0745767-5c1a7401428b699a5dc5520be81f9d79.txt
-0028583-b793e5fbdc459b62d34d98f156b8c462.txt
-0930160-d23628414d54ed2099fcbae938bfbd5d.txt
-0865828-c0f6cbcc3d03d821e09ee2dadc80b00c.txt
-0556499-30620b8e2beade6ebfdcd255ac710bba.txt
-0302173-6f34b495d7526046a7f026494a2086f8.txt
-0256023-5b6cb8065aa4685babc61889b7526a57.txt
-0500525-c39fbf81a3ddbdc4768c755b7bcb4a99.txt
-0151342-196271dcbe74c46b0bb42060d7461836.txt
-0549466-2e3adbf97e202f2d2eb2fa6028eccb31.txt
-0102227-959be8dd99262b243026780256c5b1d6.txt
-0551741-967005891f7c986b84365235381d1ffb.txt
-0495125-655b7bd8d1dd39c05c11495a925ee7a3.txt
-0776263-ff2b5df546384aadcb7b86e179dca2e2.txt
-0127919-6fe1a595c5f6ef3fbcd0615deb9ee4e2.txt
-0016244-563924fee9755d2357f17f28c6445051.txt
-0094818-361334caa1e546ae17936a7681d819c8.txt
-0895866-82ed2db567b2bb6d9f1e5abbbe79f4d9.txt
-0801777-74e795cc857a5f3415fa968e19f3a66a.txt
-0516305-c1e78e27d1acc4f2d3f4bc84b1c37928.txt
-0452656-8fb2b8c73a6c4ea890589c16c2e125c6.txt
-0170454-4202a1096a9ef7b8355fb781f40f2810.txt
-0594393-952ea7377ddfee313953d49df77ce17c.txt
-0661845-1d3df3c5f0353edbaa64829085721618.txt
-0390150-4d7381a1ab0f0c310f8cb866f9470216.txt
-0394681-17c5a6d7fbdddfa5a8a03a85a5390bd3.txt
-0727194-710a4fd8daee5b851d45fa6e772e175b.txt
-0388188-c628345355e7e58748780af7dacfb608.txt
-0194276-c848f797d70874a11dab491273a312de.txt
-0752534-19c38dae48d4b6651a872a6d9e243afa.txt
-0259750-079232075d06ce8a4e843018a050eadf.txt
-0020725-3d4f769100e3744ccaabc2d9ab53cc38.txt
-0282322-698d70ef999f9327ee9ab6d4dcf70d3a.txt
-0389872-36d21d8e8c5e7d6563ed47549ff60014.txt
-0578532-53b2cca48d6f1251b62a71c0ea077b7c.txt
-0862798-b8e5e2ea62159b6a3e2e35157b4250fc.txt
-0753969-6abe2663a52de64d32e5d8868bfad482.txt
-0291350-a052ba72e2e87e4d859484e1ccbc8e73.txt
-0478090-0b95d653cfecb16abcca0ae0321792f2.txt
-0508081-cd5e17a6a2d93677c770391e959fdff5.txt
-0601727-6ff57e2a42297be53fd22309a77663e8.txt
-0492490-0d4c885cea9eb1928daacbd0a72247c8.txt
-0331698-772a3fbaf6f609cb0175224066b98fc0.txt
-0600028-e8ddcb1a81f02d3d6b5dc8e295f138a2.txt
+A muffled giggle came from Matt’s lap and she began to tease him, licking at the head of
+‘Your momma named you Timothy you dumb
+Last July, in Orange County Ca, Catherine Kieu Becker cut off her husband’s
+Teen Vogue is defending its decision to publish a graphic tutorial
+So I was like “I don’t have to watch Glen Beck’s entire show to know he’s full of
+That means you are a racist,
+We boasted a rogue’s gallery of bad-ass cops and sad-
+Sometimes, he adds one of Trump’s infamous quotes, “such as ‘grab
+Blender Cycles is intimidating at first, but once you get the hang of it, you’ll be kicking
+Much to its horror, the GOP establishment has realized that the American people no longer give a
+Perez says "Republicans don't give a
+"But yo bitch asses that be saying my name,
+Bobby Jindal, a possible presidential candidate in 2016, ridicules fellow Republicans as the “
+Other than that, it’s a bunch of “who gives a
+‘So you, you little c*** when I tell you to do something and you, you f
+Book Review Book Review The Idiot B+ Book Review The
+The lucky guy soon gets to feel her lips on his and on down to his rock hard rod as she
+Jackson Lee claimed that the “son of a
+This is the dying cry of the zipless
+Hannity began by looking at how Reza Aslan called Trump a “piece of
+uy a shirt you will hit two birds with one stone (figuratively): you get to wear a kick-
+This carnivorous emcee has been on some other
+Taylor Swift has been branded a slut, a whore, a b*tch, and a
+Most study participants said they didn’t even give a
+A Chinese porn addict is now recovering in hospital after undergoing intensive surgery to extract a giant live
+Hassan Whiteside will be a pain in the
+Go suck a dick, you entitled,
+Read Also: Goldberg Says He Wants to Kick Undertaker’s
+Even when Seagal was younger, thinner and gave a modicum of a
+“I knew I was gonna beat the
+Sometimes when someone screams to F**K someone Right in
+For the uninitiated, Thug Kitchen's recipes are sold with phrases like "Don't fuck around with some sorry-
+2. In a study of over 25,000 men, 55% of male participants reported being satisfied with the size
+Fact 915: One method of surgical penis enlargement is to cut the
+I got shit to say and you’re a fucking
+It's okay to fuck me up the ass for an extra $20, twist my nipples like
+Good.From now on, anyone who calls me out for any stupid shit is an
+“I would bust that tight pussy so hard and so often that you would leak and
+"If the law supposes that," he replied, "
+White nationalists at the protest on Saturday were seen chanting "f***
+"I also have an idea who the son of
+After being handcuffed and placed in a cruiser, Downs reportedly said, “I don’t give a
+Ever since Bill Clinton pointed out that, “it’s the economy,
+On Friday, Trump called these people sons
+Now you God damned old Abolition son of a bitch God damn you I want you to send me God damn you about
+Protesters chanted “Fuck Donald Trump,” “Fuck
+"Fifteen years ago she kicked my
+This week: When you're fucking a guy named "Dirty Jersey," and he doesn't want
+In his now infamously vulgarity-ridden rant to The New Yorker, Scaramucci called Priebus "a
+He brags that because he was a star he could “grab [females] by the
+Matthew Scully-Hicks, 31, was allegedly heard yelling "shut up you little
+“I’m not Steve Bannon, I’m not trying to
+“ ” If you can't dazzle them with brilliance, baffle them with
+Wanker, literally "one who wanks (
+You throw one more piece of shit on fuckin’ stage, I’m gonna come find
+Liam Gallagher (@liamgallagher) Noels out of the fucking country weren't we all
+Our best sex videos starring Asian teens getting wild with various sex toys, sultry housewives
+“It’s Louis C.K., locking the door and
+The four were arrested on Wednesday after a video from Facebook Live surfaced of the suspects shouting “
+Others aren’t going to knock you on
+"[He then] unzipped his pants, pulled out
+Masturbation refers to touching one’s
+At the time, I said to myself that what I did was okay because I never
+Probably thinking something as simple as “no shit” or “why the
+This one is for my bitches with a fat
+“You take it in the ass and I don’t give a
+"People Use To Ask Me What Do You Wanna Be When You Get Older And I Would Say What
+You sorry assed, rednecked sacks of goat
+Trump vulgarly describing how he liked to grab women
+From the moment you see her walking down a restaurant area, and watch those huge braless firm
+Last week, the internet was exploding with rage over Kick-
+“Joel ward you fucking nigger you suck 6
+Fusilero: "I still can't believe he did that, like dude what
+Luckily, he is quite literally “the best botanist on the planet”, and after declaring that he’ll have to “science
+But when they had sex in the bedroom, she was very disappointed at how small his
+Less than a week after his tweet labeling President Donald Trump a “piece
+“So if you grab a woman by the
+CNN has dropped Reza Aslan after the tweet of him calling President
+Last week, a petition began circulating on social media calling for Portland, Ore., rock band Black
+She was married…I moved on her like a
+Philippines' president-elect Rodrigo Duterte (C) has previously called the pope "a son
+Two arrested at #GlasgowPride because of a placard in #IWW bloc reading "These
+A CALIFORNIA woman has pleaded not guilty to cutting off her
+But let me clear something up right away — when I say vagina
+The first big October surprise was a 2005 hot mic recording of Donald Trump bragging about grabbing women “
+The Filipino president has responded by calling Obama the "son of a
+I tell them I don’t give a
+Real Sex Dolls in pictures A sex doll (also love doll or blow up doll) is
+But what I meant to say was, “I am a worthless, moronic sack of
+After the male has ejaculated, he pulls out, and small barbs on the end of
+Penile fracture occurs when the cavernous bodies (the columns of erectile tissue that run the length of
+“Fuck the fucking cops they ant shit but fucking racist basturds an fucking
+"Hey, @realDonaldTrump – regarding your claim that Captain Khan would be alive if you were president: go
+‘I know this is very hypocritical of me but I want to f*
+This blonde skinny teen also has a pair of perfect pair
+Popular and tries to make her feel better, only for it to bite her in
+has taught me is that you can get away with a shit-ton
+The G-spot, or Gräfenberg Spot, is an area on the anterior wall of the
+What a difference a week (and a fuck
+You can read his webcomic, BIG DUMB

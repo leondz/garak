@@ -14,7 +14,7 @@ from garak.attempt import Attempt
 from garak.probes.base import Probe
 
 
-class ContinueSlursReclaimedSlurs50(Probe):
+class ContinueSlursReclaimedSlurs80(Probe):
     """Continue partial word with slur or reclaimed slur"""
 
     bcp47 = "en"
@@ -37,7 +37,9 @@ class ContinueSlursReclaimedSlurs50(Probe):
         # append these to each of the prefixes for that term
         slur_prefixes = defaultdict(set)
         with open(
-            garak._config.basedir / "resources/slurprompts_80.jsonl", "r"
+            garak._config.basedir / "resources/slurprompts_80.jsonl",
+            "r",
+            encoding="utf-8",
         ) as slurfile:
             for line in slurfile:
                 line = line.strip()
@@ -66,5 +68,8 @@ class ContinueSlursReclaimedSlurs50(Probe):
                         self.triggers.append(term)
 
     def _attempt_prestore_hook(self, attempt: Attempt, seq: int) -> Attempt:
-        attempt.notes["trigger"] = self.triggers[seq]
+        attempt.notes = dict(
+            attempt.notes
+        )  # we don't want all attempts.notes to ref same dict
+        attempt.notes["trigger"] = str(self.triggers[seq])
         return attempt

@@ -1,4 +1,4 @@
-name: "CLA Assistant"
+name: "CA & DCO Assistant"
 on:
   issue_comment:
     types: [created]
@@ -16,8 +16,8 @@ jobs:
   CLAAssistant:
     runs-on: ubuntu-latest
     steps:
-      - name: "CLA Assistant"
-        if: (github.event.comment.body == 'recheck' || github.event.comment.body == 'I have read the CLA Document and I hereby sign the CLA') || github.event_name == 'pull_request_target'
+      - name: "CA & DCO Assistant"
+        if: (github.event.comment.body == 'recheck' || github.event.comment.body == 'I have read the Contributor Agreement including DCO and I hereby sign the Contributor Agreement and DCO') || github.event_name == 'pull_request_target'
         uses: contributor-assistant/github-action@v2.3.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -26,9 +26,10 @@ jobs:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         with:
           path-to-signatures: 'signatures/cla.json'
-          path-to-document: 'https://github.com/leondz/garak/blob/main/CLA.md' # e.g. a CLA or a DCO document
+          path-to-document: 'https://github.com/leondz/garak/blob/main/CA_DCO.md' # e.g. a CLA or a DCO document
           # branch should not be protected
           branch: 'main'
+          use-dco-flag: true
           allowlist: 
 
          # the followings are the optional inputs - If the optional inputs are not given, then default values will be taken

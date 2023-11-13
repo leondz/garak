@@ -43,7 +43,10 @@ class HFInternalServerError(Exception):
 
 
 class Pipeline(Generator):
+    """Get text generations from a locally-run Hugging Face pipeline"""
+
     generator_family_name = "Hugging Face 🤗 pipeline"
+    supports_multiple_generations = True
 
     def __init__(self, name, do_sample=True, generations=10, device=0):
         self.fullname, self.name = name, name.split("/")[-1]
@@ -72,7 +75,7 @@ class Pipeline(Generator):
         if args and "deprefix" in args and args.deprefix == True:
             self.deprefix_prompt = True
 
-    def generate(self, prompt):
+    def _call_model(self, prompt: str) -> List[str]:
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=UserWarning)
             try:
@@ -88,11 +91,16 @@ class Pipeline(Generator):
                     num_return_sequences=self.generations,
                     # max_length = 1024,
                 )
-            except:
+            except Exception:
                 raw_output = []  # could handle better than this..
-        generations = [
-            i["generated_text"] for i in raw_output
-        ]  # generator returns 10 outputs by default in __init__
+
+        if raw_output is not None:
+            generations = [
+                i["generated_text"] for i in raw_output
+            ]  # generator returns 10 outputs by default in __init__
+        else:
+            generations = []
+
         if not self.deprefix_prompt:
             return generations
         else:
@@ -100,7 +108,11 @@ class Pipeline(Generator):
 
 
 class InferenceAPI(Generator):
+    """Get text generations from Hugging Face Inference API"""
+
     generator_family_name = "Hugging Face 🤗 Inference API"
+    supports_multiple_generations = True
+    import requests
 
     def __init__(self, name="", generations=10):
         self.api_url = "https://api-inference.huggingface.co/models/" + name
@@ -117,13 +129,19 @@ class InferenceAPI(Generator):
             logging.info(message)
         self.deprefix_prompt = True
         self.max_time = 20
+        self.wait_for_model = False
 
     @backoff.on_exception(
         backoff.fibo,
-        (HFRateLimitException, HFLoadingException, HFInternalServerError),
+        (
+            HFRateLimitException,
+            HFLoadingException,
+            HFInternalServerError,
+            requests.Timeout,
+        ),
         max_value=125,
     )
-    def _call_api(self, prompt: str) -> List[str]:
+    def _call_model(self, prompt: str) -> List[str]:
         import json
         import requests
 
@@ -145,7 +163,11 @@ class InferenceAPI(Generator):
             payload["parameters"]["do_sample"] = True
 
         req_response = requests.request(
-            "POST", self.api_url, headers=self.headers, data=json.dumps(payload)
+            "POST",
+            self.api_url,
+            headers=self.headers,
+            data=json.dumps(payload),
+            timeout=(20, 90),  # (connect, read)
         )
 
         if req_response.status_code == 503:
@@ -163,7 +185,8 @@ class InferenceAPI(Generator):
                     response["error"][0], str
                 ):
                     logging.error(
-                        f"Received list of errors, processing first only. Response: {response['error']}"
+                        "Received list of errors, processing first only. Response: %s",
+                        response["error"],
                     )
                     response["error"] = response["error"][0]
 
@@ -174,8 +197,7 @@ class InferenceAPI(Generator):
                         raise HFInternalServerError()
                     else:
                         raise IOError(
-                            f"🤗 reported: {req_response.status_code} "
-                            + response["error"]
+                            f"🤗 reported: {req_response.status_code} {response['error']}"
                         )
             else:
                 raise TypeError(
@@ -188,13 +210,15 @@ class InferenceAPI(Generator):
                 f"Unsure how to parse 🤗 API response type: {response}, please open an issue at https://github.com/leondz/garak/issues including this message"
             )
 
-    def generate(self, prompt):
+    def _pre_generate_hook(self):
         self.wait_for_model = False
-        return self._call_api(prompt)
 
 
 class Model(Generator):
+    """Get text generations from a locally-run Hugging Face model"""
+
     generator_family_name = "Hugging Face 🤗 model"
+    supports_multiple_generations = True
 
     def __init__(self, name, do_sample=True, generations=10, device=0):
         self.fullname, self.name = name, name.split("/")[-1]
@@ -248,7 +272,7 @@ class Model(Generator):
         self.generation_config.eos_token_id = self.model.config.eos_token_id
         self.generation_config.pad_token_id = self.model.config.eos_token_id
 
-    def generate(self, prompt):
+    def _call_model(self, prompt):
         self.generation_config.max_new_tokens = self.max_tokens
         self.generation_config.do_sample = self.do_sample
         self.generation_config.num_return_sequences = self.generations
@@ -277,10 +301,6 @@ class Model(Generator):
                 outputs, skip_special_tokens=True, device=self.device
             )
 
-            """
-            except:
-                text_output = [""] * self.generations  # could handle better than this..
-            """
         if not self.deprefix_prompt:
             return text_output
         else:

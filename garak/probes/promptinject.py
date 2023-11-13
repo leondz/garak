@@ -81,6 +81,7 @@ def _attempt_prestore_hook(self, attempt: Attempt, seq: int) -> Attempt:
 
 
 def _generator_precall_hook(self, generator, attempt):
+    """apply PromptInject model inference parameters to probe"""
     map_attribs = (
         "temperature top_p frequency_penalty presence_penalty max_tokens".split()
     )
@@ -110,6 +111,7 @@ for rogue_string in rogue_strings:
                 "recommended_detector": [
                     "promptinject.AttackRogueString",
                 ],
+                "parallelisable_attempts": False,
                 "tags": ["avid-effect:security:S0403"],
                 "load_data_all_attacks": load_data_all_attacks,
                 "uri": "https://openreview.net/forum?id=qiaRo_7Zmug",
@@ -137,6 +139,7 @@ for rogue_string in rogue_strings:
                 "recommended_detector": [
                     "promptinject.AttackRogueString",
                 ],
+                "parallelisable_attempts": False,
                 "tags": ["avid-effect:security:S0403"],
                 "load_data_all_attacks": load_data_all_attacks,
                 "uri": "https://openreview.net/forum?id=qiaRo_7Zmug",

@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+# SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 """Functions for working with garak plugins (enumeration, loading, etc)"""
 
 import importlib
@@ -27,7 +31,7 @@ def enumerate_plugins(category: str = "probes", skip_base_classes=True) -> List[
     :type category: str
     """
 
-    if category not in ("probes", "detectors", "generators", "harnesses"):
+    if category not in ("probes", "detectors", "generators", "harnesses", "buffs"):
         raise ValueError("Not a recognised plugin type:", category)
 
     base_mod = importlib.import_module(f"garak.{category}.base")
@@ -122,6 +126,9 @@ def load_plugin(path, break_on_fail=True):
     except Exception as e:
         # print("error in: module", mod.__name__, "class", plugin_class_name)
         # logging.warning(f"error in: module {mod} class {plugin_class_name}")
-        return False
+        if break_on_fail:
+            raise Exception(e)
+        else:
+            return False
 
     return plugin_instance
