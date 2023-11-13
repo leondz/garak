@@ -268,6 +268,7 @@ def main(arguments=[]) -> None:
                 _config.args.model_name
             )
         generator.generations = _config.args.generations
+        generator.seed = _config.args.seed
 
         if _config.args.probes == "all":
             probe_names = [

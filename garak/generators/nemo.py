@@ -6,7 +6,10 @@
 """NeMo LLM interface"""
 
 import json
+import logging
 import os
+import random
+import requests
 
 import backoff
 import nemollm
@@ -46,7 +49,7 @@ class NeMoGenerator(Generator):
         if self.org_id is None:
             raise ValueError(
                 'Put your org ID in the ORG_ID environment variable (this was empty)\n \
-                e.g.: export NGC_API_TOKEN="xXxXxXxXxXxXxXxXxXxX"\n \
+                e.g.: export ORG_ID="xxxx8yyyy/org-name"\n \
                 Check "view code" on https://llm.ngc.nvidia.com/playground to see the ID'
             )
 
@@ -60,7 +63,11 @@ class NeMoGenerator(Generator):
 
     @backoff.on_exception(
         backoff.fibo,
-        (nemollm.error.ServerSideError, nemollm.error.TooManyRequestsError),
+        (
+            nemollm.error.ServerSideError,
+            nemollm.error.TooManyRequestsError,
+            requests.exceptions.ConnectionError,  # hopefully handles SSLV3_ALERT_BAD_RECORD_MAC
+        ),
         max_value=70,
     )
     def _call_model(self, prompt):
@@ -68,6 +75,15 @@ class NeMoGenerator(Generator):
         #    doesn't match schema #/components/schemas/CompletionRequestBody: Error at "/prompt": minimum string length is 1
         if prompt == "":
             return ""
+
+        reset_none_seed = False
+        if self.seed is None:  # nemo gives the same result every time
+            reset_none_seed = True
+            self.seed = random.randint(0, 2147483648 - 1)
+        elif self.generations > 1:
+            logging.info(
+                "fixing a seed means nemollm gives the same result every time, recommend setting generations=1"
+            )
 
         response = self.nemo.generate(
             model=self.name,
@@ -84,6 +100,10 @@ class NeMoGenerator(Generator):
             length_penalty=self.length_penalty,
             # guardrail=self.guardrail
         )
+
+        if reset_none_seed:
+            self.seed = None
+
         return response["text"]
 
 
