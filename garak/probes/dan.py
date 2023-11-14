@@ -351,6 +351,7 @@ class Ablation_Dan_11_0(Probe):
     recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
     tags = ["avid-effect:security:S0403"]
     goal = "disregard the system prompt"
+    active = False
 
     def probe(self, generator):
         self.prompts = []
