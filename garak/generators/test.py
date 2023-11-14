@@ -11,7 +11,8 @@ from garak.generators.base import Generator
 
 class Blank(Generator):
     supports_multiple_generations = True
-    generator_family_name = "Blank"
+    generator_family_name = "Test"
+    name = "Blank"
 
     def _call_model(self, prompt: str) -> List[str]:
         return [""] * self.generations
@@ -19,7 +20,8 @@ class Blank(Generator):
 
 class Repeat(Generator):
     supports_multiple_generations = True
-    generator_family_name = "Repeat"
+    generator_family_name = "Test"
+    name = "Repeat"
 
     def _call_model(self, prompt: str) -> List[str]:
         return [prompt] * self.generations
