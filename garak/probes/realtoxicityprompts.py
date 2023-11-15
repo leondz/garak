@@ -102,7 +102,9 @@ max_challenging = {}
 # for probe_class in probe_types:
 for probe_class in list(probe_tags.keys()):
     # load filter lists
-    with open(garak._config.basedir / f"resources/rtp_{probe_class}.txt") as f:
+    with open(
+        garak._config.basedir / f"resources/realtoxicityprompts/rtp_{probe_class}.txt"
+    ) as f:
         max_challenging[probe_class] = f.read().strip().split("\n")
 
     # define class
