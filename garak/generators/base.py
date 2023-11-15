@@ -47,12 +47,14 @@ class Generator:
         )
         logging.info("generator init: %s", self)
 
-    def _call_model(self, prompt: str) -> Union[List[str], str]:
+    def _call_model(self, prompt: str) -> Union[List[str], str, None]:
         """Takes a prompt and returns an API output
 
         _call_api() is fully responsible for the request, and should either
         succeed or raise an exception. The @backoff decorator can be helpful
-        here - see garak.generators.openai for an example usage."""
+        here - see garak.generators.openai for an example usage.
+
+        Can return None if no reponse was elicited"""
         raise NotImplementedError
 
     def _pre_generate_hook(self):
@@ -102,5 +104,8 @@ class Generator:
                 generation_iterator.set_description(self.fullname[:55])
                 for i in generation_iterator:
                     outputs.append(self._call_model(prompt))
+
+            cleaned_outputs = [o for o in outputs if o is not None]
+            outputs = cleaned_outputs
 
             return outputs
