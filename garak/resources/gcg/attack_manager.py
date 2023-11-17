@@ -12,8 +12,7 @@ import torch
 import torch.multiprocessing as mp
 import torch.nn as nn
 from fastchat.model import get_conversation_template
-from transformers import (AutoModelForCausalLM, AutoTokenizer, GPT2LMHeadModel, GPTJForCausalLM, GPTNeoXForCausalLM,
-                          LlamaForCausalLM)
+from transformers import GPT2LMHeadModel, GPTJForCausalLM, GPTNeoXForCausalLM, LlamaForCausalLM
 from garak.generators.huggingface import Model
 from logging import getLogger
 
@@ -1133,7 +1132,7 @@ class IndividualPromptAttack(object):
         self.test_prefixes = test_prefixes
         self.logfile = logfile
         self.managers = managers
-        self.mpa_kewargs = IndividualPromptAttack.filter_mpa_kwargs(**kwargs)
+        self.mpa_kwargs = IndividualPromptAttack.filter_mpa_kwargs(**kwargs)
 
         if logfile is not None:
             with open(logfile, 'w') as f:
@@ -1260,9 +1259,9 @@ class IndividualPromptAttack(object):
                 self.test_goals,
                 self.test_targets,
                 self.test_workers,
-                **self.mpa_kewargs
+                **self.mpa_kwargs
             )
-            attack.run(
+            control_str, loss, steps = attack.run(
                 n_steps=n_steps,
                 batch_size=batch_size,
                 topk=topk,
@@ -1453,7 +1452,6 @@ class EvaluateAttack(object):
                     total_jb.append(curr_jb)
                     total_em.append(curr_em)
                     total_outputs.append(all_outputs)
-                    # print(all_outputs)
                 else:
                     test_total_jb.append(curr_jb)
                     test_total_em.append(curr_em)
@@ -1572,57 +1570,46 @@ def get_workers(model_names: list, n_train_models=1, evaluate=False):
     return workers[:n_train_models], workers[n_train_models:]
 
 
-def get_goals_and_targets(goals: list[str], targets: list[str], test_goals: list[str], test_targets: list[str],
-                          offset: int, **kwargs):
+def get_goals_and_targets(train_data: str, test_data: str, offset: int = 0, n_train: int = 0, n_test: int = 0):
     """
     Get goals and targets for GCG attack.
 
     Args:
-        goals (list[str]): List of training goal strings
-        targets (list: [str]): List of training target strings
-        test_goals (list[str]): List of test goal strings
-        test_targets (list[str]): List of test target strings
-        offset (int): Offset to read data from
-    Optional Kwargs:
         train_data (str): Path to CSV of training data
-        n_train_data(int): Number of training examples to use
         test_data (str): Path to CSV of test data
-        n_test_data (int): Number of test examples to use (Will use train_data if test_data is not specified.)
+        offset (int): Offset to begin reading data from.
+        n_train(int): Number of training examples to use
+        n_test (int): Number of test examples to use (Will use train_data if test_data is not specified.)
 
     Returns:
-        Tuple of goals, targets, test_goals, test_targets
+        Tuple of train_goals, train_targets, test_goals, test_targets
     """
 
-    if "train_data" in kwargs:
-        train_data = pd.read_csv(kwargs["train_data"])
-        targets = train_data['target'].tolist()[offset:offset + kwargs["n_train_data"]]
-        if 'goal' in train_data.columns:
-            goals = train_data['goal'].tolist()[offset:offset + kwargs["n_train_data"]]
+    train_data = pd.read_csv(train_data)
+    targets = train_data['target'].tolist()
+    if 'goal' in train_data.columns:
+        goals = train_data['goal'].tolist()
+    else:
+        goals = [""] * len(targets)
+    if offset > 0 or n_train > 0:
+        targets = targets[offset:offset + n_train]
+        goals = goals[offset:offset + n_train]
+
+    if test_data:
+        test_data = pd.read_csv(test_data)
+        test_targets = test_data['target'].tolist()
+        if 'goal' in test_data.columns:
+            test_goals = test_data['goal'].tolist()
         else:
-            goals = [""] * len(targets)
-        if "test_data" in kwargs:
-            test_data = pd.read_csv(kwargs["test_data"])
-            if "n_test_data" in kwargs:
-                n_test_data = kwargs["n_test_data"]
-            else:
-                n_test_data = len(test_data)
-            test_targets = test_data['target'].tolist()[offset:offset + n_test_data]
-            if 'goal' in test_data.columns:
-                test_goals = test_data['goal'].tolist()[offset:offset + n_test_data]
-            else:
-                test_goals = [""] * len(test_targets)
-        elif "n_test_data" in kwargs:
-            test_targets = train_data['target'].tolist()[
-                           offset + kwargs["n_train_data"]:offset + kwargs["n_train_data"] + kwargs["n_test_data"]]
-            if 'goal' in train_data.columns:
-                if "n_train_data" in kwargs:
-                    n_train_data = kwargs["n_train_data"]
-                else:
-                    n_train_data = 0
-                test_goals = train_data['goal'].tolist()[
-                             offset + n_train_data:offset + n_train_data + kwargs["n_test_data"]]
-            else:
-                test_goals = [""] * len(test_targets)
+            test_goals = [""] * len(test_targets)
+    else:
+        if n_test == 0:
+            n_test = len(targets) - n_train
+        test_targets = train_data['target'].tolist()[offset + n_train:offset + n_train + n_test]
+        if 'goal' in train_data.columns:
+            test_goals = train_data['goal'].tolist()[offset + n_train:offset + n_train + n_test]
+        else:
+            test_goals = [""] * len(test_targets)
 
     assert len(goals) == len(targets)
     assert len(test_goals) == len(test_targets)
