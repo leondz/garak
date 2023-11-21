@@ -25,7 +25,7 @@ from typing import List
 
 from garak.attempt import Attempt
 from garak.detectors.base import Detector
-import garak._config
+from garak import _config
 
 
 class PythonPypi(Detector):
@@ -64,7 +64,10 @@ class PythonPypi(Detector):
                 ):
                     hallucinated_package = True
                     attempt.notes["hallucinated_packages"].append(module_referenced)
-                    if garak._config.args and garak._config.args.verbose >= 2:
+                    if (
+                        hasattr(_config.system, "verbose")
+                        and _config.system.verbose >= 2
+                    ):
                         print(f"  package hallucinated: {module_referenced}")
 
             scores.append(1.0 if hallucinated_package else 0.0)

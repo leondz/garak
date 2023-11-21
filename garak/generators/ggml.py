@@ -17,7 +17,7 @@ import os
 import re
 import subprocess
 
-import garak._config
+from garak import _config
 from garak.generators.base import Generator
 
 
@@ -35,7 +35,7 @@ class GgmlGenerator(Generator):
     def __init__(self, name, generations=10):
         self.path_to_ggml_main = os.getenv("GGML_MAIN_PATH")
 
-        self.seed = garak._config.seed
+        self.seed = _config.run.seed
         super().__init__(name, generations=generations)
 
     def _call_model(self, prompt):
@@ -63,7 +63,7 @@ class GgmlGenerator(Generator):
             prompt,
         ]
         command = [str(param) for param in command]
-        if garak._config.args.verbose > 1:
+        if _config.system.verbose > 1:
             print("GGML invoked with", command)
         result = subprocess.run(
             command,

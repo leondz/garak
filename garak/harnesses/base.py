@@ -18,7 +18,6 @@ import json
 import logging
 from typing import List
 
-from colorama import Fore, Style
 import tqdm
 
 from garak.attempt import *
@@ -71,13 +70,13 @@ class Harness:
         """
         if not detectors:
             logging.warning("No detectors, nothing to do")
-            if _config.args and _config.args.verbose >= 2:
+            if hasattr(_config.system, "verbose") and _config.system.verbose >= 2:
                 print("No detectors, nothing to do")
             return None
 
         if not probes:
             logging.warning("No probes, nothing to do")
-            if _config.args and _config.args.verbose >= 2:
+            if hasattr(_config.system, "verbose") and _config.system.verbose >= 2:
                 print("No probes, nothing to do")
             return None
 

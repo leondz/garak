@@ -8,9 +8,8 @@ import logging
 from typing import List, Union
 
 from colorama import Fore, Style
-import tqdm
 
-import garak._config
+from garak import _config
 
 
 class Generator:
@@ -80,17 +79,17 @@ class Generator:
         else:
             outputs = []
             if (
-                garak._config.args
-                and garak._config.args.parallel_requests
-                and isinstance(garak._config.args.parallel_requests, int)
-                and garak._config.args.parallel_requests > 1
+                hasattr(_config.system, "parallel_requests")
+                and _config.system.parallel_requests
+                and isinstance(_config.system.parallel_requests, int)
+                and _config.system.parallel_requests > 1
             ):
                 from multiprocessing import Pool
 
                 bar = tqdm.tqdm(total=self.generations, leave=False)
                 bar.set_description(self.fullname[:55])
 
-                with Pool(garak._config.args.parallel_requests) as pool:
+                with Pool(_config.system.parallel_requests) as pool:
                     for result in pool.imap_unordered(
                         self._call_model, [prompt] * self.generations
                     ):

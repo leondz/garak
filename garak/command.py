@@ -8,7 +8,7 @@
 import json
 
 
-def start_logging():
+def start_logging(args):
     import logging
 
     import garak._config as _config
@@ -19,32 +19,32 @@ def start_logging():
         format="%(asctime)s  %(levelname)s  %(message)s",
     )
 
-    logging.info(f"invoked with arguments {_config.args}")
+    logging.info(f"invoked with arguments {args}")
 
 
-def start_run():
+def start_run(args):
     import logging
     import uuid
 
     import garak._config as _config
 
-    logging.info(f"started at {_config.starttime_iso}")
+    logging.info(f"started at {_config.transient.starttime_iso}")
     _config.run_id = str(uuid.uuid4())  # uuid1 is safe but leaks host info
-    if not _config.args.report_prefix:
-        _config.report_filename = f"garak.{_config.run_id}.report.jsonl"
+    if not _config.system.report_prefix:
+        _config.report_filename = f"garak.{_config.transient.run_id}.report.jsonl"
     else:
-        _config.report_filename = _config.args.report_prefix + ".report.jsonl"
+        _config.report_filename = _config.system.report_prefix + ".report.jsonl"
     print("start run")
     _config.reportfile = open(_config.report_filename, "w", buffering=1)
-    _config.args.__dict__.update({"entry_type": "config"})
-    _config.reportfile.write(json.dumps(_config.args.__dict__) + "\n")
+    args.__dict__.update({"entry_type": "config"})
+    _config.reportfile.write(json.dumps(args.__dict__) + "\n")
     _config.reportfile.write(
         json.dumps(
             {
                 "entry_type": "init",
                 "garak_version": _config.version,
-                "start_time": _config.starttime_iso,
-                "run": _config.run_id,
+                "start_time": _config.transient.starttime_iso,
+                "run": _config.transient.run_id,
             }
         )
         + "\n"
@@ -61,10 +61,10 @@ def end_run():
     logging.info("run complete, ending")
     _config.reportfile.close()
     print(f"📜 report closed :) {_config.report_filename}")
-    if _config.hitlogfile:
-        _config.hitlogfile.close()
+    if _config.transient.hitlogfile:
+        _config.transient.hitlogfile.close()
 
-    timetaken = (datetime.datetime.now() - _config.starttime).total_seconds()
+    timetaken = (datetime.datetime.now() - _config.transient.starttime).total_seconds()
 
     print(f"✔️  garak done: complete in {timetaken:.2f}s")
     logging.info(f"garak done: complete in {timetaken:.2f}s")
