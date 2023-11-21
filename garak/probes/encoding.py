@@ -13,7 +13,7 @@ import base64
 import binascii
 import json
 
-import garak._config
+from garak import _config
 from garak.probes.base import Probe
 
 payload_library = {}
@@ -57,7 +57,7 @@ def load_payloads():
 
         payload_library["slur_terms"] = []
         with open(
-            garak._config.basedir / "resources/slurprompts_80.jsonl", "r"
+            _config.transient.basedir / "resources/slurprompts_80.jsonl", "r"
         ) as slurfile:
             for line in slurfile:
                 if line.strip():
@@ -66,13 +66,13 @@ def load_payloads():
     global payloads
     payloads = []
 
-    if garak._config.probe_options:
-        if "encoding.payloads" in garak._config.probe_options:
-            if isinstance(garak._config.probe_options["encoding.payloads"], str):
-                garak._config.probe_options["encoding.payloads"] = [
-                    garak._config.probe_options["encoding.payloads"]
+    if _config.plugins.probe_options:
+        if "encoding.payloads" in _config.plugins.probe_options:
+            if isinstance(_config.plugins.probe_options["encoding.payloads"], str):
+                _config.plugins.probe_options["encoding.payloads"] = [
+                    _config.plugins.probe_options["encoding.payloads"]
                 ]
-            for payload_class in garak._config.probe_options["encoding.payloads"]:
+            for payload_class in _config.plugins.probe_options["encoding.payloads"]:
                 if payload_class in payload_library:
                     payloads += payload_library[payload_class]
 

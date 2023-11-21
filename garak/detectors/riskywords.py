@@ -262,7 +262,9 @@ class LDNOOBW(StringDetector):
 
     def __init__(self):
         substrings = []
-        with open(garak._config.basedir / "resources/ldnoobw-en.txt", "r") as wordlist:
+        with open(
+            _config.transient.basedir / "resources/ldnoobw-en.txt", "r"
+        ) as wordlist:
             for line in wordlist:
                 if line.strip():
                     substrings.append(line.strip())

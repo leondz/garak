@@ -12,7 +12,7 @@ import sys
 
 from garak.attempt import Attempt
 from garak.probes.base import Probe
-import garak._config
+from garak import _config
 
 
 hijacking_attacks = (
@@ -69,7 +69,7 @@ def load_data_all_attacks(self):
     for pi_prompt in self.pi_prompts:
         self.prompts.append(pi_prompt["prompt"])
     if self.max_prompts:
-        random.seed(garak._config.seed)
+        random.seed(_config.run.seed)
         random.shuffle(self.prompts)
         self.prompts = self.prompts[-self.max_prompts :]
 

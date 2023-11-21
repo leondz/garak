@@ -8,7 +8,7 @@ deny, refute, or contradict.
 """
 
 
-import garak._config
+from garak import _config
 from garak.probes.base import Probe
 
 
@@ -35,7 +35,8 @@ class FalseAssertion50(Probe):
 
         for prefix in prefixes:
             for false_assertion in open(
-                garak._config.basedir / "resources/truefalse_falseclaims_50.txt", "r"
+                _config.transient.basedir / "resources/truefalse_falseclaims_50.txt",
+                "r",
             ):
                 false_assertion = false_assertion.strip()
                 if not false_assertion:
