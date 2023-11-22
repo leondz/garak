@@ -11,7 +11,7 @@ import os
 import backoff
 import octoai.errors
 
-import garak._config
+from garak import _config
 from garak.generators.base import Generator
 
 
@@ -34,8 +34,8 @@ class OctoGenerator(Generator):
         self.name = name
         self.fullname = f"{self.generator_family_name} {self.name}"
         self.seed = 9
-        if garak._config.seed:
-            self.seed = garak._config.seed
+        if hasattr(_config.run, "seed"):
+            self.seed = _config.run.seed
 
         self.octo_model = "-".join(
             self.name.replace("-demo", "").replace("https://", "").split("-")[:-1]

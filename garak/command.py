@@ -11,7 +11,7 @@ import json
 def start_logging(args):
     import logging
 
-    import garak._config as _config
+    from garak import _config
 
     logging.basicConfig(
         filename="garak.log",
@@ -26,7 +26,7 @@ def start_run(args):
     import logging
     import uuid
 
-    import garak._config as _config
+    from garak import _config
 
     logging.info(f"started at {_config.transient.starttime_iso}")
     _config.run_id = str(uuid.uuid4())  # uuid1 is safe but leaks host info
@@ -56,7 +56,7 @@ def end_run():
     import datetime
     import logging
 
-    import garak._config as _config
+    from garak import _config
 
     logging.info("run complete, ending")
     _config.reportfile.close()
@@ -117,7 +117,6 @@ def print_buffs():
 def plugin_info(plugin_name):
     import inspect
 
-    import garak._config as _config
     from garak._plugins import enumerate_plugins, load_plugin
 
     # load plugin

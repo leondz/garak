@@ -41,6 +41,9 @@ system = StubDataclass()
 run = StubDataclass()
 plugins = StubDataclass()
 
+# this is so popular, let's set a default. what other defaults are worth setting? what's the policy?
+run.seed = None
+
 # placeholder
 # generator, probe, detector, buff = {}, {}, {}, {}
 

@@ -21,8 +21,8 @@ from typing import List
 import tqdm
 
 from garak.attempt import *
-import garak._config as _config
-import garak._plugins as _plugins
+from garak import _config
+from garak import _plugins
 
 
 class Harness:

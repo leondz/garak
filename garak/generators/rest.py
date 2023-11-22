@@ -15,9 +15,8 @@ from typing import List
 import requests
 
 import backoff
-import tqdm
 
-import garak._config
+from garak import _config
 from garak.generators.base import Generator
 
 
@@ -30,7 +29,7 @@ class RESTRateLimitError(Exception):
 class RestGenerator(Generator):
     """Generic API interface for REST models
 
-    Uses the following options from _config.generator_options:
+    Uses the following options from _config.run.generator_options:
     * uri - (optional) the URI of the REST endpoint; this can also be passed
             in --model_name
     * name - a short name for this service; defaults to the uri
@@ -98,7 +97,7 @@ class RestGenerator(Generator):
     def __init__(self, uri=None, generations=10):
         self.uri = uri
         self.name = uri
-        self.seed = garak._config.seed
+        self.seed = _config.run.seed
         self.headers = {}
         self.method = "post"
         self.req_template = "$INPUT"
@@ -111,7 +110,7 @@ class RestGenerator(Generator):
         self.retry_5xx = True
         self.key_env_var = "REST_API_KEY"
 
-        if "generator_options" in dir(garak._config):
+        if "generator_options" in dir(_config.plugins):
             for field in (
                 "name",
                 "uri",
@@ -123,19 +122,19 @@ class RestGenerator(Generator):
                 "response_timeout",
                 "ratelimit_codes",
             ):
-                if field in garak._config.generator_options:
-                    setattr(self, field, garak._config.generator_options[field])
+                if field in _config.plugins.generator_options:
+                    setattr(self, field, _config.plugins.generator_options[field])
 
-            if "req_template_json_object" in garak._config.generator_options:
+            if "req_template_json_object" in _config.plugins.generator_options:
                 self.req_template = json.dumps(
-                    garak._config.generator_options["req_template_json_object"]
+                    _config.plugins.generator_options["req_template_json_object"]
                 )
 
             if (
                 self.response_json
-                and "response_json_field" in garak._config.generator_options
+                and "response_json_field" in _config.plugins.generator_options
             ):
-                self.response_json_field = garak._config.generator_options[
+                self.response_json_field = _config.plugins.generator_options[
                     "response_json_field"
                 ]
 
