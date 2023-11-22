@@ -197,14 +197,47 @@ def main(arguments=[]) -> None:
         help="generate AutoDAN prompts; requires --prompt_options with JSON containing a prompt and target",
     )
 
-    args = parser.parse_args(arguments)
-
     import garak.command as command
-
     import logging
 
-    command.start_logging(args)
+    command.start_logging()
+
+    logging.debug("args - raw argument string received: %s", arguments)
+
+    args = parser.parse_args(arguments)
+    logging.debug("args - full argparse: %s", args)
+
+    # load site config before loading CLI config
     _config.load_config(run_config_filename=args.config)
+
+    # extract what was actually passed on CLI
+    aux_parser = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)
+    for arg, val in vars(args).items():
+        if isinstance(val, bool):
+            if val:
+                aux_parser.add_argument("--" + arg, action="store_true")
+            else:
+                aux_parser.add_argument("--" + arg, action="store_false")
+        else:
+            aux_parser.add_argument("--" + arg)
+
+    # cli_args contains items specified on CLI; the rest not to be overridden
+    cli_args, _ = aux_parser.parse_known_args(arguments)
+
+    # exception: action=count. only verbose uses this, let's bubble it through
+    cli_args.verbose = args.verbose
+
+    # also force command vars through to cli_args, even if false, to make command code easier
+    command_options = "list_detectors list_probes list_generators list_buffs plugin_info interactive report version".split()
+    for command_option in command_options:
+        setattr(cli_args, command_option, getattr(args, command_option))
+
+    logging.debug("args - cli_args&commands stored: %s", cli_args)
+
+    print("ARGS", args)
+    print("CLI_ARGS w commands", cli_args)
+    del args
+    args = cli_args
 
     import sys
     import importlib
@@ -227,7 +260,7 @@ def main(arguments=[]) -> None:
         _config.transient.reportfile = open(
             report_filename, "w", buffering=1, encoding="utf-8"
         )
-        args.__dict__.update({"entry_type": "config"})
+        args.__dict__.update({"entry_type": "args config"})
         _config.transient.reportfile.write(json.dumps(args.__dict__) + "\n")
         _config.transient.reportfile.write(
             json.dumps(

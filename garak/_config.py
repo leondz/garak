@@ -66,6 +66,7 @@ def _store_config(settings_files):
 
 def load_base_config():
     settings_files = [str(transient.basedir / "resources/garak.core.yaml")]
+    logging.debug("Loading configs from: %s", ",".join(settings_files))
     _store_config(settings_files=settings_files)
 
 

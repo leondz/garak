@@ -8,10 +8,8 @@
 import json
 
 
-def start_logging(args):
+def start_logging():
     import logging
-
-    from garak import _config
 
     logging.basicConfig(
         filename="garak.log",
@@ -19,7 +17,7 @@ def start_logging(args):
         format="%(asctime)s  %(levelname)s  %(message)s",
     )
 
-    logging.info("invoked with arguments %s", str(args))
+    logging.info("invoked")
 
 
 def start_run(args):
