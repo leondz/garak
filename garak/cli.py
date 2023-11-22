@@ -6,6 +6,9 @@
 """Flow for invoking garak from the command line"""
 
 
+from torch import diag_embed
+
+
 def main(arguments=[]) -> None:
     import datetime
 
@@ -30,7 +33,7 @@ def main(arguments=[]) -> None:
     ## SYSTEM
     parser.add_argument(
         "--verbose",
-        "-v",
+        # "-v",
         action="count",
         default=_config.system.verbose,
         help="add one or more times to increase verbosity of output during runtime",
@@ -61,7 +64,11 @@ def main(arguments=[]) -> None:
 
     ## RUN
     parser.add_argument(
-        "--seed", "-s", type=int, default=_config.run.seed, help="random seed"
+        "--seed",
+        # "-s",
+        type=int,
+        default=_config.run.seed,
+        help="random seed",
     )
     parser.add_argument(
         "--deprefix",
@@ -76,7 +83,7 @@ def main(arguments=[]) -> None:
     )
     parser.add_argument(
         "--generations",
-        "-g",
+        # "-g",
         type=int,
         default=_config.run.generations,
         help="number of generations per prompt",
@@ -89,13 +96,13 @@ def main(arguments=[]) -> None:
     # generator
     parser.add_argument(
         "--model_type",
-        "-m",
+        # "-m",
         type=str,
         help="module and optionally also class of the generator, e.g. 'huggingface', or 'openai'",
     )
     parser.add_argument(
         "--model_name",
-        "-n",
+        # "-n",
         type=str,
         default=None,
         help="name of the model, e.g. 'timdettmers/guanaco-33b-merged'",
@@ -103,7 +110,7 @@ def main(arguments=[]) -> None:
     generator_args = parser.add_mutually_exclusive_group()
     generator_args.add_argument(
         "--generator_option_file",
-        "-G",
+        # "-G",
         type=str,
         help="path to JSON file containing options to pass to generator",
     )
@@ -115,7 +122,7 @@ def main(arguments=[]) -> None:
     # probes
     parser.add_argument(
         "--probes",
-        "-p",
+        # "-p",
         type=str,
         default=_config.plugins.probe_spec,
         help="list of probe names to use, or 'all' for all (default).",
@@ -123,7 +130,7 @@ def main(arguments=[]) -> None:
     probe_args = parser.add_mutually_exclusive_group()
     probe_args.add_argument(
         "--probe_option_file",
-        "-P",
+        # "-P",
         type=str,
         help="path to JSON file containing options to pass to probes",
     )
@@ -135,7 +142,7 @@ def main(arguments=[]) -> None:
     # detectors
     parser.add_argument(
         "--detectors",
-        "-d",
+        # "-d",
         type=str,
         default=_config.plugins.detector_spec,
         help="list of detectors to use, or 'all' for all. Default is to use the probe's suggestion.",
@@ -148,7 +155,7 @@ def main(arguments=[]) -> None:
     # buffs
     parser.add_argument(
         "--buff",
-        "-b",
+        # "-b",
         type=str,
         default=_config.plugins.buff_spec,
         help="buff to use",
@@ -177,17 +184,20 @@ def main(arguments=[]) -> None:
         help="list available buffs/fuzzes",
     )
     parser.add_argument(
-        "--version", "-V", action="store_true", help="print version info & exit"
+        "--version",
+        # "-V",
+        action="store_true",
+        help="print version info & exit",
     )
     parser.add_argument(
         "--report",
-        "-r",
+        # "-r",
         type=str,
         help="process garak report into a list of AVID reports",
     )
     parser.add_argument(
         "--interactive",
-        "-I",
+        # "-I",
         action="store_true",
         help="Enter interactive probing mode",
     )
@@ -212,6 +222,7 @@ def main(arguments=[]) -> None:
 
     # extract what was actually passed on CLI
     aux_parser = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)
+    # print('VARS', vars(args))
     for arg, val in vars(args).items():
         if isinstance(val, bool):
             if val:
@@ -226,6 +237,9 @@ def main(arguments=[]) -> None:
 
     # exception: action=count. only verbose uses this, let's bubble it through
     cli_args.verbose = args.verbose
+
+    # print('ARGS', args)
+    # print('CLI_ARGS', cli_args)
 
     # also force command vars through to cli_args, even if false, to make command code easier
     command_options = "list_detectors list_probes list_generators list_buffs plugin_info interactive report version".split()
@@ -267,8 +281,7 @@ def main(arguments=[]) -> None:
         else:
             ignored_params.append((param, value))
 
-    # do a special thing for probe spec, detector spec, buff spec
-    # what's the special thing? put the spec into the _spec config value, if set at cli
+    # put plguin spec into the _spec config value, if set at cli
     if "probes" in args:
         _config.plugins.probe_spec = args.probes
     if "detectors" in args:
@@ -279,11 +292,9 @@ def main(arguments=[]) -> None:
     # do a special thing for probe options, generator options
     if _config.plugins.probe_options:
         try:
-            _config.probe_options = json.loads(_config.plugins.probe_options)
-        except Exception as e:
-            logging.warn("Failed to parse JSON probe_options:", e.args[0])
-
-    # -- after this point, args is only authoritative wrt. command choices
+            _config.plugins.probe_options = json.loads(_config.plugins.probe_options)
+        except json.JSONDecodeError as e:
+            logging.warning("Failed to parse JSON probe_options: %s", e.args[0])
 
     # process commands
     if args.interactive:
@@ -368,7 +379,7 @@ def main(arguments=[]) -> None:
             message = f"⚠️  Model type '{_config.plugins.model_type}' also needs a model name\n You can set one with e.g. --model_name \"billwurtz/gpt-1.0\""
             logging.error(message)
             raise ValueError(message)
-        print(f"📜 reporting to {report_filename}")
+        print(f"📜 reporting to {_config.transient.report_filename}")
         generator_module_name = args.model_type.split(".")[0]
         generator_mod = importlib.import_module(
             "garak.generators." + generator_module_name
@@ -383,16 +394,16 @@ def main(arguments=[]) -> None:
         else:
             generator_class_name = _config.plugins.model_type.split(".")[1]
 
-        if not args.model_name:
-            generator = getattr(generator_mod, generator_class_name)()
-        else:
-            generator = getattr(generator_mod, generator_class_name)(
-                _config.plugins.model_name
-            )
-        generator.generations = args.generations
-        generator.seed = args.seed
+        #        if 'model_name' not in args:
+        #            generator = getattr(generator_mod, generator_class_name)()
+        #        else:
+        generator = getattr(generator_mod, generator_class_name)(
+            _config.plugins.model_name
+        )
+        generator.generations = _config.run.generations
+        generator.seed = _config.run.seed
 
-        if args.generate_autodan:
+        if "generate_autodan" in args and args.generate_autodan:
             from garak.resources.autodan import autodan_generate
 
             try:
@@ -405,54 +416,14 @@ def main(arguments=[]) -> None:
                 )
             autodan_generate(generator=generator, prompt=prompt, target=target)
 
-        if _config.plugins.probe_spec == "all":
-            probe_names = [
-                name
-                for name, active in enumerate_plugins(category="probes")
-                if active == True
-            ]
-        else:
-            probe_names = []
-            for probe_clause in _config.plugins.probe_spec.split(","):
-                if probe_clause.count(".") < 1:
-                    probe_names += [
-                        p
-                        for p, a in enumerate_plugins(category="probes")
-                        if p.startswith(f"probes.{probe_clause}.") and a == True
-                    ]
-                else:
-                    probe_names += ["probes." + probe_clause]
+        probe_names = _config.parse_plugin_spec(_config.plugins.probe_spec, "probes")
+        detector_names = _config.parse_plugin_spec(
+            _config.plugins.detector_spec, "detectors"
+        )
+        buffs = _config.parse_plugin_spec(_config.plugins.buff_spec, "buffs")
+        buffs = buffs[:1]  # remove this when multiple buffs is coded
 
         evaluator = garak.evaluators.ThresholdEvaluator(_config.run.eval_threshold)
-
-        detector_names = []
-        if (
-            _config.plugins.detector_spec == ""
-            or _config.plugins.detector_spec == "auto"
-        ):
-            pass
-        elif _config.plugins.detector_spec == "all":
-            detector_names = [
-                name
-                for name, active in enumerate_plugins(category="detectors")
-                if active == True
-            ]
-        else:
-            detector_clauses = _config.plugins.detector_spec.split(",")
-            for detector_clause in detector_clauses:
-                if detector_clause.count(".") < 1:
-                    detector_names += [
-                        d
-                        for d, a in enumerate_plugins(category="detectors")
-                        if d.startswith(f"detectors.{detector_clause}.") and a == True
-                    ]
-                else:
-                    detector_names += ["detectors." + detector_clause]
-
-        if args.buff:
-            buffs = [args.buff]
-        else:
-            buffs = []
 
         if detector_names == []:
             command.probewise_run(generator, probe_names, evaluator, buffs)

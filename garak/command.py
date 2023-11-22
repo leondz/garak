@@ -29,11 +29,15 @@ def start_run(args):
     logging.info("started at %s", _config.transient.starttime_iso)
     _config.run_id = str(uuid.uuid4())  # uuid1 is safe but leaks host info
     if not _config.system.report_prefix:
-        _config.report_filename = f"garak.{_config.transient.run_id}.report.jsonl"
+        _config.transient.report_filename = (
+            f"garak.{_config.transient.run_id}.report.jsonl"
+        )
     else:
-        _config.report_filename = _config.system.report_prefix + ".report.jsonl"
+        _config.transient.report_filename = (
+            _config.system.report_prefix + ".report.jsonl"
+        )
     _config.transient.reportfile = open(
-        _config.report_filename, "w", buffering=1, encoding="utf-8"
+        _config.transient.report_filename, "w", buffering=1, encoding="utf-8"
     )
     args.__dict__.update({"entry_type": "start_run args config"})
     _config.transient.reportfile.write(json.dumps(args.__dict__) + "\n")
@@ -48,7 +52,7 @@ def start_run(args):
         )
         + "\n"
     )
-    logging.info("reporting to %s", _config.report_filename)
+    logging.info("reporting to %s", _config.transient.report_filename)
 
 
 def end_run():
@@ -59,7 +63,7 @@ def end_run():
 
     logging.info("run complete, ending")
     _config.transient.reportfile.close()
-    print(f"📜 report closed :) {_config.report_filename}")
+    print(f"📜 report closed :) {_config.transient.report_filename}")
     if _config.transient.hitlogfile:
         _config.transient.hitlogfile.close()
 

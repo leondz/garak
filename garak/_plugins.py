@@ -14,7 +14,9 @@ from typing import List
 from garak import _config
 
 
-def enumerate_plugins(category: str = "probes", skip_base_classes=True) -> List[str]:
+def enumerate_plugins(
+    category: str = "probes", skip_base_classes=True
+) -> List[tuple[str, bool]]:
     """A function for listing all modules & plugins of the specified kind.
 
     garak's plugins are organised into four packages - probes, detectors, generators
