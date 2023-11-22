@@ -32,13 +32,12 @@ def start_run(args):
         _config.report_filename = f"garak.{_config.transient.run_id}.report.jsonl"
     else:
         _config.report_filename = _config.system.report_prefix + ".report.jsonl"
-    print("start run")
     _config.transient.reportfile = open(
         _config.report_filename, "w", buffering=1, encoding="utf-8"
     )
     args.__dict__.update({"entry_type": "start_run args config"})
     _config.transient.reportfile.write(json.dumps(args.__dict__) + "\n")
-    _config.transient.write(
+    _config.transient.reportfile.write(
         json.dumps(
             {
                 "entry_type": "init",
