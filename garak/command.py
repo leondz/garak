@@ -36,7 +36,7 @@ def start_run(args):
     _config.transient.reportfile = open(
         _config.report_filename, "w", buffering=1, encoding="utf-8"
     )
-    args.__dict__.update({"entry_type": "args config"})
+    args.__dict__.update({"entry_type": "start_run args config"})
     _config.transient.reportfile.write(json.dumps(args.__dict__) + "\n")
     _config.transient.write(
         json.dumps(

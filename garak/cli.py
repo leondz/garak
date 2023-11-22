@@ -234,8 +234,6 @@ def main(arguments=[]) -> None:
 
     logging.debug("args - cli_args&commands stored: %s", cli_args)
 
-    print("ARGS", args)
-    print("CLI_ARGS w commands", cli_args)
     del args
     args = cli_args
 
@@ -249,31 +247,7 @@ def main(arguments=[]) -> None:
 
     # startup
     if not args.version and not args.report:
-        logging.info("started at %s", _config.transient.starttime_iso)
-        _config.transient.run_id = str(
-            uuid.uuid4()
-        )  # uuid1 is safe but leaks host info
-        if not _config.system.report_prefix:
-            report_filename = f"garak.{_config.transient.run_id}.report.jsonl"
-        else:
-            report_filename = _config.system.report_prefix + ".report.jsonl"
-        _config.transient.reportfile = open(
-            report_filename, "w", buffering=1, encoding="utf-8"
-        )
-        args.__dict__.update({"entry_type": "args config"})
-        _config.transient.reportfile.write(json.dumps(args.__dict__) + "\n")
-        _config.transient.reportfile.write(
-            json.dumps(
-                {
-                    "entry_type": "init",
-                    "garak_version": _config.version,
-                    "start_time": _config.transient.starttime_iso,
-                    "run": _config.transient.run_id,
-                }
-            )
-            + "\n"
-        )
-        logging.info("reporting to %s", report_filename)
+        command.start_run(args)
 
     # save args info into config
     # need to know their type: plugin, system, or run
@@ -283,7 +257,7 @@ def main(arguments=[]) -> None:
     run_params = "seed deprefix eval_threshold generations"
     plugin_params = "model_type model_name extended_detectors".split()
     ignored_params = []
-    for param, value in args._get_kwargs():
+    for param, value in vars(args).items():
         if param in system_params:
             setattr(_config.system, param, value)
         elif param in run_params:
@@ -295,9 +269,12 @@ def main(arguments=[]) -> None:
 
     # do a special thing for probe spec, detector spec, buff spec
     # what's the special thing? put the spec into the _spec config value, if set at cli
-    _config.plugins.probe_spec = args.probes
-    _config.plugins.detector_spec = args.detectors
-    _config.plugins.buff_spec = args.buff
+    if "probes" in args:
+        _config.plugins.probe_spec = args.probes
+    if "detectors" in args:
+        _config.plugins.detector_spec = args.detectors
+    if "buff" in args:
+        _config.plugins.buff_spec = args.buff
 
     # do a special thing for probe options, generator options
     if _config.plugins.probe_options:
