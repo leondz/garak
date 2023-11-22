@@ -6,9 +6,6 @@
 """Flow for invoking garak from the command line"""
 
 
-from torch import diag_embed
-
-
 def main(arguments=[]) -> None:
     import datetime
 
@@ -335,11 +332,7 @@ def main(arguments=[]) -> None:
         print(f"📜 AVID reports generated at {report.write_location}")
 
     # model is specified, we're doing something
-    # should also trigger if _config.run.model_type is set, sooooo..
-    # .. let's make this test happen /after/ the run config is loaded
     elif _config.run.model_type:
-        command.start_run(args)
-
         if (
             hasattr(_config.plugins, "probe_option_file")
             or _config.plugins.probe_options
