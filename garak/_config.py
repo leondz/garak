@@ -27,6 +27,8 @@ class Transient:
     args = None  # only access this when determining what was passed on CLI
     run_id = None
     basedir = pathlib.Path(__file__).parents[0]
+    starttime = None
+    starttime_iso = None
 
 
 transient = Transient()

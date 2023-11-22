@@ -104,6 +104,6 @@ class Harness:
 
             for attempt in attempt_results:
                 attempt.status = ATTEMPT_COMPLETE
-                _config.reportfile.write(json.dumps(attempt.as_dict()) + "\n")
+                _config.transient.reportfile.write(json.dumps(attempt.as_dict()) + "\n")
 
             evaluator.evaluate(attempt_results)

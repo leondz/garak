@@ -19,7 +19,7 @@ def start_logging(args):
         format="%(asctime)s  %(levelname)s  %(message)s",
     )
 
-    logging.info(f"invoked with arguments {args}")
+    logging.info("invoked with arguments %s", str(args))
 
 
 def start_run(args):
@@ -28,17 +28,19 @@ def start_run(args):
 
     from garak import _config
 
-    logging.info(f"started at {_config.transient.starttime_iso}")
+    logging.info("started at %s", _config.transient.starttime_iso)
     _config.run_id = str(uuid.uuid4())  # uuid1 is safe but leaks host info
     if not _config.system.report_prefix:
         _config.report_filename = f"garak.{_config.transient.run_id}.report.jsonl"
     else:
         _config.report_filename = _config.system.report_prefix + ".report.jsonl"
     print("start run")
-    _config.reportfile = open(_config.report_filename, "w", buffering=1)
-    args.__dict__.update({"entry_type": "config"})
-    _config.reportfile.write(json.dumps(args.__dict__) + "\n")
-    _config.reportfile.write(
+    _config.transient.reportfile = open(
+        _config.report_filename, "w", buffering=1, encoding="utf-8"
+    )
+    args.__dict__.update({"entry_type": "args config"})
+    _config.transient.reportfile.write(json.dumps(args.__dict__) + "\n")
+    _config.transient.write(
         json.dumps(
             {
                 "entry_type": "init",
@@ -49,7 +51,7 @@ def start_run(args):
         )
         + "\n"
     )
-    logging.info(f"reporting to {_config.report_filename}")
+    logging.info("reporting to %s", _config.report_filename)
 
 
 def end_run():
@@ -59,19 +61,20 @@ def end_run():
     from garak import _config
 
     logging.info("run complete, ending")
-    _config.reportfile.close()
+    _config.transient.reportfile.close()
     print(f"📜 report closed :) {_config.report_filename}")
     if _config.transient.hitlogfile:
         _config.transient.hitlogfile.close()
 
     timetaken = (datetime.datetime.now() - _config.transient.starttime).total_seconds()
 
-    print(f"✔️  garak done: complete in {timetaken:.2f}s")
-    logging.info(f"garak done: complete in {timetaken:.2f}s")
+    msg = f"garak done: complete in {timetaken:.2f}"
+    print(f"✔️  {msg}")
+    logging.info(msg)
 
 
 def print_plugins(prefix: str, color):
-    from colorama import Fore, Style
+    from colorama import Style
 
     from garak._plugins import enumerate_plugins
 

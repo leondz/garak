@@ -92,7 +92,7 @@ class Probe:
     def _execute_attempt(self, this_attempt):
         self._generator_precall_hook(self.generator, this_attempt)
         this_attempt.outputs = self.generator.generate(this_attempt.prompt)
-        _config.reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
+        _config.transient.reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
         this_attempt = self._postprocess_hook(this_attempt)
         return copy.deepcopy(this_attempt)
 
