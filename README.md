@@ -88,12 +88,12 @@ Probe ChatGPT for encoding-based prompt injection (OSX/\*nix) (replace example v
 export OPENAI_API_KEY="sk-123XXXXXXXXXXXX"
 python3 -m garak --model_type openai --model_name gpt-3.5-turbo --probes encoding
 ```
-If you are using Windows cmd, running the following command will initiate the execution of all the probes.
+If you are using Windows cmd, running the following command will initiate the execution of all the probes .
 ```
 SET OPENAI_API_KEY="sk-123XXXXXXXXXXXX"
 python3 -m garak --model_type openai --model_name gpt-3.5-turbo --probes all
 ```
-
+ 
 See if the Hugging Face version of GPT2 is vulnerable to DAN 11.0
 
 ```
