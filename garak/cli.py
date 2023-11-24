@@ -37,7 +37,7 @@ def main(arguments=[]) -> None:
     ## SYSTEM
     parser.add_argument(
         "--verbose",
-        # "-v",
+        "-v",
         action="count",
         default=_config.system.verbose,
         help="add one or more times to increase verbosity of output during runtime",
@@ -87,7 +87,7 @@ def main(arguments=[]) -> None:
     )
     parser.add_argument(
         "--generations",
-        # "-g",
+        "-g",
         type=int,
         default=_config.run.generations,
         help="number of generations per prompt",
@@ -100,13 +100,13 @@ def main(arguments=[]) -> None:
     # generator
     parser.add_argument(
         "--model_type",
-        # "-m",
+        "-m",
         type=str,
         help="module and optionally also class of the generator, e.g. 'huggingface', or 'openai'",
     )
     parser.add_argument(
         "--model_name",
-        # "-n",
+        "-n",
         type=str,
         default=None,
         help="name of the model, e.g. 'timdettmers/guanaco-33b-merged'",
@@ -114,7 +114,7 @@ def main(arguments=[]) -> None:
     generator_args = parser.add_mutually_exclusive_group()
     generator_args.add_argument(
         "--generator_option_file",
-        # "-G",
+        "-G",
         type=str,
         help="path to JSON file containing options to pass to generator",
     )
@@ -126,7 +126,7 @@ def main(arguments=[]) -> None:
     # probes
     parser.add_argument(
         "--probes",
-        # "-p",
+        "-p",
         type=str,
         default=_config.plugins.probe_spec,
         help="list of probe names to use, or 'all' for all (default).",
@@ -134,7 +134,7 @@ def main(arguments=[]) -> None:
     probe_args = parser.add_mutually_exclusive_group()
     probe_args.add_argument(
         "--probe_option_file",
-        # "-P",
+        "-P",
         type=str,
         help="path to JSON file containing options to pass to probes",
     )
@@ -146,7 +146,7 @@ def main(arguments=[]) -> None:
     # detectors
     parser.add_argument(
         "--detectors",
-        # "-d",
+        "-d",
         type=str,
         default=_config.plugins.detector_spec,
         help="list of detectors to use, or 'all' for all. Default is to use the probe's suggestion.",
@@ -159,7 +159,7 @@ def main(arguments=[]) -> None:
     # buffs
     parser.add_argument(
         "--buff",
-        # "-b",
+        "-b",
         type=str,
         default=_config.plugins.buff_spec,
         help="buff to use",
@@ -195,13 +195,13 @@ def main(arguments=[]) -> None:
     )
     parser.add_argument(
         "--report",
-        # "-r",
+        "-r",
         type=str,
         help="process garak report into a list of AVID reports",
     )
     parser.add_argument(
         "--interactive",
-        # "-I",
+        "-I",
         action="store_true",
         help="Enter interactive probing mode",
     )
@@ -234,16 +234,14 @@ def main(arguments=[]) -> None:
             for raw_option_string in raw_option_strings:
                 arg_names[raw_option_string] = action.option_strings
 
-    print(vars(args))
-
     for arg, val in vars(args).items():
         if isinstance(val, bool):
             if val:
-                aux_parser.add_argument("--" + arg, action="store_true")
+                aux_parser.add_argument(*arg_names[arg], action="store_true")
             else:
-                aux_parser.add_argument("--" + arg, action="store_false")
+                aux_parser.add_argument(*arg_names[arg], action="store_false")
         else:
-            aux_parser.add_argument("--" + arg)
+            aux_parser.add_argument(*arg_names[arg], type=type(val))
 
     # cli_args contains items specified on CLI; the rest not to be overridden
     cli_args, _ = aux_parser.parse_known_args(arguments)
