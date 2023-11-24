@@ -450,7 +450,7 @@ def main(arguments=[]) -> None:
 
     else:
         print("nothing to do 🤷  try --help")
-        if _config.run.model_name and not _config.run.model_type:
+        if _config.plugins.model_name and not _config.plugins.model_type:
             print(
                 "💡 try setting --model_type (--model_name is currently set but not --model_type)"
             )
