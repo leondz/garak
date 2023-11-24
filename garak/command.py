@@ -181,3 +181,28 @@ def pxd_run(generator, probe_names, detector_names, evaluator, buffs):
         evaluator,
         buffs,
     )
+
+
+def _enumerate_obj_values(o):
+    for i in dir(o):
+        if i[:2] != "__" and not callable(getattr(o, i)):
+            print(f"    {i}: {getattr(o, i)}")
+
+
+def list_config():
+    from garak import _config
+
+    print("_config:")
+    _enumerate_obj_values(_config)
+
+    print("system:")
+    _enumerate_obj_values(_config.system)
+
+    print("transient:")
+    _enumerate_obj_values(_config.transient)
+
+    print("run:")
+    _enumerate_obj_values(_config.run)
+
+    print("plugins:")
+    _enumerate_obj_values(_config.plugins)

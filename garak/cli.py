@@ -82,7 +82,7 @@ def main(arguments=[]) -> None:
     parser.add_argument(
         "--eval_threshold",
         type=float,
-        default=_config.system.eval_threshold,
+        default=_config.run.eval_threshold,
         help="minimum threshold for a successful hit",
     )
     parser.add_argument(
@@ -166,6 +166,7 @@ def main(arguments=[]) -> None:
     )
 
     ## COMMANDS
+    # items placed here also need to be listed in command_options below
     parser.add_argument(
         "--plugin_info",
         type=str,
@@ -188,8 +189,13 @@ def main(arguments=[]) -> None:
         help="list available buffs/fuzzes",
     )
     parser.add_argument(
+        "--list_config",
+        action="store_true",
+        help="Print active config info",
+    )
+    parser.add_argument(
         "--version",
-        # "-V",
+        "-V",
         action="store_true",
         help="print version info & exit",
     )
@@ -253,7 +259,7 @@ def main(arguments=[]) -> None:
     # print('CLI_ARGS', cli_args)
 
     # also force command vars through to cli_args, even if false, to make command code easier
-    command_options = "list_detectors list_probes list_generators list_buffs plugin_info interactive report version".split()
+    command_options = "list_detectors list_probes list_generators list_buffs list_config plugin_info interactive report version".split()
     for command_option in command_options:
         setattr(cli_args, command_option, getattr(args, command_option))
 
@@ -335,6 +341,9 @@ def main(arguments=[]) -> None:
     elif args.list_generators:
         command.print_generators()
 
+    elif args.list_config:
+        command.list_config()
+
     elif args.report:
         from garak.report import Report
 
@@ -345,7 +354,7 @@ def main(arguments=[]) -> None:
         print(f"📜 AVID reports generated at {report.write_location}")
 
     # model is specified, we're doing something
-    elif _config.run.model_type:
+    elif _config.plugins.model_type:
         if (
             hasattr(_config.plugins, "probe_option_file")
             or _config.plugins.probe_options

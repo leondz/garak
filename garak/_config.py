@@ -12,6 +12,7 @@ from dataclasses import dataclass
 import logging
 import os
 import pathlib
+from queue import Empty
 from typing import List
 
 from dynaconf import Dynaconf
@@ -20,7 +21,12 @@ version = -1
 
 
 @dataclass
-class Transient:
+class GarakSubConfig:
+    pass
+
+
+@dataclass
+class TransientConfig(GarakSubConfig):
     """Object to hold transient global config items not set externally"""
 
     report_filename = None
@@ -33,17 +39,11 @@ class Transient:
     starttime_iso = None
 
 
-transient = Transient()
+transient = TransientConfig()
 
-
-@dataclass
-class StubDataclass:
-    pass
-
-
-system = StubDataclass()
-run = StubDataclass()
-plugins = StubDataclass()
+system = GarakSubConfig()
+run = GarakSubConfig()
+plugins = GarakSubConfig()
 
 # this is so popular, let's set a default. what other defaults are worth setting? what's the policy?
 run.seed = None
@@ -52,7 +52,7 @@ run.seed = None
 # generator, probe, detector, buff = {}, {}, {}, {}
 
 
-def _set_settings(config_obj: StubDataclass, settings_obj: dict) -> StubDataclass:
+def _set_settings(config_obj, settings_obj: dict):
     for k, v in settings_obj.items():
         setattr(config_obj, k, v)
     return config_obj
@@ -62,11 +62,12 @@ def _store_config(settings_files) -> None:
     global system, run, plugins
     settings = Dynaconf(settings_files=settings_files, apply_default_on_none=True)
     system = _set_settings(system, settings.system)
-    run = _set_settings(system, settings.run)
-    plugins = _set_settings(system, settings.plugins)
+    run = _set_settings(run, settings.run)
+    plugins = _set_settings(plugins, settings.plugins)
 
 
 def load_base_config() -> None:
+    global system
     settings_files = [str(transient.basedir / "resources/garak.core.yaml")]
     logging.debug("Loading configs from: %s", ",".join(settings_files))
     _store_config(settings_files=settings_files)
