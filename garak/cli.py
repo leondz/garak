@@ -5,6 +5,8 @@
 
 """Flow for invoking garak from the command line"""
 
+command_options = "list_detectors list_probes list_generators list_buffs list_config plugin_info interactive report version".split()
+
 
 def main(arguments=[]) -> None:
     import datetime
@@ -191,7 +193,7 @@ def main(arguments=[]) -> None:
     parser.add_argument(
         "--list_config",
         action="store_true",
-        help="Print active config info",
+        help="print active config info (and don't scan)",
     )
     parser.add_argument(
         "--version",
@@ -259,7 +261,6 @@ def main(arguments=[]) -> None:
     # print('CLI_ARGS', cli_args)
 
     # also force command vars through to cli_args, even if false, to make command code easier
-    command_options = "list_detectors list_probes list_generators list_buffs list_config plugin_info interactive report version".split()
     for command_option in command_options:
         setattr(cli_args, command_option, getattr(args, command_option))
 
@@ -283,16 +284,13 @@ def main(arguments=[]) -> None:
     # need to know their type: plugin, system, or run
     # ignore params not listed here
     # - sorry, this means duping stuff, i know. maybe better argparse setup will help
-    system_params = "verbose report_prefix narrow_output parallel_requests parallel_attempts".split()
-    run_params = "seed deprefix eval_threshold generations"
-    plugin_params = "model_type model_name extended_detectors".split()
     ignored_params = []
     for param, value in vars(args).items():
-        if param in system_params:
+        if param in _config.system_params:
             setattr(_config.system, param, value)
-        elif param in run_params:
+        elif param in _config.run_params:
             setattr(_config.run, param, value)
-        elif param in plugin_params:
+        elif param in _config.plugins_params:
             setattr(_config.plugins, param, value)
         else:
             ignored_params.append((param, value))

@@ -17,7 +17,13 @@ from typing import List
 
 from dynaconf import Dynaconf
 
-version = -1
+version = -1  # eh why this is here? hm. who references it
+
+system_params = (
+    "verbose report_prefix narrow_output parallel_requests parallel_attempts".split()
+)
+run_params = "seed deprefix eval_threshold generations".split()
+plugins_params = "model_type model_name extended_detectors".split()
 
 
 @dataclass
