@@ -340,6 +340,7 @@ def main(arguments=[]) -> None:
         command.print_generators()
 
     elif args.list_config:
+        print("cli args:\n ", args)
         command.list_config()
 
     elif args.report:

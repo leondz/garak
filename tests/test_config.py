@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import pytest
+import tempfile
 
 from garak import _config
 import garak.cli
@@ -38,6 +39,7 @@ for p in _config.plugins_params:
     param_locs[p] = "plugins"
 
 
+# test CLI assertions of each var
 @pytest.mark.parametrize("option", cli_options_solo)
 def test_cli_solo_settings(option):
     garak.cli.main(
@@ -47,7 +49,6 @@ def test_cli_solo_settings(option):
     assert getattr(subconfig, option) == True
 
 
-# test CLI assertions of each var
 @pytest.mark.parametrize("param", cli_options_param)
 def test_cli_param_settings(param):
     option, value = param
@@ -68,11 +69,32 @@ def test_cli_spec_settings(param):
 
 
 # test a short-form CLI assertion
-# test YAML assertions of each var
-# test that site YAML overrides core YAML
+def test_cli_shortform():
+    garak.cli.main(["-s", "444", "--list_config"])
+    assert _config.run.seed == 444
+    garak.cli.main(
+        ["-g", "444", "--list_config"]
+    )  # seed gets special treatment, try another
+    assert _config.run.generations == 444
+
+
+# test YAML assertions of param/value tuple vars
+@pytest.mark.parametrize("param", cli_options_param)
+def test_yaml_param_settings(param):
+    option, value = param
+    with tempfile.NamedTemporaryFile(buffering=0) as tmp:
+        tmp.write(f"---\n{param_locs[option]}:\n  {option}: {value}\n".encode("utf-8"))
+        garak.cli.main(
+            ["--config", tmp.name, "--list_config"]
+        )  # add list_config as the action so we don't actually run
+        subconfig = getattr(_config, param_locs[option])
+        assert getattr(subconfig, option) == value
+
+
+# # test that site YAML overrides core YAML # needs file staging
 # test that run YAML overrides core YAML
 # test that run YAML overrides core YAML
-# test that run YAML overrides site YAML
+# # test that run YAML overrides site YAML # needs file staging
 # test that CLI config overrides run YAML
 # test probe_options YAML
 # test generator_options YAML

@@ -49,8 +49,7 @@ dependencies = [
   "langchain>=0.0.300",
   "nemollm>=0.3.0",
   "octoai-sdk",
-  "cmd2",
-  "dynaconf>=3.2.1"
+  "cmd2"
 ]
 
 [project.urls]

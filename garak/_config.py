@@ -12,10 +12,9 @@ from dataclasses import dataclass
 import logging
 import os
 import pathlib
-from queue import Empty
 from typing import List
-
-from dynaconf import Dynaconf
+from unittest import loader
+import yaml
 
 version = -1  # eh why this is here? hm. who references it
 
@@ -64,12 +63,30 @@ def _set_settings(config_obj, settings_obj: dict):
     return config_obj
 
 
+def _combine_into(d: dict, combined: dict) -> None:
+    for k, v in d.items():
+        if isinstance(v, dict):
+            _combine_into(v, combined.setdefault(k, {}))
+        else:
+            combined[k] = v
+    return combined
+
+
+def _load_yaml_config(settings_filenames) -> dict:
+    config = {}
+    for settings_filename in settings_filenames:
+        settings = yaml.safe_load(open(settings_filename, encoding="utf-8"))
+        if settings is not None:
+            config = _combine_into(settings, config)
+    return config
+
+
 def _store_config(settings_files) -> None:
     global system, run, plugins
-    settings = Dynaconf(settings_files=settings_files, apply_default_on_none=True)
-    system = _set_settings(system, settings.system)
-    run = _set_settings(run, settings.run)
-    plugins = _set_settings(plugins, settings.plugins)
+    settings = _load_yaml_config(settings_files)
+    system = _set_settings(system, settings["system"])
+    run = _set_settings(run, settings["run"])
+    plugins = _set_settings(plugins, settings["plugins"])
 
 
 def load_base_config() -> None:
@@ -87,6 +104,7 @@ def load_config(
     global system, run, plugins
 
     settings_files = [str(transient.basedir / "resources/garak.core.yaml")]
+
     fq_site_config_filename = str(transient.basedir / site_config_filename)
     if os.path.isfile(fq_site_config_filename):
         settings_files.append(fq_site_config_filename)
