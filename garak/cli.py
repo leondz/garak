@@ -9,11 +9,18 @@
 def main(arguments=[]) -> None:
     import datetime
 
-    from garak import __version__, __description__, _config
+    from garak import __version__, __description__
+    from garak import _config
 
     _config.transient.starttime = datetime.datetime.now()
     _config.transient.starttime_iso = _config.transient.starttime.isoformat()
     _config.version = __version__
+
+    import garak.command as command
+    import logging
+    import re
+
+    command.start_logging()
     _config.load_base_config()
 
     print(
@@ -62,7 +69,7 @@ def main(arguments=[]) -> None:
     ## RUN
     parser.add_argument(
         "--seed",
-        # "-s",
+        "-s",
         type=int,
         default=_config.run.seed,
         help="random seed",
@@ -204,11 +211,6 @@ def main(arguments=[]) -> None:
         help="generate AutoDAN prompts; requires --prompt_options with JSON containing a prompt and target",
     )
 
-    import garak.command as command
-    import logging
-
-    command.start_logging()
-
     logging.debug("args - raw argument string received: %s", arguments)
 
     args = parser.parse_args(arguments)
@@ -217,9 +219,23 @@ def main(arguments=[]) -> None:
     # load site config before loading CLI config
     _config.load_config(run_config_filename=args.config)
 
-    # extract what was actually passed on CLI
+    # extract what was actually passed on CLI; use a masking argparser
     aux_parser = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)
     # print('VARS', vars(args))
+    # aux_parser is going to get sys.argv and so also needs the argument shortnames
+    # will extract those from parser internals and use them to populate aux_parser
+    arg_names = {}
+    for action in parser._actions:
+        raw_option_strings = [
+            re.sub("^" + re.escape(parser.prefix_chars) + "+", "", a)
+            for a in action.option_strings
+        ]
+        if "help" not in raw_option_strings:
+            for raw_option_string in raw_option_strings:
+                arg_names[raw_option_string] = action.option_strings
+
+    print(vars(args))
+
     for arg, val in vars(args).items():
         if isinstance(val, bool):
             if val:
@@ -251,7 +267,6 @@ def main(arguments=[]) -> None:
     import sys
     import importlib
     import json
-    import uuid
 
     import garak.evaluators
     from garak._plugins import enumerate_plugins

@@ -5,19 +5,27 @@
 
 """ Definitions of commands and actions that can be run in the garak toolkit"""
 
+import logging
 import json
 
 
 def start_logging():
-    # print("START LOGGING")
-    import logging
-
     logging.basicConfig(
         filename="garak.log",
         level=logging.DEBUG,
         format="%(asctime)s  %(levelname)s  %(message)s",
     )
 
+    # garaklogger = logging.FileHandler("garak.log", encoding="utf-8")
+    # garakformatter = logging.Formatter("%(asctime)s  %(levelname)s  %(message)s")
+    # garaklogger.setFormatter(garakformatter)
+    # garaklogger.setLevel(logging.DEBUG)
+
+    # rootlogger = logging.getLogger()
+    # for h in rootlogger.handlers[:]:
+    #    rootlogger.removeHandler(h)
+    # rootlogger.addHandler(garaklogger)
+    # logging.root = rootlogger
     logging.info("invoked")
 
 
