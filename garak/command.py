@@ -79,7 +79,7 @@ def end_run():
 
     timetaken = (datetime.datetime.now() - _config.transient.starttime).total_seconds()
 
-    msg = f"garak done: complete in {timetaken:.2f}"
+    msg = f"garak done: complete in {timetaken:.2f}s"
     print(f"✔️  {msg}")
     logging.info(msg)
 
