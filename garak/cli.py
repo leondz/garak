@@ -394,7 +394,8 @@ def main(arguments=[]) -> None:
             logging.error(message)
             raise ValueError(message)
         print(f"📜 reporting to {_config.transient.report_filename}")
-        generator_module_name = args.model_type.split(".")[0]
+
+        generator_module_name = _config.plugins.model_type.split(".")[0]
         generator_mod = importlib.import_module(
             "garak.generators." + generator_module_name
         )

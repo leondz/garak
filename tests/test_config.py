@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
 import pytest
+import re
 import tempfile
 
 from garak import _config
 import garak.cli
 
+ansi_escape = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
 
 cli_options_solo = [
     #    "verbose", # not sure hot to test argparse action="count"
@@ -79,6 +81,7 @@ def test_cli_shortform():
 
 
 # test YAML assertions of param/value tuple vars
+# test that run YAML overrides core YAML
 @pytest.mark.parametrize("param", cli_options_param)
 def test_yaml_param_settings(param):
     option, value = param
@@ -91,11 +94,46 @@ def test_yaml_param_settings(param):
         assert getattr(subconfig, option) == value
 
 
-# # test that site YAML overrides core YAML # needs file staging
-# test that run YAML overrides core YAML
-# test that run YAML overrides core YAML
-# # test that run YAML overrides site YAML # needs file staging
+# # test that site YAML overrides core YAML # needs file staging for site yaml
+# # test that run YAML overrides site YAML # needs file staging for site yaml
+
+
 # test that CLI config overrides run YAML
+def test_cli_overrides_run_yaml():
+    with tempfile.NamedTemporaryFile(buffering=0) as tmp:
+        tmp.write(f"---\nrun:\n  seed: 37176\n".encode("utf-8"))
+        garak.cli.main(
+            ["--config", tmp.name, "-s", "10101", "--list_config"]
+        )  # add list_config as the action so we don't actually run
+        assert _config.run.seed == 10101
+
+
 # test probe_options YAML
+
 # test generator_options YAML
+
+
 # can a run be launched from a run YAML?
+def test_run_from_yaml(capsys):
+    with tempfile.NamedTemporaryFile(buffering=0) as tmp:
+        tmp.write(
+            f"---\nrun:\n  generations: 10\n\nplugins:\n  model_type: test.Blank\n  probe_spec: test.Blank\n".encode(
+                "utf-8"
+            )
+        )
+        garak.cli.main(
+            ["--config", tmp.name]
+        )  # add list_config as the action so we don't actually run
+    result = capsys.readouterr()
+    output = result.out
+    all_output = ""
+    for line in output.strip().split("\n"):
+        line = ansi_escape.sub("", line)
+        all_output += line
+
+    assert "loading generator: Test: Blank" in all_output
+    assert "queue of probes: test.Blank" in all_output
+    assert "ok on   10/  10" in all_output
+    assert "always.Pass:" in all_output
+    assert "test.Blank" in all_output
+    assert "garak done: complete" in all_output
