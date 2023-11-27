@@ -15,9 +15,9 @@ run:
 plugins:
   model_type:
   model_name:
-  generator_options:
+  generator_options: {}
   probe_spec: all
-  probe_options:
+  probe_options: {}
   detector_spec: auto
   extended_detectors: false
   buff_spec:

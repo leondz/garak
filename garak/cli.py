@@ -303,8 +303,8 @@ def main(arguments=[]) -> None:
     if "buff" in args:
         _config.plugins.buff_spec = args.buff
 
-    # do a special thing for probe options, generator options
-    if _config.plugins.probe_options:
+    # do a special thing for CLIprobe options, generator options
+    if "probe_options" in args:
         try:
             _config.plugins.probe_options = json.loads(_config.plugins.probe_options)
         except json.JSONDecodeError as e:
@@ -354,30 +354,18 @@ def main(arguments=[]) -> None:
 
     # model is specified, we're doing something
     elif _config.plugins.model_type:
-        if (
-            hasattr(_config.plugins, "probe_option_file")
-            or _config.plugins.probe_options
-        ):
-            if hasattr(_config.plugins, "probe_option_file"):
-                with open(_config.plugins.probe_option_file, encoding="utf-8") as f:
-                    probe_options_json = f.read().strip()
-            elif _config.plugins.probe_options:
-                probe_options_json = _config.plugins.probe_options
+        if hasattr(_config.plugins, "probe_option_file"):
+            with open(_config.plugins.probe_option_file, encoding="utf-8") as f:
+                probe_options_json = f.read().strip()
             try:
                 _config.plugins.probe_options = json.loads(probe_options_json)
             except json.decoder.JSONDecodeError as e:
                 logging.warning("Failed to parse JSON probe_options: %s", {e.args[0]})
                 raise e
 
-        if (
-            hasattr(_config.plugins, "generator_option_file")
-            or _config.plugins.generator_options
-        ):
-            if hasattr(_config.plugins, "generator_option_file"):
-                with open(_config.plugins.generator_option_file, encoding="utf-8") as f:
-                    generator_options_json = f.read().strip()
-            elif _config.plugins.generator_options:
-                generator_options_json = _config.run.generator_options
+        if hasattr(_config.plugins, "generator_option_file"):
+            with open(_config.plugins.generator_option_file, encoding="utf-8") as f:
+                generator_options_json = f.read().strip()
             try:
                 _config.plugins.generator_options = json.loads(generator_options_json)
             except json.decoder.JSONDecodeError as e:

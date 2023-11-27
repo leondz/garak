@@ -6,6 +6,7 @@ import tempfile
 
 from garak import _config
 import garak.cli
+from garak.command import list_config
 
 ansi_escape = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
 
@@ -100,24 +101,57 @@ def test_yaml_param_settings(param):
 
 # test that CLI config overrides run YAML
 def test_cli_overrides_run_yaml():
+    orig_seed = 10101
+    override_seed = 37176
     with tempfile.NamedTemporaryFile(buffering=0) as tmp:
-        tmp.write(f"---\nrun:\n  seed: 37176\n".encode("utf-8"))
+        tmp.write(f"---\nrun:\n  seed: {orig_seed}\n".encode("utf-8"))
         garak.cli.main(
-            ["--config", tmp.name, "-s", "10101", "--list_config"]
+            ["--config", tmp.name, "-s", f"{override_seed}", "--list_config"]
         )  # add list_config as the action so we don't actually run
-        assert _config.run.seed == 10101
+        assert _config.run.seed == override_seed
 
 
 # test probe_options YAML
+def test_probe_options_yaml(capsys):
+    with tempfile.NamedTemporaryFile(buffering=0) as tmp:
+        tmp.write(
+            """
+---
+plugins:
+  probe_spec: test.Blank
+  probe_options:
+    test.Blank:    
+        gen_x: 37176
+""".encode(
+                "utf-8"
+            )
+        )
+        garak.cli.main(
+            ["--config", tmp.name, "--list_config"]
+        )  # add list_config as the action so we don't actually run
+        print(_config.plugins.probe_options)
+        assert _config.plugins.probe_options["test.Blank"]["gen_x"] == 37176
+
 
 # test generator_options YAML
+def test_generator_options_yaml(capsys):
+    with tempfile.NamedTemporaryFile(buffering=0) as tmp:
+        tmp.write(
+            "---\nplugins:\n  model_type: test.Blank\n  probe_spec: test.Blank\n  generator_options:\n    gen_x: 37176\n".encode(
+                "utf-8"
+            )
+        )
+        garak.cli.main(
+            ["--config", tmp.name, "--list_config"]
+        )  # add list_config as the action so we don't actually run
+        assert _config.plugins.generator_options["gen_x"] == 37176
 
 
 # can a run be launched from a run YAML?
 def test_run_from_yaml(capsys):
     with tempfile.NamedTemporaryFile(buffering=0) as tmp:
         tmp.write(
-            f"---\nrun:\n  generations: 10\n\nplugins:\n  model_type: test.Blank\n  probe_spec: test.Blank\n".encode(
+            "---\nrun:\n  generations: 10\n\nplugins:\n  model_type: test.Blank\n  probe_spec: test.Blank\n".encode(
                 "utf-8"
             )
         )
