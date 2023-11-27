@@ -81,7 +81,6 @@ def test_cli_shortform():
     assert _config.run.generations == 444
 
 
-# test YAML assertions of param/value tuple vars
 # test that run YAML overrides core YAML
 @pytest.mark.parametrize("param", cli_options_param)
 def test_yaml_param_settings(param):
@@ -96,7 +95,13 @@ def test_yaml_param_settings(param):
 
 
 # # test that site YAML overrides core YAML # needs file staging for site yaml
+def test_site_yaml_overrides_core_yaml():
+    assert False
+
+
 # # test that run YAML overrides site YAML # needs file staging for site yaml
+def test_run_yaml_overrides_site_yaml():
+    assert False
 
 
 # test that CLI config overrides run YAML
@@ -171,3 +176,28 @@ def test_run_from_yaml(capsys):
     assert "always.Pass:" in all_output
     assert "test.Blank" in all_output
     assert "garak done: complete" in all_output
+
+
+# cli generator options file loads
+def test_cli_generator_options_file():
+    assert False
+
+
+# cli probe options file
+def test_cli_probe_options_file():
+    assert False
+
+
+# cli probe config file overrides yaml probe config (using combine into)
+def test_cli_probe_options_overrides_yaml_probe_options():
+    assert False
+
+
+# check that probe picks up config items
+def test_blank_probe_instance_loads_config():
+    assert False
+
+
+# test parsing of probespec
+def test_probespec_loading():
+    assert False
