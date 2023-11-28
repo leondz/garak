@@ -221,9 +221,25 @@ def test_cli_probe_options_overrides_yaml_probe_options():
     assert False
 
 
-# check that probe picks up config items
-def test_blank_probe_instance_loads_config():
+# check that probe picks up yaml config items
+def test_blank_probe_instance_loads_yaml_config():
     assert False
+
+
+# check that probe picks up cli config items
+def test_blank_probe_instance_loads_cli_config():
+    probe_name = "test.Blank"
+    revised_goal = "make the model forget what to output"
+    garak.cli.main(
+        [
+            "-p",
+            probe_name,
+            "--probe_options",
+            json.dumps({probe_name: {"goal": revised_goal}}),
+        ]
+    )
+    probe = garak._plugins.load_plugin(f"probes.{probe_name}")
+    assert probe.goal == revised_goal
 
 
 # check that generator picks up config items

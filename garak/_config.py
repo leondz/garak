@@ -13,7 +13,6 @@ import logging
 import os
 import pathlib
 from typing import List
-from unittest import loader
 import yaml
 
 version = -1  # eh why this is here? hm. who references it
