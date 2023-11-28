@@ -607,6 +607,8 @@ class MultiPromptAttack(object):
             A list of prefixes to test the attack (default is ["I'm sorry", "I apologize", "As an", "I'm just", "I'm an", "I cannot", "Hello!"])
         logfile : str, optional
             A file to which logs will be written
+        outfile : str, optional
+            A file to write adversarial control strings
         managers : dict, optional
             A dictionary of manager objects, required to create the prompts.
         test_goals : list of str, optional
@@ -616,7 +618,6 @@ class MultiPromptAttack(object):
         test_workers : list of Worker objects, optional
             The list of test workers used in the attack
         """
-
         self.goals = goals
         self.targets = targets
         self.workers = workers
@@ -625,6 +626,7 @@ class MultiPromptAttack(object):
         self.test_workers = test_workers
         self.test_prefixes = test_prefixes
         self.models = [worker.model for worker in workers]
+        self.managers = managers
         self.logfile = logfile
         self.outfile = outfile
         self.prompts = [
@@ -639,7 +641,6 @@ class MultiPromptAttack(object):
             )
             for worker in workers
         ]
-        self.managers = managers
 
     @property
     def control_str(self):
@@ -886,6 +887,7 @@ class ProgressiveMultiPromptAttack(object):
                  control_init="! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !",
                  test_prefixes=["I'm sorry", "I apologize", "As an", "I'm just", "I'm an", "I cannot", "Hello!"],
                  logfile=None,
+                 outfile=None,
                  managers=None,
                  test_goals=[],
                  test_targets=[],
@@ -914,6 +916,8 @@ class ProgressiveMultiPromptAttack(object):
             A list of prefixes to test the attack (default is ["I'm sorry", "I apologize", "As an", "I'm just", "I'm an", "I cannot", "Hello!"])
         logfile : str, optional
             A file to which logs will be written
+        outfile : str, optional
+            A file to write adversarial control strings
         managers : dict, optional
             A dictionary of manager objects, required to create the prompts.
         test_goals : list of str, optional
@@ -935,6 +939,7 @@ class ProgressiveMultiPromptAttack(object):
         self.control = control_init
         self.test_prefixes = test_prefixes
         self.logfile = logfile
+        self.outfile = outfile
         self.managers = managers
         self.mpa_kwargs = ProgressiveMultiPromptAttack.filter_mpa_kwargs(**kwargs)
 
@@ -1125,6 +1130,7 @@ class IndividualPromptAttack(object):
                  control_init="! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !",
                  test_prefixes=["I'm sorry", "I apologize", "As an", "I'm just", "I'm an", "I cannot", "Hello!"],
                  logfile=None,
+                 outfile=None,
                  managers=None,
                  test_goals=[],
                  test_targets=[],
@@ -1150,6 +1156,8 @@ class IndividualPromptAttack(object):
             A list of prefixes to test the attack (default is ["I'm sorry", "I apologize", "As an", "I'm just", "I'm an", "I cannot", "Hello!"])
         logfile : str, optional
             A file to which logs will be written
+        outfile : str, optional
+            A file to write adversarial control strings
         managers : dict, optional
             A dictionary of manager objects, required to create the prompts.
         test_goals : list, optional
@@ -1159,7 +1167,6 @@ class IndividualPromptAttack(object):
         test_workers : list, optional
             The list of test workers used in the attack
         """
-
         self.goals = goals
         self.targets = targets
         self.workers = workers
@@ -1170,6 +1177,7 @@ class IndividualPromptAttack(object):
         self.control_init = control_init
         self.test_prefixes = test_prefixes
         self.logfile = logfile
+        self.outfile = outfile
         self.managers = managers
         self.mpa_kwargs = IndividualPromptAttack.filter_mpa_kwargs(**kwargs)
 
@@ -1288,16 +1296,17 @@ class IndividualPromptAttack(object):
             logger.debug(f"Goal {i + 1}/{len(self.goals)}")
 
             attack = self.managers['MPA'](
-                self.goals[i:i + 1],
-                self.targets[i:i + 1],
-                self.workers,
-                self.control,
-                self.test_prefixes,
-                self.logfile,
-                self.managers,
-                self.test_goals,
-                self.test_targets,
-                self.test_workers,
+                goals=self.goals[i:i + 1],
+                targets=self.targets[i:i + 1],
+                workers=self.workers,
+                control_init=self.control,
+                test_prefixes=self.test_prefixes,
+                logfile=self.logfile,
+                outfile=self.outfile,
+                managers=self.managers,
+                test_goals=self.test_goals,
+                test_targets=self.test_targets,
+                test_workers=self.test_workers,
                 **self.mpa_kwargs
             )
             attack.run(
@@ -1548,7 +1557,7 @@ class ModelWorker(object):
     def start(self):
         self.process = mp.Process(
             target=ModelWorker.run,
-            args=(self.model, self.tasks, self.results)
+            args=(self.tasks, self.results)
         )
         self.process.start()
         logger.info(f"Started worker {self.process.pid} for model {self.model.name_or_path}")

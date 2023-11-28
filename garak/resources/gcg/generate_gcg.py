@@ -1,5 +1,6 @@
 from garak.generators.huggingface import Model
-import attack_manager
+from garak.resources.gcg import attack_manager
+from garak.resources.gcg import gcg_attack
 from argparse import ArgumentParser
 import torch.multiprocessing as mp
 from datetime import datetime
@@ -87,16 +88,16 @@ def generate_gcg(model_names: list[str], transfer: bool = False, progressive: bo
     workers, test_workers = attack_manager.get_workers(model_names=model_names)
 
     managers = {
-        "AP": attack_manager.AttackPrompt,
-        "PM": attack_manager.PromptManager,
-        "MPA": attack_manager.MultiPromptAttack,
+        "AP": gcg_attack.GCGAttackPrompt,
+        "PM": gcg_attack.GCGPromptManager,
+        "MPA": gcg_attack.GCGMultiPromptAttack,
     }
 
     if transfer:
         attack = attack_manager.ProgressiveMultiPromptAttack(
-            train_goals,
-            train_targets,
-            workers,
+            goals=train_goals,
+            targets=train_targets,
+            workers=workers,
             progressive_models=progressive,
             progressive_goals=progressive,
             control_init=control_init,
@@ -113,9 +114,9 @@ def generate_gcg(model_names: list[str], transfer: bool = False, progressive: bo
         )
     else:
         attack = attack_manager.IndividualPromptAttack(
-            train_goals,
-            train_targets,
-            workers,
+            goals=train_goals,
+            targets=train_targets,
+            workers=workers,
             control_init=control_init,
             logfile=logfile,
             outfile=outfile,
