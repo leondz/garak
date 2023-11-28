@@ -223,27 +223,46 @@ def test_blank_probe_instance_loads_yaml_config():
 def test_blank_probe_instance_loads_cli_config():
     probe_name = "test.Blank"
     revised_goal = "TEST GOAL make the model forget what to output"
-    garak.cli.main(
-        [
-            "-p",
-            probe_name,
-            "--probe_options",
-            json.dumps({probe_name: {"goal": revised_goal}}),
-        ]
-    )
+    args = [
+        "-p",
+        probe_name,
+        "--probe_options",
+        json.dumps({probe_name: {"goal": revised_goal}}),
+    ]
+    garak.cli.main(args)
     probe = garak._plugins.load_plugin(f"probes.{probe_name}")
     assert probe.goal == revised_goal
 
 
-# check that generator picks up config items
-def test_blank_generator_instance_loads_config():
+# check that generator picks up yaml config items
+def test_blank_generator_instance_loads_yaml_config():
     assert False
+
+
+# check that generator picks up cli config items
+def test_blank_generator_instance_loads_cli_config():
+    generator_name = "test.Repeat"
+    revised_temp = 0.9001
+    args = [
+        "--model_type",
+        "test.Blank",
+        "--probes",
+        "none",
+        "--generator_options",
+        json.dumps({generator_name: {"temperature": revised_temp}})
+        .replace(" ", "")
+        .strip(),
+    ]
+    garak.cli.main(args)
+    gen = garak._plugins.load_plugin(f"generators.{generator_name}")
+    assert gen.temperature == revised_temp
 
 
 # test parsing of probespec
 def test_probespec_loading():
     assert _config.parse_plugin_spec(None, "detectors") == []
     assert _config.parse_plugin_spec("Auto", "probes") == []
+    assert _config.parse_plugin_spec("NONE", "probes") == []
     assert _config.parse_plugin_spec("", "generators") == []
     assert _config.parse_plugin_spec("ag", "probes") == ["probes.ag.Tox"]
     assert _config.parse_plugin_spec(

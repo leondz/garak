@@ -327,7 +327,7 @@ def main(arguments=[]) -> None:
     if "generator_options" in args or "generator_option_file" in args:
         if "generator_options" in args:
             try:
-                generator_cli_config = json.loads(args.probe_options)
+                generator_cli_config = json.loads(args.generator_options)
             except json.JSONDecodeError as e:
                 logging.warning("Failed to parse JSON generator_options: %s", e.args[0])
 
