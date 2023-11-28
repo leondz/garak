@@ -147,8 +147,3 @@ def parse_plugin_spec(spec: str, category: str) -> List[str]:
                 plugin_names += [f"{category}.{clause}"]  # spec parsing
 
     return plugin_names
-
-
-# cli generator config file
-# cli probe config file
-# cli probe config file overrides yaml probe config (using combine into)

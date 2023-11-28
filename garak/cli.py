@@ -306,9 +306,39 @@ def main(arguments=[]) -> None:
     # do a special thing for CLIprobe options, generator options
     if "probe_options" in args:
         try:
-            _config.plugins.probe_options = json.loads(_config.plugins.probe_options)
+            _config.plugins.probe_options = json.loads(
+                args.probe_options
+            )  # this should be a combine
         except json.JSONDecodeError as e:
             logging.warning("Failed to parse JSON probe_options: %s", e.args[0])
+
+    elif "probe_option_file" in args:
+        with open(args.probe_option_file, encoding="utf-8") as f:
+            probe_options_json = f.read().strip()
+        try:
+            _config.plugins.probe_options = json.loads(
+                probe_options_json
+            )  # this should be a combine
+        except json.decoder.JSONDecodeError as e:
+            logging.warning("Failed to parse JSON probe_options: %s", {e.args[0]})
+            raise e
+
+    if "generator_options" in args:
+        try:
+            _config.plugins.generator_options = json.loads(
+                args.probe_options
+            )  # this should be a combine
+        except json.JSONDecodeError as e:
+            logging.warning("Failed to parse JSON generator_options: %s", e.args[0])
+
+    elif "generator_option_file" in args:
+        with open(args.generator_option_file, encoding="utf-8") as f:
+            generator_options_json = f.read().strip()
+        try:
+            _config.plugins.generator_options = json.loads(generator_options_json)
+        except json.decoder.JSONDecodeError as e:
+            logging.warning("Failed to parse JSON generator_options: %s", {e.args[0]})
+            raise e
 
     # process commands
     if args.interactive:
@@ -354,26 +384,6 @@ def main(arguments=[]) -> None:
 
     # model is specified, we're doing something
     elif _config.plugins.model_type:
-        if hasattr(_config.plugins, "probe_option_file"):
-            with open(_config.plugins.probe_option_file, encoding="utf-8") as f:
-                probe_options_json = f.read().strip()
-            try:
-                _config.plugins.probe_options = json.loads(probe_options_json)
-            except json.decoder.JSONDecodeError as e:
-                logging.warning("Failed to parse JSON probe_options: %s", {e.args[0]})
-                raise e
-
-        if hasattr(_config.plugins, "generator_option_file"):
-            with open(_config.plugins.generator_option_file, encoding="utf-8") as f:
-                generator_options_json = f.read().strip()
-            try:
-                _config.plugins.generator_options = json.loads(generator_options_json)
-            except json.decoder.JSONDecodeError as e:
-                logging.warning(
-                    "Failed to parse JSON generator_options: %s", {e.args[0]}
-                )
-                raise e
-
         if (
             _config.plugins.model_type in ("openai", "replicate", "ggml", "huggingface")
             and not _config.plugins.model_name

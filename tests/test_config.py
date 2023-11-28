@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
+import json
 import pytest
+import os
 import re
 import tempfile
 
@@ -10,24 +12,24 @@ from garak.command import list_config
 
 ansi_escape = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
 
-cli_options_solo = [
+options_solo = [
     #    "verbose", # not sure hot to test argparse action="count"
     #    "deprefix", # this param is weird
     "narrow_output",
     "extended_detectors",
 ]
-cli_options_param = [
+options_param = [
     ("report_prefix", "laurelhurst"),
     ("parallel_requests", 9),
     ("parallel_attempts", 9),
     ("seed", 9001),
     ("eval_threshold", 0.9),
     ("generations", 9),
-    #    ("config", "obsidian.yaml"), # this doesn't get stored in _config. that'll suck to troubleshoot
+    #    ("config", "obsidian.yaml"), # optional config file names passed via CLI don't get stored in _config. that'll suck to troubleshoot
     ("model_type", "test"),
     ("model_name", "bruce"),
 ]
-cli_options_spec = [
+options_spec = [
     ("probes", "3,elim,gul.dukat", "probe_spec"),
     ("detectors", "all", "detector_spec"),
     ("buff", "polymorph", "buff_spec"),
@@ -43,7 +45,7 @@ for p in _config.plugins_params:
 
 
 # test CLI assertions of each var
-@pytest.mark.parametrize("option", cli_options_solo)
+@pytest.mark.parametrize("option", options_solo)
 def test_cli_solo_settings(option):
     garak.cli.main(
         [f"--{option}", "--list_config"]
@@ -52,17 +54,19 @@ def test_cli_solo_settings(option):
     assert getattr(subconfig, option) == True
 
 
-@pytest.mark.parametrize("param", cli_options_param)
+@pytest.mark.parametrize("param", options_param)
 def test_cli_param_settings(param):
     option, value = param
     garak.cli.main(
         [f"--{option}", str(value), "--list_config"]
     )  # add list_config as the action so we don't actually run
     subconfig = getattr(_config, param_locs[option])
+    if option == "report_prefix":
+        os.remove(f"{value}.report.jsonl")
     assert getattr(subconfig, option) == value
 
 
-@pytest.mark.parametrize("param", cli_options_spec)
+@pytest.mark.parametrize("param", options_spec)
 def test_cli_spec_settings(param):
     option, value, configname = param
     garak.cli.main(
@@ -82,7 +86,7 @@ def test_cli_shortform():
 
 
 # test that run YAML overrides core YAML
-@pytest.mark.parametrize("param", cli_options_param)
+@pytest.mark.parametrize("param", options_param)
 def test_yaml_param_settings(param):
     option, value = param
     with tempfile.NamedTemporaryFile(buffering=0) as tmp:
@@ -160,9 +164,7 @@ def test_run_from_yaml(capsys):
                 "utf-8"
             )
         )
-        garak.cli.main(
-            ["--config", tmp.name]
-        )  # add list_config as the action so we don't actually run
+        garak.cli.main(["--config", tmp.name])
     result = capsys.readouterr()
     output = result.out
     all_output = ""
@@ -180,12 +182,38 @@ def test_run_from_yaml(capsys):
 
 # cli generator options file loads
 def test_cli_generator_options_file():
-    assert False
+    # write an options file
+    with tempfile.NamedTemporaryFile(mode="w+") as tmp:
+        json.dump({"test.Blank": {"this_is_a": "generator"}}, tmp)
+        tmp.flush()
+        # invoke cli
+        garak.cli.main(
+            ["--generator_option_file", tmp.name, "--list_config"]
+        )  # add list_config as the action so we don't actually run
+
+        # check it was loaded
+        print(_config.plugins.generator_options)
+        assert _config.plugins.generator_options["test.Blank"] == {
+            "this_is_a": "generator"
+        }
 
 
-# cli probe options file
+# cli generator options file loads
 def test_cli_probe_options_file():
-    assert False
+    # write an options file
+    with tempfile.NamedTemporaryFile(mode="w+") as tmp:
+        json.dump({"test.Blank": {"probes_in_this_config": 1}}, tmp)
+        tmp.flush()
+        # invoke cli
+        garak.cli.main(
+            ["--probe_option_file", tmp.name, "--list_config"]
+        )  # add list_config as the action so we don't actually run
+
+        # check it was loaded
+        print(_config.plugins.probe_options)
+        assert _config.plugins.probe_options["test.Blank"] == {
+            "probes_in_this_config": 1
+        }
 
 
 # cli probe config file overrides yaml probe config (using combine into)
@@ -195,6 +223,11 @@ def test_cli_probe_options_overrides_yaml_probe_options():
 
 # check that probe picks up config items
 def test_blank_probe_instance_loads_config():
+    assert False
+
+
+# check that generator picks up config items
+def test_blank_generator_instance_loads_config():
     assert False
 
 
