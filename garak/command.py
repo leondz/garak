@@ -131,12 +131,12 @@ def print_buffs():
 def plugin_info(plugin_name):
     import inspect
 
-    from garak._plugins import enumerate_plugins, load_plugin
+    from garak._plugins import load_plugin
 
     # load plugin
     try:
         plugin = load_plugin(plugin_name)
-        print(f"Info on {plugin_name}:")
+        print(f"Configured info on {plugin_name}:")
         priority_fields = ["description"]
         skip_fields = ["prompts", "triggers"]
         # print the attribs it has
@@ -195,14 +195,6 @@ def list_config():
     print("_config:")
     _enumerate_obj_values(_config)
 
-    print("system:")
-    _enumerate_obj_values(_config.system)
-
-    print("transient:")
-    _enumerate_obj_values(_config.transient)
-
-    print("run:")
-    _enumerate_obj_values(_config.run)
-
-    print("plugins:")
-    _enumerate_obj_values(_config.plugins)
+    for section in "system transient run plugins".split():
+        print(f"{section}:")
+        _enumerate_obj_values(getattr(_config, section))
