@@ -67,12 +67,12 @@ def load_payloads():
     payloads = []
 
     if _config.plugins.probe_options:
-        if "encoding.payloads" in _config.plugins.probe_options:
-            if isinstance(_config.plugins.probe_options["encoding.payloads"], str):
-                _config.plugins.probe_options["encoding.payloads"] = [
-                    _config.plugins.probe_options["encoding.payloads"]
+        if "encoding" in _config.plugins.probes:
+            if isinstance(_config.plugins.probes["encoding"]["payloads"], str):
+                _config.plugins.probes["encoding"]["payloads"] = [
+                    _config.plugins.probes["encoding"]["payloads"]
                 ]
-            for payload_class in _config.plugins.probe_options["encoding.payloads"]:
+            for payload_class in _config.plugins.probes["encoding"]["payloads"]:
                 if payload_class in payload_library:
                     payloads += payload_library[payload_class]
 
