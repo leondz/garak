@@ -4,11 +4,14 @@ import json
 import pytest
 import os
 import re
+import shutil
 import tempfile
 
 from garak import _config
 import garak.cli
 from garak.command import list_config
+
+site_yaml_filename = "TESTONLY.site.yaml.bak"
 
 ansi_escape = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
 
@@ -98,7 +101,24 @@ def test_yaml_param_settings(param):
 
 # # test that site YAML overrides core YAML # needs file staging for site yaml
 def test_site_yaml_overrides_core_yaml():
-    assert False
+    site_cfg_moved = False
+    try:
+        shutil.move("garak/garak.site.yaml", site_yaml_filename)
+        site_cfg_moved = True
+    except FileNotFoundError:
+        site_cfg_moved = False
+
+    with open("garak/garak.site.yaml", "w") as f:
+        f.write("---\nrun:\n  eval_threshold: 0.777\n")
+        f.flush()
+        garak.cli.main(["--list_config"])
+
+    if site_cfg_moved:
+        shutil.move(site_yaml_filename, "garak/garak.site.yaml")
+    else:
+        os.remove("garak/garak.site.yaml")
+
+    assert _config.run.eval_threshold == 0.777
 
 
 # # test that run YAML overrides site YAML # needs file staging for site yaml
