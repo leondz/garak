@@ -123,7 +123,24 @@ def test_site_yaml_overrides_core_yaml():
 
 # # test that run YAML overrides site YAML # needs file staging for site yaml
 def test_run_yaml_overrides_site_yaml():
-    assert False
+    site_cfg_moved = False
+    try:
+        shutil.move("garak/garak.site.yaml", site_yaml_filename)
+        site_cfg_moved = True
+    except FileNotFoundError:
+        site_cfg_moved = False
+
+    with open("garak/garak.site.yaml", "w") as f:
+        f.write("---\nrun:\n  eval_threshold: 0.777\n")
+        f.flush()
+        garak.cli.main(["--list_config", "--eval_threshold", str(0.9001)])
+
+    if site_cfg_moved:
+        shutil.move(site_yaml_filename, "garak/garak.site.yaml")
+    else:
+        os.remove("garak/garak.site.yaml")
+
+    assert _config.run.eval_threshold == 0.9001
 
 
 # test that CLI config overrides run YAML
