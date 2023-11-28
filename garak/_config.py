@@ -129,9 +129,9 @@ def load_config(
 def parse_plugin_spec(spec: str, category: str) -> List[str]:
     from garak._plugins import enumerate_plugins
 
-    if spec in (None, "", "auto"):
+    if spec is None or spec.lower() in ("", "auto"):
         return []
-    if spec == "all":
+    if spec.lower() == "all":
         plugin_names = [
             name
             for name, active in enumerate_plugins(category=category)

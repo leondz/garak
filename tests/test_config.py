@@ -242,4 +242,14 @@ def test_blank_generator_instance_loads_config():
 
 # test parsing of probespec
 def test_probespec_loading():
-    assert False
+    assert _config.parse_plugin_spec(None, "detectors") == []
+    assert _config.parse_plugin_spec("Auto", "probes") == []
+    assert _config.parse_plugin_spec("", "generators") == []
+    assert _config.parse_plugin_spec("ag", "probes") == ["probes.ag.Tox"]
+    assert _config.parse_plugin_spec(
+        "long.test.class,another.long.test.class", "probes"
+    ) == ["probes.long.test.class", "probes.another.long.test.class"]
+    assert _config.parse_plugin_spec("always", "detectors") == [
+        "detectors.always.Fail",
+        "detectors.always.Pass",
+    ]
