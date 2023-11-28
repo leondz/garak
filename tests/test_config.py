@@ -245,21 +245,21 @@ def test_cli_generator_options_overrides_yaml_probe_options():
     cli_generations_count = 9001
     with tempfile.NamedTemporaryFile(buffering=0) as generator_yaml_file:
         generator_yaml_file.write(
-                """
+            """
 ---
 run:
     generations: 999
 """.encode(
-                    "utf-8"
+                "utf-8"
             )
         )
         args = [
-                "--config",
-                generator_yaml_file.name,
-                "-g", 
-                cli_generations_count,
-                "--list_config",
-            ]  # add list_config as the action so we don't actually run
+            "--config",
+            generator_yaml_file.name,
+            "-g",
+            str(cli_generations_count),
+            "--list_config",
+        ]  # add list_config as the action so we don't actually run
         print(args)
         garak.cli.main(args)
     # check it was loaded
