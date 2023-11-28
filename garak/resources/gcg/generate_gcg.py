@@ -4,10 +4,13 @@ from argparse import ArgumentParser
 import torch.multiprocessing as mp
 from datetime import datetime
 from pathlib import Path
+from logging import getLogger
 
 CONTROL_INIT = "! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !"
 PATH = Path(__file__).parents[0]
 
+
+logger = getLogger(__name__)
 
 # GCG parser used by interactive mode
 gcg_parser = ArgumentParser()
@@ -19,12 +22,13 @@ gcg_parser.add_argument("--outfile", type=str, default="./data/gcg_prompts.txt",
                         help="Location to write GCG attack output")
 
 
-def generate_gcg(model_names: list[str], transfer: bool = False, progressive: bool = False, stop_success: bool = False,
+def generate_gcg(model_names: list[str], transfer: bool = False, progressive: bool = False, stop_success: bool = True,
                  train_data: str = f"{PATH}/data/advbench/harmful_behaviors.csv", n_train: int = 50, n_test: int = 0,
-                 outfile: str = f"{PATH}/data/gcg/gcg.txt", control_init = CONTROL_INIT, deterministic: bool = True,
+                 outfile: str = f"{PATH}/data/gcg/gcg.txt", control_init: str = CONTROL_INIT, deterministic: bool = True,
                  n_steps: int = 500, batch_size: int = 32, topk: int = 256, temp: int = 1, target_weight: float = 1.0,
                  control_weight: float = 0.0, test_steps: int = 50, anneal: bool = False, incr_control: bool = False,
-                 filter_cand: bool = True, allow_non_ascii: bool = False, lr: float = 0.01, **kwargs):
+                 filter_cand: bool = True, allow_non_ascii: bool = False, lr: float = 0.01, save_logs: bool = False,
+                 **kwargs):
     """
     Function to generate GCG attack strings
     Args:
@@ -50,6 +54,7 @@ def generate_gcg(model_names: list[str], transfer: bool = False, progressive: bo
         filter_cand (bool):
         allow_non_ascii (bool): Allow non-ASCII test in adversarial suffixes
         lr (float): Model learning rate
+        save_logs (bool): Maintain GCG running logs
 
     Kwargs:
         test_data (str): Path to test data
@@ -71,12 +76,13 @@ def generate_gcg(model_names: list[str], transfer: bool = False, progressive: bo
         model_string = "_".join([x.replace("/", "-") for x in model_names])
         logfile = f"{PATH}/data/logs/{timestamp}_{model_string}.json"
 
-    # TODO: Add params for get_goals_and_targets. Currently just a skeleton
+    logger.debug("Loading goals and targets for GCG attack.")
     train_goals, train_targets, test_goals, test_targets = attack_manager.get_goals_and_targets(train_data=train_data,
                                                                                                 test_data=test_data,
                                                                                                 n_train=n_train,
                                                                                                 n_test=n_test)
 
+    logger.debug("Loading workers for GCG attack")
     # TODO: Specify additional args for get_workers
     workers, test_workers = attack_manager.get_workers(model_names=model_names)
 
@@ -95,6 +101,7 @@ def generate_gcg(model_names: list[str], transfer: bool = False, progressive: bo
             progressive_goals=progressive,
             control_init=control_init,
             logfile=logfile,
+            outfile=outfile,
             managers=managers,
             test_goals=test_goals,
             test_targets=test_targets,
@@ -111,6 +118,7 @@ def generate_gcg(model_names: list[str], transfer: bool = False, progressive: bo
             workers,
             control_init=control_init,
             logfile=logfile,
+            outfile=outfile,
             managers=managers,
             test_goals=test_goals,
             test_targets=test_targets,
@@ -121,7 +129,11 @@ def generate_gcg(model_names: list[str], transfer: bool = False, progressive: bo
             mpa_n_steps=n_steps
         )
 
-    control_string, steps = attack.run(
+    if save_logs:
+        logger.info(f"Beginning GCG generation, detailed logging information for this run is in {logfile}.")
+    else:
+        logger.info("Beginning GCG generation")
+    attack.run(
         n_steps=n_steps,
         batch_size=batch_size,
         topk=topk,
@@ -138,3 +150,9 @@ def generate_gcg(model_names: list[str], transfer: bool = False, progressive: bo
 
     for worker in workers + test_workers:
         worker.stop()
+
+    logger.debug("GCG generation complete!")
+
+    if not save_logs:
+        p = Path(logfile)
+        p.unlink()
