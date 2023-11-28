@@ -64,6 +64,7 @@ class Buff:
     def transform(
         self, attempt: garak.attempt.Attempt
     ) -> Iterable[garak.attempt.Attempt]:
+        """attempt copying is handled elsewhere. isn't that nice"""
         yield attempt
 
     def buff(
