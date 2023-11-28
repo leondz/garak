@@ -128,7 +128,7 @@ def test_probe_options_yaml(capsys):
 ---
 plugins:
   probe_spec: test.Blank
-  probe_options:
+  probes:
     test.Blank:    
         gen_x: 37176
 """.encode(
@@ -138,22 +138,21 @@ plugins:
         garak.cli.main(
             ["--config", tmp.name, "--list_config"]
         )  # add list_config as the action so we don't actually run
-        print(_config.plugins.probe_options)
-        assert _config.plugins.probe_options["test.Blank"]["gen_x"] == 37176
+        assert _config.plugins.probes["test.Blank"]["gen_x"] == 37176
 
 
 # test generator_options YAML
 def test_generator_options_yaml(capsys):
     with tempfile.NamedTemporaryFile(buffering=0) as tmp:
         tmp.write(
-            "---\nplugins:\n  model_type: test.Blank\n  probe_spec: test.Blank\n  generator_options:\n    gen_x: 37176\n".encode(
+            "---\nplugins:\n  model_type: test.Blank\n  probe_spec: test.Blank\n  generators:\n    test.Blank:\n      gen_x: 37176\n".encode(
                 "utf-8"
             )
         )
         garak.cli.main(
             ["--config", tmp.name, "--list_config"]
         )  # add list_config as the action so we don't actually run
-        assert _config.plugins.generator_options["gen_x"] == 37176
+        assert _config.plugins.generators["test.Blank"]["gen_x"] == 37176
 
 
 # can a run be launched from a run YAML?
@@ -192,10 +191,7 @@ def test_cli_generator_options_file():
         )  # add list_config as the action so we don't actually run
 
         # check it was loaded
-        print(_config.plugins.generator_options)
-        assert _config.plugins.generator_options["test.Blank"] == {
-            "this_is_a": "generator"
-        }
+        assert _config.plugins.generators["test.Blank"] == {"this_is_a": "generator"}
 
 
 # cli generator options file loads
@@ -210,10 +206,7 @@ def test_cli_probe_options_file():
         )  # add list_config as the action so we don't actually run
 
         # check it was loaded
-        print(_config.plugins.probe_options)
-        assert _config.plugins.probe_options["test.Blank"] == {
-            "probes_in_this_config": 1
-        }
+        assert _config.plugins.probes["test.Blank"] == {"probes_in_this_config": 1}
 
 
 # cli probe config file overrides yaml probe config (using combine into)
@@ -229,7 +222,7 @@ def test_blank_probe_instance_loads_yaml_config():
 # check that probe picks up cli config items
 def test_blank_probe_instance_loads_cli_config():
     probe_name = "test.Blank"
-    revised_goal = "make the model forget what to output"
+    revised_goal = "TEST GOAL make the model forget what to output"
     garak.cli.main(
         [
             "-p",

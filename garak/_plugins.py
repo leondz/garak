@@ -84,7 +84,17 @@ def enumerate_plugins(
     return plugin_class_names
 
 
-def load_plugin(path, break_on_fail=True):
+def configure_plugin(plugin_path: str, plugin: object) -> object:
+    category, module_name, plugin_class_name = plugin_path.split(".")
+    plugin_name = f"{module_name}.{plugin_class_name}"
+    plugin_type_config = getattr(_config.plugins, category)
+    if plugin_name in plugin_type_config:
+        for k, v in plugin_type_config[plugin_name].items():
+            setattr(plugin, k, v)
+    return plugin
+
+
+def load_plugin(path, break_on_fail=True) -> object:
     """load_plugin takes a path to a plugin class, and attempts to load that class.
     If successful, it returns an instance of that class.
 
@@ -96,41 +106,45 @@ def load_plugin(path, break_on_fail=True):
     """
     try:
         category, module_name, plugin_class_name = path.split(".")
-    except ValueError:
+    except ValueError as ve:
         if break_on_fail:
             raise ValueError(
                 f'Expected plugin name in format category.module_name.class_name, got "{path}"'
-            )
+            ) from ve
         else:
             return False
     module_path = f"garak.{category}.{module_name}"
     try:
         mod = importlib.import_module(module_path)
-    except:
-        logging.warning(f"Exception failed import of {module_path}")
+    except Exception as e:
+        logging.warning("Exception failed import of %s", module_path)
         if break_on_fail:
-            raise ValueError("Didn't successfully import " + module_name)
+            raise ValueError("Didn't successfully import " + module_name) from e
         else:
             return False
 
     try:
         plugin_instance = getattr(mod, plugin_class_name)()
-    except AttributeError:
+    except AttributeError as ae:
         logging.warning(
-            f"Exception failed instantiation of {module_path}.{plugin_class_name}"
+            "Exception failed instantiation of %s.%s", module_path, plugin_class_name
         )
         if break_on_fail:
             raise ValueError(
                 f"Plugin {plugin_class_name} not found in {category}.{module_name}"
-            )
+            ) from ae
         else:
             return False
     except Exception as e:
         # print("error in: module", mod.__name__, "class", plugin_class_name)
-        # logging.warning(f"error in: module {mod} class {plugin_class_name}")
+        logging.warning(
+            "error instantiating module %s class %s", str(mod), plugin_class_name
+        )
         if break_on_fail:
-            raise Exception(e)
+            raise Exception(e) from e
         else:
             return False
+
+    plugin_instance = configure_plugin(path, plugin_instance)
 
     return plugin_instance

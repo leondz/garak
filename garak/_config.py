@@ -48,6 +48,10 @@ transient = TransientConfig()
 system = GarakSubConfig()
 run = GarakSubConfig()
 plugins = GarakSubConfig()
+plugins.probes = {}
+plugins.generators = {}
+plugins.detectors = {}
+plugins.buffs = {}
 
 # this is so popular, let's set a default. what other defaults are worth setting? what's the policy?
 run.seed = None
