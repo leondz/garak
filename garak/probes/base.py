@@ -38,7 +38,7 @@ class Probe:
 
     def __init__(self):
         self.probename = str(self.__class__).split("'")[1]
-        if not _config.args or _config.args.verbose > 0:
+        if hasattr(_config.system, "verbose") and _config.system.verbose > 0:
             print(
                 f"loading {Style.BRIGHT}{Fore.LIGHTYELLOW_EX}probe: {Style.RESET_ALL}{self.probename}"
             )
@@ -92,7 +92,7 @@ class Probe:
     def _execute_attempt(self, this_attempt):
         self._generator_precall_hook(self.generator, this_attempt)
         this_attempt.outputs = self.generator.generate(this_attempt.prompt)
-        _config.reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
+        _config.transient.reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
         this_attempt = self._postprocess_hook(this_attempt)
         return copy.deepcopy(this_attempt)
 
@@ -115,8 +115,8 @@ class Probe:
         attempts_completed = []
 
         if (
-            _config.args.parallel_attempts
-            and _config.args.parallel_attempts > 1
+            _config.system.parallel_attempts
+            and _config.system.parallel_attempts > 1
             and self.parallelisable_attempts
             and len(attempts_todo) > 1
         ):
@@ -125,7 +125,7 @@ class Probe:
             attempt_bar = tqdm.tqdm(total=len(attempts_todo), leave=False)
             attempt_bar.set_description(self.probename.replace("garak.", ""))
 
-            with Pool(_config.args.parallel_attempts) as attempt_pool:
+            with Pool(_config.system.parallel_attempts) as attempt_pool:
                 for result in attempt_pool.imap_unordered(
                     self._execute_attempt, attempts_todo
                 ):

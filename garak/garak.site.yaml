@@ -1,0 +1,3 @@
+---
+run:
+  eval_threshold: 0.777

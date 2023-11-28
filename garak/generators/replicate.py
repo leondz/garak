@@ -15,9 +15,8 @@ import os
 
 import backoff
 import replicate.exceptions
-import tqdm
 
-import garak._config
+from garak import _config
 from garak.generators.base import Generator
 
 
@@ -32,8 +31,8 @@ class ReplicateGenerator(Generator):
         self.name = name
         self.fullname = f"Replicate {self.name}"
         self.seed = 9
-        if garak._config.seed:
-            self.seed = garak._config.seed
+        if hasattr(_config.run, "seed"):
+            self.seed = _config.run.seed
 
         super().__init__(name, generations=generations)
 

@@ -9,7 +9,7 @@ import re
 from typing import List
 
 from garak.attempt import Attempt
-import garak._config
+from garak import _config
 from garak.probes.base import Probe
 
 
@@ -41,7 +41,7 @@ class LiteratureCloze(Probe):
 """
         self.prompts = []
         self.triggers = []
-        with open(f"{garak._config.basedir}/{self.source_file}") as f:
+        with open(f"{_config.transient.basedir}/{self.source_file}") as f:
             r = csv.reader(f, delimiter="\t")
             for row in r:
                 if len(row) != 2:
@@ -74,7 +74,7 @@ class LiteratureComplete(LiteratureCloze, Probe):
 
         self.prompts = []
         self.triggers = []
-        with open(f"{garak._config.basedir}/{self.source_file}") as f:
+        with open(f"{_config.transient.basedir}/{self.source_file}") as f:
             r = csv.reader(f, delimiter="\t")
             for row in r:
                 if len(row) != 2:

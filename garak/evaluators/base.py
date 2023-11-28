@@ -8,9 +8,9 @@ import json
 import logging
 from typing import List
 
-from colorama import Fore, Back, Style
+from colorama import Fore, Style
 
-import garak._config
+from garak import _config
 import garak.attempt
 
 
@@ -56,24 +56,24 @@ class Evaluator:
                 all_outputs += attempt.outputs
                 for idx, score in enumerate(attempt.detector_results[detector]):
                     if not self.test(score):  # if we don't pass
-                        if not garak._config.hitlogfile:
-                            if not garak._config.args.report_prefix:
+                        if not _config.transient.hitlogfile:
+                            if not _config.system.report_prefix:
                                 hitlog_filename = (
-                                    f"garak.{garak._config.run_id}.hitlog.jsonl"
+                                    f"garak.{_config.transient.run_id}.hitlog.jsonl"
                                 )
                             else:
                                 hitlog_filename = (
-                                    garak._config.args.report_prefix + ".hitlog.jsonl"
+                                    _config.system.report_prefix + ".hitlog.jsonl"
                                 )
                             logging.info(f"hit log in {hitlog_filename}")
-                            garak._config.hitlogfile = open(
+                            _config.transient.hitlogfile = open(
                                 hitlog_filename, "w", buffering=1
                             )
 
                         trigger = None
                         if "trigger" in attempt.notes:
                             trigger = attempt.notes["trigger"]
-                        garak._config.hitlogfile.write(
+                        _config.transient.hitlogfile.write(
                             json.dumps(
                                 {
                                     "goal": attempt.goal,
@@ -81,26 +81,26 @@ class Evaluator:
                                     "output": attempt.outputs[idx],
                                     "trigger": trigger,
                                     "score": score,
-                                    "run_id": str(garak._config.run_id),
+                                    "run_id": str(_config.transient.run_id),
                                     "attempt_id": str(attempt.uuid),
                                     "attempt_seq": attempt.seq,
                                     "attempt_idx": idx,
-                                    "generator": f"{garak._config.args.model_type} {garak._config.args.model_name}",
+                                    "generator": f"{_config.run.model_type} {_config.run.model_name}",
                                     "probe": self.probename,
                                     "detector": detector,
-                                    "generations_per_prompt": garak._config.args.generations,
+                                    "generations_per_prompt": _config.run.generations,
                                 }
                             )
                             + "\n"  # generator,probe,prompt,trigger,result,detector,score,run id,attemptid,
                         )
 
-            if garak._config.args.narrow_output:
+            if _config.system.narrow_output:
                 print_func = self.print_results_narrow
             else:
                 print_func = self.print_results_wide
             print_func(detector, all_passes, all_outputs)
 
-            garak._config.reportfile.write(
+            _config.transient.reportfile.write(
                 json.dumps(
                     {
                         "entry_type": "eval",
@@ -136,7 +136,7 @@ class Evaluator:
             )
         print()
 
-        if garak._config.args.verbose > 0 and messages:
+        if _config.system.verbose > 0 and messages:
             for i in range(len(passes)):
                 if not passes[i]:
                     try:
@@ -169,7 +169,7 @@ class Evaluator:
                 f"    {Fore.LIGHTRED_EX}failure rate:{Style.RESET_ALL} {failrate:.4g}%"
             )
 
-        if garak._config.args.verbose > 0 and messages:
+        if _config.system.verbose > 0 and messages:
             for i in range(len(passes)):
                 if not passes[i]:
                     try:

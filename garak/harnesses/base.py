@@ -18,12 +18,11 @@ import json
 import logging
 from typing import List
 
-from colorama import Fore, Style
 import tqdm
 
 from garak.attempt import *
-import garak._config as _config
-import garak._plugins as _plugins
+from garak import _config
+from garak import _plugins
 
 
 class Harness:
@@ -71,13 +70,13 @@ class Harness:
         """
         if not detectors:
             logging.warning("No detectors, nothing to do")
-            if _config.args and _config.args.verbose >= 2:
+            if hasattr(_config.system, "verbose") and _config.system.verbose >= 2:
                 print("No detectors, nothing to do")
             return None
 
         if not probes:
             logging.warning("No probes, nothing to do")
-            if _config.args and _config.args.verbose >= 2:
+            if hasattr(_config.system, "verbose") and _config.system.verbose >= 2:
                 print("No probes, nothing to do")
             return None
 
@@ -105,6 +104,6 @@ class Harness:
 
             for attempt in attempt_results:
                 attempt.status = ATTEMPT_COMPLETE
-                _config.reportfile.write(json.dumps(attempt.as_dict()) + "\n")
+                _config.transient.reportfile.write(json.dumps(attempt.as_dict()) + "\n")
 
             evaluator.evaluate(attempt_results)

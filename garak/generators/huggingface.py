@@ -23,7 +23,7 @@ import warnings
 
 import backoff
 
-from garak._config import args
+from garak import _config
 from garak.generators.base import Generator
 
 
@@ -55,9 +55,8 @@ class Pipeline(Generator):
 
         from transformers import pipeline, set_seed
 
-        if "seed" in dir(args):
-            if args.seed is not None:
-                set_seed(args.seed)
+        if _config.run.seed is not None:
+            set_seed(_config.run.seed)
 
         import torch.cuda
 
@@ -72,7 +71,7 @@ class Pipeline(Generator):
             device=device,
         )
         self.deprefix_prompt = name in models_to_deprefix
-        if args and "deprefix" in args and args.deprefix == True:
+        if _config.run.deprefix == True:
             self.deprefix_prompt = True
 
     def _call_model(self, prompt: str) -> List[str]:
@@ -228,9 +227,8 @@ class Model(Generator):
 
         import transformers
 
-        if "seed" in dir(args):
-            if args.seed is not None:
-                transformers.set_seed(args.seed)
+        if _config.run.seed is not None:
+            transformers.set_seed(_config.run.seed)
 
         self.init_device = "cuda:" + str(self.device)
         import torch.cuda

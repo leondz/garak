@@ -5,73 +5,87 @@
 
 """ Definitions of commands and actions that can be run in the garak toolkit"""
 
+import logging
 import json
 
 
 def start_logging():
-    import logging
-
-    import garak._config as _config
-
     logging.basicConfig(
         filename="garak.log",
         level=logging.DEBUG,
         format="%(asctime)s  %(levelname)s  %(message)s",
     )
 
-    logging.info(f"invoked with arguments {_config.args}")
+    # garaklogger = logging.FileHandler("garak.log", encoding="utf-8")
+    # garakformatter = logging.Formatter("%(asctime)s  %(levelname)s  %(message)s")
+    # garaklogger.setFormatter(garakformatter)
+    # garaklogger.setLevel(logging.DEBUG)
+
+    # rootlogger = logging.getLogger()
+    # for h in rootlogger.handlers[:]:
+    #    rootlogger.removeHandler(h)
+    # rootlogger.addHandler(garaklogger)
+    # logging.root = rootlogger
+    logging.info("invoked")
 
 
-def start_run():
+def start_run(args):
     import logging
     import uuid
 
-    import garak._config as _config
+    from garak import _config
 
-    logging.info(f"started at {_config.starttime_iso}")
-    _config.run_id = str(uuid.uuid4())  # uuid1 is safe but leaks host info
-    if not _config.args.report_prefix:
-        _config.report_filename = f"garak.{_config.run_id}.report.jsonl"
+    logging.info("started at %s", _config.transient.starttime_iso)
+    # print("ASSIGN UUID", args)
+    _config.transient.run_id = str(uuid.uuid4())  # uuid1 is safe but leaks host info
+    if not _config.system.report_prefix:
+        _config.transient.report_filename = (
+            f"garak.{_config.transient.run_id}.report.jsonl"
+        )
     else:
-        _config.report_filename = _config.args.report_prefix + ".report.jsonl"
-    print("start run")
-    _config.reportfile = open(_config.report_filename, "w", buffering=1)
-    _config.args.__dict__.update({"entry_type": "config"})
-    _config.reportfile.write(json.dumps(_config.args.__dict__) + "\n")
-    _config.reportfile.write(
+        _config.transient.report_filename = (
+            _config.system.report_prefix + ".report.jsonl"
+        )
+    _config.transient.reportfile = open(
+        _config.transient.report_filename, "w", buffering=1, encoding="utf-8"
+    )
+    args.__dict__.update({"entry_type": "start_run args config"})
+    _config.transient.reportfile.write(json.dumps(args.__dict__) + "\n")
+    _config.transient.reportfile.write(
         json.dumps(
             {
                 "entry_type": "init",
                 "garak_version": _config.version,
-                "start_time": _config.starttime_iso,
-                "run": _config.run_id,
+                "start_time": _config.transient.starttime_iso,
+                "run": _config.transient.run_id,
             }
         )
         + "\n"
     )
-    logging.info(f"reporting to {_config.report_filename}")
+    logging.info("reporting to %s", _config.transient.report_filename)
 
 
 def end_run():
     import datetime
     import logging
 
-    import garak._config as _config
+    from garak import _config
 
     logging.info("run complete, ending")
-    _config.reportfile.close()
-    print(f"📜 report closed :) {_config.report_filename}")
-    if _config.hitlogfile:
-        _config.hitlogfile.close()
+    _config.transient.reportfile.close()
+    print(f"📜 report closed :) {_config.transient.report_filename}")
+    if _config.transient.hitlogfile:
+        _config.transient.hitlogfile.close()
 
-    timetaken = (datetime.datetime.now() - _config.starttime).total_seconds()
+    timetaken = (datetime.datetime.now() - _config.transient.starttime).total_seconds()
 
-    print(f"✔️  garak done: complete in {timetaken:.2f}s")
-    logging.info(f"garak done: complete in {timetaken:.2f}s")
+    msg = f"garak done: complete in {timetaken:.2f}s"
+    print(f"✔️  {msg}")
+    logging.info(msg)
 
 
 def print_plugins(prefix: str, color):
-    from colorama import Fore, Style
+    from colorama import Style
 
     from garak._plugins import enumerate_plugins
 
@@ -117,7 +131,6 @@ def print_buffs():
 def plugin_info(plugin_name):
     import inspect
 
-    import garak._config as _config
     from garak._plugins import enumerate_plugins, load_plugin
 
     # load plugin
@@ -168,3 +181,28 @@ def pxd_run(generator, probe_names, detector_names, evaluator, buffs):
         evaluator,
         buffs,
     )
+
+
+def _enumerate_obj_values(o):
+    for i in dir(o):
+        if i[:2] != "__" and not callable(getattr(o, i)):
+            print(f"    {i}: {getattr(o, i)}")
+
+
+def list_config():
+    from garak import _config
+
+    print("_config:")
+    _enumerate_obj_values(_config)
+
+    print("system:")
+    _enumerate_obj_values(_config.system)
+
+    print("transient:")
+    _enumerate_obj_values(_config.transient)
+
+    print("run:")
+    _enumerate_obj_values(_config.run)
+
+    print("plugins:")
+    _enumerate_obj_values(_config.plugins)

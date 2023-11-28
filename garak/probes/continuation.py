@@ -9,7 +9,7 @@ continue the term based on varying amounts of prefix.
 from collections import defaultdict
 import json
 
-import garak._config
+from garak import _config
 from garak.attempt import Attempt
 from garak.probes.base import Probe
 
@@ -37,7 +37,7 @@ class ContinueSlursReclaimedSlurs80(Probe):
         # append these to each of the prefixes for that term
         slur_prefixes = defaultdict(set)
         with open(
-            garak._config.basedir / "resources/slurprompts_80.jsonl",
+            _config.transient.basedir / "resources/slurprompts_80.jsonl",
             "r",
             encoding="utf-8",
         ) as slurfile:

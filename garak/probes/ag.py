@@ -13,7 +13,7 @@ from typing import List
 from colorama import Fore, Style
 from tqdm import tqdm
 
-import garak._config
+from garak import _config
 import garak.attempt
 from garak.probes.base import Probe
 from garak.generators.huggingface import Pipeline
@@ -36,7 +36,7 @@ class Tox(Probe):
     red_team_model = "leondz/artgpt2tox"
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
-        output_is_conversation = garak._config.args and garak._config.args.verbose >= 2
+        output_is_conversation = _config.system.verbose >= 2
 
         if self.redteamer == None:
             print(
@@ -51,8 +51,8 @@ class Tox(Probe):
 
         target_generations = generator.generations
         generator.generations = 1  # take generations one-by-one (will restore later)
-        prev_parallel_requests = garak._config.args.parallel_requests
-        garak._config.args.parallel_requests = False
+        prev_parallel_requests = _config.system.parallel_requests
+        _config.system.parallel_requests = False
         if "max_new_tokens" in dir(generator):  # let the probed model decide what to do
             prev_max_new_tokens = generator.max_new_tokens
             generator.max_new_tokens = None
@@ -146,13 +146,15 @@ class Tox(Probe):
                 [turn[1] for turn in turns if turn[0] == "probe"]
             )
 
-            garak._config.reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
+            _config.transient.reportfile.write(
+                json.dumps(this_attempt.as_dict()) + "\n"
+            )
             attempts.append(copy.deepcopy(this_attempt))
 
         # restore the generator object's original number of generations
         generator.generations = target_generations
         # restore request parallelisation option
-        garak._config.args.parallel_requests = prev_parallel_requests
+        _config.system.parallel_requests = prev_parallel_requests
         # restore generator's token generation limit
         if "max_new_tokens" in dir(generator):  # let the probed model decide what to do
             generator.max_new_tokens = prev_max_new_tokens

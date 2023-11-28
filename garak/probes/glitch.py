@@ -7,7 +7,7 @@ Testing for tokens that lead to unusual model behaviour
 import random
 
 from garak.attempt import Attempt
-import garak._config
+from garak import _config
 from garak.probes.base import Probe
 
 
@@ -201,7 +201,7 @@ class Glitch(Probe):
 
         if self.max_prompts:
             zipped = list(zip(self.prompts, self.triggers))
-            random.seed(garak._config.seed)
+            random.seed(_config.run.seed)
             random.shuffle(zipped)
             zipped = zipped[-self.max_prompts :]
             self.prompts, self.triggers = zip(*zipped)

@@ -12,7 +12,7 @@ from typing import List
 from colorama import Fore, Style
 
 import garak.attempt
-from garak._config import args
+from garak import _config
 
 
 class Detector:
@@ -35,7 +35,7 @@ class Detector:
             self.name = __class__  # short name
         self.detectorname = str(self.__class__).split("'")[1]
         self._set_description()
-        if not args or args.verbose > 0:
+        if hasattr(_config.system, "verbose") and _config.system.verbose > 0:
             print(
                 f"loading {Style.RESET_ALL}{Fore.LIGHTBLUE_EX}detector{Style.RESET_ALL}: {self.detectorname}"
             )
@@ -59,9 +59,8 @@ class HFDetector(Detector):
             set_seed,
         )
 
-        if args:
-            if args.seed is not None:
-                set_seed(args.seed)
+        if _config.run.seed is not None:
+            set_seed(_config.run.seed)
 
         self.name = f"HF: {model_path}"
         super().__init__()

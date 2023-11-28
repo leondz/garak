@@ -1,0 +1,25 @@
+---
+system:
+  verbose: 0
+  report_prefix:
+  narrow_output: false
+  parallel_requests: false
+  parallel_attempts: false
+
+run:
+  seed:
+  deprefix: true
+  eval_threshold: 0.5
+  generations: 10
+
+plugins:
+  model_type:
+  model_name:
+  generators: {}
+  probe_spec: all
+  probes: {}
+  detector_spec: auto
+  detectors: {}
+  extended_detectors: false
+  buff_spec:
+  buffs: {}

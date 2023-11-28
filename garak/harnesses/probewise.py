@@ -14,8 +14,7 @@ from colorama import Fore, Style
 from garak.detectors.base import Detector
 from garak.harnesses.base import Harness
 
-import garak._plugins as _plugins
-import garak._config as _config
+from garak import _config, _plugins
 
 
 class ProbewiseHarness(Harness):
@@ -62,7 +61,7 @@ class ProbewiseHarness(Harness):
 
         if not probenames:
             logging.warning("No probes, nothing to do")
-            if _config.args and _config.args.verbose >= 2:
+            if hasattr(_config.system, "verbose") and _config.system.verbose >= 2:
                 print("No probes, nothing to do")
             return None
 
@@ -89,12 +88,11 @@ class ProbewiseHarness(Harness):
                 d = self._load_detector(probe.primary_detector)
                 if d:
                     detectors = [d]
-                if _config.args:
-                    if _config.args.extended_detectors:
-                        for detector_name in sorted(probe.extended_detectors):
-                            d = self._load_detector(detector_name)
-                            if d:
-                                detectors.append(d)
+                if _config.plugins.extended_detectors:
+                    for detector_name in sorted(probe.extended_detectors):
+                        d = self._load_detector(detector_name)
+                        if d:
+                            detectors.append(d)
 
             else:
                 for detector_name in sorted(probe.recommended_detector):

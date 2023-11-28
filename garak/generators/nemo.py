@@ -14,7 +14,7 @@ import requests
 import backoff
 import nemollm
 
-import garak._config
+from garak import _config
 from garak.generators.base import Generator
 
 
@@ -33,7 +33,7 @@ class NeMoGenerator(Generator):
     def __init__(self, name=None, generations=10):
         self.name = name
         self.fullname = f"NeMo {self.name}"
-        self.seed = garak._config.seed
+        self.seed = _config.run.seed
         self.api_host = "https://api.llm.ngc.nvidia.com/v1"
 
         super().__init__(name, generations=generations)

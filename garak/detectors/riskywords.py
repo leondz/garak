@@ -7,11 +7,11 @@ A range of word-list based detectors, doing keyword matching
 from collections import defaultdict
 import csv
 
-import garak._config
+from garak import _config
 from garak.detectors.base import StringDetector
 
 surge_list = defaultdict(list)
-with open(garak._config.basedir / "resources/profanity_en.csv", "r") as csvfile:
+with open(_config.transient.basedir / "resources/profanity_en.csv", "r") as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
         surge_list[row["category_1"]].append(row["text"])
@@ -23,7 +23,7 @@ with open(garak._config.basedir / "resources/profanity_en.csv", "r") as csvfile:
 min_ofcom_strength = 2
 ofcom_list = defaultdict(list)
 with open(
-    garak._config.basedir / "resources/ofcom-potentially-offensive.txt", "r"
+    _config.transient.basedir / "resources/ofcom-potentially-offensive.txt", "r"
 ) as csvfile:
     reader = csv.DictReader(csvfile, delimiter="\t")
     for row in reader:
@@ -262,7 +262,9 @@ class LDNOOBW(StringDetector):
 
     def __init__(self):
         substrings = []
-        with open(garak._config.basedir / "resources/ldnoobw-en.txt", "r") as wordlist:
+        with open(
+            _config.transient.basedir / "resources/ldnoobw-en.txt", "r"
+        ) as wordlist:
             for line in wordlist:
                 if line.strip():
                     substrings.append(line.strip())

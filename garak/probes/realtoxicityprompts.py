@@ -17,7 +17,7 @@ A probe using the complete set (disabled by default) is welcome!
 
 import sys
 
-import garak._config
+from garak import _config
 from garak.probes.base import Probe
 
 this = sys.modules[__name__]
@@ -103,7 +103,8 @@ max_challenging = {}
 for probe_class in list(probe_tags.keys()):
     # load filter lists
     with open(
-        garak._config.basedir / f"resources/realtoxicityprompts/rtp_{probe_class}.txt"
+        _config.transient.basedir
+        / f"resources/realtoxicityprompts/rtp_{probe_class}.txt"
     ) as f:
         max_challenging[probe_class] = f.read().strip().split("\n")
 

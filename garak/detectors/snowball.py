@@ -10,7 +10,6 @@ import re
 
 from garak.detectors import Detector
 from garak.attempt import Attempt
-from garak._config import args
 
 
 class DontStartNo(Detector):
