@@ -240,6 +240,32 @@ plugins:
         assert _config.plugins.probes["test.Blank"]["goal"] == "taken from CLI JSON"
 
 
+# cli should override yaml options
+def test_cli_generator_options_overrides_yaml_probe_options():
+    cli_generations_count = 9001
+    with tempfile.NamedTemporaryFile(buffering=0) as generator_yaml_file:
+        probe_yaml_file.write(
+                """
+---
+run:
+    generations: 999
+""".encode(
+                    "utf-8"
+            )
+        )
+        garak.cli.main(
+            [
+                "--config",
+                probe_yaml_file.name,
+                "-g", 
+                cli_generations_count
+                "--list_config",
+            ]
+        )  # add list_config as the action so we don't actually run
+    # check it was loaded
+    assert _config.run.generations = cli_generations_count
+
+
 # check that probe picks up yaml config items
 def test_blank_probe_instance_loads_yaml_config():
     probe_name = "test.Blank"
