@@ -209,7 +209,35 @@ def test_cli_probe_options_file():
 
 # cli probe config file overrides yaml probe config (using combine into)
 def test_cli_probe_options_overrides_yaml_probe_options():
-    assert False
+    # write an options file
+    with tempfile.NamedTemporaryFile(mode="w+") as probe_json_file:
+        json.dump({"test.Blank": {"goal": "taken from CLI JSON"}}, probe_json_file)
+        probe_json_file.flush()
+        with tempfile.NamedTemporaryFile(buffering=0) as probe_yaml_file:
+            probe_yaml_file.write(
+                """
+---
+plugins:
+    probes:
+        test.Blank:
+            goal: taken from CLI YAML
+""".encode(
+                    "utf-8"
+                )
+            )
+            probe_yaml_file.flush()
+            # invoke cli
+            garak.cli.main(
+                [
+                    "--config",
+                    probe_yaml_file.name,
+                    "--probe_option_file",
+                    probe_json_file.name,
+                    "--list_config",
+                ]
+            )  # add list_config as the action so we don't actually run
+        # check it was loaded
+        assert _config.plugins.probes["test.Blank"]["goal"] == "taken from CLI JSON"
 
 
 # check that probe picks up yaml config items
