@@ -244,7 +244,7 @@ plugins:
 def test_cli_generator_options_overrides_yaml_probe_options():
     cli_generations_count = 9001
     with tempfile.NamedTemporaryFile(buffering=0) as generator_yaml_file:
-        probe_yaml_file.write(
+        generator_yaml_file.write(
                 """
 ---
 run:
@@ -253,17 +253,17 @@ run:
                     "utf-8"
             )
         )
-        garak.cli.main(
-            [
+        args = [
                 "--config",
-                probe_yaml_file.name,
+                generator_yaml_file.name,
                 "-g", 
-                cli_generations_count
+                cli_generations_count,
                 "--list_config",
-            ]
-        )  # add list_config as the action so we don't actually run
+            ]  # add list_config as the action so we don't actually run
+        print(args)
+        garak.cli.main(args)
     # check it was loaded
-    assert _config.run.generations = cli_generations_count
+    assert _config.run.generations == cli_generations_count
 
 
 # check that probe picks up yaml config items
