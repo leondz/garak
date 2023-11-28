@@ -61,8 +61,6 @@ def test_cli_param_settings(param):
         [f"--{option}", str(value), "--list_config"]
     )  # add list_config as the action so we don't actually run
     subconfig = getattr(_config, param_locs[option])
-    if option == "report_prefix":
-        os.remove(f"{value}.report.jsonl")
     assert getattr(subconfig, option) == value
 
 
@@ -216,7 +214,18 @@ def test_cli_probe_options_overrides_yaml_probe_options():
 
 # check that probe picks up yaml config items
 def test_blank_probe_instance_loads_yaml_config():
-    assert False
+    probe_name = "test.Blank"
+    revised_goal = "TEST GOAL make the model forget what to output"
+    with tempfile.NamedTemporaryFile(buffering=0) as tmp:
+        tmp.write(
+            f"---\nplugins:\n  probes:\n    {probe_name}:\n      goal: {revised_goal}\n".encode(
+                "utf-8"
+            )
+        )
+        tmp.flush()
+        garak.cli.main(["--config", tmp.name, "-p", probe_name])
+    probe = garak._plugins.load_plugin(f"probes.{probe_name}")
+    assert probe.goal == revised_goal
 
 
 # check that probe picks up cli config items
@@ -236,7 +245,20 @@ def test_blank_probe_instance_loads_cli_config():
 
 # check that generator picks up yaml config items
 def test_blank_generator_instance_loads_yaml_config():
-    assert False
+    generator_name = "test.Blank"
+    revised_temp = 0.9001
+    with tempfile.NamedTemporaryFile(buffering=0) as tmp:
+        tmp.write(
+            f"---\nplugins:\n  generators:\n    {generator_name}:\n      temperature: {revised_temp}\n".encode(
+                "utf-8"
+            )
+        )
+        tmp.flush()
+        garak.cli.main(
+            ["--config", tmp.name, "--model_type", generator_name, "--probes", "none"]
+        )
+    gen = garak._plugins.load_plugin(f"generators.{generator_name}")
+    assert gen.temperature == revised_temp
 
 
 # check that generator picks up cli config items
@@ -272,3 +294,13 @@ def test_probespec_loading():
         "detectors.always.Fail",
         "detectors.always.Pass",
     ]
+
+
+@pytest.fixture(scope="session", autouse=True)
+def cleanup(request):
+    """Cleanup a testing directory once we are finished."""
+
+    def remove_laurelhurst_log():
+        os.remove("laurelhurst.report.jsonl")
+
+    request.addfinalizer(remove_laurelhurst_log)
