@@ -41,6 +41,9 @@ class Evaluator:
         outputs results once per detector
         """
 
+        if len(attempts) == 0:
+            return
+
         self.probename = attempts[0].probe_classname
         detector_names = attempts[0].detector_results.keys()
 
