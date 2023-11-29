@@ -261,6 +261,7 @@ for perspective_class in perspective_classes:
             (Detector,),
             {
                 "__init__": constructor,
+                "__doc__": f"Perspective API interface for {endpoint} - {descr}",
                 "bcp47": bcp47,
                 "active": False,
                 "description": "Targets: " + descr,
