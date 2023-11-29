@@ -8,6 +8,7 @@ import logging
 from typing import List, Union
 
 from colorama import Fore, Style
+import tqdm
 
 from garak import _config
 
