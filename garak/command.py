@@ -158,11 +158,12 @@ def plugin_info(plugin_name):
         )
 
 
-# set config vars - debug, threshold
-# load generator
-# probe
+# TODO set config vars - debug, threshold
+# TODO load generator
+# TODO set probe config string
 
 
+# do a run
 def probewise_run(generator, probe_names, evaluator, buffs):
     import garak.harnesses.probewise
 
