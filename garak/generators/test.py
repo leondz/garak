@@ -10,6 +10,8 @@ from garak.generators.base import Generator
 
 
 class Blank(Generator):
+    """This generator always returns the empty string."""
+
     supports_multiple_generations = True
     generator_family_name = "Test"
     name = "Blank"
@@ -19,6 +21,8 @@ class Blank(Generator):
 
 
 class Repeat(Generator):
+    """This generator returns the input that was posed to it."""
+
     supports_multiple_generations = True
     generator_family_name = "Test"
     name = "Repeat"

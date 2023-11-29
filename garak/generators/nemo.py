@@ -19,6 +19,8 @@ from garak.generators.base import Generator
 
 
 class NeMoGenerator(Generator):
+    """Wrapper for the NVIDIA NeMo models via NGC. Expects NGC_API_KEY and ORG_ID environment variables."""
+
     supports_multiple_generations = False
     generator_family_name = "NeMo"
     temperature = 0.9

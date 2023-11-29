@@ -21,6 +21,8 @@ from garak.generators.base import Generator
 
 
 class ReplicateGenerator(Generator):
+    """Wrapper for the Replicate hosted models (replicate.com). Expects API key in REPLICATE_API_TOKEN environment variable."""
+
     generator_family_name = "Replicate"
     temperature = 1
     top_p = 1.0

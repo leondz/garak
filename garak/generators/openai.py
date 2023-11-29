@@ -38,6 +38,8 @@ chat_models = (
 
 
 class OpenAIGenerator(Generator):
+    """Generator wrapper for OpenAI text2text models. Expects API key in the OPENAI_API_KEY environment variable"""
+
     supports_multiple_generations = True
     generator_family_name = "OpenAI"
 

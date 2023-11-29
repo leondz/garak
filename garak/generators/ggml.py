@@ -22,6 +22,11 @@ from garak.generators.base import Generator
 
 
 class GgmlGenerator(Generator):
+    """Generator interface for ggml models.
+
+    Set the path to the model as the model name, and put the path to the ggml executable in environment variable GGML_MAIN_PATH.
+    """
+
     repeat_penalty = 1.1
     presence_penalty = 0.0
     frequency_penalty = 0.0

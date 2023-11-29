@@ -24,6 +24,11 @@ COHERE_GENERATION_LIMIT = (
 
 
 class CohereGenerator(Generator):
+    """Interface to Cohere's python library for their text2text model.
+
+    Expects API key in COHERE_API_KEY environment variable.
+    """
+
     supports_multiple_generations = True
     temperature = 0.750
     k = 0
