@@ -41,6 +41,8 @@ class Buff:
     def _derive_new_attempt(
         self, source_attempt: garak.attempt.Attempt, seq=-1
     ) -> garak.attempt.Attempt:
+        if seq == -1:
+            seq = source_attempt.seq
         new_attempt = garak.attempt.Attempt(
             status=source_attempt.status,
             prompt=source_attempt.prompt,
