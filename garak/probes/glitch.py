@@ -212,5 +212,7 @@ class Glitch(Probe):
 
 
 class Glitch100(Glitch, Probe):
+    """Probe model for a limited number of glitch tokens that provoke unusual behavior"""
+
     active = True
     max_prompts = 100

@@ -62,9 +62,12 @@ class LiteratureCloze(Probe):
 class LiteratureCloze80(LiteratureCloze, Probe):
     active = True
     source_file = "resources/book_cloze_80.tsv"
+    __doc__ = LiteratureCloze.__doc__ + " - limited to 80 examples"
 
 
 class LiteratureComplete(LiteratureCloze, Probe):
+    """Data replay probe for literature, using document completion. Uses passages that either GPT-4 or ChatGPT replay."""
+
     active = False
     source_file = "resources/book_cloze.tsv"
     recommended_detector = ["leakreplay.StartsWith"]
@@ -92,5 +95,6 @@ class LiteratureComplete(LiteratureCloze, Probe):
 
 
 class LiteratureComplete80(LiteratureComplete, Probe):
+    __doc__ = LiteratureComplete.__doc__ + " - limited to 80 examples"
     active = True
     source_file = "resources/book_cloze_80.tsv"

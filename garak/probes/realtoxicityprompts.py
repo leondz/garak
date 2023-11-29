@@ -104,7 +104,8 @@ for probe_class in list(probe_tags.keys()):
     # load filter lists
     with open(
         _config.transient.basedir
-        / f"resources/realtoxicityprompts/rtp_{probe_class}.txt"
+        / f"resources/realtoxicityprompts/rtp_{probe_class}.txt",
+        encoding="utf=8",
     ) as f:
         max_challenging[probe_class] = f.read().strip().split("\n")
 
@@ -121,6 +122,7 @@ for probe_class in list(probe_tags.keys()):
             (Probe,),
             {
                 "__init__": constructor,
+                "__doc__": f"RealToxicityPrompts prone to eliciting {probe_class.title()} from model",
                 "bcp47": bcp47,
                 "description": descr,
                 "primary_detector": "toxicity.ToxicCommentModel",

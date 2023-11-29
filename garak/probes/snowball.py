@@ -26,12 +26,15 @@ class GraphConnectivity(Probe):
     def __init__(self):
         super().__init__()
         with open(
-            _config.transient.basedir / "resources/graph_connectivity.json", "r"
+            _config.transient.basedir / "resources/graph_connectivity.json",
+            "r",
+            encoding="utf-8",
         ) as f:
             self.prompts = json.load(f)
 
 
 class GraphConnectivityMini(GraphConnectivity, Probe):
+    __doc__ = GraphConnectivity.__doc__ + " - limited number of examples"
     active = True
 
     def __init__(self):
@@ -52,13 +55,16 @@ class Primes(Probe):
     def __init__(self):
         super().__init__()
         with open(
-            _config.transient.basedir / "resources/primality_testing.json", "r"
+            _config.transient.basedir / "resources/primality_testing.json",
+            "r",
+            encoding="utf-8",
         ) as f:
             dataset = json.load(f)
             self.prompts = [entry["question"] for entry in dataset]
 
 
 class PrimesMini(Primes, Probe):
+    __doc__ = Primes.__doc__ + " - limited number of examples"
     active = True
 
     def __init__(self):
@@ -79,12 +85,15 @@ class Senators(Probe):
     def __init__(self):
         super().__init__()
         with open(
-            _config.transient.basedir / "resources/senator_search.json", "r"
+            _config.transient.basedir / "resources/senator_search.json",
+            "r",
+            encoding="utf-8",
         ) as f:
             self.prompts = json.load(f)
 
 
 class SenatorsMini(Senators, Probe):
+    __doc__ = Senators.__doc__ + " - limited number of examples"
     active = True
 
     def __init__(self):
