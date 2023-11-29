@@ -68,9 +68,9 @@ class Evaluator:
                                 hitlog_filename = (
                                     _config.system.report_prefix + ".hitlog.jsonl"
                                 )
-                            logging.info(f"hit log in {hitlog_filename}")
+                            logging.info("hit log in %s", hitlog_filename)
                             _config.transient.hitlogfile = open(
-                                hitlog_filename, "w", buffering=1
+                                hitlog_filename, "w", buffering=1, encoding="utf-8"
                             )
 
                         trigger = None
@@ -88,7 +88,7 @@ class Evaluator:
                                     "attempt_id": str(attempt.uuid),
                                     "attempt_seq": attempt.seq,
                                     "attempt_idx": idx,
-                                    "generator": f"{_config.run.model_type} {_config.run.model_name}",
+                                    "generator": f"{_config.plugins.model_type} {_config.plugins.model_name}",
                                     "probe": self.probename,
                                     "detector": detector,
                                     "generations_per_prompt": _config.run.generations,
