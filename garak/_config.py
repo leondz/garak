@@ -117,11 +117,11 @@ def load_config(
         logging.warning("site config not found: %s", fq_site_config_filename)
 
     if run_config_filename is not None:
-        fq_run_config_filename = str(transient.basedir / run_config_filename)
-        if os.path.isfile(fq_run_config_filename):
-            settings_files.append(fq_run_config_filename)
+        # take config file path as provided
+        if os.path.isfile(run_config_filename):
+            settings_files.append(run_config_filename)
         else:
-            logging.error("run config not found: %s", fq_run_config_filename)
+            logging.error("run config not found: %s", run_config_filename)
 
     logging.debug("Loading configs from: %s", ",".join(settings_files))
     _store_config(settings_files=settings_files)
