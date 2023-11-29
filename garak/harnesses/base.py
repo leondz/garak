@@ -43,16 +43,21 @@ class Harness:
         If one wants to use buffs directly with this harness without subclassing,
         then call this method instance directly."""
 
-        _config.buffs = []
+        _config.buffs = []  # maybe put this in transient / session, eh
         for buff in buffs:
+            err_msg = None
             try:
                 _config.buffs.append(_plugins.load_plugin(buff))
-                logging.debug(f"loaded {buff}")
+                logging.debug("loaded %s", buff)
+            except ValueError as ve:
+                err_msg = f"❌🦾 buff load error:❌ {ve}"
             except Exception as e:
-                msg = f"failed to load buff {buff}"
-                print(msg)
-                logging.warning(f"{msg}: {e}")
-                continue
+                err_msg = f"❌🦾 failed to load buff {buff}:❌ {e}"
+            finally:
+                if err_msg is not None:
+                    print(err_msg)
+                    logging.warning(err_msg)
+                    continue
 
     def run(self, model, probes, detectors, evaluator, announce_probe=True) -> None:
         """Core harness method
