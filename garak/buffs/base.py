@@ -33,14 +33,17 @@ class Buff:
     active = True
 
     def __init__(self) -> None:
+        module = self.__class__.__module__.replace("garak.buffs.", "")
         print(
-            f"🦾 loading {Style.BRIGHT}{Fore.LIGHTGREEN_EX}buff: {Style.RESET_ALL}{self.__class__.__name__}"
+            f"🦾 loading {Style.BRIGHT}{Fore.LIGHTGREEN_EX}buff: {Style.RESET_ALL}{module}.{self.__class__.__name__}"
         )
         logging.info(f"buff init: {self}")
 
     def _derive_new_attempt(
         self, source_attempt: garak.attempt.Attempt, seq=-1
     ) -> garak.attempt.Attempt:
+        if seq == -1:
+            seq = source_attempt.seq
         new_attempt = garak.attempt.Attempt(
             status=source_attempt.status,
             prompt=source_attempt.prompt,
@@ -64,6 +67,7 @@ class Buff:
     def transform(
         self, attempt: garak.attempt.Attempt
     ) -> Iterable[garak.attempt.Attempt]:
+        """attempt copying is handled elsewhere. isn't that nice"""
         yield attempt
 
     def buff(
