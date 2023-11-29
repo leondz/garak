@@ -440,7 +440,8 @@ def main(arguments=[]) -> None:
             _config.plugins.detector_spec, "detectors"
         )
         buffs = _config.parse_plugin_spec(_config.plugins.buff_spec, "buffs")
-        buffs = buffs[:1]  # remove this when multiple buffs is coded
+        if len(buffs) > 1:
+            raise NotImplementedError("Multiple concurrent buffs aren't yet supported")
 
         evaluator = garak.evaluators.ThresholdEvaluator(_config.run.eval_threshold)
 
