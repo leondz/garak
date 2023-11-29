@@ -64,7 +64,7 @@ class PegasusT5(Buff):
             yield paraphrased_attempt
 
 
-class HumarinT5(Buff):
+class Fast(Buff):
     """CPU-friendly paraphrase buff based on Humarin's T5 paraphraser"""
 
     bcp47 = "en"
