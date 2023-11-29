@@ -33,8 +33,9 @@ class Buff:
     active = True
 
     def __init__(self) -> None:
+        module = self.__class__.__module__.replace("garak.buffs.", "")
         print(
-            f"🦾 loading {Style.BRIGHT}{Fore.LIGHTGREEN_EX}buff: {Style.RESET_ALL}{self.__class__.__name__}"
+            f"🦾 loading {Style.BRIGHT}{Fore.LIGHTGREEN_EX}buff: {Style.RESET_ALL}{module}.{self.__class__.__name__}"
         )
         logging.info(f"buff init: {self}")
 

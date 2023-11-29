@@ -65,7 +65,7 @@ class PegasusT5(Buff):
 
 
 class HumarinT5(Buff):
-    """ CPU-friendly paraphrase buff based on Humarin's T5 paraphraser """
+    """CPU-friendly paraphrase buff based on Humarin's T5 paraphraser"""
 
     bcp47 = "en"
     uri = "https://huggingface.co/humarin/chatgpt_paraphraser_on_T5_base"
