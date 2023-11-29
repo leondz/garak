@@ -52,6 +52,7 @@ plugins.probes = {}
 plugins.generators = {}
 plugins.detectors = {}
 plugins.buffs = {}
+plugins.harnesses = {}
 
 # this is so popular, let's set a default. what other defaults are worth setting? what's the policy?
 run.seed = None

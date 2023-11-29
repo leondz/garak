@@ -26,3 +26,4 @@ plugins:
   extended_detectors: false
   buff_spec:
   buffs: {}
+  harnesses: {}
