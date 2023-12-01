@@ -13,8 +13,10 @@ import torch.multiprocessing as mp
 import torch.nn as nn
 from fastchat.model import get_conversation_template
 from transformers import GPT2LMHeadModel, GPTJForCausalLM, GPTNeoXForCausalLM, LlamaForCausalLM
-from garak.generators.huggingface import Model
 from logging import getLogger
+from tqdm import tqdm
+
+from garak.generators.huggingface import Model
 
 logger = getLogger(__name__)
 
@@ -299,7 +301,7 @@ class AttackPrompt(object):
     @torch.no_grad()
     def logits(self, model, test_controls=None, return_ids=False):
         pad_tok = -1
-        if test_controls is None:
+        if not test_controls:
             test_controls = self.control_toks
         if isinstance(test_controls, torch.Tensor):
             if len(test_controls.shape) == 1:
@@ -343,13 +345,13 @@ class AttackPrompt(object):
             attn_mask = None
 
         if return_ids:
-            del locs, test_ids;
+            del locs, test_ids
             gc.collect()
             return model(input_ids=ids, attention_mask=attn_mask).logits, ids
         else:
             del locs, test_ids
             logits = model(input_ids=ids, attention_mask=attn_mask).logits
-            del ids;
+            del ids
             gc.collect()
             return logits
 
@@ -666,7 +668,8 @@ class MultiPromptAttack(object):
         cands, count = [], 0
         worker = self.workers[worker_index]
         for i in range(control_cand.shape[0]):
-            decoded_str = worker.tokenizer.decode(control_cand[i], skip_special_tokens=True)
+            decoded_str = worker.tokenizer.decode(control_cand[i], skip_special_tokens=True,
+                                                  clean_up_tokenization_spaces=False)
             if filter_cand:
                 if decoded_str != curr_control and len(
                         worker.tokenizer(decoded_str, add_special_tokens=False).input_ids) == len(control_cand[i]):
@@ -677,8 +680,14 @@ class MultiPromptAttack(object):
                 cands.append(decoded_str)
 
         if filter_cand:
-            cands = cands + [cands[-1]] * (len(control_cand) - len(cands))
-            # print(f"Warning: {round(count / len(control_cand), 2)} control candidates were not valid")
+            # Handle the case where the candidate strings are empty.
+            # TODO: Manage this more elegantly.
+            if not cands:
+                decoded_str = worker.tokenizer.decode(control_cand[0], skip_special_tokens=True)
+                cands.append(decoded_str)
+
+            cands = cands + [cands[-1] for _ in range((len(control_cand) - len(cands)))]
+
         return cands
 
     def step(self, *args, **kwargs):
@@ -730,8 +739,8 @@ class MultiPromptAttack(object):
                      model_tests,
                      verbose=verbose)
 
+        pbar = tqdm(desc="Running Attack", total=n_steps, position=0, colour='green')
         for i in range(n_steps):
-
             if stop_on_success:
                 model_tests_jb, model_tests_mb, _ = self.test(self.workers, self.prompts)
                 if all(all(tests for tests in model_test) for model_test in model_tests_jb):
@@ -742,7 +751,6 @@ class MultiPromptAttack(object):
 
             steps += 1
             start = time.time()
-            torch.cuda.empty_cache()
             control, loss = self.step(
                 batch_size=batch_size,
                 topk=topk,
@@ -773,6 +781,8 @@ class MultiPromptAttack(object):
                          verbose=verbose)
 
                 self.control_str = last_control
+
+            pbar.update(1)
 
         if not stop_on_success:
             model_tests_jb, model_tests_mb, _ = self.test(self.workers, self.prompts)
@@ -1520,10 +1530,11 @@ class ModelWorker(object):
         """
         Worker for running against models
         Args:
-            generator (garak.generators.Generator): Generator to run against
+            generator (garak.generators.huggingface.Model): Generator to run against
             conv_template (fastchat.Conversation): Conversation template
         """
         self.model = generator.model
+        self.model.requires_grad_(False)  # Disable grads to reduce memory consumption
         self.tokenizer = generator.tokenizer
         self.conv_template = conv_template
         self.tasks = mp.JoinableQueue()
@@ -1594,7 +1605,7 @@ def get_workers(model_names: list, n_train_models=1, evaluate=False):
     for model_name in model_names:
         generators.append(Model(model_name))
 
-    print(f"Loaded {len(generators)} generators")
+    logger.debug(f"Loaded {len(generators)} generators")
 
     conv_model_names = [get_conv_name(model_name) for model_name in model_names]
     raw_conv_templates = [get_conversation_template(conv_model) for conv_model in conv_model_names]
@@ -1607,14 +1618,14 @@ def get_workers(model_names: list, n_train_models=1, evaluate=False):
             conv.sep2 = conv.sep2.strip()
         conv_templates.append(conv)
 
-    print(f"Loaded {len(conv_templates)} conversation templates")
+    logger.debug(f"Loaded {len(conv_templates)} conversation templates")
     workers = [ModelWorker(generator, conv_template) for generator, conv_template in zip(generators, conv_templates)]
     if not evaluate:
         for worker in workers:
             worker.start()
 
-    print('Loaded {} train models'.format(n_train_models))
-    print('Loaded {} test models'.format(len(workers) - n_train_models))
+    logger.debug('Loaded {} train models'.format(n_train_models))
+    logger.debug('Loaded {} test models'.format(len(workers) - n_train_models))
 
     return workers[:n_train_models], workers[n_train_models:]
 
