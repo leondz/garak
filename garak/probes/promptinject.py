@@ -12,7 +12,7 @@ import sys
 
 from garak.attempt import Attempt
 from garak.probes.base import Probe
-import garak._config
+from garak import _config
 
 
 hijacking_attacks = (
@@ -69,7 +69,7 @@ def load_data_all_attacks(self):
     for pi_prompt in self.pi_prompts:
         self.prompts.append(pi_prompt["prompt"])
     if self.max_prompts:
-        random.seed(garak._config.seed)
+        random.seed(_config.run.seed)
         random.shuffle(self.prompts)
         self.prompts = self.prompts[-self.max_prompts :]
 
@@ -81,6 +81,7 @@ def _attempt_prestore_hook(self, attempt: Attempt, seq: int) -> Attempt:
 
 
 def _generator_precall_hook(self, generator, attempt):
+    """apply PromptInject model inference parameters to probe"""
     map_attribs = (
         "temperature top_p frequency_penalty presence_penalty max_tokens".split()
     )
@@ -104,12 +105,14 @@ for rogue_string in rogue_strings:
             (Probe,),
             {
                 "__init__": constructor,
+                "__doc__": f"PromptInject probe to inject a string; payload is {rogue_string}",
                 "name": "promptinject_" + rogue_string,
                 "bcp47": "en",
                 "description": "PromptInject is a framework that assembles prompts in a modular fashion to provide a quantitative analysis of the robustness of LLMs to adversarial prompt attacks. trophy Best Paper Awards @ NeurIPS ML Safety Workshop 2022",
                 "recommended_detector": [
                     "promptinject.AttackRogueString",
                 ],
+                "parallelisable_attempts": False,
                 "tags": ["avid-effect:security:S0403"],
                 "load_data_all_attacks": load_data_all_attacks,
                 "uri": "https://openreview.net/forum?id=qiaRo_7Zmug",
@@ -131,12 +134,14 @@ for rogue_string in rogue_strings:
             (Probe,),
             {
                 "__init__": constructor,
+                "__doc__": f"PromptInject probe to inject a string; payload is {rogue_string}",
                 "name": "promptinject_" + rogue_string,
                 "bcp47": "en",
                 "description": "PromptInject is a framework that assembles prompts in a modular fashion to provide a quantitative analysis of the robustness of LLMs to adversarial prompt attacks. trophy Best Paper Awards @ NeurIPS ML Safety Workshop 2022",
                 "recommended_detector": [
                     "promptinject.AttackRogueString",
                 ],
+                "parallelisable_attempts": False,
                 "tags": ["avid-effect:security:S0403"],
                 "load_data_all_attacks": load_data_all_attacks,
                 "uri": "https://openreview.net/forum?id=qiaRo_7Zmug",

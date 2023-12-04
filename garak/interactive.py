@@ -1,33 +1,51 @@
+#! /usr/bin/env python3
+
+# SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import argparse
 from logging import getLogger
 import cmd2
 import sys
-from garak._plugins import enumerate_plugins
 from colorama import Fore, Style
 import importlib
+
 import garak.harnesses.probewise
 from garak.evaluators import ThresholdEvaluator
+from garak._plugins import enumerate_plugins
 
 logger = getLogger(__name__)
 
 
 def _get_list_parser():
     # Create parser for list command
-    list_parser = cmd2.Cmd2ArgumentParser(description="List available probes, decorators, or generators",
-                                          epilog="This command only accepts a single string and lists the relevant attributes.")
-    list_parser.add_argument("type", type=str, choices=("probes", "detectors", "generators"),
-                             help="Specify probes, detectors, or generators.")
+    list_parser = cmd2.Cmd2ArgumentParser(
+        description="List available probes, decorators, or generators",
+        epilog="This command only accepts a single string and lists the relevant attributes.",
+    )
+    list_parser.add_argument(
+        "type",
+        type=str,
+        choices=("probes", "detectors", "generators"),
+        help="Specify probes, detectors, or generators.",
+    )
     return list_parser
 
 
 global list_parser
 list_parser = _get_list_parser()
 
-probe_parser = cmd2.Cmd2ArgumentParser(description="Run the probe.",
-                                       epilog="Uses set probe if no probe name is provided. "
-                                              "If a probe name is provided, executes that probe.")
-probe_parser.add_argument("probe", nargs='?', type=str, help="Name of the probe to execute if not already set.")
-
+probe_parser = cmd2.Cmd2ArgumentParser(
+    description="Run the probe.",
+    epilog="Uses set probe if no probe name is provided. "
+    "If a probe name is provided, executes that probe.",
+)
+probe_parser.add_argument(
+    "probe",
+    nargs="?",
+    type=str,
+    help="Name of the probe to execute if not already set.",
+)
 
 def print_plugins(prefix, color):
     plugin_names = enumerate_plugins(category=prefix)
@@ -47,7 +65,7 @@ def print_plugins(prefix, color):
 @cmd2.with_default_category("Garak Commands")
 class GarakCommands(cmd2.CommandSet):
     def __init__(self):
-        """ Initialize the Garak Commands object. """
+        """Initialize the Garak Commands object."""
         super().__init__()
 
     @cmd2.with_argparser(list_parser)
@@ -76,7 +94,9 @@ class GarakCommands(cmd2.CommandSet):
     @cmd2.with_argparser(probe_parser)
     def do_probe(self, args):
         if not self._cmd.target_type or not self._cmd.target_model:
-            print("Use the `set` command to set the target_type and target_model first.")
+            print(
+                "Use the `set` command to set the target_type and target_model first."
+            )
             return
         # If probe is already set, overwrite it.
         if args.probe and self._cmd.probe:
@@ -93,15 +113,23 @@ class GarakCommands(cmd2.CommandSet):
             else:
                 generator_module_name = self._cmd.target_type
                 generator_class_name = None
-            generator_mod = importlib.import_module("garak.generators." + generator_module_name)
+            generator_mod = importlib.import_module(
+                "garak.generators." + generator_module_name
+            )
             if generator_class_name is None:
-                logger.info(f"Loading default generator class for {generator_module_name}")
+                logger.info(
+                    f"Loading default generator class for {generator_module_name}"
+                )
                 try:
                     generator_class_name = generator_mod.default_class
                 except Exception as e:
-                    logger.error(f"Module {generator_module_name} has no default class. Specify a generator.")
+                    logger.error(
+                        f"Module {generator_module_name} has no default class. Specify a generator."
+                    )
                     return
-            generator = getattr(generator_mod, generator_class_name)(self._cmd.target_model)
+            generator = getattr(generator_mod, generator_class_name)(
+                self._cmd.target_model
+            )
         except ImportError as e:
             logger.error(e)
             print("Could not load generator from Garak generators.")
@@ -117,7 +145,7 @@ class GarakCommands(cmd2.CommandSet):
 
 
 class GarakTerminal(cmd2.Cmd):
-    """ Terminal class for Interactive Garak CLI """
+    """Terminal class for Interactive Garak CLI"""
     _cmd = None
 
     def __init__(self):
@@ -127,11 +155,19 @@ class GarakTerminal(cmd2.Cmd):
         self.quit_message = "Thanks for hacking!"
         # Create settable parameters
         self.add_settable(cmd2.Settable("target_type", str, "Type of the target", self))
-        self.add_settable(cmd2.Settable("target_model", str, "Name of the target", self))
+        self.add_settable(
+            cmd2.Settable("target_model", str, "Name of the target", self)
+        )
         self.add_settable(cmd2.Settable("probe", str, "Probe to execute", self))
         self.add_settable(cmd2.Settable("detector", str, "Detector to execute", self))
-        self.add_settable(cmd2.Settable("generator", str, "Generator settings path", self))
-        self.add_settable(cmd2.Settable("eval_threshold", float, "Evaluation threshold for success", self))
+        self.add_settable(
+            cmd2.Settable("generator", str, "Generator settings path", self)
+        )
+        self.add_settable(
+            cmd2.Settable(
+                "eval_threshold", float, "Evaluation threshold for success", self
+            )
+        )
         # Set default parameter values
         self.target_type = ""
         self.target_model = ""
@@ -159,12 +195,12 @@ class GarakTerminal(cmd2.Cmd):
         self.remove_settable("feedback_to_output")
 
     def default(self, command: str) -> None:
-        """ Execute when a command isn't recognized """
+        """Execute when a command isn't recognized"""
         print(f"Command does not exist.\n")
         return None
 
     def postcmd(self, stop, line):
-        """ Set the prompt to reflect interaction changes. """
+        """Set the prompt to reflect interaction changes."""
         target_type = self.target_type
         target_model = self.target_model
         active_probe = self.probe

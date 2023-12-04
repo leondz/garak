@@ -3,16 +3,21 @@ CLI reference for garak
 
 ::
 
-  garak LLM security probe v0.9.0.7 ( https://github.com/leondz/garak ) at 2023-07-26T09:42:45.231512
+  garak LLM security probe v0.9.0.8 ( https://github.com/leondz/garak ) at 2023-11-14T17:00:32.654683
   usage: __main__.py [-h] [--model_type MODEL_TYPE] [--model_name MODEL_NAME]
                      [--seed SEED] [--generations GENERATIONS] [--probes PROBES]
-                     [--detectors DETECTORS] [--eval_threshold EVAL_THRESHOLD]
-                     [--deprefix] [--plugin_info PLUGIN_INFO] [--list_probes]
-                     [--list_detectors] [--list_generators] [--version]
-                     [--verbose] [--generator_option GENERATOR_OPTION]
-                     [--probe_options PROBE_OPTIONS]
+                     [--detectors DETECTORS] [--buff BUFF]
+                     [--eval_threshold EVAL_THRESHOLD] [--deprefix]
+                     [--plugin_info PLUGIN_INFO] [--list_probes]
+                     [--list_detectors] [--list_generators] [--list_buffs]
+                     [--version] [--verbose]
+                     [--generator_option_file GENERATOR_OPTION_FILE | --generator_options GENERATOR_OPTIONS]
+                     [--probe_option_file PROBE_OPTION_FILE | --probe_options PROBE_OPTIONS]
                      [--report_prefix REPORT_PREFIX] [--narrow_output]
-                     [--report REPORT] [--extended_detectors]
+                     [--report REPORT] [--extended_detectors] [--interactive]
+                     [--parallel_requests PARALLEL_REQUESTS]
+                     [--parallel_attempts PARALLEL_ATTEMPTS]
+                     [--generate_autodan]
   
   LLM safety & security scanning tool
   
@@ -33,6 +38,7 @@ CLI reference for garak
     --detectors DETECTORS, -d DETECTORS
                           list of detectors to use, or 'all' for all. Default is
                           to use the probe's suggestion.
+    --buff BUFF, -b BUFF  buff to use
     --eval_threshold EVAL_THRESHOLD
                           minimum threshold for a successful hit
     --deprefix            remove the prompt from the front of system output
@@ -42,12 +48,18 @@ CLI reference for garak
     --list_probes         list available vulnerability probes
     --list_detectors      list available detectors
     --list_generators     list available generation model interfaces
+    --list_buffs          list available buffs/fuzzes
     --version, -V         print version info & exit
     --verbose, -v         add one or more times to increase verbosity of output
                           during runtime
-    --generator_option GENERATOR_OPTION, -G GENERATOR_OPTION
+    --generator_option_file GENERATOR_OPTION_FILE, -G GENERATOR_OPTION_FILE
+                          path to JSON file containing options to pass to
+                          generator
+    --generator_options GENERATOR_OPTIONS
                           options to pass to the generator
-    --probe_options PROBE_OPTIONS, -P PROBE_OPTIONS
+    --probe_option_file PROBE_OPTION_FILE, -P PROBE_OPTION_FILE
+                          path to JSON file containing options to pass to probes
+    --probe_options PROBE_OPTIONS
                           options to pass to probes, formatted as a JSON dict
     --report_prefix REPORT_PREFIX
                           Specify an optional prefix for the report and hit logs
@@ -57,5 +69,14 @@ CLI reference for garak
     --extended_detectors  If detectors aren't specified on the command line,
                           should we run all detectors? (default is just the
                           primary detector, if given, else everything)
+    --interactive, -I     Enter interactive probing mode
+    --parallel_requests PARALLEL_REQUESTS
+                          How many generator requests to launch in parallel for
+                          a given prompt. Ignored for models that support
+                          multiple generations per call.
+    --parallel_attempts PARALLEL_ATTEMPTS
+                          How many probe attempts to launch in parallel.
+    --generate_autodan    generate AutoDAN prompts; requires --prompt_options
+                          with JSON containing a prompt and target
   
   See https://github.com/leondz/garak

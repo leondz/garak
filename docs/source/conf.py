@@ -5,9 +5,6 @@
 project = "garak"
 copyright = "2023, Leon Derczynski"
 author = "Leon Derczynski"
-release = "0.9.0.6"
-
-# version = "0.9.0.5"
 
 # -- General configuration
 

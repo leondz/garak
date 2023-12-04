@@ -9,7 +9,7 @@ instead of giving the right answer or no answer. Bsaed on
 
 import json
 
-import garak._config
+from garak import _config
 from garak.probes.base import Probe
 
 
@@ -26,12 +26,15 @@ class GraphConnectivity(Probe):
     def __init__(self):
         super().__init__()
         with open(
-            garak._config.basedir / "resources/graph_connectivity.json", "r"
+            _config.transient.basedir / "resources/graph_connectivity.json",
+            "r",
+            encoding="utf-8",
         ) as f:
             self.prompts = json.load(f)
 
 
 class GraphConnectivityMini(GraphConnectivity, Probe):
+    __doc__ = GraphConnectivity.__doc__ + " - limited number of examples"
     active = True
 
     def __init__(self):
@@ -51,12 +54,17 @@ class Primes(Probe):
 
     def __init__(self):
         super().__init__()
-        with open(garak._config.basedir / "resources/primality_testing.json", "r") as f:
+        with open(
+            _config.transient.basedir / "resources/primality_testing.json",
+            "r",
+            encoding="utf-8",
+        ) as f:
             dataset = json.load(f)
             self.prompts = [entry["question"] for entry in dataset]
 
 
 class PrimesMini(Primes, Probe):
+    __doc__ = Primes.__doc__ + " - limited number of examples"
     active = True
 
     def __init__(self):
@@ -76,11 +84,16 @@ class Senators(Probe):
 
     def __init__(self):
         super().__init__()
-        with open(garak._config.basedir / "resources/senator_search.json", "r") as f:
+        with open(
+            _config.transient.basedir / "resources/senator_search.json",
+            "r",
+            encoding="utf-8",
+        ) as f:
             self.prompts = json.load(f)
 
 
 class SenatorsMini(Senators, Probe):
+    __doc__ = Senators.__doc__ + " - limited number of examples"
     active = True
 
     def __init__(self):

@@ -4,9 +4,15 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "garak"
-version = "0.9.0.8"
+version = "0.9.0.8.post1"
 authors = [
   { name= "Leon Derczynski", email="leonderczynski@gmail.com" },
+  { name= "Subho Majumdar" },
+  { name= "nv052193" },
+  { name= "Mads Kongsbak" },
+  { name= "Erick Galinkin" },
+  { name= "Tianhao Li" },
+  { name= "Phyllis Poh" },
 ]
 license = { file = "LICENSE" }
 description = "LLM vulnerability scanner"
@@ -27,7 +33,7 @@ dependencies = [
   "colorama>=0.4.3",
   "tqdm>=4.64.0",
   "cohere>=4.5.1",
-  "openai>=0.27.7",
+  "openai>=0.27.7,<1.0.0",
   "replicate>=0.8.3",
   "pytest>=7.3",
   "google-api-python-client>=2.0",
@@ -35,8 +41,17 @@ dependencies = [
   "torch",
   "rapidfuzz",
   "jinja2",
-  "avidtools==0.1.1.1",
-  "stdlibs"
+  "fschat>=0.2.30",
+  "nltk>=3.8.1",
+  "accelerate>=0.23.0",
+  "avidtools==0.1.1.2",
+  "stdlibs",
+  "langchain>=0.0.300",
+  "nemollm>=0.3.0",
+  "octoai-sdk",
+  "cmd2",
+  "torch>=2.1.0",
+  "sentencepiece>=0.1.99"
 ]
 
 [project.urls]

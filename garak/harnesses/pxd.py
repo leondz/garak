@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+# SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 """pxd harness
 
 The pxd (probes x detectors) harness runs all specified probes and analyses
@@ -21,7 +25,7 @@ class PxD(Harness):
     def __init__(self):
         super().__init__()
 
-    def run(self, model, probe_names, detector_names, evaluator):
+    def run(self, model, probe_names, detector_names, evaluator, buffs=[]):
         probe_names = sorted(probe_names)
         detector_names = sorted(detector_names)
         print(
@@ -33,6 +37,7 @@ class PxD(Harness):
             + ", ".join([name.replace("detectors.", "") for name in detector_names])
         )
         logging.info("probe queue: " + " ".join(probe_names))
+        self._load_buffs(buffs)
         for probename in probe_names:
             try:
                 probe = _plugins.load_plugin(probename)

@@ -1,6 +1,10 @@
 # resources/autodan/__init__.py
-# AutoDAN implementation lightly modified from https://github.com/SheltonLiu-N/AutoDAN
+
+# SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+# AutoDAN implementation derived from https://github.com/SheltonLiu-N/AutoDAN under MIT license.
 # Paper can be found at: https://arxiv.org/abs/2310.04451
 
 # Resources we want to expose
-from autodan import autodan_generate, autodan_parser
+from garak.resources.autodan.autodan import autodan_generate, autodan_parser

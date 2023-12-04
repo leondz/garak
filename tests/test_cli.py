@@ -22,7 +22,7 @@ def test_probe_list(capsys):
     output = ansi_escape.sub("", result.out)
     for line in output.strip().split("\n"):
         assert re.match(
-            r"^probes: [a-z0-9_]+.[A-Za-z0-9_]+( 🌟)?( 💤)?$", line
+            r"^probes: [a-z0-9_]+(\.[A-Za-z0-9_]+)?( 🌟)?( 💤)?$", line
         ) or line.startswith("garak LLM security probe v")
 
 
@@ -32,7 +32,7 @@ def test_detector_list(capsys):
     output = ansi_escape.sub("", result.out)
     for line in output.strip().split("\n"):
         assert re.match(
-            r"^detectors: [a-z0-9_]+.[A-Za-z0-9_]+( 🌟)?( 💤)?$", line
+            r"^detectors: [a-z0-9_]+(\.[A-Za-z0-9_]+)?( 🌟)?( 💤)?$", line
         ) or line.startswith("garak LLM security probe v")
 
 
@@ -42,7 +42,7 @@ def test_generator_list(capsys):
     output = ansi_escape.sub("", result.out)
     for line in output.strip().split("\n"):
         assert re.match(
-            r"^generators: [a-z0-9_]+.[A-Za-z0-9_]+( 🌟)?( 💤)?$", line
+            r"^generators: [a-z0-9_]+(\.[A-Za-z0-9_]+)?( 🌟)?( 💤)?$", line
         ) or line.startswith("garak LLM security probe v")
 
 

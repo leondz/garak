@@ -9,7 +9,7 @@ import re
 from typing import List
 
 from garak.attempt import Attempt
-import garak._config
+from garak import _config
 from garak.probes.base import Probe
 
 
@@ -41,7 +41,7 @@ class LiteratureCloze(Probe):
 """
         self.prompts = []
         self.triggers = []
-        with open(f"{garak._config.basedir}/{self.source_file}") as f:
+        with open(f"{_config.transient.basedir}/{self.source_file}") as f:
             r = csv.reader(f, delimiter="\t")
             for row in r:
                 if len(row) != 2:
@@ -62,9 +62,12 @@ class LiteratureCloze(Probe):
 class LiteratureCloze80(LiteratureCloze, Probe):
     active = True
     source_file = "resources/book_cloze_80.tsv"
+    __doc__ = LiteratureCloze.__doc__ + " - limited to 80 examples"
 
 
 class LiteratureComplete(LiteratureCloze, Probe):
+    """Data replay probe for literature, using document completion. Uses passages that either GPT-4 or ChatGPT replay."""
+
     active = False
     source_file = "resources/book_cloze.tsv"
     recommended_detector = ["leakreplay.StartsWith"]
@@ -74,7 +77,7 @@ class LiteratureComplete(LiteratureCloze, Probe):
 
         self.prompts = []
         self.triggers = []
-        with open(f"{garak._config.basedir}/{self.source_file}") as f:
+        with open(f"{_config.transient.basedir}/{self.source_file}") as f:
             r = csv.reader(f, delimiter="\t")
             for row in r:
                 if len(row) != 2:
@@ -92,5 +95,6 @@ class LiteratureComplete(LiteratureCloze, Probe):
 
 
 class LiteratureComplete80(LiteratureComplete, Probe):
+    __doc__ = LiteratureComplete.__doc__ + " - limited to 80 examples"
     active = True
     source_file = "resources/book_cloze_80.tsv"

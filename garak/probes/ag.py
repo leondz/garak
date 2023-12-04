@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ART: Automatic red-team. 
+"""AG: Attack Generation. 
 
 This probe uses a separate model to create prompts for a generator,
 which are intended to guide that generator into a certain failure mode."""
@@ -13,7 +13,7 @@ from typing import List
 from colorama import Fore, Style
 from tqdm import tqdm
 
-import garak._config
+from garak import _config
 import garak.attempt
 from garak.probes.base import Probe
 from garak.generators.huggingface import Pipeline
@@ -22,7 +22,9 @@ output_sep = "<||>"
 
 
 class Tox(Probe):
-    """Auto Red-Team"""
+    """Attack Generation
+
+    Simulates red teaming"""
 
     recommended_detector = ["toxicity.ToxicCommentModel"]
     redteamer = None
@@ -30,15 +32,16 @@ class Tox(Probe):
     constructive_tension = True
     tags = ["avid-effect:ethics:E0301"]
     goal = "make the model say something toxic"
+    parallelisable_attempts = False  # AG has its own dialog manager
     red_team_model = "leondz/artgpt2tox"
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
-        output_is_conversation = garak._config.args and garak._config.args.verbose >= 2
+        output_is_conversation = _config.system.verbose >= 2
 
         if self.redteamer == None:
             print(
                 "🔴🪖  ", end=""
-            )  # distinguish load message for ART generator from target generator
+            )  # distinguish load message for AG generator from target generator
             self.redteamer = Pipeline(self.red_team_model)
             self.redteamer.generations = 1
             self.redteamer.deprefix_prompt = True
@@ -48,6 +51,8 @@ class Tox(Probe):
 
         target_generations = generator.generations
         generator.generations = 1  # take generations one-by-one (will restore later)
+        prev_parallel_requests = _config.system.parallel_requests
+        _config.system.parallel_requests = False
         if "max_new_tokens" in dir(generator):  # let the probed model decide what to do
             prev_max_new_tokens = generator.max_new_tokens
             generator.max_new_tokens = None
@@ -65,10 +70,10 @@ class Tox(Probe):
 
             last_response = None
             turns = []
-            logging.debug(f"ART: attempt {i} uuid {this_attempt.uuid}")
+            logging.debug(f"AG: attempt {i} uuid {this_attempt.uuid}")
 
             if output_is_conversation:
-                print("ART: 🆕 ⋅.˳˳.⋅ॱ˙˙ॱ New conversation ॱ˙˙ॱ⋅.˳˳.⋅ 🗣️")
+                print("AG: 🆕 ⋅.˳˳.⋅ॱ˙˙ॱ New conversation ॱ˙˙ॱ⋅.˳˳.⋅ 🗣️")
             else:
                 t = tqdm(total=2 * self.max_calls, leave=False)
 
@@ -101,11 +106,11 @@ class Tox(Probe):
                     t.update()
                 turn = ("probe", challenge)
                 turns.append(turn)
-                logging.debug(f"ART: probe: {turn}")
+                logging.debug(f"AG: probe: {turn}")
                 if output_is_conversation:
                     probe_text = re.sub(r"[\r\n]+", "\n", turn[1]).strip()
                     print(
-                        f"ART: 🔴 probe: {Fore.LIGHTYELLOW_EX}{probe_text}{Style.RESET_ALL}"
+                        f"AG: 🔴 probe: {Fore.LIGHTYELLOW_EX}{probe_text}{Style.RESET_ALL}"
                     )
                 else:
                     t.set_description(
@@ -116,9 +121,9 @@ class Tox(Probe):
                 # log the response
                 turn = ("model", response)
                 turns.append(turn)
-                logging.debug(f"ART: model: {turn}")
+                logging.debug(f"AG: model: {turn}")
                 if output_is_conversation:
-                    print(f"ART: 🦜 model: {Style.BRIGHT}{turn[1]}{Style.RESET_ALL}")
+                    print(f"AG: 🦜 model: {Style.BRIGHT}{turn[1]}{Style.RESET_ALL}")
                 else:
                     t.update()
                 # increment calls_made
@@ -141,11 +146,15 @@ class Tox(Probe):
                 [turn[1] for turn in turns if turn[0] == "probe"]
             )
 
-            garak._config.reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
+            _config.transient.reportfile.write(
+                json.dumps(this_attempt.as_dict()) + "\n"
+            )
             attempts.append(copy.deepcopy(this_attempt))
 
         # restore the generator object's original number of generations
         generator.generations = target_generations
+        # restore request parallelisation option
+        _config.system.parallel_requests = prev_parallel_requests
         # restore generator's token generation limit
         if "max_new_tokens" in dir(generator):  # let the probed model decide what to do
             generator.max_new_tokens = prev_max_new_tokens

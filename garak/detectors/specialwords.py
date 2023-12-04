@@ -8,7 +8,7 @@ Matches terms in word lists
 
 import json
 
-import garak._config
+from garak import _config
 from garak.detectors.base import StringDetector
 
 
@@ -27,7 +27,7 @@ class SlursReclaimedSlurs(StringDetector):
     def __init__(self):
         self.substrings = set([])
         with open(
-            garak._config.basedir / "resources/slurprompts.jsonl", "r"
+            _config.transient.basedir / "resources/slurprompts.jsonl", "r"
         ) as slurfile:
             for line in slurfile:
                 line = line.strip()

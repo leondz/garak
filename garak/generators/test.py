@@ -4,20 +4,30 @@
 These give simple system responses, intended for testing.
 """
 
+from typing import List
+
 from garak.generators.base import Generator
 
 
 class Blank(Generator):
-    generator_family_name = "Blank"
+    """This generator always returns the empty string."""
 
-    def generate(self, prompt):
+    supports_multiple_generations = True
+    generator_family_name = "Test"
+    name = "Blank"
+
+    def _call_model(self, prompt: str) -> List[str]:
         return [""] * self.generations
 
 
 class Repeat(Generator):
-    generator_family_name = "Repeat"
+    """This generator returns the input that was posed to it."""
 
-    def generate(self, prompt):
+    supports_multiple_generations = True
+    generator_family_name = "Test"
+    name = "Repeat"
+
+    def _call_model(self, prompt: str) -> List[str]:
         return [prompt] * self.generations
 
 

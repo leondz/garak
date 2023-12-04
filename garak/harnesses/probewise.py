@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+# SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 """Probewise harness
 
 Selects detectors to run for each probe based on that probe's recommendations
@@ -10,8 +14,7 @@ from colorama import Fore, Style
 from garak.detectors.base import Detector
 from garak.harnesses.base import Harness
 
-import garak._plugins as _plugins
-import garak._config as _config
+from garak import _config, _plugins
 
 
 class ProbewiseHarness(Harness):
@@ -29,7 +32,7 @@ class ProbewiseHarness(Harness):
             logging.error(f" detector load failed: {detector_name}, skipping >>")
         return False
 
-    def run(self, model, probenames, evaluator):
+    def run(self, model, probenames, evaluator, buffs=[]):
         """Execute a probe-by-probe scan
 
         Probes are executed in name order. For each probe, the detectors
@@ -48,11 +51,21 @@ class ProbewiseHarness(Harness):
 
         :param model: an instantiated generator providing an interface to the model to be examined
         :type model: garak.generators.base.Generator
-        :param probenames: a list of probe instances to be run
-        :type probenames: List[garak.probes.base.Probe]
+        :param probenames: a list of probe names to be run
+        :type probenames: List[str]
         :param evaluator: an instantiated evaluator for judging detector results
         :type evaluator: garak.evaluators.base.Evaluator
+        :param buffs: a list of buff names to be used this run
+        :type buffs: List[str]
         """
+
+        if not probenames:
+            logging.warning("No probes, nothing to do")
+            if hasattr(_config.system, "verbose") and _config.system.verbose >= 2:
+                print("No probes, nothing to do")
+            return None
+
+        self._load_buffs(buffs)
 
         probenames = sorted(probenames)
         print(
@@ -75,12 +88,11 @@ class ProbewiseHarness(Harness):
                 d = self._load_detector(probe.primary_detector)
                 if d:
                     detectors = [d]
-                if _config.args:
-                    if _config.args.extended_detectors:
-                        for detector_name in sorted(probe.extended_detectors):
-                            d = self._load_detector(detector_name)
-                            if d:
-                                detectors.append(d)
+                if _config.plugins.extended_detectors:
+                    for detector_name in sorted(probe.extended_detectors):
+                        d = self._load_detector(detector_name)
+                        if d:
+                            detectors.append(d)
 
             else:
                 for detector_name in sorted(probe.recommended_detector):
