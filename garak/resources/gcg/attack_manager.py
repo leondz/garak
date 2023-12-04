@@ -16,6 +16,7 @@ from transformers import GPT2LMHeadModel, GPTJForCausalLM, GPTNeoXForCausalLM, L
 from logging import getLogger
 from tqdm import tqdm
 
+import garak.generators
 from garak.generators.huggingface import Model
 
 logger = getLogger(__name__)
@@ -739,7 +740,7 @@ class MultiPromptAttack(object):
                      model_tests,
                      verbose=verbose)
 
-        pbar = tqdm(desc="Running Attack", total=n_steps, position=0, colour='green')
+        pbar = tqdm(desc="Running Attack", total=n_steps, position=1, colour='blue', leave=False)
         for i in range(n_steps):
             if stop_on_success:
                 model_tests_jb, model_tests_mb, _ = self.test(self.workers, self.prompts)
@@ -748,6 +749,9 @@ class MultiPromptAttack(object):
                     with open(self.outfile, "a") as f:
                         f.write(f"{self.control_str}\n")
                     break
+                else:
+                    del model_tests_jb, model_tests_mb
+                    gc.collect()
 
             steps += 1
             start = time.time()
@@ -807,6 +811,9 @@ class MultiPromptAttack(object):
             for j, worker in enumerate(workers):
                 worker(prompts[j], "test_loss", worker.model)
             model_tests_loss = [worker.results.get() for worker in workers]
+
+        del model_tests
+        gc.collect()
 
         return model_tests_jb, model_tests_mb, model_tests_loss
 
@@ -1302,7 +1309,9 @@ class IndividualPromptAttack(object):
 
         stop_inner_on_success = stop_on_success
 
+        pbar = tqdm(total=len(self.goals), position=0, colour="green")
         for i in range(len(self.goals)):
+            pbar.set_description(f"Goal {i+1}/{len(self.goals)}")
             logger.debug(f"Goal {i + 1}/{len(self.goals)}")
 
             attack = self.managers['MPA'](
@@ -1336,6 +1345,7 @@ class IndividualPromptAttack(object):
                 filter_cand=filter_cand,
                 verbose=verbose
             )
+            pbar.update(1)
 
         return self.control, n_steps
 
@@ -1526,16 +1536,18 @@ class EvaluateAttack(object):
 
 
 class ModelWorker(object):
-    def __init__(self, generator, conv_template):
+    def __init__(self, model_name, conv_template):
         """
         Worker for running against models
         Args:
-            generator (garak.generators.huggingface.Model): Generator to run against
+            model_name (str): Name of model to run against
             conv_template (fastchat.Conversation): Conversation template
         """
+        generator = garak.generators.huggingface.Model(model_name)
         self.model = generator.model
         self.model.requires_grad_(False)  # Disable grads to reduce memory consumption
         self.tokenizer = generator.tokenizer
+        self.tokenizer.pad_token_id = self.tokenizer.eos_token_id  # Suppress warning for open-end generation.
         self.conv_template = conv_template
         self.tasks = mp.JoinableQueue()
         self.results = mp.JoinableQueue()
@@ -1551,6 +1563,7 @@ class ModelWorker(object):
             if fn == "grad":
                 with torch.enable_grad():
                     results.put(ob.grad(*args, **kwargs))
+                    del task
             else:
                 with torch.no_grad():
                     if fn == "logits":
@@ -1564,6 +1577,7 @@ class ModelWorker(object):
                     else:
                         results.put(fn(*args, **kwargs))
             tasks.task_done()
+            del task
 
     def start(self):
         self.process = mp.Process(
@@ -1619,7 +1633,7 @@ def get_workers(model_names: list, n_train_models=1, evaluate=False):
         conv_templates.append(conv)
 
     logger.debug(f"Loaded {len(conv_templates)} conversation templates")
-    workers = [ModelWorker(generator, conv_template) for generator, conv_template in zip(generators, conv_templates)]
+    workers = [ModelWorker(generator, conv_template) for generator, conv_template in zip(model_names, conv_templates)]
     if not evaluate:
         for worker in workers:
             worker.start()

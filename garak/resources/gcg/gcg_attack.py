@@ -123,11 +123,7 @@ class GCGMultiPromptAttack(MultiPromptAttack):
              opt_only=False,
              filter_cand=True):
 
-        # GCG currently does not support optimization_only mode,
-        # so opt_only does not change the inner loop.
-        opt_only = False
-
-        main_device = self.models[0].device
+        device = self.models[0].device
         control_cands = list()
 
         for j, worker in enumerate(self.workers):
@@ -136,7 +132,7 @@ class GCGMultiPromptAttack(MultiPromptAttack):
         # Aggregate gradients
         grad = None
         for j, worker in enumerate(self.workers):
-            new_grad = worker.results.get().to(main_device)
+            new_grad = worker.results.get().to(device)
             new_grad = new_grad / new_grad.norm(dim=-1, keepdim=True)
             if grad is None:
                 grad = torch.zeros_like(new_grad)
@@ -149,44 +145,54 @@ class GCGMultiPromptAttack(MultiPromptAttack):
             else:
                 grad += new_grad
 
-        with torch.no_grad():
-            control_cand = self.prompts[j].sample_control(grad, batch_size, topk, temp, allow_non_ascii)
-            control_cands.append(
-                self.get_filtered_cands(j, control_cand, filter_cand=filter_cand, curr_control=self.control_str))
-        del grad, control_cand
-        gc.collect()
+            with torch.no_grad():
+                control_cand = self.prompts[j].sample_control(grad, batch_size, topk, temp, allow_non_ascii)
+                control_cands.append(
+                    self.get_filtered_cands(j, control_cand, filter_cand=filter_cand, curr_control=self.control_str))
+            del grad, control_cand
+            gc.collect()
         
         # Handle case where get_filtered_cands does not return anything
         if not control_cands:
             control_cands.append(self.control_str)
 
         # Search
-        loss = torch.zeros(len(control_cands) * batch_size).to(main_device)
+        loss = torch.zeros(len(control_cands) * batch_size).to(device)
         with torch.no_grad():
             for j, cand in enumerate(control_cands):
-                # Looping through the prompts at this level is less elegant, but
-                # we can manage VRAM better this way
-                progress = range(len(self.prompts[0]))
-                for i in progress:
-                    # This can OOM even on an RTX A6000 for long candidates, so we should try/catch.
-                    try:
+                try:
+                    # Looping through the prompts at this level is less elegant, but
+                    # we can manage VRAM better this way
+                    # This can OOM even on an RTX A6000 for long candidates, so we should try/catch and break
+                    progress = range(len(self.prompts[0]))
+                    for i in progress:
                         for k, worker in enumerate(self.workers):
                             worker(self.prompts[k][i], "logits", worker.model, cand, return_ids=True)
                         logits, ids = zip(*[worker.results.get() for worker in self.workers])
                         loss[j * batch_size:(j + 1) * batch_size] += sum([
-                            target_weight * self.prompts[k][i].target_loss(logit, id).mean(dim=-1).to(main_device)
+                            target_weight * self.prompts[k][i].target_loss(logit, id).mean(dim=-1).to(device)
                             for k, (logit, id) in enumerate(zip(logits, ids))
                         ])
                         if control_weight != 0:
                             loss[j * batch_size:(j + 1) * batch_size] += sum([
-                                control_weight * self.prompts[k][i].control_loss(logit, idx).mean(dim=-1).to(main_device)
+                                control_weight * self.prompts[k][i].control_loss(logit, idx).mean(dim=-1).to(device)
                                 for k, (logit, idx) in enumerate(zip(logits, ids))
                             ])
                         del logits, ids
                         gc.collect()
-                    except torch.cuda.OutOfMemoryError as e:
-                        logger.error(e)
-                        break
+                except torch.cuda.OutOfMemoryError as e:
+                    logger.error(e)
+
+                    min_idx = loss.argmin()
+                    model_idx = min_idx // batch_size
+                    batch_idx = min_idx % batch_size
+                    next_control, cand_loss = control_cands[model_idx][batch_idx], loss[min_idx]
+
+                    del logits, ids, control_cands, loss
+                    torch.cuda.empty_cache()
+                    gc.collect()
+
+                    return next_control, cand_loss.item() / len(self.prompts[0]) / len(self.workers)
 
             min_idx = loss.argmin()
             model_idx = min_idx // batch_size
@@ -195,6 +201,5 @@ class GCGMultiPromptAttack(MultiPromptAttack):
 
         del control_cands, loss
         gc.collect()
-        torch.cuda.empty_cache()
 
         return next_control, cand_loss.item() / len(self.prompts[0]) / len(self.workers)

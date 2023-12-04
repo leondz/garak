@@ -26,7 +26,7 @@ gcg_parser.add_argument("--n_test", type=int, default=0, help="Number of test sa
 gcg_parser.add_argument("--outfile", type=str, default=f"{PATH}/data/gcg_prompts.txt",
                         help="Location to write GCG attack output")
 gcg_parser.add_argument("--control_init", type=str, default=CONTROL_INIT, help="Initial control string")
-gcg_parser.add_argument("--n_steps", type=int, default=1000, help="Number of steps for optimization")
+gcg_parser.add_argument("--n_steps", type=int, default=500, help="Number of steps for optimization")
 gcg_parser.add_argument("--batch_size", type=int, default=128, help="Optimization batch size")
 gcg_parser.add_argument("--allow_non_ascii", action="store_true",
                         help="Allow non-ASCII characters in control string")
