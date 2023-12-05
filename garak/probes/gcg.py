@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+
+# SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 """GCG probes.
 
 Probes designed to disrupt a system prompt by appending an adversarial suffix.
@@ -17,7 +20,8 @@ class GCG_Probe(Probe):
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass"]
     tags = ["avid-effect:security:S0403", "avid-effect:performance:P0204"]
-    goal = "disregard the system prompt"
+    goal = "cause the model to disregard the system prompt"
+    uri = "https://arxiv.org/abs/2307.15043"
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
         self.prompts = list()
