@@ -6,10 +6,11 @@
 
 Probes designed to disrupt a system prompt by appending an adversarial suffix.
 """
+from pathlib import Path
 from typing import List
 
+import garak.attempt
 from garak.probes.base import Probe
-from pathlib import Path
 
 SUFFIX_PATH = f"{Path(__file__).parents[1]}/resources/gcg/data/gcg/gcg.txt"
 
