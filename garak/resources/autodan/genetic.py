@@ -572,7 +572,7 @@ def apply_word_replacement(
         replace_with_best_synonym(sentence, word_dict, replacement_rate)
         for sentence in parents_list
     ]
-  
+
 
 def join_words_with_punctuation(words: list) -> str:
     """

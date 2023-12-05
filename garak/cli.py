@@ -221,7 +221,7 @@ def main(arguments=[]) -> None:
     parser.add_argument(
         "--interactive.py",
         action="store_true",
-        help="Launch garak in interactive.py mode"
+        help="Launch garak in interactive.py mode",
     )
 
     logging.debug("args - raw argument string received: %s", arguments)
@@ -270,7 +270,6 @@ def main(arguments=[]) -> None:
         setattr(cli_args, command_option, getattr(args, command_option))
 
     logging.debug("args - cli_args&commands stored: %s", cli_args)
-
 
     del args
     args = cli_args

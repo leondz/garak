@@ -47,6 +47,7 @@ probe_parser.add_argument(
     help="Name of the probe to execute if not already set.",
 )
 
+
 def print_plugins(prefix, color):
     plugin_names = enumerate_plugins(category=prefix)
     plugin_names = [(p.replace(f"{prefix}.", ""), a) for p, a in plugin_names]
@@ -146,6 +147,7 @@ class GarakCommands(cmd2.CommandSet):
 
 class GarakTerminal(cmd2.Cmd):
     """Terminal class for Interactive Garak CLI"""
+
     _cmd = None
 
     def __init__(self):

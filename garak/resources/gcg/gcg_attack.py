@@ -5,7 +5,13 @@ import torch
 import torch.nn as nn
 from logging import getLogger
 
-from .attack_manager import AttackPrompt, MultiPromptAttack, PromptManager, get_embedding_matrix, get_embeddings
+from .attack_manager import (
+    AttackPrompt,
+    MultiPromptAttack,
+    PromptManager,
+    get_embedding_matrix,
+    get_embeddings,
+)
 
 logger = getLogger(__name__)
 
@@ -38,12 +44,12 @@ def token_gradients(model, input_ids, input_slice, target_slice, loss_slice):
         input_ids[input_slice].shape[0],
         embed_weights.shape[0],
         device=model.device,
-        dtype=embed_weights.dtype
+        dtype=embed_weights.dtype,
     )
     one_hot.scatter_(
         1,
         input_ids[input_slice].unsqueeze(1),
-        torch.ones(one_hot.shape[0], 1, device=model.device, dtype=embed_weights.dtype)
+        torch.ones(one_hot.shape[0], 1, device=model.device, dtype=embed_weights.dtype),
     )
     one_hot.requires_grad_()
     input_embeds = (one_hot @ embed_weights).unsqueeze(0)
@@ -52,11 +58,12 @@ def token_gradients(model, input_ids, input_slice, target_slice, loss_slice):
     embeds = get_embeddings(model, input_ids.unsqueeze(0)).detach()
     full_embeds = torch.cat(
         [
-            embeds[:, :input_slice.start, :],
+            embeds[:, : input_slice.start, :],
             input_embeds,
-            embeds[:, input_slice.stop:, :]
+            embeds[:, input_slice.stop :, :],
         ],
-        dim=1)
+        dim=1,
+    )
 
     logits = model(inputs_embeds=full_embeds).logits
     targets = input_ids[target_slice]
@@ -77,12 +84,11 @@ class GCGAttackPrompt(AttackPrompt):
             self.input_ids.to(model.device),
             self._control_slice,
             self._target_slice,
-            self._loss_slice
+            self._loss_slice,
         )
 
 
 class GCGPromptManager(PromptManager):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -93,36 +99,35 @@ class GCGPromptManager(PromptManager):
         control_toks = self.control_toks.to(grad.device)
         original_control_toks = control_toks.repeat(batch_size, 1)
         new_token_pos = torch.arange(
-            0,
-            len(control_toks),
-            len(control_toks) / batch_size,
-            device=grad.device
+            0, len(control_toks), len(control_toks) / batch_size, device=grad.device
         ).type(torch.int64)
         new_token_val = torch.gather(
-            top_indices[new_token_pos], 1,
-            torch.randint(0, topk, (batch_size, 1),
-                          device=grad.device)
+            top_indices[new_token_pos],
+            1,
+            torch.randint(0, topk, (batch_size, 1), device=grad.device),
         )
-        new_control_toks = original_control_toks.scatter_(1, new_token_pos.unsqueeze(-1), new_token_val)
+        new_control_toks = original_control_toks.scatter_(
+            1, new_token_pos.unsqueeze(-1), new_token_val
+        )
         return new_control_toks
 
 
 class GCGMultiPromptAttack(MultiPromptAttack):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def step(self,
-             batch_size=1024,
-             topk=256,
-             temp=1,
-             allow_non_ascii=True,
-             target_weight=1,
-             control_weight=0.1,
-             verbose=False,
-             opt_only=False,
-             filter_cand=True):
-
+    def step(
+        self,
+        batch_size=1024,
+        topk=256,
+        temp=1,
+        allow_non_ascii=True,
+        target_weight=1,
+        control_weight=0.1,
+        verbose=False,
+        opt_only=False,
+        filter_cand=True,
+    ):
         device = self.models[0].device
         control_cands = list()
 
@@ -138,20 +143,36 @@ class GCGMultiPromptAttack(MultiPromptAttack):
                 grad = torch.zeros_like(new_grad)
             if grad.shape != new_grad.shape:
                 with torch.no_grad():
-                    control_cand = self.prompts[j - 1].sample_control(grad, batch_size, topk, temp, allow_non_ascii)
-                    control_cands.append(self.get_filtered_cands(j - 1, control_cand, filter_cand=filter_cand,
-                                                                 curr_control=self.control_str))
+                    control_cand = self.prompts[j - 1].sample_control(
+                        grad, batch_size, topk, temp, allow_non_ascii
+                    )
+                    control_cands.append(
+                        self.get_filtered_cands(
+                            j - 1,
+                            control_cand,
+                            filter_cand=filter_cand,
+                            curr_control=self.control_str,
+                        )
+                    )
                 grad = new_grad
             else:
                 grad += new_grad
 
             with torch.no_grad():
-                control_cand = self.prompts[j].sample_control(grad, batch_size, topk, temp, allow_non_ascii)
+                control_cand = self.prompts[j].sample_control(
+                    grad, batch_size, topk, temp, allow_non_ascii
+                )
                 control_cands.append(
-                    self.get_filtered_cands(j, control_cand, filter_cand=filter_cand, curr_control=self.control_str))
+                    self.get_filtered_cands(
+                        j,
+                        control_cand,
+                        filter_cand=filter_cand,
+                        curr_control=self.control_str,
+                    )
+                )
             del grad, control_cand
             gc.collect()
-        
+
         # Handle case where get_filtered_cands does not return anything
         if not control_cands:
             control_cands.append(self.control_str)
@@ -167,17 +188,37 @@ class GCGMultiPromptAttack(MultiPromptAttack):
                     progress = range(len(self.prompts[0]))
                     for i in progress:
                         for k, worker in enumerate(self.workers):
-                            worker(self.prompts[k][i], "logits", worker.model, cand, return_ids=True)
-                        logits, ids = zip(*[worker.results.get() for worker in self.workers])
-                        loss[j * batch_size:(j + 1) * batch_size] += sum([
-                            target_weight * self.prompts[k][i].target_loss(logit, id).mean(dim=-1).to(device)
-                            for k, (logit, id) in enumerate(zip(logits, ids))
-                        ])
+                            worker(
+                                self.prompts[k][i],
+                                "logits",
+                                worker.model,
+                                cand,
+                                return_ids=True,
+                            )
+                        logits, ids = zip(
+                            *[worker.results.get() for worker in self.workers]
+                        )
+                        loss[j * batch_size : (j + 1) * batch_size] += sum(
+                            [
+                                target_weight
+                                * self.prompts[k][i]
+                                .target_loss(logit, id)
+                                .mean(dim=-1)
+                                .to(device)
+                                for k, (logit, id) in enumerate(zip(logits, ids))
+                            ]
+                        )
                         if control_weight != 0:
-                            loss[j * batch_size:(j + 1) * batch_size] += sum([
-                                control_weight * self.prompts[k][i].control_loss(logit, idx).mean(dim=-1).to(device)
-                                for k, (logit, idx) in enumerate(zip(logits, ids))
-                            ])
+                            loss[j * batch_size : (j + 1) * batch_size] += sum(
+                                [
+                                    control_weight
+                                    * self.prompts[k][i]
+                                    .control_loss(logit, idx)
+                                    .mean(dim=-1)
+                                    .to(device)
+                                    for k, (logit, idx) in enumerate(zip(logits, ids))
+                                ]
+                            )
                         del logits, ids
                         gc.collect()
                 except torch.cuda.OutOfMemoryError as e:
@@ -186,13 +227,18 @@ class GCGMultiPromptAttack(MultiPromptAttack):
                     min_idx = loss.argmin()
                     model_idx = min_idx // batch_size
                     batch_idx = min_idx % batch_size
-                    next_control, cand_loss = control_cands[model_idx][batch_idx], loss[min_idx]
+                    next_control, cand_loss = (
+                        control_cands[model_idx][batch_idx],
+                        loss[min_idx],
+                    )
 
                     del logits, ids, control_cands, loss
                     torch.cuda.empty_cache()
                     gc.collect()
 
-                    return next_control, cand_loss.item() / len(self.prompts[0]) / len(self.workers)
+                    return next_control, cand_loss.item() / len(self.prompts[0]) / len(
+                        self.workers
+                    )
 
             min_idx = loss.argmin()
             model_idx = min_idx // batch_size

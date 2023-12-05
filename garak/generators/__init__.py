@@ -10,7 +10,6 @@ from garak.generators.base import Generator
 logger = getLogger(__name__)
 
 
-
 def load_generator(
     model_name: str, model_type: str, generations: int = 10
 ) -> Generator:
