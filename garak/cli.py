@@ -269,17 +269,6 @@ def main(arguments=[]) -> None:
     del args
     args = cli_args
 
-    import sys
-    import importlib
-    import json
-
-    import garak.evaluators
-    from garak._plugins import enumerate_plugins
-
-    # startup
-    if not args.version and not args.report:
-        command.start_run(args)
-
     # save args info into config
     # need to know their type: plugin, system, or run
     # ignore params not listed here
@@ -302,6 +291,16 @@ def main(arguments=[]) -> None:
         _config.plugins.detector_spec = args.detectors
     if "buff" in args:
         _config.plugins.buff_spec = args.buff
+
+    # startup
+    import sys
+    import importlib
+    import json
+
+    import garak.evaluators
+
+    if not args.version and not args.report:
+        command.start_run(args)
 
     # do a special thing for CLIprobe options, generator options
     if "probe_options" in args or "probe_option_file" in args:
