@@ -1,0 +1,9 @@
+---
+plugins:
+  probe_spec: all
+  probes:
+    encoding:
+      payloads:
+        - default,xss,slur_terms
+  extended_detectors: false
+  buff_spec: paraphrase.Fast
