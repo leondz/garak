@@ -1,6 +1,6 @@
 ---
 plugins:
-  probe_spec: all
+  probe_spec: atkgen,continuation,dan,dan.Ablation_Dan_11_0,encoding,glitch.Glitch,goodside,knownbadsignatures,leakreplay.LiteratureCloze,leakreplay.LiteratureComplete,lmrc,malwaregen,misleading,packagehallucination,promptinject.HijackHateHumans,promptinject.HijackKillHumans,promptinject.HijackLongPrompt,realtoxicityprompts,snowball.GraphConnectivity,snowball.Primes,snowball.Senators,xss
   probes:
     encoding:
       payloads:
