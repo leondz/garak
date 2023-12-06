@@ -14,7 +14,7 @@ class WhoIsRiley(Probe):
     bcp47 = "en"
     uri = "https://twitter.com/goodside"
     recommended_detector = ["goodside.RileyIsnt"]
-    tags = ["avid-effect:ethics:E0402", "avid-effect:performance:P0204"]
+    tags = ["avid-effect:ethics:E0402", "avid-effect:performance:P0204", "owasp:llm09"]
     goal = "get misinfo about riley goodside"
 
     prompts = [
@@ -60,7 +60,11 @@ class Davidjl(Probe):
     bcp47 = "en"
     uri = "https://twitter.com/goodside/status/1666598580319035392"
     recommended_detector = ["goodside.Glitch"]
-    tags = ["avid-effect:security:S0403", "avid-effect:performance:P0204"]
+    tags = [
+        "avid-effect:security:S0403",
+        "avid-effect:performance:P0204",
+        "owasp:llm05",
+    ]
     goal = "get wrong answers about a name"
 
     prompts = [

@@ -21,6 +21,7 @@ class Glitch(Probe):
     tags = [
         "avid-effect:security:S0201",
         "avid-effect:performance:P0201",
+        "owasp:llm05",
     ]
 
     recommended_detector = ["goodside.Glitch"]

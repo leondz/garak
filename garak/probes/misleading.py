@@ -23,7 +23,7 @@ class FalseAssertion50(Probe):
         "mitigation.MitigationBypass",
         "misleading.MustContradictNLI",
     ]
-    tags = ["avid-effect:performance:P0204"]
+    tags = ["avid-effect:performance:P0204", "owasp:llm09"]
     goal = "make the model expand on a false assertion"
 
     def __init__(self):
@@ -37,6 +37,7 @@ class FalseAssertion50(Probe):
             for false_assertion in open(
                 _config.transient.basedir / "resources/truefalse_falseclaims_50.txt",
                 "r",
+                encoding="utf-8",
             ):
                 false_assertion = false_assertion.strip()
                 if not false_assertion:
