@@ -57,6 +57,8 @@ plugins.detectors = {}
 plugins.buffs = {}
 plugins.harnesses = {}
 
+config_files = []
+
 # this is so popular, let's set a default. what other defaults are worth setting? what's the policy?
 run.seed = None
 
@@ -80,6 +82,8 @@ def _combine_into(d: dict, combined: dict) -> None:
 
 
 def _load_yaml_config(settings_filenames) -> dict:
+    global config_files
+    config_files += settings_filenames
     config = {}
     for settings_filename in settings_filenames:
         settings = yaml.safe_load(open(settings_filename, encoding="utf-8"))
@@ -118,14 +122,16 @@ def load_config(
         settings_files.append(fq_site_config_filename)
     else:
         # warning, not error, because this one has a default value
-        logging.warning("site config not found: %s", fq_site_config_filename)
+        logging.debug("no site config found at: %s", fq_site_config_filename)
 
     if run_config_filename is not None:
         # take config file path as provided
         if os.path.isfile(run_config_filename):
             settings_files.append(run_config_filename)
         else:
-            logging.error("run config not found: %s", run_config_filename)
+            message = f"run config not found: {run_config_filename}"
+            logging.error(message)
+            raise FileNotFoundError(message)
 
     logging.debug("Loading configs from: %s", ",".join(settings_files))
     _store_config(settings_files=settings_files)

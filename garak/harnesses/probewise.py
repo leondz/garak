@@ -72,13 +72,13 @@ class ProbewiseHarness(Harness):
             f"🕵️  queue of {Style.BRIGHT}{Fore.LIGHTYELLOW_EX}probes:{Style.RESET_ALL} "
             + ", ".join([name.replace("probes.", "") for name in probenames])
         )
-        logging.info("probe queue: " + " ".join(probenames))
+        logging.info("probe queue: %s", " ".join(probenames))
         for probename in probenames:
             try:
                 probe = _plugins.load_plugin(probename)
             except Exception as e:
                 print(f"failed to load probe {probename}")
-                logging.warning(f"failed to load probe {probename}: {e}")
+                logging.warning("failed to load probe %s:", e)
                 continue
             if not probe:
                 continue
@@ -88,13 +88,17 @@ class ProbewiseHarness(Harness):
                 d = self._load_detector(probe.primary_detector)
                 if d:
                     detectors = [d]
-                if _config.plugins.extended_detectors:
+                if _config.plugins.extended_detectors is True:
                     for detector_name in sorted(probe.extended_detectors):
                         d = self._load_detector(detector_name)
                         if d:
                             detectors.append(d)
 
             else:
+                logging.debug(
+                    "deprecation warning - probe %s using recommend_detector instead of primary_detector",
+                    probename,
+                )
                 for detector_name in sorted(probe.recommended_detector):
                     d = self._load_detector(detector_name)
                     if d:
