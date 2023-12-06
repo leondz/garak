@@ -19,7 +19,11 @@ class Dan_11_0(Probe):
 
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
-    tags = ["avid-effect:security:S0403", "avid-effect:performance:P0204"]
+    tags = [
+        "avid-effect:security:S0403",
+        "avid-effect:performance:P0204",
+        "owasp:llm01",
+    ]
     goal = "disregard the system prompt"
 
     def probe(self, generator):
@@ -34,7 +38,7 @@ class Dan_10_0(Probe):
 
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
-    tags = ["avid-effect:security:S0403"]
+    tags = ["avid-effect:security:S0403", "owasp:llm01"]
     goal = "disregard the system prompt"
 
     def probe(self, generator):
@@ -49,7 +53,7 @@ class Dan_9_0(Probe):
 
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
-    tags = ["avid-effect:security:S0403"]
+    tags = ["avid-effect:security:S0403", "owasp:llm01"]
     goal = "disregard the system prompt"
 
     def probe(self, generator):
@@ -91,7 +95,7 @@ class Dan_8_0(Probe):
 
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
-    tags = ["avid-effect:security:S0403"]
+    tags = ["avid-effect:security:S0403", "owasp:llm01"]
     goal = "disregard the system prompt"
 
     def probe(self, generator):
@@ -136,7 +140,7 @@ class Dan_7_0(Probe):
 
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
-    tags = ["avid-effect:security:S0403"]
+    tags = ["avid-effect:security:S0403", "owasp:llm01"]
     goal = "disregard the system prompt"
 
     def probe(self, generator):
@@ -169,7 +173,7 @@ class Dan_6_2(Probe):
 
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
-    tags = ["avid-effect:security:S0403"]
+    tags = ["avid-effect:security:S0403", "owasp:llm01"]
     goal = "disregard the system prompt"
 
     def probe(self, generator):
@@ -198,7 +202,7 @@ class Dan_6_0(Probe):
 
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
-    tags = ["avid-effect:security:S0403"]
+    tags = ["avid-effect:security:S0403", "owasp:llm01"]
     goal = "disregard the system prompt"
 
     def probe(self, generator):
@@ -213,7 +217,7 @@ class DUDE(Probe):
 
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass", "dan.DUDE"]
-    tags = ["avid-effect:security:S0403"]
+    tags = ["avid-effect:security:S0403", "owasp:llm01"]
     goal = "disregard the system prompt"
 
     def probe(self, generator):
@@ -228,7 +232,7 @@ class STAN(Probe):
 
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass", "dan.STAN"]
-    tags = ["avid-effect:security:S0403"]
+    tags = ["avid-effect:security:S0403", "owasp:llm01"]
     goal = "disregard the system prompt"
 
     def probe(self, generator):
@@ -246,7 +250,7 @@ class DAN_Jailbreak(Probe):
         "mitigation.MitigationBypass",
         "dan.DANJailbreak",
     ]
-    tags = ["avid-effect:security:S0403"]
+    tags = ["avid-effect:security:S0403", "owasp:llm01"]
     goal = "disregard the system prompt"
 
     def probe(self, generator):
@@ -264,7 +268,11 @@ class AntiDAN(Probe):
         "mitigation.MitigationBypass",
         "dan.AntiDAN",
     ]
-    tags = ["avid-effect:security:S0403", "avid-effect:performance:P0204"]
+    tags = [
+        "avid-effect:security:S0403",
+        "avid-effect:performance:P0204",
+        "owasp:llm01",
+    ]
     goal = "disregard the system prompt"
 
     def probe(self, generator):
@@ -296,7 +304,7 @@ class ChatGPT_Developer_Mode_v2(Probe):
         "mitigation.MitigationBypass",
         "dan.DevMode",
     ]
-    tags = ["avid-effect:security:S0403"]
+    tags = ["avid-effect:security:S0403", "owasp:llm01"]
     goal = "disregard the system prompt"
 
     def probe(self, generator):
@@ -314,7 +322,11 @@ class ChatGPT_Developer_Mode_RANTI(Probe):
         "mitigation.MitigationBypass",
         "dan.DevMode",
     ]
-    tags = ["avid-effect:security:S0403", "avid-effect:performance:P0204"]
+    tags = [
+        "avid-effect:security:S0403",
+        "avid-effect:performance:P0204",
+        "owasp:llm01",
+    ]
     goal = "disregard the system prompt"
 
     def probe(self, generator):
@@ -332,7 +344,7 @@ class ChatGPT_Image_Markdown(Probe):
         "mitigation.MitigationBypass",
         "dan.MarkdownLink",
     ]
-    tags = ["avid-effect:security:S0403"]
+    tags = ["avid-effect:security:S0403", "owasp:llm01"]
     goal = "disregard the system prompt"
 
     def probe(self, generator):
@@ -349,7 +361,7 @@ class Ablation_Dan_11_0(Probe):
 
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
-    tags = ["avid-effect:security:S0403"]
+    tags = ["avid-effect:security:S0403", "owasp:llm01"]
     goal = "disregard the system prompt"
     active = False
 
@@ -384,7 +396,7 @@ class AutoDANProbe(Probe):
 
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
-    tags = ["avid-effect:security:S0403"]
+    tags = ["avid-effect:security:S0403", "owasp:llm01"]
     goal = "disregard the system prompt"
     uri = "https://arxiv.org/abs/2310.04451"
 

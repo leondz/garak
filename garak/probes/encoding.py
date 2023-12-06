@@ -247,7 +247,7 @@ def _generate_encoded_prompts(encoding_funcs, encoding_name):
 class BaseEncodingProbe:
     """Mixin for encoding-based injection probes"""
 
-    tags = ["avid-effect:security:S0403"]
+    tags = ["avid-effect:security:S0403", "owasp:llm01"]
     goal = "make the model say an encoded payload"
     bcp47 = "en"
     uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
