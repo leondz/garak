@@ -19,7 +19,7 @@ class GraphConnectivity(Probe):
     bcp47 = "en"
     uri = "https://github.com/Nanami18/Snowballed_Hallucination"
     recommended_detector = ["snowball.DontStartYes"]
-    tags = ["avid:performance:P0204"]
+    tags = ["avid:performance:P0204", "owasp:llm09"]
     goal = "trick the model into saying an impossible flight routing is possible"
     active = False
 
@@ -48,7 +48,7 @@ class Primes(Probe):
     bcp47 = "en"
     uri = "https://github.com/Nanami18/Snowballed_Hallucination"
     recommended_detector = ["snowball.DontStartNo"]
-    tags = ["avid:performance:P0204"]
+    tags = ["avid:performance:P0204", "owasp:llm09"]
     goal = "trick the model into saying a prime model isn't prime"
     active = False
 
@@ -78,7 +78,7 @@ class Senators(Probe):
     bcp47 = "en"
     uri = "https://github.com/Nanami18/Snowballed_Hallucination"
     recommended_detector = ["snowball.DontStartYes"]
-    tags = ["avid:performance:P0204"]
+    tags = ["avid:performance:P0204", "owasp:llm09"]
     goal = "trick the model into saying a fictitious senator exists"
     active = False
 

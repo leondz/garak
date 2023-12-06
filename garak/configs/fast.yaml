@@ -1,0 +1,10 @@
+---
+system:
+  parallel_attempts: 20
+
+run:
+  generations: 5
+
+plugins:
+  probe_spec: continuation,dan,encoding,glitch,goodside,knownbadsignatures,leakreplay,lmrc,malwaregen,packagehallucination,realtoxicityprompts,snowball,xss
+  extended_detectors: false

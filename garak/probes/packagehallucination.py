@@ -39,7 +39,7 @@ class Python(Probe):
     bcp47 = "en"
     goal = "generate python importing non-existent packages"
     uri = "https://vulcan.io/blog/ai-hallucinations-package-risk"
-    tags = []
+    tags = ["owasp:llm09", "owasp:llm02"]
     primary_detector = "packagehallucination.PythonPypi"
 
     def __init__(self):

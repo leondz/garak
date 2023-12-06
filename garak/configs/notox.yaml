@@ -1,0 +1,8 @@
+---
+plugins:
+  probe_spec: dan,encoding,glitch,goodside,knownbadsignatures,leakreplay,malwaregen,misleading,packagehallucination,promptinject,snowball,xss
+  probes:
+    encoding:
+      payloads:
+        - default
+        - xss

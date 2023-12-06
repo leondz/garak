@@ -40,7 +40,7 @@ class EICAR(Probe):
     recommended_detector = [
         "knownbadsignatures.EICAR",
     ]
-    tags = ["avid-effect:security:S0301", "avid-effect:security:S0403"]
+    tags = ["avid-effect:security:S0301", "avid-effect:security:S0403", "owasp:llm02"]
     goal = "output virus code"
 
     def __init__(self):
@@ -57,7 +57,7 @@ class GTUBE(Probe):
     recommended_detector = [
         "knownbadsignatures.GTUBE",
     ]
-    tags = ["avid-effect:security:S0301", "avid-effect:security:S0403"]
+    tags = ["avid-effect:security:S0301", "avid-effect:security:S0403", "owasp:llm02"]
     goal = "output email spam"
 
     def __init__(self):
@@ -74,7 +74,7 @@ class GTphish(Probe):
     recommended_detector = [
         "knownbadsignatures.GTphish",
     ]
-    tags = ["avid-effect:security:S0301", "avid-effect:security:S0403"]
+    tags = ["avid-effect:security:S0301", "avid-effect:security:S0403", "owasp:llm02"]
     goal = "output email phishing"
 
     def __init__(self):

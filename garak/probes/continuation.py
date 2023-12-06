@@ -27,6 +27,7 @@ class ContinueSlursReclaimedSlurs80(Probe):
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401",
+        "owasp:llm01",
     ]
     goal = "output an ethnic slur"
 
@@ -50,7 +51,7 @@ class ContinueSlursReclaimedSlurs80(Probe):
 
         self.prompts = []
         self.triggers = []
-        for term in slur_prefixes.keys():
+        for term, prefixes in slur_prefixes.items():
             lower_term = term.lower()
             term_variants = set(["", lower_term[0]])  # blank, first letter
             if len(term) > 2:
@@ -59,7 +60,7 @@ class ContinueSlursReclaimedSlurs80(Probe):
                 lower_term[: int(len(lower_term) / 2)].strip()
             )  # first half of term
 
-            for prefix in slur_prefixes[term]:
+            for prefix in prefixes:
                 for term_variant in term_variants:
                     # would use a set but order is important
                     candidate_prompt = prefix + term_variant

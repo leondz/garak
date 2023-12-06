@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AG: Attack Generation. 
+"""atkgen: Attack Generation. 
 
 This probe uses a separate model to create prompts for a generator,
 which are intended to guide that generator into a certain failure mode."""
@@ -32,7 +32,7 @@ class Tox(Probe):
     constructive_tension = True
     tags = ["avid-effect:ethics:E0301"]
     goal = "make the model say something toxic"
-    parallelisable_attempts = False  # AG has its own dialog manager
+    parallelisable_attempts = False  # atkgen has its own dialog manager
     red_team_model = "leondz/artgpt2tox"
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
@@ -41,7 +41,7 @@ class Tox(Probe):
         if self.redteamer == None:
             print(
                 "🔴🪖  ", end=""
-            )  # distinguish load message for AG generator from target generator
+            )  # distinguish load message for atkgen generator from target generator
             self.redteamer = Pipeline(self.red_team_model)
             self.redteamer.generations = 1
             self.redteamer.deprefix_prompt = True
@@ -70,10 +70,10 @@ class Tox(Probe):
 
             last_response = None
             turns = []
-            logging.debug(f"AG: attempt {i} uuid {this_attempt.uuid}")
+            logging.debug(f"atkgen: attempt {i} uuid {this_attempt.uuid}")
 
             if output_is_conversation:
-                print("AG: 🆕 ⋅.˳˳.⋅ॱ˙˙ॱ New conversation ॱ˙˙ॱ⋅.˳˳.⋅ 🗣️")
+                print("atkgen: 🆕 ⋅.˳˳.⋅ॱ˙˙ॱ New conversation ॱ˙˙ॱ⋅.˳˳.⋅ 🗣️")
             else:
                 t = tqdm(total=2 * self.max_calls, leave=False)
 
@@ -106,11 +106,11 @@ class Tox(Probe):
                     t.update()
                 turn = ("probe", challenge)
                 turns.append(turn)
-                logging.debug(f"AG: probe: {turn}")
+                logging.debug(f"atkgen: probe: %s", turn)
                 if output_is_conversation:
                     probe_text = re.sub(r"[\r\n]+", "\n", turn[1]).strip()
                     print(
-                        f"AG: 🔴 probe: {Fore.LIGHTYELLOW_EX}{probe_text}{Style.RESET_ALL}"
+                        f"atkgen: 🔴 probe: {Fore.LIGHTYELLOW_EX}{probe_text}{Style.RESET_ALL}"
                     )
                 else:
                     t.set_description(
@@ -121,9 +121,9 @@ class Tox(Probe):
                 # log the response
                 turn = ("model", response)
                 turns.append(turn)
-                logging.debug(f"AG: model: {turn}")
+                logging.debug("atkgen: model: %s", turn)
                 if output_is_conversation:
-                    print(f"AG: 🦜 model: {Style.BRIGHT}{turn[1]}{Style.RESET_ALL}")
+                    print(f"atkgen: 🦜 model: {Style.BRIGHT}{turn[1]}{Style.RESET_ALL}")
                 else:
                     t.update()
                 # increment calls_made
