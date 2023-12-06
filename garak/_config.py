@@ -24,6 +24,9 @@ run_params = "seed deprefix eval_threshold generations".split()
 plugins_params = "model_type model_name extended_detectors".split()
 
 
+loaded = False
+
+
 @dataclass
 class GarakSubConfig:
     pass
@@ -94,10 +97,11 @@ def _store_config(settings_files) -> None:
 
 
 def load_base_config() -> None:
-    global system
+    global loaded
     settings_files = [str(transient.basedir / "resources/garak.core.yaml")]
     logging.debug("Loading configs from: %s", ",".join(settings_files))
     _store_config(settings_files=settings_files)
+    loaded = True
 
 
 def load_config(
@@ -105,7 +109,7 @@ def load_config(
 ) -> None:
     # would be good to bubble up things from run_config, e.g. generator, probe(s), detector(s)
     # and then not have cli be upset when these are not given as cli params
-    global system, run, plugins
+    global loaded
 
     settings_files = [str(transient.basedir / "resources/garak.core.yaml")]
 
@@ -125,6 +129,7 @@ def load_config(
 
     logging.debug("Loading configs from: %s", ",".join(settings_files))
     _store_config(settings_files=settings_files)
+    loaded = True
 
 
 def parse_plugin_spec(spec: str, category: str) -> List[str]:
