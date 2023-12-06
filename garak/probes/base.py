@@ -66,7 +66,9 @@ class Probe:
             return attempts
         buffed_attempts = []
         for buff in _config.buffs:
-            for buffed_attempt in buff.buff(attempts):
+            for buffed_attempt in buff.buff(
+                attempts, probename=".".join(self.probename.split(".")[-2:])
+            ):
                 buffed_attempts.append(buffed_attempt)
         return buffed_attempts
 

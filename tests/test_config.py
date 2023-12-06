@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import importlib
 import json
 import pytest
 import os
@@ -9,7 +10,7 @@ import tempfile
 
 from garak import _config
 import garak.cli
-from garak.command import list_config
+
 
 site_yaml_filename = "TESTONLY.site.yaml.bak"
 
@@ -38,18 +39,22 @@ options_spec = [
     ("buff", "polymorph", "buff_spec"),
 ]
 
+import garak._config
+
 param_locs = {}
-for p in _config.system_params:
+for p in garak._config.system_params:
     param_locs[p] = "system"
-for p in _config.run_params:
+for p in garak._config.run_params:
     param_locs[p] = "run"
-for p in _config.plugins_params:
+for p in garak._config.plugins_params:
     param_locs[p] = "plugins"
 
 
 # test CLI assertions of each var
 @pytest.mark.parametrize("option", options_solo)
 def test_cli_solo_settings(option):
+    importlib.reload(_config)
+
     garak.cli.main(
         [f"--{option}", "--list_config"]
     )  # add list_config as the action so we don't actually run
@@ -59,6 +64,8 @@ def test_cli_solo_settings(option):
 
 @pytest.mark.parametrize("param", options_param)
 def test_cli_param_settings(param):
+    importlib.reload(_config)
+
     option, value = param
     garak.cli.main(
         [f"--{option}", str(value), "--list_config"]
@@ -69,6 +76,8 @@ def test_cli_param_settings(param):
 
 @pytest.mark.parametrize("param", options_spec)
 def test_cli_spec_settings(param):
+    importlib.reload(_config)
+
     option, value, configname = param
     garak.cli.main(
         [f"--{option}", str(value), "--list_config"]
@@ -78,6 +87,8 @@ def test_cli_spec_settings(param):
 
 # test a short-form CLI assertion
 def test_cli_shortform():
+    importlib.reload(_config)
+
     garak.cli.main(["-s", "444", "--list_config"])
     assert _config.run.seed == 444
     garak.cli.main(
@@ -89,6 +100,8 @@ def test_cli_shortform():
 # test that run YAML overrides core YAML
 @pytest.mark.parametrize("param", options_param)
 def test_yaml_param_settings(param):
+    importlib.reload(_config)
+
     option, value = param
     with tempfile.NamedTemporaryFile(buffering=0) as tmp:
         tmp.write(f"---\n{param_locs[option]}:\n  {option}: {value}\n".encode("utf-8"))
@@ -101,6 +114,8 @@ def test_yaml_param_settings(param):
 
 # # test that site YAML overrides core YAML # needs file staging for site yaml
 def test_site_yaml_overrides_core_yaml():
+    importlib.reload(_config)
+
     site_cfg_moved = False
     try:
         shutil.move("garak/garak.site.yaml", site_yaml_filename)
@@ -108,7 +123,7 @@ def test_site_yaml_overrides_core_yaml():
     except FileNotFoundError:
         site_cfg_moved = False
 
-    with open("garak/garak.site.yaml", "w") as f:
+    with open("garak/garak.site.yaml", "w", encoding="utf-8") as f:
         f.write("---\nrun:\n  eval_threshold: 0.777\n")
         f.flush()
         garak.cli.main(["--list_config"])
@@ -123,6 +138,8 @@ def test_site_yaml_overrides_core_yaml():
 
 # # test that run YAML overrides site YAML # needs file staging for site yaml
 def test_run_yaml_overrides_site_yaml():
+    importlib.reload(_config)
+
     site_cfg_moved = False
     try:
         shutil.move("garak/garak.site.yaml", site_yaml_filename)
@@ -130,7 +147,7 @@ def test_run_yaml_overrides_site_yaml():
     except FileNotFoundError:
         site_cfg_moved = False
 
-    with open("garak/garak.site.yaml", "w") as f:
+    with open("garak/garak.site.yaml", "w", encoding="utf-8") as f:
         f.write("---\nrun:\n  eval_threshold: 0.777\n")
         f.flush()
         garak.cli.main(["--list_config", "--eval_threshold", str(0.9001)])
@@ -145,6 +162,8 @@ def test_run_yaml_overrides_site_yaml():
 
 # test that CLI config overrides run YAML
 def test_cli_overrides_run_yaml():
+    importlib.reload(_config)
+
     orig_seed = 10101
     override_seed = 37176
     with tempfile.NamedTemporaryFile(buffering=0) as tmp:
@@ -157,6 +176,8 @@ def test_cli_overrides_run_yaml():
 
 # test probe_options YAML
 def test_probe_options_yaml(capsys):
+    importlib.reload(_config)
+
     with tempfile.NamedTemporaryFile(buffering=0) as tmp:
         tmp.write(
             """
@@ -178,6 +199,8 @@ plugins:
 
 # test generator_options YAML
 def test_generator_options_yaml(capsys):
+    importlib.reload(_config)
+
     with tempfile.NamedTemporaryFile(buffering=0) as tmp:
         tmp.write(
             "---\nplugins:\n  model_type: test.Blank\n  probe_spec: test.Blank\n  generators:\n    test.Blank:\n      gen_x: 37176\n".encode(
@@ -192,6 +215,8 @@ def test_generator_options_yaml(capsys):
 
 # can a run be launched from a run YAML?
 def test_run_from_yaml(capsys):
+    importlib.reload(_config)
+
     with tempfile.NamedTemporaryFile(buffering=0) as tmp:
         tmp.write(
             "---\nrun:\n  generations: 10\n\nplugins:\n  model_type: test.Blank\n  probe_spec: test.Blank\n".encode(
@@ -216,6 +241,8 @@ def test_run_from_yaml(capsys):
 
 # cli generator options file loads
 def test_cli_generator_options_file():
+    importlib.reload(_config)
+
     # write an options file
     with tempfile.NamedTemporaryFile(mode="w+") as tmp:
         json.dump({"test.Blank": {"this_is_a": "generator"}}, tmp)
@@ -231,6 +258,8 @@ def test_cli_generator_options_file():
 
 # cli generator options file loads
 def test_cli_probe_options_file():
+    importlib.reload(_config)
+
     # write an options file
     with tempfile.NamedTemporaryFile(mode="w+") as tmp:
         json.dump({"test.Blank": {"probes_in_this_config": 1}}, tmp)
@@ -246,6 +275,8 @@ def test_cli_probe_options_file():
 
 # cli probe config file overrides yaml probe config (using combine into)
 def test_cli_probe_options_overrides_yaml_probe_options():
+    importlib.reload(_config)
+
     # write an options file
     with tempfile.NamedTemporaryFile(mode="w+") as probe_json_file:
         json.dump({"test.Blank": {"goal": "taken from CLI JSON"}}, probe_json_file)
@@ -279,6 +310,8 @@ plugins:
 
 # cli should override yaml options
 def test_cli_generator_options_overrides_yaml_probe_options():
+    importlib.reload(_config)
+
     cli_generations_count = 9001
     with tempfile.NamedTemporaryFile(buffering=0) as generator_yaml_file:
         generator_yaml_file.write(
@@ -305,6 +338,8 @@ run:
 
 # check that probe picks up yaml config items
 def test_blank_probe_instance_loads_yaml_config():
+    importlib.reload(_config)
+
     probe_name = "test.Blank"
     revised_goal = "TEST GOAL make the model forget what to output"
     with tempfile.NamedTemporaryFile(buffering=0) as tmp:
@@ -321,6 +356,8 @@ def test_blank_probe_instance_loads_yaml_config():
 
 # check that probe picks up cli config items
 def test_blank_probe_instance_loads_cli_config():
+    importlib.reload(_config)
+
     probe_name = "test.Blank"
     revised_goal = "TEST GOAL make the model forget what to output"
     args = [
@@ -336,6 +373,8 @@ def test_blank_probe_instance_loads_cli_config():
 
 # check that generator picks up yaml config items
 def test_blank_generator_instance_loads_yaml_config():
+    importlib.reload(_config)
+
     generator_name = "test.Blank"
     revised_temp = 0.9001
     with tempfile.NamedTemporaryFile(buffering=0) as tmp:
@@ -354,6 +393,8 @@ def test_blank_generator_instance_loads_yaml_config():
 
 # check that generator picks up cli config items
 def test_blank_generator_instance_loads_cli_config():
+    importlib.reload(_config)
+
     generator_name = "test.Repeat"
     revised_temp = 0.9001
     args = [
@@ -377,7 +418,7 @@ def test_probespec_loading():
     assert _config.parse_plugin_spec("Auto", "probes") == []
     assert _config.parse_plugin_spec("NONE", "probes") == []
     assert _config.parse_plugin_spec("", "generators") == []
-    assert _config.parse_plugin_spec("ag", "probes") == ["probes.ag.Tox"]
+    assert _config.parse_plugin_spec("atkgen", "probes") == ["probes.atkgen.Tox"]
     assert _config.parse_plugin_spec(
         "long.test.class,another.long.test.class", "probes"
     ) == ["probes.long.test.class", "probes.another.long.test.class"]

@@ -15,6 +15,7 @@ import logging
 from typing import List
 
 from colorama import Fore, Style
+import tqdm
 
 import garak.attempt
 
@@ -34,8 +35,9 @@ class Buff:
 
     def __init__(self) -> None:
         module = self.__class__.__module__.replace("garak.buffs.", "")
+        self.fullname = f"{module}.{self.__class__.__name__}"
         print(
-            f"🦾 loading {Style.BRIGHT}{Fore.LIGHTGREEN_EX}buff: {Style.RESET_ALL}{module}.{self.__class__.__name__}"
+            f"🦾 loading {Style.BRIGHT}{Fore.LIGHTGREEN_EX}buff: {Style.RESET_ALL}{self.fullname}"
         )
         logging.info(f"buff init: {self}")
 
@@ -71,9 +73,13 @@ class Buff:
         yield attempt
 
     def buff(
-        self, source_attempts: List[garak.attempt.Attempt]
+        self, source_attempts: List[garak.attempt.Attempt], probename=""
     ) -> Iterable[garak.attempt.Attempt]:
-        for source_attempt in source_attempts:
+        for source_attempt in tqdm.tqdm(
+            source_attempts,
+            desc=f"📥 Buffing probe: {probename}/{self.fullname}",
+            leave=False,
+        ):
             # create one or more untransformed new attempts
             new_attempts = []
             new_attempts.append(

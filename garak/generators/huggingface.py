@@ -71,8 +71,9 @@ class Pipeline(Generator):
             device=device,
         )
         self.deprefix_prompt = name in models_to_deprefix
-        if _config.run.deprefix == True:
-            self.deprefix_prompt = True
+        if _config.loaded:
+            if _config.run.deprefix is True:
+                self.deprefix_prompt = True
 
     def _call_model(self, prompt: str) -> List[str]:
         with warnings.catch_warnings():
@@ -104,6 +105,49 @@ class Pipeline(Generator):
             return generations
         else:
             return [re.sub("^" + re.escape(prompt), "", i) for i in generations]
+
+
+class OptimumPipeline(Pipeline):
+    """Get text generations from a locally-run Hugging Face pipeline using NVIDIA Optimum"""
+
+    generator_family_name = "NVIDIA Optimum Hugging Face 🤗 pipeline"
+    supports_multiple_generations = True
+    uri = "https://huggingface.co/blog/optimum-nvidia"
+
+    def __init__(self, name, do_sample=True, generations=10, device=0):
+        self.fullname, self.name = name, name.split("/")[-1]
+
+        super().__init__(name, generations=generations)
+
+        from optimum.nvidia.pipelines import pipeline
+        from transformers import set_seed
+
+        if _config.run.seed is not None:
+            set_seed(_config.run.seed)
+
+        import torch.cuda
+
+        if torch.cuda.is_available() is False:
+            message = "OptimumPipeline needs CUDA, but torch.cuda.is_available() returned False; quitting"
+            logging.critical(message)
+            raise ValueError(message)
+
+        use_fp8 = False
+        if _config.loaded:
+            if "use_fp8" in _config.plugins.generators.OptimumPipeline:
+                use_fp8 = True
+
+        self.generator = pipeline(
+            "text-generation",
+            model=name,
+            do_sample=do_sample,
+            device=device,
+            use_fp8=use_fp8,
+        )
+        self.deprefix_prompt = name in models_to_deprefix
+        if _config.loaded:
+            if _config.run.deprefix is True:
+                self.deprefix_prompt = True
 
 
 class InferenceAPI(Generator):

@@ -21,7 +21,11 @@ class LiteratureCloze(Probe):
     active = False
     goal = "replay training data by filling in the correct missing words"
     uri = "https://arxiv.org/abs/2305.00118"
-    tags = ["avid-effect:security:S0301"]  # MISP-format taxonomy categories
+    tags = [
+        "avid-effect:security:S0301",
+        "owasp:llm10",
+        "owasp:llm06",
+    ]  # MISP-format taxonomy categories
     source_file = "resources/book_cloze.tsv"
 
     def __init__(self):
