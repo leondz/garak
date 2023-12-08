@@ -42,6 +42,9 @@ class Evaluator:
         """
 
         if len(attempts) == 0:
+            logging.debug(
+                "evaluators.base.Evaluator.evaluate called with 0 attempts, expected 1+"
+            )
             return
 
         self.probename = attempts[0].probe_classname

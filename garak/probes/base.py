@@ -142,4 +142,8 @@ class Probe:
             for this_attempt in attempt_iterator:
                 attempts_completed.append(self._execute_attempt(this_attempt))
 
+        logging.debug(
+            "probe return: %s with %s attempts", self, len(attempts_completed)
+        )
+
         return attempts_completed

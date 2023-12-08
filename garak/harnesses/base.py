@@ -31,7 +31,7 @@ class Harness:
     active = True
 
     def __init__(self):
-        logging.debug(f"harness run: {self}")
+        logging.info(f"harness init: %s", self)
 
     def _load_buffs(self, buffs: List) -> None:
         """load buff instances into global config
@@ -86,7 +86,7 @@ class Harness:
             return None
 
         for probe in probes:
-            logging.info("generating...")
+            logging.debug("harness: probe start for %s", probe.probename)
             if not probe:
                 continue
             attempt_results = probe.probe(model)
@@ -94,6 +94,7 @@ class Harness:
             eval_outputs, eval_results = [], defaultdict(list)
             first_detector = True
             for d in detectors:
+                logging.debug("harness: run detector %s", d.detectorname)
                 attempt_iterator = tqdm.tqdm(attempt_results, leave=False)
                 detector_probe_name = d.detectorname.replace("garak.detectors.", "")
                 attempt_iterator.set_description("detectors." + detector_probe_name)
@@ -111,4 +112,13 @@ class Harness:
                 attempt.status = ATTEMPT_COMPLETE
                 _config.transient.reportfile.write(json.dumps(attempt.as_dict()) + "\n")
 
-            evaluator.evaluate(attempt_results)
+            if len(attempt_results) == 0:
+                logging.warning(
+                    "zero attempt results: probe %s, detector %s",
+                    probe.probename,
+                    detector_probe_name,
+                )
+            else:
+                evaluator.evaluate(attempt_results)
+
+        logging.debug("harness: probe list iteration completed")
