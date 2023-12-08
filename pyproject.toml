@@ -52,8 +52,7 @@ dependencies = [
   "octoai-sdk",
   "cmd2",
   "torch>=2.1.0",
-  "sentencepiece>=0.1.99",
-  "pydantic>=2.0"
+  "sentencepiece>=0.1.99"
 ]
 
 [project.urls]
