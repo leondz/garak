@@ -116,7 +116,6 @@ def autodan_ga(
         mutation_rate=mutation,
         if_api=if_api,
     )
-
     # Combine elites with the mutated offspring
     next_generation = elites + mutated_offspring
 
@@ -201,7 +200,6 @@ def roulette_wheel_selection(
     selected_indices = np.random.choice(
         len(data_list), size=num_selected, p=selection_probs, replace=True
     )
-
     selected_data = [data_list[i] for i in selected_indices]
     return selected_data
 

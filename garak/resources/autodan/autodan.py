@@ -210,7 +210,7 @@ def autodan_generate(
                 logger.info(
                     f"Found a successful AutoDAN prompt!\n{adv_prefix}\nAppending to {out_path}."
                 )
-                with open(out_path, "w+") as f:
+                with open(out_path, "a") as f:
                     f.write(adv_prefix)
                 break
 
