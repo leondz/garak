@@ -1,6 +1,6 @@
 sphinx
 sphinx-rtd-theme
 colorama
-yaml
+pyyaml
 tqdm
 pandas
