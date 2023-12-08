@@ -92,6 +92,7 @@ class OpenAIGenerator(Generator):
             openai.error.ServiceUnavailableError,
             openai.error.APIError,
             openai.error.Timeout,
+            openai.error.APIConnectionError,
         ),
         max_value=70,
     )
