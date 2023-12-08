@@ -10,11 +10,11 @@ import jinja2
 templateLoader = jinja2.FileSystemLoader(searchpath=".")
 templateEnv = jinja2.Environment(loader=templateLoader)
 
-header_template = templateEnv.get_template("analyse/templates/digest_header.jinja")
-footer_template = templateEnv.get_template("analyse/templates/digest_footer.jinja")
-module_template = templateEnv.get_template("analyse/templates/digest_module.jinja")
-probe_template = templateEnv.get_template("analyse/templates/digest_probe.jinja")
-detector_template = templateEnv.get_template("analyse/templates/digest_detector.jinja")
+header_template = templateEnv.get_template("analyze/templates/digest_header.jinja")
+footer_template = templateEnv.get_template("analyze/templates/digest_footer.jinja")
+module_template = templateEnv.get_template("analyze/templates/digest_module.jinja")
+probe_template = templateEnv.get_template("analyze/templates/digest_probe.jinja")
+detector_template = templateEnv.get_template("analyze/templates/digest_detector.jinja")
 
 digest_content = header_template.render()
 

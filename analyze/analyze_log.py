@@ -10,7 +10,7 @@ completed_attempts = {}
 
 current_probe_classname = None
 
-with open(sys.argv[1], "r") as reportfile:
+with open(sys.argv[1], "r", encoding="utf-8") as reportfile:
     for i, line in enumerate(reportfile):
         line = line.strip()
         if not line:
