@@ -1,2 +1,6 @@
 sphinx
 sphinx-rtd-theme
+colorama
+yaml
+tqdm
+pandas
