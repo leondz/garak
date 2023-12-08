@@ -15,8 +15,10 @@ class NeMoGuardrails(Generator):
         try:
             from nemoguardrails import RailsConfig, LLMRails
             from nemoguardrails.logging.verbose import set_verbose
-        except ImportError:
-            raise Exception("You must first install NeMo Guardrails using `pip install nemoguardrails`.")
+        except ImportError as e:
+            raise Exception(
+                "You must first install NeMo Guardrails using `pip install nemoguardrails`."
+            ) from e
 
         self.name = name
         self.fullname = f"Guardrails {self.name}"
@@ -28,13 +30,14 @@ class NeMoGuardrails(Generator):
         super().__init__(name, generations=generations)
 
     def _call_model(self, prompt: str) -> List[str]:
-        print(f"{prompt}")
+        # print(f"{prompt}")
 
         result = self.rails.generate(prompt)
-        print(result)
-        print("--")
+        # print(result)
+        # print(repr(result))
+        # print("--")
 
-        return [result]
+        return result
 
 
 default_class = "NeMoGuardrails"
