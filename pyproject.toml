@@ -4,15 +4,16 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "garak"
-version = "0.9.0.8.post1"
+version = "0.9.0.9"
 authors = [
-  { name= "Leon Derczynski", email="leonderczynski@gmail.com" },
-  { name= "Subho Majumdar" },
-  { name= "nv052193" },
-  { name= "Mads Kongsbak" },
-  { name= "Erick Galinkin" },
-  { name= "Tianhao Li" },
-  { name= "Phyllis Poh" },
+  { name = "Leon Derczynski", email="leonderczynski@gmail.com" },
+  { name = "Subho Majumdar" },
+  { name = "nv052193" },
+  { name = "Mads Kongsbak" },
+  { name = "Erick Galinkin" },
+  { name = "Tianhao Li" },
+  { name = "Phyllis Poh" },
+  { name = "Razvan Dinu" },
 ]
 license = { file = "LICENSE" }
 description = "LLM vulnerability scanner"
