@@ -13,3 +13,5 @@ recursive-include garak *.json
 recursive-include garak *.jsonl
 recursive-include garak *.py
 recursive-include garak *.txt
+recursive-include garak *.yaml
+recursive-include garak *.pth
