@@ -1,7 +1,7 @@
-garak.probes.art
-================
+garak.probes.atkgen
+===================
 
-.. automodule:: garak.probes.art
+.. automodule:: garak.probes.atkgen
    :members:
    :undoc-members:
    :show-inheritance:   

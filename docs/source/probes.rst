@@ -8,11 +8,12 @@ for a specific vulnerability or failure mode.
    :maxdepth: 2
 
    garak.probes
-   garak.probes.art
+   garak.probes.atkgen
    garak.probes.base
    garak.probes.continuation
    garak.probes.dan
    garak.probes.encoding
+   garak.probes.gcg
    garak.probes.glitch
    garak.probes.goodside
    garak.probes.knownbadsignatures
