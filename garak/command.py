@@ -29,7 +29,7 @@ def start_logging():
     logging.info("invoked")
 
 
-def start_run(args):
+def start_run():
     import logging
     import uuid
 
@@ -49,8 +49,34 @@ def start_run(args):
     _config.transient.reportfile = open(
         _config.transient.report_filename, "w", buffering=1, encoding="utf-8"
     )
-    args.__dict__.update({"entry_type": "start_run args config"})
-    _config.transient.reportfile.write(json.dumps(args.__dict__) + "\n")
+    setup_dict = {"entry_type": "start_run setup"}
+    for k, v in _config.__dict__.items():
+        if k[:2] != "__" and type(v) in (
+            str,
+            int,
+            bool,
+            dict,
+            tuple,
+            list,
+            set,
+            type(None),
+        ):
+            setup_dict[f"_config.{k}"] = v
+    for subset in "system transient run plugins".split():
+        for k, v in getattr(_config, subset).__dict__.items():
+            if k[:2] != "__" and type(v) in (
+                str,
+                int,
+                bool,
+                dict,
+                tuple,
+                list,
+                set,
+                type(None),
+            ):
+                setup_dict[f"{subset}.{k}"] = v
+
+    _config.transient.reportfile.write(json.dumps(setup_dict) + "\n")
     _config.transient.reportfile.write(
         json.dumps(
             {

@@ -305,7 +305,7 @@ def main(arguments=[]) -> None:
     import garak.evaluators
 
     if not args.version and not args.report:
-        command.start_run(args)
+        command.start_run()
 
     # do a special thing for CLIprobe options, generator options
     if "probe_options" in args or "probe_option_file" in args:
