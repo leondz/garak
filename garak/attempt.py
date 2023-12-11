@@ -41,11 +41,11 @@ class Attempt:
         status=ATTEMPT_NEW,
         prompt=None,
         probe_classname=None,
-        probe_params={},
-        targets=[],
-        outputs=[],
-        notes={},
-        detector_results={},
+        probe_params=None,
+        targets=None,
+        outputs=None,
+        notes=None,
+        detector_results=None,
         goal=None,
         seq=-1,
     ) -> None:
@@ -53,11 +53,26 @@ class Attempt:
         self.status = status
         self.prompt = prompt
         self.probe_classname = probe_classname
-        self.probe_params = probe_params
-        self.targets = targets
-        self.outputs = outputs
-        self.notes = notes
-        self.detector_results = detector_results
+        if probe_params is None:
+            self.probe_params = {}
+        else:
+            self.probe_params = probe_params
+        if targets is None:
+            self.targets = []
+        else:
+            self.targets = targets
+        if outputs is None:
+            self.outputs = []
+        else:
+            self.outputs = outputs
+        if notes is None:
+            self.notes = {}
+        else:
+            self.notes = notes
+        if detector_results is None:
+            self.detector_results = {}
+        else:
+            self.detector_results = detector_results
         self.goal = goal
         self.seq = seq
 
