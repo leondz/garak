@@ -5,6 +5,8 @@
 
 """NeMo Guardrails generator."""
 
+from contextlib import redirect_stderr
+import io
 from typing import List
 
 from garak.generators.base import Generator
@@ -21,7 +23,7 @@ class NeMoGuardrails(Generator):
             from nemoguardrails import RailsConfig, LLMRails
             from nemoguardrails.logging.verbose import set_verbose
         except ImportError as e:
-            raise Exception(
+            raise NameError(
                 "You must first install NeMo Guardrails using `pip install nemoguardrails`."
             ) from e
 
@@ -29,18 +31,15 @@ class NeMoGuardrails(Generator):
         self.fullname = f"Guardrails {self.name}"
 
         # Currently, we use the model_name as the path to the config
-        config = RailsConfig.from_path(self.name)
-        self.rails = LLMRails(config=config)
+        with redirect_stderr(io.StringIO()) as f:  # quieten the tqdm
+            config = RailsConfig.from_path(self.name)
+            self.rails = LLMRails(config=config)
 
         super().__init__(name, generations=generations)
 
     def _call_model(self, prompt: str) -> List[str]:
-        # print(f"{prompt}")
-
-        result = self.rails.generate(prompt)
-        # print(result)
-        # print(repr(result))
-        # print("--")
+        with redirect_stderr(io.StringIO()) as f:  # quieten the tqdm
+            result = self.rails.generate(prompt)
 
         return result
 
