@@ -9,7 +9,6 @@ from garak.resources.autodan.genetic import (
     apply_gpt_mutation,
 )
 from garak.resources.autodan.model_utils import (
-    AutoDanPrefixManager,
     load_conversation_template,
     check_for_attack_success,
 )
@@ -103,21 +102,21 @@ test_prefixes = [
 
 
 def autodan_generate(
-    generator: Generator,
-    prompt: str,
-    target: str,
-    num_steps: int = 100,
-    batch_size: int = 64,
-    num_elites: int = 20,
-    crossover_rate: float = 0.5,
-    num_points: int = 5,
-    mutation_rate: float = 0.1,
-    hierarchical: bool = False,
-    out_path: str = f"{Path(__file__).parents[0]}/data/autodan_prompts.txt",
-    init_prompt_path: str = f"{Path(__file__).parents[0]}/data/autodan_init.txt",
-    reference_path: str = f"{Path(__file__).parents[0]}/data/prompt_group.pth",
-    low_memory: bool = False,
-    random_seed: int = None,
+        generator: Generator,
+        prompt: str,
+        target: str,
+        num_steps: int = 100,
+        batch_size: int = 8,
+        num_elites: int = 2,
+        crossover_rate: float = 0.5,
+        num_points: int = 5,
+        mutation_rate: float = 0.1,
+        hierarchical: bool = False,
+        out_path: str = f"{Path(__file__).parents[0]}/data/autodan_prompts.txt",
+        init_prompt_path: str = f"{Path(__file__).parents[0]}/data/autodan_init.txt",
+        reference_path: str = f"{Path(__file__).parents[0]}/data/prompt_group.pth",
+        low_memory: bool = False,
+        random_seed: int = None
 ):
     """
     Execute base AutoDAN generation
@@ -151,20 +150,12 @@ def autodan_generate(
         torch.manual_seed(random_seed)
         torch.cuda.manual_seed_all(random_seed)
 
-    device = generator.device
 
-    adv_string_init = open(init_prompt_path, "r").readlines()[0]
+    adv_string_init = open(init_prompt_path, 'r').readlines()[0]
 
     conv_template = load_conversation_template(generator.name)
     crit = nn.CrossEntropyLoss(reduction="mean")
 
-    prefix_manager = AutoDanPrefixManager(
-        generator=generator,
-        conv_template=conv_template,
-        instruction=prompt,
-        target=target,
-        adv_string=adv_string_init,
-    )
 
     # Feel like this could just be text instead of storing it as tensors.
     if os.path.exists(reference_path):
@@ -182,13 +173,12 @@ def autodan_generate(
             "ModelKeeper", developer_dict.get(conv_template.name, "Moderation")
         )
         reference[o] = reference[o] + " [PROMPT]:"
-    ################################################################################
 
     new_adv_prefixes = reference[:batch_size]
     if hierarchical:
         word_dict = dict()
 
-    for j in tqdm(range(num_steps), position=0, leave=True):
+    for j in tqdm(range(num_steps), leave=True):
         with torch.no_grad():
             losses = get_score_autodan(
                 generator=generator,
@@ -207,11 +197,9 @@ def autodan_generate(
             adv_prefix = best_new_adv_prefix
             success, gen_str = check_for_attack_success(adv_prefix, test_prefixes)
             if success:
-                logger.info(
-                    f"Found a successful AutoDAN prompt!\n{adv_prefix}\nAppending to {out_path}."
-                )
+                logger.info(f"Found a successful AutoDAN prompt!\n{adv_prefix}\nAppending to {out_path}.")
                 with open(out_path, "a") as f:
-                    f.write(adv_prefix)
+                    f.write(f"{adv_prefix}\n")
                 break
 
             if hierarchical:
@@ -239,5 +227,6 @@ def autodan_generate(
             gc.collect()
             torch.cuda.empty_cache()
 
-    logger.info(f"Ran through {num_steps} iterations and found no successful prompts")
-    print(f"Ran through {num_steps} iterations and found no successful prompts")
+    if not success:
+        logger.info(f"Ran through {num_steps} iterations and found no successful prompts")
+        print(f"Ran through {num_steps} iterations and found no successful prompts")

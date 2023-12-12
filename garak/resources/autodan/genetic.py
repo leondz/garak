@@ -121,7 +121,7 @@ def autodan_ga(
 
     assert (
         len(next_generation) == batch_size
-    ), "Generated offspring did not match batch size."
+    ), f"Generated offspring did not match batch size. Expected {batch_size}. Got {len(next_generation)}"
     return next_generation
 
 
@@ -261,6 +261,9 @@ def crossover(str1: str, str2: str, num_points: int) -> Tuple[str, str]:
     sentences2 = [s for s in re.split("(?<=[.!?])\s+", str2) if s]
 
     max_swaps = min(len(sentences1), len(sentences2)) - 1
+    # Catch rare case where max_swaps is negative
+    if not max_swaps >= 0:
+        max_swaps = 0
     num_swaps = min(num_points, max_swaps)
 
     swap_indices = sorted(random.sample(range(1, max_swaps), num_swaps))
