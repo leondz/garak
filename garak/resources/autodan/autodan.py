@@ -2,8 +2,16 @@ import gc
 import numpy as np
 import torch
 import torch.nn as nn
-from garak.resources.autodan.genetic import get_score_autodan, autodan_ga, autodan_hga, apply_gpt_mutation
-from garak.resources.autodan.model_utils import load_conversation_template, check_for_attack_success
+from garak.resources.autodan.genetic import (
+    get_score_autodan,
+    autodan_ga,
+    autodan_hga,
+    apply_gpt_mutation,
+)
+from garak.resources.autodan.model_utils import (
+    load_conversation_template,
+    check_for_attack_success,
+)
 import argparse
 import os
 from logging import getLogger
@@ -93,20 +101,23 @@ test_prefixes = [
 ]
 
 
-def autodan_generate(generator: Generator,
-                     prompt: str,
-                     target: str,
-                     num_steps: int = 100,
-                     batch_size: int = 8,
-                     num_elites: int = 2,
-                     crossover_rate: float = 0.5,
-                     num_points: int = 5,
-                     mutation_rate: float = 0.1,
-                     hierarchical: bool = False,
-                     out_path: str = f"{Path(__file__).parents[0]}/data/autodan_prompts.txt",
-                     init_prompt_path: str = f"{Path(__file__).parents[0]}/data/autodan_init.txt",
-                     reference_path: str = f"{Path(__file__).parents[0]}/data/prompt_group.pth",
-                     low_memory: bool = False, random_seed: int = None):
+def autodan_generate(
+        generator: Generator,
+        prompt: str,
+        target: str,
+        num_steps: int = 100,
+        batch_size: int = 8,
+        num_elites: int = 2,
+        crossover_rate: float = 0.5,
+        num_points: int = 5,
+        mutation_rate: float = 0.1,
+        hierarchical: bool = False,
+        out_path: str = f"{Path(__file__).parents[0]}/data/autodan_prompts.txt",
+        init_prompt_path: str = f"{Path(__file__).parents[0]}/data/autodan_init.txt",
+        reference_path: str = f"{Path(__file__).parents[0]}/data/prompt_group.pth",
+        low_memory: bool = False,
+        random_seed: int = None
+):
     """
     Execute base AutoDAN generation
     Args:
