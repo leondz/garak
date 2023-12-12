@@ -32,12 +32,12 @@ def map_score(score):
     return 4
 
 
-filename = sys.argv[1]
+report_path = sys.argv[1]
 
 
 evals = []
 setup = defaultdict(str)
-with open(sys.argv[1], "r", encoding="utf-8") as reportfile:
+with open(report_path, "r", encoding="utf-8") as reportfile:
     for line in reportfile:
         record = json.loads(line.strip())
         if record["entry_type"] == "eval":
@@ -52,7 +52,7 @@ with open(sys.argv[1], "r", encoding="utf-8") as reportfile:
 
 digest_content = header_template.render(
     {
-        "reportfile": filename,
+        "reportfile": report_path.split("/")[-1],
         "garak_version": garak_version,
         "start_time": start_time,
         "run_uuid": run_uuid,

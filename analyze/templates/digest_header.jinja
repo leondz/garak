@@ -50,7 +50,8 @@ h2,h3,h4 {padding-top: 10px; padding-bottom: 10px}
 <body>
 
 <h1>garak run: {{reportfile}}</h1>
-<div style="border:solid black 1px; padding: 5px; margin: 5px">
+<button class="accordion">⚙️ view config</button>
+<div style="border:solid black 1px; padding: 5px; margin: 5px" class="panel">
 <h2>config</h2>
 <p>filename: {{reportfile}}</p>
 <p>garak version: {{garak_version}}</p>
@@ -59,4 +60,5 @@ h2,h3,h4 {padding-top: 10px; padding-bottom: 10px}
 <p>run config: {{setup}}</p>
 <p>probe spec: {{probespec}}</p>
 </div>
+
 <h2>results</h2>
