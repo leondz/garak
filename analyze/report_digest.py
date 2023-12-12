@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Prints a report given a garak report.jsonl"""
 
+from collections import defaultdict
 import json
 import sqlite3
 import sys
@@ -15,8 +16,7 @@ footer_template = templateEnv.get_template("analyze/templates/digest_footer.jinj
 module_template = templateEnv.get_template("analyze/templates/digest_module.jinja")
 probe_template = templateEnv.get_template("analyze/templates/digest_probe.jinja")
 detector_template = templateEnv.get_template("analyze/templates/digest_detector.jinja")
-
-digest_content = header_template.render()
+end_module = templateEnv.get_template("analyze/templates/end_module.jinja")
 
 
 def map_score(score):
@@ -32,12 +32,36 @@ def map_score(score):
     return 4
 
 
+report_path = sys.argv[1]
+
+
 evals = []
-with open(sys.argv[1], "r") as reportfile:
+setup = defaultdict(str)
+with open(report_path, "r", encoding="utf-8") as reportfile:
     for line in reportfile:
         record = json.loads(line.strip())
         if record["entry_type"] == "eval":
             evals.append(record)
+        elif record["entry_type"] == "init":
+            garak_version = record["garak_version"]
+            start_time = record["start_time"]
+            run_uuid = record["run"]
+        elif record["entry_type"] == "start_run setup":
+            setup = record
+
+
+digest_content = header_template.render(
+    {
+        "reportfile": report_path.split("/")[-1],
+        "garak_version": garak_version,
+        "start_time": start_time,
+        "run_uuid": run_uuid,
+        "setup": repr(setup),
+        "probespec": setup["plugins.probe_spec"],
+        "model_type": setup["plugins.model_type"],
+        "model_name": setup["plugins.model_name"],
+    }
+)
 
 conn = sqlite3.connect(":memory:")
 cursor = conn.cursor()
@@ -118,6 +142,8 @@ for probe_module in module_names:
                         }
                     )
                     # print(f"\t\tdetector: {detector} - {score:.1f}%")
+
+    digest_content += end_module.render()
 
 conn.close()
 
