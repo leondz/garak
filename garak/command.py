@@ -5,6 +5,7 @@
 
 """ Definitions of commands and actions that can be run in the garak toolkit"""
 
+from ast import Pass
 import logging
 import json
 
@@ -112,7 +113,11 @@ def end_run():
 
     timetaken = (datetime.datetime.now() - _config.transient.starttime).total_seconds()
 
-    msg = f"garak done: complete in {timetaken:.2f}s"
+    digest_filename = _config.transient.report_filename.replace(".jsonl", ".html")
+    print(f"📜 writing HTML report summary to {digest_filename}")
+    write_report_digest(_config.transient.report_filename, digest_filename)
+
+    msg = f"garak run complete in {timetaken:.2f}s"
     print(f"✔️  {msg}")
     logging.info(msg)
 
@@ -232,3 +237,11 @@ def list_config():
     for section in "system transient run plugins".split():
         print(f"{section}:")
         _enumerate_obj_values(getattr(_config, section))
+
+
+def write_report_digest(report_filename, digest_filename):
+    from garak.analyze import report_digest
+
+    digest = report_digest.compile_digest(report_filename)
+    with open(digest_filename, "w", encoding="utf-8") as f:
+        f.write(digest)
