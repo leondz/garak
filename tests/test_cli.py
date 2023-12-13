@@ -50,11 +50,11 @@ def test_run_all_probes(capsys):
     cli.main(["-m", "test", "-p", "all", "-d", "always.Pass", "-g", "1"])
     result = capsys.readouterr()
     last_line = result.out.strip().split("\n")[-1]
-    assert re.match("^✔️  garak done: complete in [0-9]+\\.[0-9]+s$", last_line)
+    assert re.match("^✔️  garak run complete in [0-9]+\\.[0-9]+s$", last_line)
 
 
 def test_run_all_detectors(capsys):
     cli.main(["-m", "test", "-p", "blank.BlankPrompt", "-d", "all", "-g", "1"])
     result = capsys.readouterr()
     last_line = result.out.strip().split("\n")[-1]
-    assert re.match("^✔️  garak done: complete in [0-9]+\\.[0-9]+s$", last_line)
+    assert re.match("^✔️  garak run complete in [0-9]+\\.[0-9]+s$", last_line)
