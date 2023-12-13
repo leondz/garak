@@ -102,21 +102,21 @@ test_prefixes = [
 
 
 def autodan_generate(
-        generator: Generator,
-        prompt: str,
-        target: str,
-        num_steps: int = 100,
-        batch_size: int = 8,
-        num_elites: int = 2,
-        crossover_rate: float = 0.5,
-        num_points: int = 5,
-        mutation_rate: float = 0.1,
-        hierarchical: bool = False,
-        out_path: str = f"{Path(__file__).parents[0]}/data/autodan_prompts.txt",
-        init_prompt_path: str = f"{Path(__file__).parents[0]}/data/autodan_init.txt",
-        reference_path: str = f"{Path(__file__).parents[0]}/data/prompt_group.pth",
-        low_memory: bool = False,
-        random_seed: int = None
+    generator: Generator,
+    prompt: str,
+    target: str,
+    num_steps: int = 100,
+    batch_size: int = 8,
+    num_elites: int = 2,
+    crossover_rate: float = 0.5,
+    num_points: int = 5,
+    mutation_rate: float = 0.1,
+    hierarchical: bool = False,
+    out_path: str = f"{Path(__file__).parents[0]}/data/autodan_prompts.txt",
+    init_prompt_path: str = f"{Path(__file__).parents[0]}/data/autodan_init.txt",
+    reference_path: str = f"{Path(__file__).parents[0]}/data/prompt_group.pth",
+    low_memory: bool = False,
+    random_seed: int = None,
 ):
     """
     Execute base AutoDAN generation
@@ -150,12 +150,10 @@ def autodan_generate(
         torch.manual_seed(random_seed)
         torch.cuda.manual_seed_all(random_seed)
 
-
-    adv_string_init = open(init_prompt_path, 'r').readlines()[0]
+    adv_string_init = open(init_prompt_path, "r").readlines()[0]
 
     conv_template = load_conversation_template(generator.name)
     crit = nn.CrossEntropyLoss(reduction="mean")
-
 
     # Feel like this could just be text instead of storing it as tensors.
     if os.path.exists(reference_path):
@@ -197,7 +195,9 @@ def autodan_generate(
             adv_prefix = best_new_adv_prefix
             success, gen_str = check_for_attack_success(adv_prefix, test_prefixes)
             if success:
-                logger.info(f"Found a successful AutoDAN prompt!\n{adv_prefix}\nAppending to {out_path}.")
+                logger.info(
+                    f"Found a successful AutoDAN prompt!\n{adv_prefix}\nAppending to {out_path}."
+                )
                 with open(out_path, "a") as f:
                     f.write(f"{adv_prefix}\n")
                 break
@@ -228,5 +228,7 @@ def autodan_generate(
             torch.cuda.empty_cache()
 
     if not success:
-        logger.info(f"Ran through {num_steps} iterations and found no successful prompts")
+        logger.info(
+            f"Ran through {num_steps} iterations and found no successful prompts"
+        )
         print(f"Ran through {num_steps} iterations and found no successful prompts")

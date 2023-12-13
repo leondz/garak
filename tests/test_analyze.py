@@ -20,7 +20,7 @@ def garak_tiny_run() -> None:
 
 def test_analyze_log_runs():
     result = subprocess.run(
-        ["python3", "analyze/analyze_log.py", temp_prefix + ".report.jsonl"],
+        ["python3", "garak/analyze/analyze_log.py", temp_prefix + ".report.jsonl"],
         check=True,
     )
     assert result.returncode == 0
@@ -28,7 +28,7 @@ def test_analyze_log_runs():
 
 def test_report_digest_runs():
     result = subprocess.run(
-        ["python3", "analyze/report_digest.py", temp_prefix + ".report.jsonl"],
+        ["python3", "garak/analyze/report_digest.py", temp_prefix + ".report.jsonl"],
         check=True,
     )
     assert result.returncode == 0

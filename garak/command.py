@@ -5,6 +5,7 @@
 
 """ Definitions of commands and actions that can be run in the garak toolkit"""
 
+from ast import Pass
 import logging
 import json
 
@@ -31,6 +32,7 @@ def start_logging():
 
 def start_run():
     import logging
+    import os
     import uuid
 
     from garak import _config
@@ -39,9 +41,15 @@ def start_run():
     # print("ASSIGN UUID", args)
     _config.transient.run_id = str(uuid.uuid4())  # uuid1 is safe but leaks host info
     if not _config.system.report_prefix:
-        _config.transient.report_filename = (
-            f"garak.{_config.transient.run_id}.report.jsonl"
-        )
+        if not os.path.isdir(_config.transient.report_dir):
+            try:
+                os.mkdir(_config.transient.report_dir)
+            except PermissionError as e:
+                raise PermissionError(
+                    "Can't create logging directory %s, quitting",
+                    _config.transient.report_dir,
+                ) from e
+        _config.transient.report_filename = f"{_config.transient.report_dir}/garak.{_config.transient.run_id}.report.jsonl"
     else:
         _config.transient.report_filename = (
             _config.system.report_prefix + ".report.jsonl"
@@ -105,7 +113,14 @@ def end_run():
 
     timetaken = (datetime.datetime.now() - _config.transient.starttime).total_seconds()
 
-    msg = f"garak done: complete in {timetaken:.2f}s"
+    digest_filename = _config.transient.report_filename.replace(".jsonl", ".html")
+    print(f"📜 report html summary being written to {digest_filename}")
+    try:
+        write_report_digest(_config.transient.report_filename, digest_filename)
+    except Exception as e:
+        print("Didn't successfully build the report - JSON log preserved.", e)
+
+    msg = f"garak run complete in {timetaken:.2f}s"
     print(f"✔️  {msg}")
     logging.info(msg)
 
@@ -225,3 +240,11 @@ def list_config():
     for section in "system transient run plugins".split():
         print(f"{section}:")
         _enumerate_obj_values(getattr(_config, section))
+
+
+def write_report_digest(report_filename, digest_filename):
+    from garak.analyze import report_digest
+
+    digest = report_digest.compile_digest(report_filename)
+    with open(digest_filename, "w", encoding="utf-8") as f:
+        f.write(digest)

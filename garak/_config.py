@@ -44,6 +44,7 @@ class TransientConfig(GarakSubConfig):
     basedir = pathlib.Path(__file__).parents[0]
     starttime = None
     starttime_iso = None
+    report_dir = "runs"
 
 
 transient = TransientConfig()

@@ -239,7 +239,7 @@ def test_run_from_yaml(capsys):
     assert "ok on   10/  10" in all_output
     assert "always.Pass:" in all_output
     assert "test.Blank" in all_output
-    assert "garak done: complete" in all_output
+    assert "garak run complete" in all_output
 
 
 # cli generator options file loads
