@@ -73,7 +73,10 @@ class Evaluator:
                                 )
                             logging.info("hit log in %s", hitlog_filename)
                             _config.transient.hitlogfile = open(
-                                hitlog_filename, "w", buffering=1, encoding="utf-8"
+                                _config.transient.report_dir + "/" + hitlog_filename,
+                                "w",
+                                buffering=1,
+                                encoding="utf-8",
                             )
 
                         trigger = None
