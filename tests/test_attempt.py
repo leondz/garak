@@ -34,6 +34,7 @@ def cleanup(request):
     def remove_reports():
         with contextlib.suppress(FileNotFoundError):
             os.remove("_garak_test_attempt_sticky_params.report.jsonl")
+            os.remove("_garak_test_attempt_sticky_params.report.html")
             os.remove("_garak_test_attempt_sticky_params.hitlog.jsonl")
 
     request.addfinalizer(remove_reports)

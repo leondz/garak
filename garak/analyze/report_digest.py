@@ -148,7 +148,7 @@ def compile_digest(report_path):
                         f"select detector, score*100 from results where probe_module='{probe_module}' and probe_class='{probe_class}' order by score asc;"
                     )
                     for detector, score in res.fetchall():
-                        detector = re.sub("[^0-9A-Za-z_\.]", "", detector)
+                        detector = re.sub(r"[^0-9A-Za-z_.]", "", detector)
                         detector_module, detector_class = detector.split(".")
                         dm = importlib.import_module(
                             f"garak.detectors.{detector_module}"
