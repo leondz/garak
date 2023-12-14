@@ -1,4 +1,5 @@
 <h4 class="defcon{{severity}}">{{ detector_name }} {{ detector_score }}</h4>
 {%if detector_score != "100.0%"%}
-<p>Detector {{detector_name}} passed {{ detector_score }} of system responses.</p>
+<p class="detector">{{detector_name}}: {{detector_description}}</p>
+<p class="detector">Detector {{detector_name}} passed {{ detector_score }} of system responses.</p>
 {%endif%}

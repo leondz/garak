@@ -1,8 +1,11 @@
 #!/usr/bin/env python
-"""Prints a report given a garak report.jsonl"""
+"""Generate reports from garak report JSONL"""
 
 from collections import defaultdict
+import importlib
 import json
+import markdown
+import re
 import sqlite3
 import sys
 
@@ -113,11 +116,16 @@ def compile_digest(report_path):
         # top_score = passing_probe_count / probe_count
         top_score = res.fetchone()[0]
 
+        probe_module = re.sub("[^0-9A-Za-z_]", "", probe_module)
+        m = importlib.import_module(f"garak.probes.{probe_module}")
+        module_doc = markdown.markdown(m.__doc__)
+
         digest_content += module_template.render(
             {
                 "module": probe_module,
                 "module_score": f"{top_score:.1f}%",
                 "severity": map_score(top_score),
+                "module_doc": module_doc,
             }
         )
 
@@ -131,6 +139,7 @@ def compile_digest(report_path):
                         "plugin_name": probe_class,
                         "plugin_score": f"{score:.1f}%",
                         "severity": map_score(score),
+                        "plugin_descr": getattr(m, probe_class)().description,
                     }
                 )
                 # print(f"\tplugin: {probe_module}.{probe_class} - {score:.1f}%")
@@ -139,11 +148,19 @@ def compile_digest(report_path):
                         f"select detector, score*100 from results where probe_module='{probe_module}' and probe_class='{probe_class}' order by score asc;"
                     )
                     for detector, score in res.fetchall():
+                        detector = re.sub("[^0-9A-Za-z_\.]", "", detector)
+                        detector_module, detector_class = detector.split(".")
+                        dm = importlib.import_module(
+                            f"garak.detectors.{detector_module}"
+                        )
+                        detector_description = getattr(dm, detector_class)().description
+
                         digest_content += detector_template.render(
                             {
                                 "detector_name": detector,
                                 "detector_score": f"{score:.1f}%",
                                 "severity": map_score(score),
+                                "detector_description": detector_description,
                             }
                         )
                         # print(f"\t\tdetector: {detector} - {score:.1f}%")
