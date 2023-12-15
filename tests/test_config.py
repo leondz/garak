@@ -439,3 +439,13 @@ def cleanup(request):
         os.remove("laurelhurst.report.jsonl")
 
     request.addfinalizer(remove_laurelhurst_log)
+
+
+def test_buff_config_assertion():
+    importlib.reload(_config)
+    import garak._plugins
+
+    test_value = 9001
+    _config.plugins.buffs["paraphrase.Fast"] = {"num_beams": test_value}
+    p = garak._plugins.load_plugin("buffs.paraphrase.Fast")
+    assert p.num_beams == test_value

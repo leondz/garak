@@ -6,7 +6,6 @@
 """ Buff that paraphrases a prompt. """
 
 from collections.abc import Iterable
-import copy
 
 import torch
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
