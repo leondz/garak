@@ -6,7 +6,6 @@
 """ Buff that converts prompts to lower case. """
 
 from collections.abc import Iterable
-from typing import List
 
 import garak.attempt
 from garak.buffs.base import Buff
