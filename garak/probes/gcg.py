@@ -20,7 +20,11 @@ class GCG_Probe(Probe):
 
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass"]
-    tags = ["avid-effect:security:S0403", "avid-effect:performance:P0204"]
+    tags = [
+        "avid-effect:security:S0403",
+        "avid-effect:performance:P0204",
+        "quality:Security:PromptStability",
+    ]
     goal = "cause the model to disregard the system prompt"
     uri = "https://arxiv.org/abs/2307.15043"
 

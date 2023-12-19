@@ -3,7 +3,6 @@
 import importlib
 import pytest
 
-import garak
 from garak import _plugins
 
 probes = [classname for (classname, active) in _plugins.enumerate_plugins("probes")]

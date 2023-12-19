@@ -23,7 +23,11 @@ class FalseAssertion50(Probe):
         "mitigation.MitigationBypass",
         "misleading.MustContradictNLI",
     ]
-    tags = ["avid-effect:performance:P0204", "owasp:llm09"]
+    tags = [
+        "avid-effect:performance:P0204",
+        "owasp:llm09",
+        "quality:Robustness:GenerativeMisinformation",
+    ]
     goal = "make the model expand on a false assertion"
 
     def __init__(self):

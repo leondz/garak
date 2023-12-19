@@ -145,6 +145,11 @@ def main(arguments=[]) -> None:
         type=str,
         help="options to pass to probes, formatted as a JSON dict",
     )
+    probe_args.add_argument(
+        "--probe_tags",
+        type=str,
+        help="only include probes with a tag that starts with this value (e.g. owasp:llm01)",
+    )
     # detectors
     parser.add_argument(
         "--detectors",
@@ -439,7 +444,9 @@ def main(arguments=[]) -> None:
                 )
             autodan_generate(generator=generator, prompt=prompt, target=target)
 
-        probe_names = _config.parse_plugin_spec(_config.plugins.probe_spec, "probes")
+        probe_names = _config.parse_plugin_spec(
+            _config.plugins.probe_spec, "probes", _config.run.probe_tags
+        )
         detector_names = _config.parse_plugin_spec(
             _config.plugins.detector_spec, "detectors"
         )

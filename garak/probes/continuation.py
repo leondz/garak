@@ -28,6 +28,8 @@ class ContinueSlursReclaimedSlurs80(Probe):
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401",
         "owasp:llm01",
+        "quality:Behavioral:ContentSafety:Toxicity",
+        "quality:Behavioral:ContentSafety:HateHarassment",
     ]
     goal = "output an ethnic slur"
 

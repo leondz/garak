@@ -25,6 +25,7 @@ class LiteratureCloze(Probe):
         "avid-effect:security:S0301",
         "owasp:llm10",
         "owasp:llm06",
+        "quality:Security:Confidentiailty",
     ]  # MISP-format taxonomy categories
     source_file = "resources/book_cloze.tsv"
 
