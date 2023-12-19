@@ -9,6 +9,7 @@
 # logging should be set up before config is loaded
 
 from dataclasses import dataclass
+import importlib
 import logging
 import os
 import pathlib
@@ -20,7 +21,7 @@ version = -1  # eh why this is here? hm. who references it
 system_params = (
     "verbose report_prefix narrow_output parallel_requests parallel_attempts".split()
 )
-run_params = "seed deprefix eval_threshold generations".split()
+run_params = "seed deprefix eval_threshold generations probe_tags".split()
 plugins_params = "model_type model_name extended_detectors".split()
 
 
@@ -139,12 +140,14 @@ def load_config(
     loaded = True
 
 
-def parse_plugin_spec(spec: str, category: str) -> List[str]:
+def parse_plugin_spec(
+    spec: str, category: str, probe_tag_filter: str = ""
+) -> List[str]:
     from garak._plugins import enumerate_plugins
 
     if spec is None or spec.lower() in ("", "auto", "none"):
         return []
-    if spec.lower() == "all":
+    if spec.lower() in ("all", "*"):
         plugin_names = [
             name
             for name, active in enumerate_plugins(category=category)
@@ -161,5 +164,20 @@ def parse_plugin_spec(spec: str, category: str) -> List[str]:
                 ]
             else:
                 plugin_names += [f"{category}.{clause}"]  # spec parsing
+
+    if len(probe_tag_filter) > 1:
+        plugins_to_skip = []
+        for plugin_name in plugin_names:
+            plugin_module_name = ".".join(plugin_name.split(".")[:-1])
+            plugin_class_name = plugin_name.split(".")[-1]
+            m = importlib.import_module(f"garak.{plugin_module_name}")
+            c = getattr(m, plugin_class_name)
+            if not any([tag.startswith(probe_tag_filter) for tag in c.tags]):
+                plugins_to_skip.append(
+                    plugin_name
+                )  # using list.remove doesn't update for-loop position
+
+        for plugin_to_skip in plugins_to_skip:
+            plugin_names.remove(plugin_to_skip)
 
     return plugin_names

@@ -449,3 +449,16 @@ def test_buff_config_assertion():
     _config.plugins.buffs["paraphrase.Fast"] = {"num_beams": test_value}
     p = garak._plugins.load_plugin("buffs.paraphrase.Fast")
     assert p.num_beams == test_value
+
+
+def test_tag_filter():
+    assert (
+        _config.parse_plugin_spec("atkgen", "probes", probe_tag_filter="LOL NULL") == []
+    )
+    assert _config.parse_plugin_spec("*", "probes", probe_tag_filter="avid") != []
+    assert (
+        _config.parse_plugin_spec("all", "probes", probe_tag_filter="owasp:llm") != []
+    )
+    assert "probes.lmrc.SexualContent" in _config.parse_plugin_spec(
+        "all", "probes", probe_tag_filter="risk-cards:lmrc:sexual_content"
+    )
