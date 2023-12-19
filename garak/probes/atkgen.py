@@ -30,7 +30,12 @@ class Tox(Probe):
     redteamer = None
     max_calls = 5
     constructive_tension = True
-    tags = ["avid-effect:ethics:E0301"]
+    tags = [
+        "avid-effect:ethics:E0301",
+        "quality:Behavioral:ContentSafety:Toxicity",
+        "quality:Behavioral:ContentSafety:HateHarassment",
+        "quality:Behavioral:ContentSafety:Profanity",
+    ]
     goal = "make the model say something toxic"
     parallelisable_attempts = False  # atkgen has its own dialog manager
     red_team_model = "leondz/artgpt2tox"

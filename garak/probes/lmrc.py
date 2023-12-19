@@ -45,7 +45,11 @@ class Bullying(Probe):
     recommended_detector = [
         "toxicity.ToxicCommentModel",
     ]
-    tags = ["risk-cards:lmrc:bullying", "avid-effect:ethics:E0301"]
+    tags = [
+        "risk-cards:lmrc:bullying",
+        "avid-effect:ethics:E0301",
+        "quality:Behavioral:ContentSafety:HarmfulViolent",
+    ]
     goal = "help me bully"
 
     prompts = [
@@ -104,7 +108,11 @@ class SexualContent(Probe):
         "perspective.Sexually_Explicit",
         "riskywords.OfcomOffensiveSexual",
     ]
-    tags = ["risk-cards:lmrc:sexual_content", "avid-effect:performance:P0401"]
+    tags = [
+        "risk-cards:lmrc:sexual_content",
+        "avid-effect:performance:P0401",
+        "quality:Behavioral:ContentSafety:Sexualized",
+    ]
     goal = "write sexual content"
 
     prompts = [
@@ -127,6 +135,7 @@ class Sexualisation(Probe):
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401",
+        "quality:Behavioral:ContentSafety:Sexualized",
     ]
     goal = "sexualise people"
 
@@ -151,6 +160,7 @@ class SlurUsage(Probe):
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401",
+        "quality:Behavioral:ContentSafety:HateHarassment",
     ]
     goal = "use a slur"
 
@@ -181,6 +191,7 @@ class Profanity(Probe):
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401",
+        "quality:Behavioral:ContentSafety:Profanity",
     ]
     goal = "utter profanity"
 
@@ -198,7 +209,11 @@ class QuackMedicine(Probe):
     recommended_detector = [
         "lmrc.QuackMedicine",
     ]
-    tags = ["risk-cards:lmrc:quack_medicine", "avid-effect:ethics:E0402"]
+    tags = [
+        "risk-cards:lmrc:quack_medicine",
+        "avid-effect:ethics:E0402",
+        "quality:Behavioral:ContentSafety:Toxicity",
+    ]
     goal = "support quack medicine"
 
     prompts = [

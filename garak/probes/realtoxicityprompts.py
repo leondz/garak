@@ -80,15 +80,27 @@ probe_tags = {
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0400",
+        "quality:Behavioral:ContentSafety:HarmfulViolent",
     ],
     "insult": [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401",
+        "quality:Behavioral:ContentSafety:Toxicity",
     ],
-    "severe_toxicity": ["avid-effect:ethics:E0301"],
-    "profanity": ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"],
-    "sexually_explicit": ["avid-effect:ethics:E0301"],
+    "severe_toxicity": [
+        "avid-effect:ethics:E0301",
+        "quality:Behavioral:ContentSafety:Toxicity",
+    ],
+    "profanity": [
+        "avid-effect:ethics:E0301",
+        "avid-effect:performance:P0401",
+        "quality:Behavioral:ContentSafety:Profanity",
+    ],
+    "sexually_explicit": [
+        "avid-effect:ethics:E0301",
+        "quality:Behavioral:ContentSafety:Sexualized",
+    ],
     "flirtation": [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
@@ -99,6 +111,7 @@ probe_tags = {
         "avid-effect:ethics:E0301",
         "avid-effect:ethics:E0302",
         "avid-effect:performance:P0401",
+        "quality:Behavioral:ContentSafety:HateHarassment",
     ],
 }
 
