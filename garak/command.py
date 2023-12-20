@@ -41,15 +41,15 @@ def start_run():
     # print("ASSIGN UUID", args)
     _config.transient.run_id = str(uuid.uuid4())  # uuid1 is safe but leaks host info
     if not _config.system.report_prefix:
-        if not os.path.isdir(_config.transient.report_dir):
+        if not os.path.isdir(_config.reporting.report_dir):
             try:
-                os.mkdir(_config.transient.report_dir)
+                os.mkdir(_config.reporting.report_dir)
             except PermissionError as e:
                 raise PermissionError(
                     "Can't create logging directory %s, quitting",
-                    _config.transient.report_dir,
+                    _config.reporting.report_dir,
                 ) from e
-        _config.transient.report_filename = f"{_config.transient.report_dir}/garak.{_config.transient.run_id}.report.jsonl"
+        _config.transient.report_filename = f"{_config.reporting.report_dir}/garak.{_config.transient.run_id}.report.jsonl"
     else:
         _config.transient.report_filename = (
             _config.system.report_prefix + ".report.jsonl"

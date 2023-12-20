@@ -46,7 +46,6 @@ class TransientConfig(GarakSubConfig):
     basedir = pathlib.Path(__file__).parents[0]
     starttime = None
     starttime_iso = None
-    report_dir = "runs"
 
 
 transient = TransientConfig()
@@ -60,6 +59,7 @@ plugins.generators = {}
 plugins.detectors = {}
 plugins.buffs = {}
 plugins.harnesses = {}
+reporting.report_dir = "runs"
 
 
 config_files = []

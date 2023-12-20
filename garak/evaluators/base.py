@@ -65,7 +65,7 @@ class Evaluator:
                     if not self.test(score):  # if we don't pass
                         if not _config.transient.hitlogfile:
                             if not _config.system.report_prefix:
-                                hitlog_filename = f"{_config.transient.report_dir}/garak.{_config.transient.run_id}.hitlog.jsonl"
+                                hitlog_filename = f"{_config.reporting.report_dir}/garak.{_config.transient.run_id}.hitlog.jsonl"
                             else:
                                 hitlog_filename = (
                                     _config.system.report_prefix + ".hitlog.jsonl"
