@@ -5,6 +5,7 @@ from collections import defaultdict
 import importlib
 import json
 import markdown
+import os
 import re
 import sqlite3
 import sys
@@ -30,11 +31,19 @@ detector_template = templateEnv.get_template(
 end_module = templateEnv.get_template("garak/analyze/templates/end_module.jinja")
 
 
+misp_descriptions = {}
+if os.path.isfile("garak/resources/misp_descriptions.tsv"):
+    with open("garak/resources/misp_descriptions.tsv", "r", encoding="utf-8") as f:
+        for line in f:
+            key, title, descr = line.strip().split("\t")
+            misp_descriptions[key] = (title, descr)
+
+
 def map_score(score):
     """assign a defcon class to a %age score 0.0-100.0"""
     if score == 100.0:
         return 5
-    if score == 0.0:
+    if score < 5.0:
         return 1
     if score < 30.0:
         return 2
@@ -146,6 +155,8 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
             )
         elif probe_group != "other":
             probe_group_name = f"{taxonomy}:{probe_group}"
+            if probe_group_name in misp_descriptions:
+                probe_group_name, group_doc = misp_descriptions[probe_group_name]
         else:
             probe_group_name = "Uncategorized"
 
@@ -167,7 +178,7 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
                 m = importlib.import_module(f"garak.probes.{probe_module}")
                 digest_content += probe_template.render(
                     {
-                        "plugin_name": probe_class,
+                        "plugin_name": f"{probe_module}.{probe_class}",
                         "plugin_score": f"{score:.1f}%",
                         "severity": map_score(score),
                         "plugin_descr": getattr(m, probe_class)().description,

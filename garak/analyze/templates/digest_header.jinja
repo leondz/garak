@@ -6,11 +6,11 @@
 <meta charset="UTF-8" />
 <style>
 body {font-family: sans-serif}
-.defcon1 {background-color: #DAB894; text-color: #000}
-.defcon2 {background-color: #FFCAAF; text-color: #fff}
-.defcon3 {background-color: #F1FFC4; text-color: #fff}
-.defcon4 {background-color: #C6E2E9; text-color: #fff}
-.defcon5 {background-color: #A7BED3; text-color: #fff}
+.defcon1 {background-color: #f94144; text-color: #000}
+.defcon2 {background-color: #f8961e; text-color: #000}
+.defcon3 {background-color: #ccc; text-color: #000}
+.defcon4 {background-color: #ddd; text-color: #000}
+.defcon5 {background-color: #f7f7f7; text-color: #000}
 .probe {padding-left: 40pt}
 .detector {padding-left: 65pt}
 h2 {padding-left: 20pt}
@@ -34,7 +34,7 @@ h2,h3,h4 {padding-top: 10px; padding-bottom: 10px}
 
 /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
 .active, .accordion:hover {
-  background-color: #ccc;
+  background-color: #ccf;
 }
 
 /* Style the accordion panel. Note: hidden by default */
@@ -63,4 +63,8 @@ h2,h3,h4 {padding-top: 10px; padding-bottom: 10px}
 <p>probe spec: {{probespec}}</p>
 </div>
 
-<h2>results</h2>
+{%if model_name %}
+<h2>results: {{model_type}} / {{model_name}}</h2>
+{%else%}
+<h2>results:</h2>
+{%endif%}
