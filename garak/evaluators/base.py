@@ -6,6 +6,7 @@ These describe evaluators for assessing detector results.
 
 import json
 import logging
+import os
 from typing import List
 
 from colorama import Fore, Style
@@ -64,16 +65,14 @@ class Evaluator:
                     if not self.test(score):  # if we don't pass
                         if not _config.transient.hitlogfile:
                             if not _config.system.report_prefix:
-                                hitlog_filename = (
-                                    f"garak.{_config.transient.run_id}.hitlog.jsonl"
-                                )
+                                hitlog_filename = f"{_config.transient.report_dir}/garak.{_config.transient.run_id}.hitlog.jsonl"
                             else:
                                 hitlog_filename = (
                                     _config.system.report_prefix + ".hitlog.jsonl"
                                 )
                             logging.info("hit log in %s", hitlog_filename)
                             _config.transient.hitlogfile = open(
-                                _config.transient.report_dir + "/" + hitlog_filename,
+                                hitlog_filename,
                                 "w",
                                 buffering=1,
                                 encoding="utf-8",
