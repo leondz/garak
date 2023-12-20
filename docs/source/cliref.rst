@@ -3,21 +3,23 @@ CLI reference for garak
 
 ::
 
-  garak LLM security probe v0.9.0.9 ( https://github.com/leondz/garak ) at 2023-12-08T14:24:07.990707
-  usage: __main__.py [-h] [--verbose] [--report_prefix REPORT_PREFIX]
-                     [--narrow_output] [--parallel_requests PARALLEL_REQUESTS]
-                     [--parallel_attempts PARALLEL_ATTEMPTS] [--seed SEED]
-                     [--deprefix] [--eval_threshold EVAL_THRESHOLD]
-                     [--generations GENERATIONS] [--config CONFIG]
-                     [--model_type MODEL_TYPE] [--model_name MODEL_NAME]
-                     [--generator_option_file GENERATOR_OPTION_FILE | --generator_options GENERATOR_OPTIONS]
-                     [--probes PROBES]
-                     [--probe_option_file PROBE_OPTION_FILE | --probe_options PROBE_OPTIONS]
-                     [--detectors DETECTORS] [--extended_detectors]
-                     [--buff BUFF] [--plugin_info PLUGIN_INFO] [--list_probes]
-                     [--list_detectors] [--list_generators] [--list_buffs]
-                     [--list_config] [--version] [--report REPORT]
-                     [--interactive] [--generate_autodan] [--interactive.py]
+  garak LLM security probe v0.9.0.9.post1 ( https://github.com/leondz/garak ) at 2023-12-20T14:18:27.371652
+  usage: python -m garak [-h] [--verbose] [--report_prefix REPORT_PREFIX]
+                         [--narrow_output]
+                         [--parallel_requests PARALLEL_REQUESTS]
+                         [--parallel_attempts PARALLEL_ATTEMPTS] [--seed SEED]
+                         [--deprefix] [--eval_threshold EVAL_THRESHOLD]
+                         [--generations GENERATIONS] [--config CONFIG]
+                         [--model_type MODEL_TYPE] [--model_name MODEL_NAME]
+                         [--generator_option_file GENERATOR_OPTION_FILE | --generator_options GENERATOR_OPTIONS]
+                         [--probes PROBES]
+                         [--probe_option_file PROBE_OPTION_FILE | --probe_options PROBE_OPTIONS | --probe_tags PROBE_TAGS]
+                         [--detectors DETECTORS] [--extended_detectors]
+                         [--buff BUFF] [--taxonomy TAXONOMY]
+                         [--plugin_info PLUGIN_INFO] [--list_probes]
+                         [--list_detectors] [--list_generators] [--list_buffs]
+                         [--list_config] [--version] [--report REPORT]
+                         [--interactive] [--generate_autodan] [--interactive.py]
   
   LLM safety & security scanning tool
   
@@ -59,6 +61,9 @@ CLI reference for garak
                           path to JSON file containing options to pass to probes
     --probe_options PROBE_OPTIONS
                           options to pass to probes, formatted as a JSON dict
+    --probe_tags PROBE_TAGS
+                          only include probes with a tag that starts with this
+                          value (e.g. owasp:llm01)
     --detectors DETECTORS, -d DETECTORS
                           list of detectors to use, or 'all' for all. Default is
                           to use the probe's suggestion.
@@ -66,6 +71,9 @@ CLI reference for garak
                           should we run all detectors? (default is just the
                           primary detector, if given, else everything)
     --buff BUFF, -b BUFF  buff to use
+    --taxonomy TAXONOMY   specify a MISP top-level taxonomy to be used for
+                          grouping probes in reporting. e.g. 'avid-effect',
+                          'owasp'
     --plugin_info PLUGIN_INFO
                           show info about one plugin; format as
                           type.plugin.class, e.g. probes.lmrc.Profanity
