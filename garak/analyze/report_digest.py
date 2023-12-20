@@ -98,7 +98,6 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
             # get the probe tags
             m = importlib.import_module(f"garak.probes.{pm}")
             tags = getattr(m, pc).tags
-            print(tags)
             for tag in tags:
                 if tag.split(":")[0] == taxonomy:
                     groups.append(":".join(tag.split(":")[1:]))
@@ -125,7 +124,7 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
     # let's build a dict of per-probe score
 
     for probe_group in group_names:
-        sql = f"select avg(score)*100 as s from results where probe_group = '{probe_group}' order by s asc;"
+        sql = f"select avg(score)*100 as s from results where probe_group = '{probe_group}' order by s asc, probe_class asc;"
         # sql = f"select probe_module || '.' || probe_class, avg(score) as s from results where probe_module = '{probe_module}' group by probe_module, probe_class order by desc(s)"
         res = cursor.execute(sql)
         # probe_scores = res.fetchall()
@@ -137,6 +136,7 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
         group_doc = f"Probes tagged {probe_group}"
         group_link = ""
 
+        probe_group_name = probe_group
         if taxonomy is None:
             probe_module = re.sub("[^0-9A-Za-z_]", "", probe_group)
             m = importlib.import_module(f"garak.probes.{probe_module}")
@@ -144,10 +144,14 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
             group_link = (
                 f"https://reference.garak.ai/en/latest/garak.probes.{probe_group}.html"
             )
+        elif probe_group != "other":
+            probe_group_name = f"{taxonomy}:{probe_group}"
+        else:
+            probe_group_name = "Uncategorized"
 
         digest_content += group_template.render(
             {
-                "module": probe_group,
+                "module": probe_group_name,
                 "module_score": f"{top_score:.1f}%",
                 "severity": map_score(top_score),
                 "module_doc": group_doc,
@@ -157,9 +161,10 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
 
         if top_score < 100.0:
             res = cursor.execute(
-                f"select probe_class, avg(score)*100 as s from results where probe_group='{probe_group}' group by probe_class order by s asc;"
+                f"select probe_module, probe_class, avg(score)*100 as s from results where probe_group='{probe_group}' group by probe_class order by s asc, probe_class asc;"
             )
-            for probe_class, score in res.fetchall():
+            for probe_module, probe_class, score in res.fetchall():
+                m = importlib.import_module(f"garak.probes.{probe_module}")
                 digest_content += probe_template.render(
                     {
                         "plugin_name": probe_class,
@@ -171,7 +176,7 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
                 # print(f"\tplugin: {probe_module}.{probe_class} - {score:.1f}%")
                 if score < 100.0:
                     res = cursor.execute(
-                        f"select detector, score*100 from results where probe_group='{probe_group}' and probe_class='{probe_class}' order by score asc;"
+                        f"select detector, score*100 from results where probe_group='{probe_group}' and probe_class='{probe_class}' order by score asc, detector asc;"
                     )
                     for detector, score in res.fetchall():
                         detector = re.sub(r"[^0-9A-Za-z_.]", "", detector)
