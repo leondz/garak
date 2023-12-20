@@ -28,3 +28,6 @@ plugins:
   buff_spec:
   buffs: {}
   harnesses: {}
+
+reporting:
+  taxonomy:

@@ -32,6 +32,7 @@ def main(arguments=[]) -> None:
     import argparse
 
     parser = argparse.ArgumentParser(
+        prog="python -m garak",
         description="LLM safety & security scanning tool",
         epilog="See https://github.com/leondz/garak",
     )
@@ -171,6 +172,14 @@ def main(arguments=[]) -> None:
         type=str,
         default=_config.plugins.buff_spec,
         help="buff to use",
+    )
+
+    ## REPORTING
+    parser.add_argument(
+        "--taxonomy",
+        type=str,
+        default=_config.reporting.taxonomy,
+        help="specify a MISP top-level taxonomy to be used for grouping probes in reporting. e.g. 'avid-effect', 'owasp' ",
     )
 
     ## COMMANDS

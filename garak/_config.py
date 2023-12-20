@@ -23,6 +23,7 @@ system_params = (
 )
 run_params = "seed deprefix eval_threshold generations probe_tags".split()
 plugins_params = "model_type model_name extended_detectors".split()
+reporting_params = "taxonomy".split()
 
 
 loaded = False
@@ -53,11 +54,13 @@ transient = TransientConfig()
 system = GarakSubConfig()
 run = GarakSubConfig()
 plugins = GarakSubConfig()
+reporting = GarakSubConfig()
 plugins.probes = {}
 plugins.generators = {}
 plugins.detectors = {}
 plugins.buffs = {}
 plugins.harnesses = {}
+
 
 config_files = []
 
@@ -95,11 +98,12 @@ def _load_yaml_config(settings_filenames) -> dict:
 
 
 def _store_config(settings_files) -> None:
-    global system, run, plugins
+    global system, run, plugins, reporting
     settings = _load_yaml_config(settings_files)
     system = _set_settings(system, settings["system"])
     run = _set_settings(run, settings["run"])
     plugins = _set_settings(plugins, settings["plugins"])
+    reporting = _set_settings(reporting, settings["reporting"])
 
 
 def load_base_config() -> None:

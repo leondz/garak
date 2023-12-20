@@ -70,7 +70,7 @@ def start_run():
             type(None),
         ):
             setup_dict[f"_config.{k}"] = v
-    for subset in "system transient run plugins".split():
+    for subset in "system transient run plugins reporting".split():
         for k, v in getattr(_config, subset).__dict__.items():
             if k[:2] != "__" and type(v) in (
                 str,
