@@ -11,6 +11,7 @@ run:
   deprefix: true
   eval_threshold: 0.5
   generations: 10
+  probe_tags:
 
 plugins:
   model_type:

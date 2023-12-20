@@ -147,6 +147,7 @@ def main(arguments=[]) -> None:
     )
     probe_args.add_argument(
         "--probe_tags",
+        default=_config.run.probe_tags,
         type=str,
         help="only include probes with a tag that starts with this value (e.g. owasp:llm01)",
     )
