@@ -44,7 +44,7 @@ class NeMoGenerator(Generator):
         if self.api_key is None:
             raise ValueError(
                 'Put the NGC API key in the NGC_API_KEY environment variable (this was empty)\n \
-                e.g.: export NGC_API_TOKEN="xXxXxXxXxXxXxXxXxXxX"'
+                e.g.: export NGC_API_KEY="xXxXxXxXxXxXxXxXxXxX"'
             )
         self.org_id = os.getenv("ORG_ID")
 
