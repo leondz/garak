@@ -40,7 +40,7 @@ def start_run():
     logging.info("started at %s", _config.transient.starttime_iso)
     # print("ASSIGN UUID", args)
     _config.transient.run_id = str(uuid.uuid4())  # uuid1 is safe but leaks host info
-    if not _config.system.report_prefix:
+    if not _config.reporting.report_prefix:
         if not os.path.isdir(_config.reporting.report_dir):
             try:
                 os.mkdir(_config.reporting.report_dir)
@@ -52,7 +52,7 @@ def start_run():
         _config.transient.report_filename = f"{_config.reporting.report_dir}/garak.{_config.transient.run_id}.report.jsonl"
     else:
         _config.transient.report_filename = (
-            _config.system.report_prefix + ".report.jsonl"
+            _config.reporting.report_prefix + ".report.jsonl"
         )
     _config.transient.reportfile = open(
         _config.transient.report_filename, "w", buffering=1, encoding="utf-8"

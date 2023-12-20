@@ -1,7 +1,6 @@
 ---
 system:
   verbose: 0
-  report_prefix:
   narrow_output: false
   parallel_requests: false
   parallel_attempts: false
@@ -30,4 +29,5 @@ plugins:
   harnesses: {}
 
 reporting:
+  report_prefix:
   taxonomy:

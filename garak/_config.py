@@ -18,12 +18,10 @@ import yaml
 
 version = -1  # eh why this is here? hm. who references it
 
-system_params = (
-    "verbose report_prefix narrow_output parallel_requests parallel_attempts".split()
-)
+system_params = "verbose narrow_output parallel_requests parallel_attempts".split()
 run_params = "seed deprefix eval_threshold generations probe_tags".split()
 plugins_params = "model_type model_name extended_detectors".split()
-reporting_params = "taxonomy".split()
+reporting_params = "taxonomy report_prefix".split()
 
 
 loaded = False
