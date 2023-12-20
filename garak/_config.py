@@ -165,7 +165,7 @@ def parse_plugin_spec(
             else:
                 plugin_names += [f"{category}.{clause}"]  # spec parsing
 
-    if len(probe_tag_filter) > 1:
+    if probe_tag_filter is not None and len(probe_tag_filter) > 1:
         plugins_to_skip = []
         for plugin_name in plugin_names:
             plugin_module_name = ".".join(plugin_name.split(".")[:-1])
