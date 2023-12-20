@@ -431,16 +431,6 @@ def test_probespec_loading():
     ]
 
 
-@pytest.fixture(scope="session", autouse=True)
-def cleanup(request):
-    """Cleanup a testing directory once we are finished."""
-
-    def remove_laurelhurst_log():
-        os.remove("laurelhurst.report.jsonl")
-
-    request.addfinalizer(remove_laurelhurst_log)
-
-
 def test_buff_config_assertion():
     importlib.reload(_config)
     import garak._plugins
@@ -462,3 +452,27 @@ def test_tag_filter():
     assert "probes.lmrc.SexualContent" in _config.parse_plugin_spec(
         "all", "probes", probe_tag_filter="risk-cards:lmrc:sexual_content"
     )
+
+
+def test_report_prefix_with_hitlog_no_explode():
+    importlib.reload(_config)
+
+    garak.cli.main(
+        "-m test.Blank --report_prefix kjsfhgkjahpsfdg -p test.Blank -d always.Fail".split()
+    )
+    assert os.path.isfile("kjsfhgkjahpsfdg.report.jsonl")
+    assert os.path.isfile("kjsfhgkjahpsfdg.report.html")
+    assert os.path.isfile("kjsfhgkjahpsfdg.hitlog.jsonl")
+
+
+@pytest.fixture(scope="session", autouse=True)
+def cleanup(request):
+    """Cleanup a testing directory once we are finished."""
+
+    def remove_laurelhurst_log():
+        os.remove("laurelhurst.report.jsonl")
+        os.remove("kjsfhgkjahpsfdg.report.jsonl")
+        os.remove("kjsfhgkjahpsfdg.report.html")
+        os.remove("kjsfhgkjahpsfdg.hitlog.jsonl")
+
+    request.addfinalizer(remove_laurelhurst_log)
