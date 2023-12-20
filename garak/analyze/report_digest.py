@@ -11,6 +11,8 @@ import sys
 
 import jinja2
 
+from garak import _config, _plugins
+
 templateLoader = jinja2.FileSystemLoader(searchpath=".")
 templateEnv = jinja2.Environment(loader=templateLoader)
 
@@ -20,9 +22,7 @@ header_template = templateEnv.get_template(
 footer_template = templateEnv.get_template(
     "garak/analyze/templates/digest_footer.jinja"
 )
-module_template = templateEnv.get_template(
-    "garak/analyze/templates/digest_module.jinja"
-)
+group_template = templateEnv.get_template("garak/analyze/templates/digest_group.jinja")
 probe_template = templateEnv.get_template("garak/analyze/templates/digest_probe.jinja")
 detector_template = templateEnv.get_template(
     "garak/analyze/templates/digest_detector.jinja"
@@ -43,7 +43,7 @@ def map_score(score):
     return 4
 
 
-def compile_digest(report_path):
+def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
     evals = []
     setup = defaultdict(str)
     with open(report_path, "r", encoding="utf-8") as reportfile:
@@ -78,6 +78,7 @@ def compile_digest(report_path):
 
     create_table = """create table results(
         probe_module VARCHAR(255) not null,
+        probe_group VARCHAR(255) not null,
         probe_class VARCHAR(255) not null,
         detector VARCHAR(255) not null, 
         score FLOAT not null,
@@ -92,22 +93,38 @@ def compile_digest(report_path):
         detector = eval["detector"].replace("detector.", "")
         score = eval["passed"] / eval["total"]
         instances = eval["total"]
-        cursor.execute(
-            f"insert into results values ('{pm}', '{pc}', '{detector}', '{score}', '{instances}')"
-        )
+        groups = []
+        if taxonomy is not None:
+            # get the probe tags
+            m = importlib.import_module(f"garak.probes.{pm}")
+            tags = getattr(m, pc).tags
+            for tag in tags:
+                if tag.split(":")[0] == taxonomy:
+                    groups.append(":".join(tag.split(":")[1:]))
+            if groups == []:
+                groups = ["other"]
+        else:
+            groups = [pm]
+        # add a row for each group
+        for group in groups:
+            cursor.execute(
+                f"insert into results values ('{pm}', '{group}', '{pc}', '{detector}', '{score}', '{instances}')"
+            )
 
     # calculate per-probe scores
 
-    res = cursor.execute("select distinct probe_module from results")
-    module_names = [i[0] for i in res.fetchall()]
+    res = cursor.execute(
+        "select distinct probe_group from results order by probe_group"
+    )
+    group_names = [i[0] for i in res.fetchall()]
 
     # top score: % of passed probes
     # probe score: mean of detector scores
 
     # let's build a dict of per-probe score
 
-    for probe_module in module_names:
-        sql = f"select avg(score)*100 as s from results where probe_module = '{probe_module}' order by s asc;"
+    for probe_group in group_names:
+        sql = f"select avg(score)*100 as s from results where probe_group = '{probe_group}' order by s asc, probe_class asc;"
         # sql = f"select probe_module || '.' || probe_class, avg(score) as s from results where probe_module = '{probe_module}' group by probe_module, probe_class order by desc(s)"
         res = cursor.execute(sql)
         # probe_scores = res.fetchall()
@@ -116,24 +133,38 @@ def compile_digest(report_path):
         # top_score = passing_probe_count / probe_count
         top_score = res.fetchone()[0]
 
-        probe_module = re.sub("[^0-9A-Za-z_]", "", probe_module)
-        m = importlib.import_module(f"garak.probes.{probe_module}")
-        module_doc = markdown.markdown(m.__doc__)
+        group_doc = f"Probes tagged {probe_group}"
+        group_link = ""
 
-        digest_content += module_template.render(
+        probe_group_name = probe_group
+        if taxonomy is None:
+            probe_module = re.sub("[^0-9A-Za-z_]", "", probe_group)
+            m = importlib.import_module(f"garak.probes.{probe_module}")
+            group_doc = markdown.markdown(m.__doc__)
+            group_link = (
+                f"https://reference.garak.ai/en/latest/garak.probes.{probe_group}.html"
+            )
+        elif probe_group != "other":
+            probe_group_name = f"{taxonomy}:{probe_group}"
+        else:
+            probe_group_name = "Uncategorized"
+
+        digest_content += group_template.render(
             {
-                "module": probe_module,
+                "module": probe_group_name,
                 "module_score": f"{top_score:.1f}%",
                 "severity": map_score(top_score),
-                "module_doc": module_doc,
+                "module_doc": group_doc,
+                "group_link": group_link,
             }
         )
 
         if top_score < 100.0:
             res = cursor.execute(
-                f"select probe_class, avg(score)*100 as s from results where probe_module='{probe_module}' group by probe_class order by s asc;"
+                f"select probe_module, probe_class, avg(score)*100 as s from results where probe_group='{probe_group}' group by probe_class order by s asc, probe_class asc;"
             )
-            for probe_class, score in res.fetchall():
+            for probe_module, probe_class, score in res.fetchall():
+                m = importlib.import_module(f"garak.probes.{probe_module}")
                 digest_content += probe_template.render(
                     {
                         "plugin_name": probe_class,
@@ -145,7 +176,7 @@ def compile_digest(report_path):
                 # print(f"\tplugin: {probe_module}.{probe_class} - {score:.1f}%")
                 if score < 100.0:
                     res = cursor.execute(
-                        f"select detector, score*100 from results where probe_module='{probe_module}' and probe_class='{probe_class}' order by score asc;"
+                        f"select detector, score*100 from results where probe_group='{probe_group}' and probe_class='{probe_class}' order by score asc, detector asc;"
                     )
                     for detector, score in res.fetchall():
                         detector = re.sub(r"[^0-9A-Za-z_.]", "", detector)
@@ -176,5 +207,8 @@ def compile_digest(report_path):
 
 if __name__ == "__main__":
     report_path = sys.argv[1]
-    digest_content = compile_digest(report_path)
+    taxonomy = None
+    if len(sys.argv) == 3:
+        taxonomy = sys.argv[2]
+    digest_content = compile_digest(report_path, taxonomy=taxonomy)
     print(digest_content)

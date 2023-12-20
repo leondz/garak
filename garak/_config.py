@@ -18,11 +18,10 @@ import yaml
 
 version = -1  # eh why this is here? hm. who references it
 
-system_params = (
-    "verbose report_prefix narrow_output parallel_requests parallel_attempts".split()
-)
+system_params = "verbose narrow_output parallel_requests parallel_attempts".split()
 run_params = "seed deprefix eval_threshold generations probe_tags".split()
 plugins_params = "model_type model_name extended_detectors".split()
+reporting_params = "taxonomy report_prefix".split()
 
 
 loaded = False
@@ -45,7 +44,6 @@ class TransientConfig(GarakSubConfig):
     basedir = pathlib.Path(__file__).parents[0]
     starttime = None
     starttime_iso = None
-    report_dir = "runs"
 
 
 transient = TransientConfig()
@@ -53,11 +51,15 @@ transient = TransientConfig()
 system = GarakSubConfig()
 run = GarakSubConfig()
 plugins = GarakSubConfig()
+reporting = GarakSubConfig()
 plugins.probes = {}
 plugins.generators = {}
 plugins.detectors = {}
 plugins.buffs = {}
 plugins.harnesses = {}
+reporting.report_dir = "runs"
+reporting.taxonomy = None  # set here to enable report_digest to be called directly
+
 
 config_files = []
 
@@ -95,11 +97,12 @@ def _load_yaml_config(settings_filenames) -> dict:
 
 
 def _store_config(settings_files) -> None:
-    global system, run, plugins
+    global system, run, plugins, reporting
     settings = _load_yaml_config(settings_files)
     system = _set_settings(system, settings["system"])
     run = _set_settings(run, settings["run"])
     plugins = _set_settings(plugins, settings["plugins"])
+    reporting = _set_settings(reporting, settings["reporting"])
 
 
 def load_base_config() -> None:

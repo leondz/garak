@@ -64,11 +64,11 @@ class Evaluator:
                 for idx, score in enumerate(attempt.detector_results[detector]):
                     if not self.test(score):  # if we don't pass
                         if not _config.transient.hitlogfile:
-                            if not _config.system.report_prefix:
-                                hitlog_filename = f"{_config.transient.report_dir}/garak.{_config.transient.run_id}.hitlog.jsonl"
+                            if not _config.reporting.report_prefix:
+                                hitlog_filename = f"{_config.reporting.report_dir}/garak.{_config.transient.run_id}.hitlog.jsonl"
                             else:
                                 hitlog_filename = (
-                                    _config.system.report_prefix + ".hitlog.jsonl"
+                                    _config.reporting.report_prefix + ".hitlog.jsonl"
                                 )
                             logging.info("hit log in %s", hitlog_filename)
                             _config.transient.hitlogfile = open(

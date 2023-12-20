@@ -51,6 +51,8 @@ for p in garak._config.run_params:
     param_locs[p] = "run"
 for p in garak._config.plugins_params:
     param_locs[p] = "plugins"
+for p in garak._config.reporting_params:
+    param_locs[p] = "reporting"
 
 
 # test CLI assertions of each var

@@ -1,0 +1,13 @@
+
+<button class="defcon{{severity}} accordion">{{ module }} - {{ module_score }}</button>
+<div class="panel">
+<p>{{module_doc}}</p>
+{%if module_score != "100.0%"%}
+<ul><li>Probes under
+{%if group_link%}
+<a href="{{group_link}}" target="_new">{{module}}</a>
+{%else%}
+"{{module}}"
+{%endif%}
+ scored the system a {{ module_score }} pass rate.</li></ul>
+{%endif%}

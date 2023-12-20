@@ -1,7 +1,0 @@
-
-<button class="defcon{{severity}} accordion">{{ module }}: {{ module_score }}</button>
-<div class="panel">
-<p>{{module_doc}}</p>
-{%if module_score != "100.0%"%}
-<ul><li>Probes in the <a href="https://reference.garak.ai/en/latest/garak.probes.{{module}}.html" target="_new">{{module}}</a> module scored the system a {{ module_score }} pass rate.</li></ul>
-{%endif%}

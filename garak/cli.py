@@ -32,6 +32,7 @@ def main(arguments=[]) -> None:
     import argparse
 
     parser = argparse.ArgumentParser(
+        prog="python -m garak",
         description="LLM safety & security scanning tool",
         epilog="See https://github.com/leondz/garak",
     )
@@ -47,7 +48,7 @@ def main(arguments=[]) -> None:
     parser.add_argument(
         "--report_prefix",
         type=str,
-        default=_config.system.report_prefix,
+        default=_config.reporting.report_prefix,
         help="Specify an optional prefix for the report and hit logs",
     )
     parser.add_argument(
@@ -173,6 +174,14 @@ def main(arguments=[]) -> None:
         help="buff to use",
     )
 
+    ## REPORTING
+    parser.add_argument(
+        "--taxonomy",
+        type=str,
+        default=_config.reporting.taxonomy,
+        help="specify a MISP top-level taxonomy to be used for grouping probes in reporting. e.g. 'avid-effect', 'owasp' ",
+    )
+
     ## COMMANDS
     # items placed here also need to be listed in command_options below
     parser.add_argument(
@@ -292,10 +301,13 @@ def main(arguments=[]) -> None:
             setattr(_config.run, param, value)
         elif param in _config.plugins_params:
             setattr(_config.plugins, param, value)
+        elif param in _config.reporting_params:
+            setattr(_config.reporting, param, value)
         else:
             ignored_params.append((param, value))
+    logging.debug("non-config params: %s", ignored_params)
 
-    # put plguin spec into the _spec config value, if set at cli
+    # put plugin spec into the _spec config value, if set at cli
     if "probes" in args:
         _config.plugins.probe_spec = args.probes
     if "detectors" in args:
