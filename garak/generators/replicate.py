@@ -21,7 +21,10 @@ from garak.generators.base import Generator
 
 
 class ReplicateGenerator(Generator):
-    """Wrapper for the Replicate hosted models (replicate.com). Expects API key in REPLICATE_API_TOKEN environment variable."""
+    """
+    Interface for public endpoints of models hosted in Replicate (replicate.com).
+    Expects API key in REPLICATE_API_TOKEN environment variable.
+    """
 
     generator_family_name = "Replicate"
     temperature = 1
@@ -31,7 +34,7 @@ class ReplicateGenerator(Generator):
 
     def __init__(self, name, generations=10):
         self.name = name
-        self.fullname = f"Replicate {self.name}"
+        self.fullname = f"{self.generator_family_name} {self.name}"
         self.seed = 9
         if hasattr(_config.run, "seed"):
             self.seed = _config.run.seed
@@ -40,7 +43,7 @@ class ReplicateGenerator(Generator):
 
         if os.getenv("REPLICATE_API_TOKEN", default=None) is None:
             raise ValueError(
-                'Put the Replicate API token in the REPLICATE_API_TOKEN environment variable (this was empty)\n \
+                '🛑 Put the Replicate API token in the REPLICATE_API_TOKEN environment variable (this was empty)\n \
                 e.g.: export REPLICATE_API_TOKEN="r8-123XXXXXXXXXXXX"'
             )
         self.replicate = importlib.import_module("replicate")
@@ -62,5 +65,32 @@ class ReplicateGenerator(Generator):
         )
         return "".join(response_iterator)
 
-
+class InferenceEndpoint(ReplicateGenerator):
+    """
+    Interface for private Replicate endpoints.
+    Expects `name` in the format of `username/deployed-model-name`.
+    """
+    @backoff.on_exception(
+        backoff.fibo, replicate.exceptions.ReplicateError, max_value=70
+    )
+    def _call_model(self, prompt):
+        deployment = self.replicate.deployments.get(self.name)
+        prediction = deployment.predictions.create(
+            input={
+                "prompt": prompt,
+                "max_length": self.max_tokens,
+                "temperature": self.temperature,
+                "top_p": self.top_p,
+                "repetition_penalty": self.repetition_penalty,
+            },
+        )
+        prediction.wait()
+        try:
+            response = "".join(prediction.output)
+        except TypeError:
+            raise IOError(
+                "Replicate endpoint didn't generate a response. Make sure the endpoint is active."
+            )
+        return response
+    
 default_class = "ReplicateGenerator"

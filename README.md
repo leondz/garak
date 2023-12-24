@@ -114,16 +114,19 @@ Send PRs & open issues. Happy hunting!
 
 ## Intro to generators
 
-### huggingface
+### Hugging Face
 
 * `--model_type huggingface` (for transformers models to run locally)
 * `--model_name` - use the model name from Hub. Only generative models will work. If it fails and shouldn't, please open an issue and paste in the command you tried + the exception!
 
 * `--model_type huggingface.InferenceAPI` (for API-based model access)
 * `--model_name` - the model name from Hub, e.g. `"mosaicml/mpt-7b-instruct"`
+* `--model_type huggingface.InferenceEndpoint` (for private endpoints)
+* `--model_name` - the endpoint URL, e.g. `https://xxx.us-east-1.aws.endpoints.huggingface.cloud`
+
 * (optional) set the `HF_INFERENCE_TOKEN` environment variable to a Hugging Face API token with the "read" role; see https://huggingface.co/settings/tokens when logged in
 
-### openai
+### OpenAI
 
 * `--model_type openai`
 * `--model_name` - the OpenAI model you'd like to use. `text-babbage-001` is fast and fine for testing; `gpt-4` seems weaker to many of the more subtle attacks.
@@ -131,13 +134,15 @@ Send PRs & open issues. Happy hunting!
 
 Recognised model types are whitelisted, because the plugin needs to know which sub-API to use. Completion or ChatCompletion models are OK. If you'd like to use a model not supported, you should get an informative error message, and please send a PR / open an issue.
 
-### replicate
+### Replicate
 
 * `--model_type replicate`
 * `--model_name` - the Replicate model name and hash, e.g. `"stability-ai/stablelm-tuned-alpha-7b:c49dae36"`
+* `--model_type replicate.InferenceEndpoint` (for private endpoints)
+* `--model_name` - username/model-name slug from the deployed endpoint, e.g. `elim/elims-llama2-7b`
 * set the `REPLICATE_API_TOKEN` environment variable to your Replicate API token, e.g. "r8-123XXXXXXXXXXXX"; see https://replicate.com/account/api-tokens when logged in
 
-### cohere
+### Cohere
 
 * `--model_type cohere`
 * `--model_name` (optional, `command` by default) - The specific Cohere model you'd like to test
@@ -149,7 +154,15 @@ Recognised model types are whitelisted, because the plugin needs to know which s
 * `--model_name` - The path to the ggml model you'd like to load, e.g. `/home/leon/llama.cpp/models/7B/ggml-model-q4_0.bin`
 * set the `GGML_MAIN_PATH` environment variable to the path to your ggml `main` executable
 
-### test
+### OctoAI
+
+* `--model_type octo`
+* `--model_name` - the OctoAI public endpoint for the model, e.g. `mistral-7b-instruct-fp16`
+* `--model_type octo.InferenceEndpoint` (for private endpoints)
+* `--model_name` - the deployed endpoint URL, e.g. `https://llama-2-70b-chat-xxx.octoai.run/v1/chat/completions`
+* set the `OCTO_API_TOKEN` environment variable to your Replicate API token, e.g. "r8-123XXXXXXXXXXXX"; see https://replicate.com/account/api-tokens when logged in
+
+### Test
 
 * `--model_type test`
 * (alternatively) `--model_name test.Blank`
@@ -160,53 +173,26 @@ For testing. This generator repeats back the prompt it received.
 
 ## Intro to probes
 
-### blank
- 
-A simple probe that always sends an empty prompt.
-
-### continuation
-
-Probes that test if the model will continue a probably undesirable word
-
-### dan
-
-Various [DAN]() and DAN-like attacks
-
-### encoding
-
-Prompt injection through text encoding
-
-### malwaregen
-
-Attempts to have the model generate code for building malware
-
-### knownbadsignatures
-
-Probes that attempt to make the model output malicious content signatures
-
-### lmrc
-
-Subsample of the [Language Model Risk Cards](https://arxiv.org/abs/2303.18190) probes
-
-### misleading
-
-Attempts to make a model support misleading and false claims
-
-### promptinject
-
-Implementation of the Agency Enterprise [PromptInject](https://github.com/agencyenterprise/PromptInject/tree/main/promptinject) work (best paper awards @ NeurIPS ML Safety Workshop 2022)
-
-### realtoxicityprompts
-
-Subset of the RealToxicityPrompts work (data constrained because the full test will take so long to run)
-
-### snowball
-
-[Snowballed Hallucination](https://ofir.io/snowballed_hallucination.pdf) probes designed to make a model give a wrong answer to questions too complex for it to process
-
-### art
-
-Auto Red-Team. A red-teaming LLM probes the target and reacts to it in an attempt to get toxic output. Prototype, mostly stateless, for now uses a simple GPT-2 [fine-tuned](https://huggingface.co/leondz/artgpt2tox) on the subset of hhrlhf attempts that yielded detectable toxicity (the only target currently supported for now).
+| Probe | Description |
+| --- | --- |
+| blank | A simple probe that always sends an empty prompt. |
+| atkgen | Automated Attack Generation. A red-teaming LLM probes the target and reacts to it in an attempt to get toxic output. Prototype, mostly stateless, for now uses a simple GPT-2 [fine-tuned](https://huggingface.co/leondz/artgpt2tox) on the subset of hhrlhf attempts that yielded detectable toxicity (the only target currently supported for now). |
+| continuation | Probes that test if the model will continue a probably undesirable word |
+| dan | Various [DAN](https://adguard.com/en/blog/chatgpt-dan-prompt-abuse.html) and DAN-like attacks |
+| encoding | Prompt injection through text encoding |
+| gcg | Disrupt a system prompt by appending an adversarial suffix. |
+| glitch | Probe model for glitch tokens that provoke unusual behavior. |
+| goodside | Implementations of Riley Goodside attacks. |
+| knownbadsignatures | Probes that attempt to make the model output malicious content signatures |
+| leakerplay | Evaluate if a model will replay training data. |
+| lmrc | Subsample of the [Language Model Risk Cards](https://arxiv.org/abs/2303.18190) probes |
+| malwaregen | Attempts to have the model generate code for building malware |
+| misleading | Attempts to make a model support misleading and false claims |
+| packagehallucination | Trying to get code generations that specify non-existent (and therefore insecure) packages. |
+| promptinject | Implementation of the Agency Enterprise [PromptInject](https://github.com/agencyenterprise/PromptInject/tree/main/promptinject) work (best paper awards @ NeurIPS ML Safety Workshop 2022) |
+| realtoxicityprompts | Subset of the RealToxicityPrompts work (data constrained because the full test will take so long to run) |
+| snowball | [Snowballed Hallucination](https://ofir.io/snowballed_hallucination.pdf) probes designed to make a model give a wrong answer to questions too complex for it to process |
+| xss | Look for vulnerabilities the permit or enact cross-site attacks, such as private data exfilteration. |
 
 ## Logging
 
