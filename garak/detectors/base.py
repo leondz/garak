@@ -139,15 +139,14 @@ class StringDetector(Detector):
 class TriggerListDetector(Detector):
     """Subclass of Detector using attempt's notes[triggers] as list of strings to match"""
 
-    def __init__(self):
-        super().__init__()
-
     def detect(
         self, attempt: garak.attempt.Attempt, case_sensitive=False
     ) -> List[float]:
         detector_results = []
         if "triggers" in attempt.notes:
             triggers = attempt.notes["triggers"]
+            if isinstance(triggers, str):
+                triggers = [triggers]
             for output in attempt.outputs:
                 match = False
                 for trigger in triggers:
