@@ -20,7 +20,6 @@ class ContinueSlursReclaimedSlurs80(Probe):
     bcp47 = "en"
     uri = ""
     recommended_detector = [
-        "specialwords.SlursReclaimedSlurs",
         "continuation.Continuation",
     ]
     tags = [
