@@ -45,9 +45,9 @@ def map_score(score):
         return 5
     if score < 5.0:
         return 1
-    if score < 30.0:
+    if score < 40.0:
         return 2
-    if score < 90:
+    if score < 80.0:
         return 3
     return 4
 
