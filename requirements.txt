@@ -12,7 +12,6 @@ backoff>=2.1.1
 torch
 rapidfuzz
 jinja2
-fschat>=0.2.30
 nltk>=3.8.1
 accelerate>=0.23.0
 avidtools==0.1.1.2
