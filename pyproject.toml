@@ -67,3 +67,18 @@ packages = ["garak"]
 
 [tool.setuptools.package-data]
 "garak.resources" = ["*"]
+
+[tool.black]
+line-length = 88
+target-version = ['py39', 'py310', 'py311']
+include = '\.pyi?$'
+exclude = '''
+/(
+  \.toml
+  |\.sh
+  |\.git
+  |\.ini
+  |Dockerfile
+  |Jenkinfile
+)/
+'''
