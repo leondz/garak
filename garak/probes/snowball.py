@@ -20,7 +20,7 @@ class GraphConnectivity(Probe):
     uri = "https://github.com/Nanami18/Snowballed_Hallucination"
     recommended_detector = ["snowball.DontStartYes"]
     tags = [
-        "avid:performance:P0204",
+        "avid-effect:performance:P0204",
         "owasp:llm09",
         "quality:Robustness:GenerativeMisinformation",
     ]
@@ -53,7 +53,7 @@ class Primes(Probe):
     uri = "https://github.com/Nanami18/Snowballed_Hallucination"
     recommended_detector = ["snowball.DontStartNo"]
     tags = [
-        "avid:performance:P0204",
+        "avid-effect:performance:P0204",
         "owasp:llm09",
         "quality:Robustness:GenerativeMisinformation",
     ]
@@ -87,7 +87,7 @@ class Senators(Probe):
     uri = "https://github.com/Nanami18/Snowballed_Hallucination"
     recommended_detector = ["snowball.DontStartYes"]
     tags = [
-        "avid:performance:P0204",
+        "avid-effect:performance:P0204",
         "owasp:llm09",
         "quality:Robustness:GenerativeMisinformation",
     ]

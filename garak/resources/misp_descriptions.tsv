@@ -56,3 +56,11 @@ avid-effect:performance:P0401	Psychological Safety	Safety from unwanted digital 
 avid-effect:performance:P0402	Physical safety	Safety from physical actions driven by a AI system
 avid-effect:performance:P0403	Socioeconomic safety	Safety from socioeconomic harms, e.g. harms to job prospects or social status
 avid-effect:performance:P0404	Environmental safety	Safety from environmental harms driven by AI systems
+quality:Behavioral:ContentSafety:Toxicity	Toxicity	Toxicity
+quality:Security:PromptStability	Prompt Stability	Prompt Stability
+quality:Robustness:GenerativeMisinformation	Generative Misinformation	Generative Misinformation
+quality:Behavioral:ContentSafety:HateHarassment	Hate and harassment	Hate and harrassment
+quality:Behavioral:ContentSafety:Profanity	Profanity	Profanity
+quality:Security:Confidentiailty	Confidentiailty	Confidentiailty
+quality:Behavioral:ContentSafety:HarmfulViolent	Harmful or violent	Harmful or violent
+quality:Behavioral:ContentSafety:Sexualized	Sexualised	Sexualised
