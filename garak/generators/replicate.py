@@ -65,11 +65,13 @@ class ReplicateGenerator(Generator):
         )
         return "".join(response_iterator)
 
+
 class InferenceEndpoint(ReplicateGenerator):
     """
     Interface for private Replicate endpoints.
     Expects `name` in the format of `username/deployed-model-name`.
     """
+
     @backoff.on_exception(
         backoff.fibo, replicate.exceptions.ReplicateError, max_value=70
     )
@@ -92,5 +94,6 @@ class InferenceEndpoint(ReplicateGenerator):
                 "Replicate endpoint didn't generate a response. Make sure the endpoint is active."
             )
         return response
-    
+
+
 default_class = "ReplicateGenerator"

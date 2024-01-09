@@ -55,12 +55,9 @@ class OctoGenerator(Generator):
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a helpful assistant. Keep your responses limited to one short paragraph if possible."
+                    "content": "You are a helpful assistant. Keep your responses limited to one short paragraph if possible.",
                 },
-                {
-                    "role": "user",
-                    "content": prompt
-                }
+                {"role": "user", "content": prompt},
             ],
             model=self.name,
             max_tokens=self.max_tokens,
@@ -68,9 +65,10 @@ class OctoGenerator(Generator):
             temperature=self.temperature,
             top_p=self.top_p,
         )
-        
+
         return outputs.choices[0].message.content
-    
+
+
 class InferenceEndpoint(OctoGenerator):
     """Interface for OctoAI private endpoints
 
@@ -86,7 +84,7 @@ class InferenceEndpoint(OctoGenerator):
         self.octo_model = "-".join(
             self.name.replace("-demo", "").replace("https://", "").split("-")[:-1]
         )
-    
+
     @backoff.on_exception(backoff.fibo, octoai.errors.OctoAIServerError, max_value=70)
     def _call_model(self, prompt):
         outputs = self.client.infer(
@@ -104,5 +102,6 @@ class InferenceEndpoint(OctoGenerator):
             },
         )
         return outputs.get("choices")[0].get("message").get("content")
+
 
 default_class = "OctoGenerator"

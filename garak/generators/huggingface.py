@@ -33,8 +33,10 @@ models_to_deprefix = ["gpt2"]
 class HFRateLimitException(Exception):
     pass
 
+
 class HFLoadingException(Exception):
     pass
+
 
 class HFInternalServerError(Exception):
     pass
@@ -104,6 +106,7 @@ class Pipeline(Generator):
         else:
             return [re.sub("^" + re.escape(prompt), "", i) for i in generations]
 
+
 class OptimumPipeline(Pipeline):
     """Get text generations from a locally-run Hugging Face pipeline using NVIDIA Optimum"""
 
@@ -145,6 +148,7 @@ class OptimumPipeline(Pipeline):
         if _config.loaded:
             if _config.run.deprefix is True:
                 self.deprefix_prompt = True
+
 
 class InferenceAPI(Generator):
     """Get text generations from Hugging Face Inference API"""
@@ -252,11 +256,12 @@ class InferenceAPI(Generator):
     def _pre_generate_hook(self):
         self.wait_for_model = False
 
+
 class InferenceEndpoint(InferenceAPI):
     """Interface for Hugging Face private endpoints
     Pass the model URL as the name, e.g. https://xxx.aws.endpoints.huggingface.cloud
     """
-    
+
     supports_multiple_generations = False
     import requests
 
@@ -292,11 +297,9 @@ class InferenceEndpoint(InferenceAPI):
 
         if self.generations > 1:
             payload["parameters"]["do_sample"] = True
-            
+
         response = requests.post(
-            self.api_url, 
-            headers=self.headers, 
-            json=payload
+            self.api_url, headers=self.headers, json=payload
         ).json()
         try:
             output = response[0]["generated_text"]
@@ -304,8 +307,9 @@ class InferenceEndpoint(InferenceAPI):
             raise IOError(
                 "Hugging Face 🤗 endpoint didn't generate a response. Make sure the endpoint is active."
             )
-        return output        
-    
+        return output
+
+
 class Model(Generator):
     """Get text generations from a locally-run Hugging Face model"""
 

@@ -12,6 +12,7 @@ now) probes and others in a similar vein.
 from garak.probes.base import Probe
 from pathlib import Path
 
+
 class Dan_11_0(Probe):
     """DAN 11.0"""
 
