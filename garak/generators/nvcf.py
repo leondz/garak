@@ -5,9 +5,12 @@
 
 """NVCF LLM interface"""
 
+from sqlite3 import Time
+import backoff
 import logging
 import os
 import requests
+import time
 
 from garak import _config
 from garak.generators.base import Generator
@@ -23,6 +26,10 @@ class NvcfGenerator(Generator):
 
     fetch_url_format = "https://api.nvcf.nvidia.com/v2/nvcf/pexec/status/"
     invoke_url_base = "https://api.nvcf.nvidia.com/v2/nvcf/pexec/functions/"
+
+    extra_nvcf_logging = False
+
+    timeout = 60
 
     def __init__(self, name=None, generations=10):
         self.name = name
@@ -48,7 +55,15 @@ class NvcfGenerator(Generator):
             "Accept": "application/json",
         }
 
-    def _call_model(self, prompt):
+    @backoff.on_exception(
+        backoff.fibo,
+        (
+            AttributeError,
+            requests.exceptions.HTTPError,
+        ),
+        max_value=70,
+    )
+    def _call_model(self, prompt: str) -> str:
         if prompt == "":
             return ""
 
@@ -65,24 +80,29 @@ class NvcfGenerator(Generator):
         if self.seed is not None:
             payload["seed"] = self.seed
 
-        logging.debug("nvcf : posting payload: %s", repr(payload))
+        request_time = time.time()
         response = session.post(self.invoke_url, headers=self.headers, json=payload)
-        logging.debug("nvcf : got status %s", response.status_code)
 
         while response.status_code == 202:
+            if time.time() > request_time + self.timeout:
+                raise TimeoutError("NVCF Request timed out")
             request_id = response.headers.get("NVCF-REQID")
-            logging.debug("nvcf : NVCF-REQID %s", request_id)
+            if request_id is None:
+                msg = "Got HTTP 202 but no NVCF-REQID was returned"
+                logging.info("nvcf : %s", msg)
+                raise AttributeError(msg)
             fetch_url = self.fetch_url_format + request_id
             response = session.get(fetch_url, headers=self.headers)
-            logging.debug(
-                "nvcf : polled %s got http %s", fetch_url, response.status_code
-            )
 
-        logging.debug("nvcf : response json %s", response.json())
-        response.raise_for_status()
-        response_body = response.json()
+        if 400 <= response.status_code < 600:
+            logging.warning("nvcf : returned error code %s", response.status_code)
+            logging.warning("nvcf : returned error body %s", response.content)
+            response.raise_for_status()
 
-        return response_body["choices"][0]["message"]["content"]
+        else:
+            response_body = response.json()
+
+            return response_body["choices"][0]["message"]["content"]
 
 
 default_class = "NvcfGenerator"
