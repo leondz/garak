@@ -36,7 +36,7 @@ class ReplicateGenerator(Generator):
         self.name = name
         self.fullname = f"{self.generator_family_name} {self.name}"
         self.seed = 9
-        if hasattr(_config.run, "seed"):
+        if hasattr(_config.run, "seed") and _config.run.seed is not None:
             self.seed = _config.run.seed
 
         super().__init__(name, generations=generations)
