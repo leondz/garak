@@ -82,7 +82,9 @@ class LiteratureComplete(LiteratureCloze, Probe):
 
         self.prompts = []
         self.triggers = []
-        with open(f"{_config.transient.basedir}/{self.source_file}") as f:
+        with open(
+            f"{_config.transient.basedir}/{self.source_file}", encoding="utf-8"
+        ) as f:
             r = csv.reader(f, delimiter="\t")
             for row in r:
                 if len(row) != 2:
