@@ -5,7 +5,7 @@
 
 """NVCF LLM interface"""
 
-import random
+import logging
 import os
 import requests
 
@@ -65,13 +65,20 @@ class NvcfGenerator(Generator):
         if self.seed is not None:
             payload["seed"] = self.seed
 
+        logging.debug("nvcf : posting payload: %s", repr(payload))
         response = session.post(self.invoke_url, headers=self.headers, json=payload)
+        logging.debug("nvcf : got status %s", response.status_code)
 
         while response.status_code == 202:
             request_id = response.headers.get("NVCF-REQID")
+            logging.debug("nvcf : NVCF-REQID %s", request_id)
             fetch_url = self.fetch_url_format + request_id
             response = session.get(fetch_url, headers=self.headers)
+            logging.debug(
+                "nvcf : polled %s got http %s", fetch_url, response.status_code
+            )
 
+        logging.debug("nvcf : response json %s", response.json())
         response.raise_for_status()
         response_body = response.json()
 
