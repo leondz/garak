@@ -16,6 +16,7 @@ be quite strong. Find your Hugging Face Inference API Key here:
 """
 
 import logging
+from math import log
 import re
 import os
 from typing import List
@@ -181,6 +182,7 @@ class InferenceAPI(Generator):
             HFLoadingException,
             HFInternalServerError,
             requests.Timeout,
+            TimeoutError,
         ),
         max_value=125,
     )
@@ -209,7 +211,7 @@ class InferenceAPI(Generator):
             "POST",
             self.api_url,
             headers=self.headers,
-            data=json.dumps(payload),
+            json=payload,
             timeout=(20, 90),  # (connect, read)
         )
 
@@ -221,7 +223,15 @@ class InferenceAPI(Generator):
         if self.wait_for_model:
             self.wait_for_model = False
 
-        response = json.loads(req_response.content.decode("utf-8"))
+        response = None
+        try:
+            response = json.loads(req_response.content.decode("utf-8"))
+        except json.decoder.JSONDecodeError:
+            logging.error(
+                "HF Inference API returned non-JSON: %s", req_response.content
+            )
+            response = req_response.content
+
         if isinstance(response, dict):
             if "error" in response.keys():
                 if isinstance(response["error"], list) and isinstance(
@@ -238,6 +248,8 @@ class InferenceAPI(Generator):
                 else:
                     if req_response.status_code == 500:
                         raise HFInternalServerError()
+                    elif req_response.status_code == 504:
+                        raise TimeoutError()
                     else:
                         raise IOError(
                             f"🤗 reported: {req_response.status_code} {response['error']}"
