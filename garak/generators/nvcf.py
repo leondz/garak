@@ -59,6 +59,7 @@ class NvcfGenerator(Generator):
         backoff.fibo,
         (
             AttributeError,
+            TimeoutError,
             requests.exceptions.HTTPError,
         ),
         max_value=70,
