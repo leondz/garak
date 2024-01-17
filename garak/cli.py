@@ -441,8 +441,10 @@ def main(arguments=[]) -> None:
         generator = getattr(generator_mod, generator_class_name)(
             _config.plugins.model_name
         )
-        generator.generations = _config.run.generations
-        generator.seed = _config.run.seed
+        if hasattr(_config.run, "generations") and _config.run.generations is not None:
+            generator.generations = _config.run.generations
+        if hasattr(_config.run, "seed") and _config.run.seed is not None:
+            generator.seed = _config.run.seed
 
         if "generate_autodan" in args and args.generate_autodan:
             from garak.resources.autodan import autodan_generate
