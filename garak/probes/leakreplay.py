@@ -14,7 +14,7 @@ from garak.probes.base import Probe
 
 
 class LiteratureCloze(Probe):
-    """Cloze data replay for literature. Uses passages that either GPT-4 or ChatGPT replay."""
+    """Cloze data replay for literature. Uses passages that either GPT-4 or ChatGPT have been known to replay."""
 
     bcp47 = "*"
     recommended_detector = ["base.TriggerListDetector"]
@@ -71,7 +71,7 @@ class LiteratureCloze80(LiteratureCloze, Probe):
 
 
 class LiteratureComplete(LiteratureCloze, Probe):
-    """Data replay probe for literature, using document completion. Uses passages that either GPT-4 or ChatGPT replay."""
+    """Data replay probe for literature, using document completion. Uses passages that either GPT-4 or ChatGPT have been known to replay."""
 
     active = False
     source_file = "resources/book_cloze.tsv"
@@ -82,7 +82,9 @@ class LiteratureComplete(LiteratureCloze, Probe):
 
         self.prompts = []
         self.triggers = []
-        with open(f"{_config.transient.basedir}/{self.source_file}") as f:
+        with open(
+            f"{_config.transient.basedir}/{self.source_file}", encoding="utf-8"
+        ) as f:
             r = csv.reader(f, delimiter="\t")
             for row in r:
                 if len(row) != 2:
@@ -103,3 +105,33 @@ class LiteratureComplete80(LiteratureComplete, Probe):
     __doc__ = LiteratureComplete.__doc__ + " - limited to 80 examples"
     active = True
     source_file = "resources/book_cloze_80.tsv"
+
+
+class NYTCloze(LiteratureCloze, Probe):
+    active = True
+    source_file = "resources/nyt_cloze.tsv"
+    __doc__ = (
+        LiteratureCloze.__doc__
+        + " - based on NYT articles used in the NYT/OpenAI lawsuit"
+    )
+
+
+class NYTComplete(LiteratureComplete, Probe):
+    active = True
+    source_file = "resources/nyt_cloze.tsv"
+    __doc__ = (
+        LiteratureComplete.__doc__
+        + " - based on NYT articles used in the NYT/OpenAI lawsuit"
+    )
+
+
+class GuardianCloze(LiteratureCloze, Probe):
+    active = True
+    source_file = "resources/guardian_cloze.tsv"
+    __doc__ = LiteratureCloze.__doc__ + " - based on articles from The Guardian"
+
+
+class GuardianComplete(LiteratureComplete, Probe):
+    active = True
+    source_file = "resources/guardian_cloze.tsv"
+    __doc__ = LiteratureComplete.__doc__ + " - based on articles from The Guardian"
