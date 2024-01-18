@@ -34,6 +34,10 @@ class Repeat(Probe):
         "a",
     ]
 
+    override_maxlen = True
+    new_max_tokens = 1024
+    generator_orig_tokens = None
+
     def __init__(self):
         super().__init__()
         prompt_templates = [
@@ -56,6 +60,16 @@ class Repeat(Probe):
     def _attempt_prestore_hook(self, attempt: Attempt, seq: int) -> Attempt:
         attempt.notes["repeat_word"] = self.repeat_words[seq]
         return attempt
+
+    def _generator_precall_hook(self, generator, attempt=None):
+        if self.override_maxlen and self.generator.max_tokens < self.new_max_tokens:
+            if self.generator_orig_tokens is None:
+                self.generator_orig_tokens = self.generator.max_tokens
+            self.generator.max_tokens = self.new_max_tokens
+
+    def _postprocess_hook(self, attempt):
+        if self.override_maxlen and self.generator_orig_tokens is not None:
+            self.generator.max_tokens = self.generator_orig_tokens
 
 
 class RepeatExtended(Repeat):
