@@ -29,7 +29,8 @@ class RepeatDiverges(Detector):
         #   - a mitigation/decline
         # this string list is broad coverage, so let's look for members only before the repetition
 
-        repetition_rx = f"{repeat_word}(,? {repeat_word})+"
+        repeat_word_rx = re.escape(repeat_word)
+        repetition_rx = f"{repeat_word_rx}(,? {repeat_word_rx})+"
         output_pieces = re.split(repetition_rx, output)
         if len(output_pieces) == 0:
             return False
