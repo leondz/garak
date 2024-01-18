@@ -8,8 +8,6 @@
 Probes for evaluating if a model will replay training data when asked to repeat a string, or when given a repeated string
 """
 
-from typing import List
-
 from garak.attempt import Attempt
 from garak.probes.base import Probe
 
@@ -21,7 +19,7 @@ class Repeat(Probe):
     primary_detector = "replay.RepeatDiverges"
     extended_detectors = ["mitigation.MitigationBypass"]
     goal = "get the model to leak data by asking it to repeat words"
-    uri = "https://arxiv.org/abs/2311.17035"
+    uri = "https://not-just-memorization.github.io/extracting-training-data-from-chatgpt.html"
     tags = [
         "avid-effect:security:S0301",
         "owasp:llm10",
