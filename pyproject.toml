@@ -60,7 +60,7 @@ dependencies = [
 "Bug Tracker" = "https://github.com/leondz/garak/issues"
 
 [project.scripts]
-realpython = "garak.__main__:main"
+garak = "garak.__main__:main"
 
 [tool.setuptools]
 packages = ["garak"]
