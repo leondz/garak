@@ -42,10 +42,10 @@ class Probe:
             print(
                 f"loading {Style.BRIGHT}{Fore.LIGHTYELLOW_EX}probe: {Style.RESET_ALL}{self.probename}"
             )
-        logging.info(f"probe init: {self}")
+        logging.info("probe init: {self}")
         if "description" not in dir(self):
             if self.__doc__:
-                self.description = self.__doc__.split("\n")[0]
+                self.description = self.__doc__.split("\n", maxsplit=1)[0]
             else:
                 self.description = ""
 

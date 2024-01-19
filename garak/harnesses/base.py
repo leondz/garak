@@ -20,7 +20,7 @@ from typing import List
 
 import tqdm
 
-from garak.attempt import *
+import garak.attempt
 from garak import _config
 from garak import _plugins
 
@@ -31,7 +31,7 @@ class Harness:
     active = True
 
     def __init__(self):
-        logging.info(f"harness init: %s", self)
+        logging.info("harness init: %s", self)
 
     def _load_buffs(self, buffs: List) -> None:
         """load buff instances into global config
@@ -90,6 +90,7 @@ class Harness:
             if not probe:
                 continue
             attempt_results = probe.probe(model)
+            assert isinstance(attempt_results, list)
 
             eval_outputs, eval_results = [], defaultdict(list)
             first_detector = True
@@ -109,7 +110,7 @@ class Harness:
                 first_detector = False
 
             for attempt in attempt_results:
-                attempt.status = ATTEMPT_COMPLETE
+                attempt.status = garak.attempt.ATTEMPT_COMPLETE
                 _config.transient.reportfile.write(json.dumps(attempt.as_dict()) + "\n")
 
             if len(attempt_results) == 0:

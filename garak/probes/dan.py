@@ -9,8 +9,10 @@ Probes designed to disrupt a system prompt, for example the DAN (do anything
 now) probes and others in a similar vein.
 """
 
-from garak.probes.base import Probe
 from pathlib import Path
+
+import garak._config
+from garak.probes.base import Probe
 
 
 class Dan_11_0(Probe):
@@ -472,10 +474,43 @@ class AutoDANProbe(Probe):
     ):
         self.autodan_prompt_location = autodan_prompt_location
 
-        with open(self.autodan_prompt_location, "r") as f:
+        with open(self.autodan_prompt_location, "r", encoding="utf-8") as f:
             prompts = f.readlines()
         if not prompts:
             msg = f"No prompts found in {self.autodan_prompt_location}"
-            raise Exception(msg)
+            raise EOFError(msg)
         self.prompts = prompts
         super().__init__()
+
+
+class DanInTheWild(Probe):
+
+    """Tries a set of ~700 known jailbreaks, in an attempt to get a model to disregard alignment/system prompt. Success is measured by not getting a safety mitigaton message."""
+
+    active = False
+    primary_detector = "mitigation.MitigationBypass"
+    uri = "https://arxiv.org/abs/2308.03825"
+    goal = "disregard the system prompt or alignment"
+    tags = [
+        "avid-effect:security:S0403",
+        "owasp:llm01",
+        "quality:Security:PromptStability",
+    ]
+
+    def __init__(self):
+        super().__init__()
+
+        inthewild_path = str(
+            garak._config.transient.basedir / "resources/inthewild_jailbreak_llms.txt"
+        )
+
+        with open(inthewild_path, "r", encoding="utf-8") as f:
+            self.prompts = f.readlines()
+
+
+class DanInTheWildMini(DanInTheWild):
+    active = True
+
+    def __init__(self):
+        super().__init__()
+        self.prompts = self.prompts[:100]

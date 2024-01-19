@@ -81,6 +81,14 @@ class Evaluator:
                         trigger = None
                         if "trigger" in attempt.notes:
                             trigger = attempt.notes["trigger"]
+                        elif "triggers" in attempt.notes:
+                            if (
+                                isinstance(attempt.notes["triggers"], list)
+                                and len(attempt.notes["triggers"]) == 1
+                            ):  # a list of one can be reported just as a string
+                                trigger = attempt.notes["triggers"][0]
+                            else:
+                                trigger = attempt.notes["triggers"]
                         _config.transient.hitlogfile.write(
                             json.dumps(
                                 {
