@@ -5,7 +5,6 @@
 
 """NVCF LLM interface"""
 
-from sqlite3 import Time
 import backoff
 import logging
 import os
