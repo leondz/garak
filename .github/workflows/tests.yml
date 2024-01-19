@@ -1,4 +1,4 @@
-name: Python package
+name: Garak pytest
 
 on: [push]
 
