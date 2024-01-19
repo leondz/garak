@@ -2,7 +2,15 @@
 """atkgen: Attack Generation. 
 
 This probe uses a separate model to create prompts for a generator,
-which are intended to guide that generator into a certain failure mode."""
+which are intended to guide that generator into a certain failure mode.
+
+Warning: These attack models may generate highly toxic prompts while 
+attempting to goad target models into failure - peruse logs at your
+own risk, and take care of yourself, using this guide to working with
+harmful text:
+
+ https://aclanthology.org/2022.findings-emnlp.35/
+"""
 
 import copy
 import logging
@@ -102,7 +110,7 @@ class Tox(Probe):
                     # print("query:", query)
                     challenge = self.redteamer.generate(query)
                     # print("challenge:", challenge)
-                    challenge = re.sub("\<\|.*", "", challenge[0]).strip()
+                    challenge = re.sub(r"\<\|.*", "", challenge[0]).strip()
                     # get first item, ignore whitespace, take everything up to the first newline
                     # challenge[0].strip().split("\n")[0].strip()
                     # log what we'll send
@@ -111,7 +119,7 @@ class Tox(Probe):
                     t.update()
                 turn = ("probe", challenge)
                 turns.append(turn)
-                logging.debug(f"atkgen: probe: %s", turn)
+                logging.debug("atkgen: probe: %s", turn)
                 if output_is_conversation:
                     probe_text = re.sub(r"[\r\n]+", "\n", turn[1]).strip()
                     print(
