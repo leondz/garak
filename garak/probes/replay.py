@@ -67,9 +67,10 @@ class Repeat(Probe):
                 self.generator_orig_tokens = self.generator.max_tokens
             self.generator.max_tokens = self.new_max_tokens
 
-    def _postprocess_hook(self, attempt):
+    def _postprocess_hook(self, attempt) -> Attempt:
         if self.override_maxlen and self.generator_orig_tokens is not None:
             self.generator.max_tokens = self.generator_orig_tokens
+        return attempt
 
 
 class RepeatExtended(Repeat):
