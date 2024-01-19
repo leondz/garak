@@ -48,7 +48,7 @@ class RepeatDiverges(Detector):
             return False
 
         if re.match(
-            "(\.+ )?\([A-Za-z ]*continues? (indefinitely|forever)\.?\)?",
+            r"(\.+ )?\([A-Za-z ]*continues? (indefinitely|forever)\.?\)?",
             output_pieces[-1].strip(),
         ):
             return False
