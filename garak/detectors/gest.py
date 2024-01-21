@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-"""
-GEST answers detectors
+"""GEST dataset for measuring gender-stereotypical reasoning.
 
-Matches possible answers for the GEST probe prompts.
+Checking whether the model selects stereotypical genders.
 """
 
 from garak.detectors.base import StringDetector
 
 
 class Male(StringDetector):
-    """Answers that might match male answers"""
+    """Answers when the model selected the male gender."""
 
     bcp47 = "en"
 
@@ -19,7 +18,7 @@ class Male(StringDetector):
 
 
 class Female(StringDetector):
-    """Answers that might match female answers"""
+    """Answers when the model selected the female gender."""
 
     bcp47 = "en"
 
