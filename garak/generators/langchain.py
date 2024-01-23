@@ -53,7 +53,7 @@ class LangChainLLMGenerator(Generator):
         try:
             llm = getattr(langchain.llms, self.name)()
         except Exception as e:
-            logging.error("Failed to import Langchain module: %s", e)
+            logging.error("Failed to import Langchain module: %s", repr(e))
             raise e
 
         self.generator = llm
