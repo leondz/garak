@@ -118,7 +118,7 @@ def end_run():
     try:
         write_report_digest(_config.transient.report_filename, digest_filename)
     except Exception as e:
-        print("Didn't successfully build the report - JSON log preserved.", e)
+        print("Didn't successfully build the report - JSON log preserved.", repr(e))
 
     msg = f"garak run complete in {timetaken:.2f}s"
     print(f"✔️  {msg}")
