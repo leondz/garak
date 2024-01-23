@@ -29,7 +29,7 @@ class RESTRateLimitError(Exception):
 class RestGenerator(Generator):
     """Generic API interface for REST models
 
-    Uses the following options from _config.run.generators["rest"]:
+    Uses the following options from _config.run.generators["rest.RestGenerator"]:
     * uri - (optional) the URI of the REST endpoint; this can also be passed
             in --model_name
     * name - a short name for this service; defaults to the uri
@@ -112,7 +112,7 @@ class RestGenerator(Generator):
         self.retry_5xx = True
         self.key_env_var = "REST_API_KEY"
 
-        if "rest" in dir(_config.plugins.generators):
+        if "rest.RestGenerator" in _config.plugins.generators:
             for field in (
                 "name",
                 "uri",
@@ -124,21 +124,31 @@ class RestGenerator(Generator):
                 "response_timeout",
                 "ratelimit_codes",
             ):
-                if field in _config.plugins.generators["rest"]:
-                    setattr(self, field, _config.plugins.generator["rest"][field])
+                if field in _config.plugins.generators["rest.RestGenerator"]:
+                    setattr(
+                        self,
+                        field,
+                        _config.plugins.generators["rest.RestGenerator"][field],
+                    )
 
-            if "req_template_json_object" in _config.plugins.generators["rest"]:
+            if (
+                "req_template_json_object"
+                in _config.plugins.generators["rest.RestGenerator"]
+            ):
                 self.req_template = json.dumps(
-                    _config.plugins.generators["rest"]["req_template_json_object"]
+                    _config.plugins.generators["rest.RestGenerator"][
+                        "req_template_json_object"
+                    ]
                 )
 
             if (
                 self.response_json
-                and "response_json_field" in _config.plugins.generators["rest"]
+                and "response_json_field"
+                in _config.plugins.generators["rest.RestGenerator"]
             ):
-                self.response_json_field = _config.plugins.generators["rest"][
-                    "response_json_field"
-                ]
+                self.response_json_field = _config.plugins.generators[
+                    "rest.RestGenerator"
+                ]["response_json_field"]
 
         if self.name is None:
             self.name = self.uri
