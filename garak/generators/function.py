@@ -25,7 +25,7 @@ import garak
 import garak.cli
 import mymodule
 
-garak.cli.run("--model_type function --model_name mymodule#function_name --probes encoding.InjectBase32".split())
+garak.cli.main("--model_type function --model_name mymodule#function_name --probes encoding.InjectBase32".split())
 ```
 
 """
