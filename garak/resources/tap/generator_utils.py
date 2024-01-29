@@ -47,12 +47,10 @@ def load_generator(
         model_name = hf_dict[model_name]
 
     if model_name in supported_openai:
-        generator = OpenAIConvGenerator(
-            model_name,
-            max_tokens=max_tokens,
-            temperature=temperature,
-            generations=generations,
-        )
+        generator = OpenAIGenerator(model_name, generations=generations)
+        generator.max_tokens = max_tokens
+        if temperature is not None:
+            generator.temperature = temperature
     elif model_name in supported_huggingface:
         generator = Model(model_name, generations=generations, device=device)
         generator.max_tokens = max_tokens
@@ -67,29 +65,3 @@ def load_generator(
 
     return generator
 
-
-class OpenAIConvGenerator(OpenAIGenerator):
-    """
-    Helper class for taking full conversations
-    """
-    def __init__(
-        self, model_name, max_tokens: int = 150, temperature: float = 0.0, generations=1
-    ):
-        super().__init__(model_name, generations=generations)
-
-        self.max_tokens = max_tokens
-        self.temperature = temperature
-
-    def generate(self, prompts: list) -> list[str]:
-        response = self.generator.create(
-            model=self.name,
-            messages=prompts,
-            temperature=self.temperature,
-            top_p=self.top_p,
-            n=self.generations,
-            stop=self.stop,
-            max_tokens=self.max_tokens,
-            presence_penalty=self.presence_penalty,
-            frequency_penalty=self.frequency_penalty,
-        )
-        return [c["message"]["content"] for c in response["choices"]]
