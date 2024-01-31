@@ -1,9 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
-from typing import List
 
-import openai
-import torch
+from typing import Union
 
 from garak.generators.openai import chat_models, OpenAIGenerator
 from garak.generators.huggingface import Model
@@ -19,7 +17,6 @@ hf_dict = {
     "mistral": "mistralai/Mistral-7B-Instruct-v0.2",
     "llama2": "meta-llama/Llama-2-7b-chat-hf",
 }
-device = 0 if torch.cuda.is_available() else "cpu"
 
 
 def load_generator(
@@ -27,6 +24,7 @@ def load_generator(
     generations: int = 1,
     max_tokens: int = 150,
     temperature: float = None,
+    device: Union[int, str] = 0
 ):
     """
     Function to load a generator
@@ -37,6 +35,7 @@ def load_generator(
     generations : Number of outputs to generate per call
     max_tokens : Maximum output tokens
     temperature : Model temperature
+    device : Device to run the model on. Accepts GPU ID (int) or "cpu"
 
     Returns
     -------
@@ -47,21 +46,23 @@ def load_generator(
         model_name = hf_dict[model_name]
 
     if model_name in supported_openai:
-        generator = OpenAIGenerator(model_name, generations=generations)
-        generator.max_tokens = max_tokens
-        if temperature is not None:
-            generator.temperature = temperature
+        generator = OpenAIGenerator(
+            model_name,
+            generations=generations,
+        )
     elif model_name in supported_huggingface:
         generator = Model(model_name, generations=generations, device=device)
-        generator.max_tokens = max_tokens
-        if temperature is not None:
-            generator.temperature = temperature
     else:
         msg = (
-            f"I'm sorry, that model is not currently supported. TAP generation supports the following models:"
-            f"\nOpenAI: {supported_openai}\nHuggingFace: {supported_huggingface}"
+            f"{model_name} is not currently supported for TAP generation. Support is available for the following "
+            f"OpenAI and HuggingFace models:\nOpenAI: {supported_openai}\nHuggingFace: {supported_huggingface}\n"
+            f"Your jailbreaks will *NOT* be saved."
         )
-        raise Exception(msg)
+        print(msg)
+        generator = Model(model_name, generations=generations, device=device)
+
+    generator.max_tokens = max_tokens
+    if temperature is not None:
+        generator.temperature = temperature
 
     return generator
-

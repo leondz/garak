@@ -63,7 +63,6 @@ def extract_json(s):
     start_pos = s.find("{")
     end_pos = s.rfind("}") + 1  # +1 to include the closing brace
 
-
     if end_pos == -1:
         logging.error("Error extracting potential JSON structure")
         logging.error(f"Input:\n {s}")
@@ -99,11 +98,7 @@ def process_target_response(target_response, score, goal):
 
 def clean_attacks_and_convs(attack_list, convs_list):
     """
-<<<<<<< HEAD
     Remove any failed attacks (which appear as None) and corresponding conversations
-=======
-        Remove any failed attacks (which appear as None) and corresponding conversations
->>>>>>> bfd82e2 (Initial commit containing full, untested implementation for tree of attacks.)
     """
     tmp = [(a, c) for (a, c) in zip(attack_list, convs_list) if a is not None]
     tmp = [*zip(*tmp)]
