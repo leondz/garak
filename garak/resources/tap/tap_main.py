@@ -7,9 +7,10 @@ from tqdm import tqdm
 from logging import getLogger
 from pathlib import Path
 
-from utils import prune, get_template, clean_attacks_and_convs, get_init_msg, process_target_response, random_string, extract_json
+from utils import prune, get_template, clean_attacks_and_convs, get_init_msg, process_target_response, random_string, \
+    extract_json
 from system_prompts import attacker_system_prompt, on_topic_prompt, judge_system_prompt
-from generator_utils import load_generator, supported_openai
+from generator_utils import load_generator, supported_openai, OpenAIConvGenerator
 
 import garak.generators
 
@@ -93,9 +94,7 @@ class AttackManager:
                     continue
 
                 for full_prompt in full_prompts_subset[left:right]:
-                    outputs_list.append(
-                        self.attack_generator.generate(full_prompt)
-                    )
+                    outputs_list.append(self.attack_generator.generate(full_prompt)[0])
 
             # Check for valid outputs and update the list
             new_indices_to_regenerate = []
@@ -149,9 +148,7 @@ class AttackManager:
                 continue
 
             for full_prompt in full_prompts[left:right]:
-                outputs_list.append(
-                    self.target_generator.generate(full_prompt)
-                )
+                outputs_list.append(self.target_generator.generate(full_prompt)[0])
         return outputs_list
 
     @staticmethod
@@ -204,17 +201,16 @@ class AttackManager:
             self.create_conv(self.get_evaluator_prompt(prompt, response))
             for prompt, response in zip(attack_prompt_list, target_response_list)
         ]
-        raw_outputs = [self.evaluation_generator.generate(conv) for conv in convs_list]
+        raw_outputs = [self.evaluation_generator.generate(conv)[0] for conv in convs_list]
         outputs = [self.process_output_judge_score(raw_output) for raw_output in raw_outputs]
         return outputs
 
     def on_topic_score(self, attack_prompt_list):
-
         convs_list = [
             self.create_conv(self.get_evaluator_prompt_on_topic(prompt), system_prompt=self.system_prompt_on_topic)
             for prompt in attack_prompt_list
         ]
-        raw_outputs = [self.evaluation_generator.generate(conv) for conv in convs_list]
+        raw_outputs = [self.evaluation_generator.generate(conv)[0] for conv in convs_list]
         outputs = [self.process_output_on_topic_score(raw_output) for raw_output in raw_outputs]
         return outputs
 
@@ -369,8 +365,9 @@ def generate_tap(goal: str,
             jailbreaks = list()
             for idx, score in enumerate(judge_scores):
                 if score == 10:
-                    jailbreaks.append(extracted_attack_list[idx])
-            msg = "Found a jailbreak. Exiting."
+                    jailbreaks.append(adv_prompt_list[idx])
+            jailbreaks = list(set(jailbreaks))
+            msg = f"Found {len(jailbreaks)} jailbreak(s). Exiting."
             with open(outfile, "a") as f:
                 for jailbreak in jailbreaks:
                     f.write(f"{jailbreak}\n")
@@ -384,8 +381,7 @@ def generate_tap(goal: str,
             process_target_response(
                 target_response=target_response,
                 score=score,
-                goal=goal,
-                target_str=target
+                goal=goal
             )
             for target_response, score in zip(target_response_list, judge_scores)
         ]
