@@ -6,9 +6,10 @@
 
 LLM-generated prompts to jailbreak a target
 """
-from pathlib import Path
 
 from garak.probes.base import Probe
+
+import garak._config
 
 
 class TAPProbe(Probe):
@@ -25,8 +26,8 @@ class TAPProbe(Probe):
     uri = "https://arxiv.org/abs/2312.02119"
 
     def __init__(
-            self,
-            prompts_location: str = f"{Path(__file__).parents[1]}/resources/tap/data/tap_jailbreaks.txt"
+        self,
+        prompts_location: str = f"{garak._config.transient.basedir}/resources/tap/data/tap_jailbreaks.txt",
     ):
         self.prompts_location = prompts_location
 

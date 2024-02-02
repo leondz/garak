@@ -33,7 +33,7 @@ from fastchat.model import get_conversation_template
 
 def get_template(model_name, self_id=None, parent_id=None):
     template = get_conversation_template(model_name)
-    if template.name == 'llama-2':
+    if template.name == "llama-2":
         template.sep2 = template.sep2.strip()
 
     # IDs of self and parent in the tree of thougtht
@@ -44,7 +44,7 @@ def get_template(model_name, self_id=None, parent_id=None):
 
 
 def random_string(n):
-    return ''.join(random.choices(string.ascii_letters + string.digits, k=n))
+    return "".join(random.choices(string.ascii_letters + string.digits, k=n))
 
 
 def extract_json(s):
@@ -98,7 +98,7 @@ def process_target_response(target_response, score, goal):
 
 def clean_attacks_and_convs(attack_list, convs_list):
     """
-        Remove any failed attacks (which appear as None) and corresponding conversations
+    Remove any failed attacks (which appear as None) and corresponding conversations
     """
     tmp = [(a, c) for (a, c) in zip(attack_list, convs_list) if a is not None]
     tmp = [*zip(*tmp)]
@@ -107,26 +107,28 @@ def clean_attacks_and_convs(attack_list, convs_list):
     return attack_list, convs_list
 
 
-def prune(on_topic_scores=None,
-          judge_scores=None,
-          adv_prompt_list=None,
-          improv_list=None,
-          convs_list=None,
-          target_response_list=None,
-          extracted_attack_list=None,
-          sorting_score=None,
-          attack_params=None):
+def prune(
+    on_topic_scores=None,
+    judge_scores=None,
+    adv_prompt_list=None,
+    improv_list=None,
+    convs_list=None,
+    target_response_list=None,
+    extracted_attack_list=None,
+    sorting_score=None,
+    attack_params=None,
+):
     """
-        This function takes
-            1. various lists containing metadata related to the attacks as input,
-            2. a list with `sorting_score`
-        It prunes all attacks (and correspondng metadata)
-            1. whose `sorting_score` is 0;
-            2. which exceed the `attack_params['width']` when arranged
-               in decreasing order of `sorting_score`.
+    This function takes
+        1. various lists containing metadata related to the attacks as input,
+        2. a list with `sorting_score`
+    It prunes all attacks (and correspondng metadata)
+        1. whose `sorting_score` is 0;
+        2. which exceed the `attack_params['width']` when arranged
+           in decreasing order of `sorting_score`.
 
-        In Phase 1 of pruning, `sorting_score` is a list of `on-topic` values.
-        In Phase 2 of pruning, `sorting_score` is a list of `judge` values.
+    In Phase 1 of pruning, `sorting_score` is a list of `on-topic` values.
+    In Phase 2 of pruning, `sorting_score` is a list of `judge` values.
     """
     # Shuffle the branches and sort them according to judge scores
     shuffled_scores = enumerate(sorting_score)
@@ -136,13 +138,20 @@ def prune(on_topic_scores=None,
     shuffled_scores.sort(reverse=True)
 
     def get_first_k(list_):
-        width = min(attack_params['width'], len(list_))
+        width = min(attack_params["width"], len(list_))
 
-        truncated_list = [list_[shuffled_scores[i][1]] for i in range(width) if shuffled_scores[i][0] > 0]
+        truncated_list = [
+            list_[shuffled_scores[i][1]]
+            for i in range(width)
+            if shuffled_scores[i][0] > 0
+        ]
 
         # Ensure that the truncated list has at least two elements
         if len(truncated_list) == 0:
-            truncated_list = [list_[shuffled_scores[0][0]], list_[shuffled_scores[0][1]]]
+            truncated_list = [
+                list_[shuffled_scores[0][0]],
+                list_[shuffled_scores[0][1]],
+            ]
 
         return truncated_list
 
@@ -162,10 +171,12 @@ def prune(on_topic_scores=None,
     convs_list = get_first_k(convs_list)
     extracted_attack_list = get_first_k(extracted_attack_list)
 
-    return on_topic_scores, \
-        judge_scores, \
-        adv_prompt_list, \
-        improv_list, \
-        convs_list, \
-        target_response_list, \
-        extracted_attack_list
+    return (
+        on_topic_scores,
+        judge_scores,
+        adv_prompt_list,
+        improv_list,
+        convs_list,
+        target_response_list,
+        extracted_attack_list,
+    )
