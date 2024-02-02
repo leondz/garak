@@ -24,6 +24,7 @@ for a specific vulnerability or failure mode.
    garak.probes.packagehallucination
    garak.probes.promptinject
    garak.probes.realtoxicityprompts
+   garak.probes.replay
    garak.probes.snowball
    garak.probes.test
    garak.probes.xss
