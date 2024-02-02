@@ -14,16 +14,17 @@ import jinja2
 
 from garak import _config
 
-print(_config.transient.basedir)
-templateLoader = jinja2.FileSystemLoader(searchpath=_config.transient.basedir)
+templateLoader = jinja2.FileSystemLoader(
+    searchpath=_config.transient.basedir / "analyze/templates/"
+)
 templateEnv = jinja2.Environment(loader=templateLoader)
 
-header_template = templateEnv.get_template("analyze/templates/digest_header.jinja")
-footer_template = templateEnv.get_template("analyze/templates/digest_footer.jinja")
-group_template = templateEnv.get_template("analyze/templates/digest_group.jinja")
-probe_template = templateEnv.get_template("analyze/templates/digest_probe.jinja")
-detector_template = templateEnv.get_template("analyze/templates/digest_detector.jinja")
-end_module = templateEnv.get_template("analyze/templates/end_module.jinja")
+header_template = templateEnv.get_template("digest_header.jinja")
+footer_template = templateEnv.get_template("digest_footer.jinja")
+group_template = templateEnv.get_template("digest_group.jinja")
+probe_template = templateEnv.get_template("digest_probe.jinja")
+detector_template = templateEnv.get_template("digest_detector.jinja")
+end_module = templateEnv.get_template("end_module.jinja")
 
 
 misp_descriptions = {}
