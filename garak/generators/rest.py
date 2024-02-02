@@ -46,8 +46,8 @@ class RestGenerator(Generator):
     * response_json - Is the response in JSON format? (bool)
     * response_json_field - (optional) Which field of the response JSON
             should be used as the output string? Default "text"
-    * response_timeout - How many seconds should we wait before timing out?
-            Default 10
+    * request_timeout - How many seconds should we wait before timing out?
+            Default 20
     * ratelimit_codes - Which endpoint HTTP response codes should be caught
             as indicative of rate limiting and retried? List[int], default [429]
 
@@ -106,7 +106,7 @@ class RestGenerator(Generator):
         self.supports_multiple_generations = False  # not implemented yet
         self.response_json = False
         self.response_json_field = "text"
-        self.request_timeout = 10  # seconds
+        self.request_timeout = 20  # seconds
         self.ratelimit_codes = [429]
         self.escape_function = self._json_escape
         self.retry_5xx = True
@@ -121,7 +121,7 @@ class RestGenerator(Generator):
                 "method",
                 "headers",
                 "response_json",  # response_json_field is processed later
-                "response_timeout",
+                "request_timeout",
                 "ratelimit_codes",
             ):
                 if field in _config.plugins.generators["rest.RestGenerator"]:
