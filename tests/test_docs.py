@@ -27,6 +27,9 @@ def test_docs_probes(classname):
     file_path = f"docs/source/garak.probes.{classname}.rst"
     assert os.path.isfile(file_path)
     assert os.path.getsize(file_path) > 0
+    category_file = "docs/source/probes.rst"
+    target_doc = f"garak.probes.{classname}\n"
+    assert open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
 
 
 @pytest.mark.parametrize("classname", m["detectors"])
@@ -34,6 +37,9 @@ def test_docs_detectors(classname):
     file_path = f"docs/source/garak.detectors.{classname}.rst"
     assert os.path.isfile(file_path)
     assert os.path.getsize(file_path) > 0
+    category_file = "docs/source/detectors.rst"
+    target_doc = f"garak.detectors.{classname}\n"
+    assert open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
 
 
 @pytest.mark.parametrize("classname", m["harnesses"])
@@ -41,6 +47,9 @@ def test_docs_harnesses(classname):
     file_path = f"docs/source/garak.harnesses.{classname}.rst"
     assert os.path.isfile(file_path)
     assert os.path.getsize(file_path) > 0
+    category_file = "docs/source/harnesses.rst"
+    target_doc = f"garak.harnesses.{classname}\n"
+    assert open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
 
 
 @pytest.mark.parametrize("classname", m["evaluators"])
@@ -48,6 +57,9 @@ def test_docs_evaluators(classname):
     file_path = f"docs/source/garak.evaluators.{classname}.rst"
     assert os.path.isfile(file_path)
     assert os.path.getsize(file_path) > 0
+    category_file = "docs/source/evaluators.rst"
+    target_doc = f"garak.evaluators.{classname}\n"
+    assert open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
 
 
 @pytest.mark.parametrize("classname", m["generators"])
@@ -55,6 +67,9 @@ def test_docs_generators(classname):
     file_path = f"docs/source/garak.generators.{classname}.rst"
     assert os.path.isfile(file_path)
     assert os.path.getsize(file_path) > 0
+    category_file = "docs/source/generators.rst"
+    target_doc = f"garak.generators.{classname}\n"
+    assert open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
 
 
 from garak import _plugins

@@ -17,8 +17,10 @@ garak.detectors
    garak.detectors.malwaregen
    garak.detectors.misleading
    garak.detectors.mitigation
+   garak.detectors.packagehallucination
    garak.detectors.perspective
    garak.detectors.promptinject
+   garak.detectors.replay
    garak.detectors.riskywords
    garak.detectors.snowball
    garak.detectors.specialwords
