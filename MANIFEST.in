@@ -1,9 +1,12 @@
-include garak/detectors
-include garak/evaluators
-include garak/generators
-include garak/harness
-include garak/probes
-include garak/resources
+garak/analyze
+garak/buffs
+garak/configs
+garak/detectors
+garak/evaluators
+garak/generators
+garak/harnesses
+garak/probes
+garak/resources
 
 include *.md
 include *.txt
@@ -15,3 +18,4 @@ recursive-include garak *.py
 recursive-include garak *.txt
 recursive-include garak *.yaml
 recursive-include garak *.pth
+recursive-include garak *.jinja
