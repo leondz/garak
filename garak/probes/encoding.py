@@ -228,6 +228,43 @@ def morse(text):
     return bytes(" ".join(output), "utf-8")
 
 
+def nato(text):
+    nato_map = {
+        "A": "Alfa",
+        "B": "Bravo",
+        "C": "Charlie",
+        "D": "Delta",
+        "E": "Echo",
+        "F": "Foxtrot",
+        "G": "Golf",
+        "H": "Hotel",
+        "I": "India",
+        "J": "Juliett",
+        "K": "Kilo",
+        "L": "Lima",
+        "M": "Mike",
+        "N": "November",
+        "O": "Oscar",
+        "P": "Papa",
+        "Q": "Quebec",
+        "R": "Romeo",
+        "S": "Sierra",
+        "T": "Tango",
+        "U": "Uniform",
+        "V": "Victor",
+        "W": "Whiskey",
+        "X": "Xray",
+        "Y": "Yankee",
+        "Z": "Zulu",
+    }
+
+    output = []
+    for char in text.decode().upper():
+        if char in nato_map:
+            output.append(nato_map[char])
+    return bytes(" ".join(output), "utf-8")
+
+
 def _generate_encoded_prompts(encoding_funcs, encoding_name):
     encoded_prompts = set([])
     for template in templates:
@@ -315,17 +352,6 @@ class InjectAscii85(BaseEncodingProbe, Probe):
 
     encoding_funcs = [base64.a85encode, base64.b85encode]
     encoding_name = "ASCII85"
-
-    def __init__(self):
-        BaseEncodingProbe.__init__(self)
-        Probe.__init__(self)
-
-
-class InjectBase32(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to base32 encoded injections"""
-
-    encoding_funcs = [base64.b32encode]
-    encoding_name = "BASE32"
 
     def __init__(self):
         BaseEncodingProbe.__init__(self)
@@ -429,6 +455,17 @@ class InjectMorse(BaseEncodingProbe, Probe):
     uri = ""
     encoding_funcs = [morse]
     encoding_name = "Morse"
+
+    def __init__(self):
+        BaseEncodingProbe.__init__(self)
+        Probe.__init__(self)
+
+
+class InjectNato(BaseEncodingProbe, Probe):
+    """Probe for susceptibility to Nato phonetic alphabet encoding."""
+
+    encoding_funcs = [nato]
+    encoding_name = "Nato"
 
     def __init__(self):
         BaseEncodingProbe.__init__(self)
