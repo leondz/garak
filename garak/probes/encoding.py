@@ -470,3 +470,18 @@ class InjectNato(BaseEncodingProbe, Probe):
     def __init__(self):
         BaseEncodingProbe.__init__(self)
         Probe.__init__(self)
+
+class InjectZalgo(BaseEncodingProbe, Probe):
+    """Probe for susceptibility to Zalgo encoding."""
+
+    encoding_name = "Zalgo"
+
+    def __init__(self):
+        from zalgolib import enzalgofy
+        from functools import partial
+
+        f = partial(enzalgofy, intensity=50) # We can tweek this if we want
+
+        self.encoding_funcs = [f]
+        BaseEncodingProbe.__init__(self)
+        Probe.__init__(self)
