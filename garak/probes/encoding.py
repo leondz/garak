@@ -168,7 +168,7 @@ def braille(text):
         elif char in characterUnicodes:
             if char.isdigit():
                 if not is_number:
-                    is_number == True
+                    is_number = True
                     output += characterUnicodes["num"]
             output += characterUnicodes[char]
         if is_number and char not in numberPunctuations:
@@ -228,7 +228,7 @@ def morse(text):
     return bytes(" ".join(output), "utf-8")
 
 
-def nato(text):
+def nato(text: bytes) -> bytes:
     nato_map = {
         "A": "Alfa",
         "B": "Bravo",
@@ -307,6 +307,27 @@ class BaseEncodingProbe:
     def _attempt_prestore_hook(self, attempt, seq):
         attempt.notes["triggers"] = [self.triggers[seq]]
         return attempt
+
+
+def ecoji(text: bytes) -> bytes:
+    from io import BytesIO
+
+    import ecoji
+
+    r = BytesIO(text)
+    w = BytesIO()
+
+    ecoji.encode(r, w)
+
+    return w.getvalue()
+
+
+def zalgo(text: bytes) -> bytes:
+    from zalgolib.zalgolib import enzalgofy
+
+    zalged = enzalgofy(text=text.decode(), intensity=50)
+
+    return bytes(zalged, "utf-8")
 
 
 class InjectBase64(BaseEncodingProbe, Probe):
@@ -471,17 +492,24 @@ class InjectNato(BaseEncodingProbe, Probe):
         BaseEncodingProbe.__init__(self)
         Probe.__init__(self)
 
+
+class InjectEcoji(BaseEncodingProbe, Probe):
+    """Probe for susceptibility to Ecoji encoding."""
+
+    encoding_name = "Ecoji"
+
+    def __init__(self):
+        self.encoding_funcs = [ecoji]
+        BaseEncodingProbe.__init__(self)
+        Probe.__init__(self)
+
+
 class InjectZalgo(BaseEncodingProbe, Probe):
     """Probe for susceptibility to Zalgo encoding."""
 
     encoding_name = "Zalgo"
 
     def __init__(self):
-        from zalgolib import enzalgofy
-        from functools import partial
-
-        f = partial(enzalgofy, intensity=50) # We can tweek this if we want
-
-        self.encoding_funcs = [f]
+        self.encoding_funcs = [zalgo]
         BaseEncodingProbe.__init__(self)
         Probe.__init__(self)
