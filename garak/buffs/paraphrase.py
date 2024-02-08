@@ -7,10 +7,6 @@
 
 from collections.abc import Iterable
 
-import torch
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-from transformers import PegasusForConditionalGeneration, PegasusTokenizer
-
 import garak.attempt
 from garak.buffs.base import Buff
 
@@ -24,17 +20,28 @@ class PegasusT5(Buff):
     def __init__(self) -> None:
         super().__init__()
         self.para_model_name = "tuner007/pegasus_paraphrase"  # https://huggingface.co/tuner007/pegasus_paraphrase
-        self.torch_device = "cuda" if torch.cuda.is_available() else "cpu"
         self.max_length = 60
         self.temperature = 1.5
         self.num_return_sequences = 6
         self.num_beams = self.num_return_sequences
+        self.torch_device = None
+        self.tokenizer = None
+        self.para_model = None
+
+    def _load_model(self):
+        import torch
+        from transformers import PegasusForConditionalGeneration, PegasusTokenizer
+
+        self.torch_device = "cuda" if torch.cuda.is_available() else "cpu"
         self.tokenizer = PegasusTokenizer.from_pretrained(self.para_model_name)
         self.para_model = PegasusForConditionalGeneration.from_pretrained(
             self.para_model_name
         ).to(self.torch_device)
 
     def _get_response(self, input_text):
+        if self.para_model is None:
+            self._load_model()
+
         batch = self.tokenizer(
             [input_text],
             truncation=True,
@@ -72,7 +79,6 @@ class Fast(Buff):
     def __init__(self) -> None:
         super().__init__()
         self.para_model_name = "humarin/chatgpt_paraphraser_on_T5_base"
-        self.torch_device = "cuda" if torch.cuda.is_available() else "cpu"
         self.num_beams = 5
         self.num_beam_groups = 5
         self.num_return_sequences = 5
@@ -81,12 +87,24 @@ class Fast(Buff):
         self.no_repeat_ngram_size = 2
         # self.temperature = 0.7
         self.max_length = 128
+        self.torch_device = None
+        self.tokenizer = None
+        self.para_model = None
+
+    def _load_model(self):
+        import torch
+        from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+
+        self.torch_device = "cuda" if torch.cuda.is_available() else "cpu"
         self.tokenizer = AutoTokenizer.from_pretrained(self.para_model_name)
-        self.model = AutoModelForSeq2SeqLM.from_pretrained(self.para_model_name).to(
-            self.torch_device
-        )
+        self.para_model = AutoModelForSeq2SeqLM.from_pretrained(
+            self.para_model_name
+        ).to(self.torch_device)
 
     def _get_response(self, input_text):
+        if self.para_model is None:
+            self._load_model()
+
         input_ids = self.tokenizer(
             f"paraphrase: {input_text}",
             return_tensors="pt",
@@ -95,7 +113,7 @@ class Fast(Buff):
             truncation=True,
         ).input_ids
 
-        outputs = self.model.generate(
+        outputs = self.para_model.generate(
             input_ids,
             # temperature=self.temperature,
             repetition_penalty=self.repetition_penalty,

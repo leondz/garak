@@ -61,9 +61,10 @@ Plugin structure
 .. toctree::
    :maxdepth: 1
 
-   detectors
-   evaluators
-   generators
-   harnesses
    probes
+   detectors
+   generators
+   buffs
+   harnesses
+   evaluators
    report
