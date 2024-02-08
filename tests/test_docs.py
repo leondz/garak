@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 import pytest
 
-top_paths = ["probes", "detectors", "harnesses", "generators", "evaluators"]
+top_paths = ["probes", "detectors", "harnesses", "generators", "evaluators", "buffs"]
 m = {}
 for top_path in top_paths:
     m[top_path] = [
@@ -72,6 +72,16 @@ def test_docs_generators(classname):
     assert open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
 
 
+@pytest.mark.parametrize("classname", m["buffs"])
+def test_docs_generators(classname):
+    file_path = f"docs/source/garak.buffs.{classname}.rst"
+    assert os.path.isfile(file_path)
+    assert os.path.getsize(file_path) > 0
+    category_file = "docs/source/buffs.rst"
+    target_doc = f"garak.buffs.{classname}\n"
+    assert open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
+
+
 from garak import _plugins
 
 probes = [classname for (classname, active) in _plugins.enumerate_plugins("probes")]
@@ -84,11 +94,12 @@ generators = [
 harnesses = [
     classname for (classname, active) in _plugins.enumerate_plugins("harnesses")
 ]
+buffs = [classname for (classname, active) in _plugins.enumerate_plugins("buffs")]
 # commented out until enumerate_plugins supports evaluators
 # evaluators = [
 #    classname for (classname, active) in _plugins.enumerate_plugins("evaluators")
 # ]
-plugins = probes + detectors + generators
+plugins = probes + detectors + generators + buffs
 
 
 @pytest.mark.parametrize("plugin_name", plugins)
