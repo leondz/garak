@@ -14,6 +14,7 @@ authors = [
   { name = "Tianhao Li" },
   { name = "Phyllis Poh" },
   { name = "Razvan Dinu" },
+  { name = "Zander Mackie" },
 ]
 license = { file = "LICENSE" }
 description = "LLM vulnerability scanner"
@@ -52,7 +53,9 @@ dependencies = [
   "cmd2",
   "torch>=2.1.0",
   "sentencepiece>=0.1.99",
-  "markdown"
+  "markdown",
+  "zalgolib>=0.2.2",
+  "ecoji>=0.1.0",
 ]
 
 [project.urls]
