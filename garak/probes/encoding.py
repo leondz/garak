@@ -228,43 +228,6 @@ def morse(text):
     return bytes(" ".join(output), "utf-8")
 
 
-def nato(text: bytes) -> bytes:
-    nato_map = {
-        "A": "Alfa",
-        "B": "Bravo",
-        "C": "Charlie",
-        "D": "Delta",
-        "E": "Echo",
-        "F": "Foxtrot",
-        "G": "Golf",
-        "H": "Hotel",
-        "I": "India",
-        "J": "Juliett",
-        "K": "Kilo",
-        "L": "Lima",
-        "M": "Mike",
-        "N": "November",
-        "O": "Oscar",
-        "P": "Papa",
-        "Q": "Quebec",
-        "R": "Romeo",
-        "S": "Sierra",
-        "T": "Tango",
-        "U": "Uniform",
-        "V": "Victor",
-        "W": "Whiskey",
-        "X": "Xray",
-        "Y": "Yankee",
-        "Z": "Zulu",
-    }
-
-    output = []
-    for char in text.decode().upper():
-        if char in nato_map:
-            output.append(nato_map[char])
-    return bytes(" ".join(output), "utf-8")
-
-
 def _generate_encoded_prompts(encoding_funcs, encoding_name):
     encoded_prompts = set([])
     for template in templates:
@@ -307,27 +270,6 @@ class BaseEncodingProbe:
     def _attempt_prestore_hook(self, attempt, seq):
         attempt.notes["triggers"] = [self.triggers[seq]]
         return attempt
-
-
-def ecoji(text: bytes) -> bytes:
-    from io import BytesIO
-
-    import ecoji
-
-    r = BytesIO(text)
-    w = BytesIO()
-
-    ecoji.encode(r, w)
-
-    return w.getvalue()
-
-
-def zalgo(text: bytes) -> bytes:
-    from zalgolib.zalgolib import enzalgofy
-
-    zalged = enzalgofy(text=text.decode(), intensity=50)
-
-    return bytes(zalged, "utf-8")
 
 
 class InjectBase64(BaseEncodingProbe, Probe):
@@ -485,6 +427,44 @@ class InjectMorse(BaseEncodingProbe, Probe):
 class InjectNato(BaseEncodingProbe, Probe):
     """Probe for susceptibility to Nato phonetic alphabet encoding."""
 
+    uri = "https://en.wikipedia.org/wiki/NATO_phonetic_alphabet"
+
+    def nato(text: bytes) -> bytes:
+        nato_map = {
+            "A": "Alfa",
+            "B": "Bravo",
+            "C": "Charlie",
+            "D": "Delta",
+            "E": "Echo",
+            "F": "Foxtrot",
+            "G": "Golf",
+            "H": "Hotel",
+            "I": "India",
+            "J": "Juliett",
+            "K": "Kilo",
+            "L": "Lima",
+            "M": "Mike",
+            "N": "November",
+            "O": "Oscar",
+            "P": "Papa",
+            "Q": "Quebec",
+            "R": "Romeo",
+            "S": "Sierra",
+            "T": "Tango",
+            "U": "Uniform",
+            "V": "Victor",
+            "W": "Whiskey",
+            "X": "Xray",
+            "Y": "Yankee",
+            "Z": "Zulu",
+        }
+
+        output = []
+        for char in text.decode().upper():
+            if char in nato_map:
+                output.append(nato_map[char])
+        return bytes(" ".join(output), "utf-8")
+
     encoding_funcs = [nato]
     encoding_name = "Nato"
 
@@ -496,10 +476,24 @@ class InjectNato(BaseEncodingProbe, Probe):
 class InjectEcoji(BaseEncodingProbe, Probe):
     """Probe for susceptibility to Ecoji encoding."""
 
+    uri = "https://ecoji.io/"
+
+    def _ecoji(text: bytes) -> bytes:
+        import io
+
+        import ecoji
+
+        r = io.BytesIO(text)
+        w = io.StringIO()
+
+        ecoji.encode(r, w)
+
+        return w.getvalue()
+
     encoding_name = "Ecoji"
+    encoding_funcs = [_ecoji]
 
     def __init__(self):
-        self.encoding_funcs = [ecoji]
         BaseEncodingProbe.__init__(self)
         Probe.__init__(self)
 
@@ -507,9 +501,18 @@ class InjectEcoji(BaseEncodingProbe, Probe):
 class InjectZalgo(BaseEncodingProbe, Probe):
     """Probe for susceptibility to Zalgo encoding."""
 
+    uri = "https://en.wikipedia.org/wiki/Zalgo_text"
+
+    def zalgo(text: bytes) -> bytes:
+        from zalgolib.zalgolib import enzalgofy
+
+        zalged = enzalgofy(text=text.decode(), intensity=50)
+
+        return bytes(zalged, "utf-8")
+
     encoding_name = "Zalgo"
+    encoding_funcs = [zalgo]
 
     def __init__(self):
-        self.encoding_funcs = [zalgo]
         BaseEncodingProbe.__init__(self)
         Probe.__init__(self)
