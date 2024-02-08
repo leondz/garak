@@ -23,3 +23,6 @@ cmd2
 torch>=2.1.0
 sentencepiece>=0.1.99
 markdown
+zalgolib>=0.2.2
+basest>=0.7.3
+ecoji>=0.1.0

@@ -168,7 +168,7 @@ def braille(text):
         elif char in characterUnicodes:
             if char.isdigit():
                 if not is_number:
-                    is_number == True
+                    is_number = True
                     output += characterUnicodes["num"]
             output += characterUnicodes[char]
         if is_number and char not in numberPunctuations:
@@ -321,17 +321,6 @@ class InjectAscii85(BaseEncodingProbe, Probe):
         Probe.__init__(self)
 
 
-class InjectBase32(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to base32 encoded injections"""
-
-    encoding_funcs = [base64.b32encode]
-    encoding_name = "BASE32"
-
-    def __init__(self):
-        BaseEncodingProbe.__init__(self)
-        Probe.__init__(self)
-
-
 class InjectHex(BaseEncodingProbe, Probe):
     """Probe for susceptibility to hex encoded injections"""
 
@@ -429,6 +418,100 @@ class InjectMorse(BaseEncodingProbe, Probe):
     uri = ""
     encoding_funcs = [morse]
     encoding_name = "Morse"
+
+    def __init__(self):
+        BaseEncodingProbe.__init__(self)
+        Probe.__init__(self)
+
+
+class InjectNato(BaseEncodingProbe, Probe):
+    """Probe for susceptibility to Nato phonetic alphabet encoding."""
+
+    uri = "https://en.wikipedia.org/wiki/NATO_phonetic_alphabet"
+
+    def nato(text: bytes) -> bytes:
+        nato_map = {
+            "A": "Alfa",
+            "B": "Bravo",
+            "C": "Charlie",
+            "D": "Delta",
+            "E": "Echo",
+            "F": "Foxtrot",
+            "G": "Golf",
+            "H": "Hotel",
+            "I": "India",
+            "J": "Juliett",
+            "K": "Kilo",
+            "L": "Lima",
+            "M": "Mike",
+            "N": "November",
+            "O": "Oscar",
+            "P": "Papa",
+            "Q": "Quebec",
+            "R": "Romeo",
+            "S": "Sierra",
+            "T": "Tango",
+            "U": "Uniform",
+            "V": "Victor",
+            "W": "Whiskey",
+            "X": "Xray",
+            "Y": "Yankee",
+            "Z": "Zulu",
+        }
+
+        output = []
+        for char in text.decode().upper():
+            if char in nato_map:
+                output.append(nato_map[char])
+        return bytes(" ".join(output), "utf-8")
+
+    encoding_funcs = [nato]
+    encoding_name = "Nato"
+
+    def __init__(self):
+        BaseEncodingProbe.__init__(self)
+        Probe.__init__(self)
+
+
+class InjectEcoji(BaseEncodingProbe, Probe):
+    """Probe for susceptibility to Ecoji encoding."""
+
+    uri = "https://ecoji.io/"
+
+    def _ecoji(text: bytes) -> bytes:
+        import io
+
+        import ecoji
+
+        r = io.BytesIO(text)
+        w = io.StringIO()
+
+        ecoji.encode(r, w)
+
+        return w.getvalue()
+
+    encoding_name = "Ecoji"
+    encoding_funcs = [_ecoji]
+
+    def __init__(self):
+        BaseEncodingProbe.__init__(self)
+        Probe.__init__(self)
+
+
+class InjectZalgo(BaseEncodingProbe, Probe):
+    """Probe for susceptibility to Zalgo encoding."""
+
+    uri = "https://en.wikipedia.org/wiki/Zalgo_text"
+
+    def zalgo(text: bytes) -> bytes:
+        from zalgolib.zalgolib import enzalgofy
+
+        zalged = enzalgofy(text=text.decode(), intensity=50)
+
+        return bytes(zalged, "utf-8")
+
+    encoding_name = "Zalgo"
+    encoding_funcs = [zalgo]
 
     def __init__(self):
         BaseEncodingProbe.__init__(self)
