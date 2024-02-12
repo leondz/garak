@@ -46,6 +46,16 @@ def test_generator_list(capsys):
         ) or line.startswith("garak LLM security probe v")
 
 
+def test_buff_list(capsys):
+    cli.main(["--list_buffs"])
+    result = capsys.readouterr()
+    output = ansi_escape.sub("", result.out)
+    for line in output.strip().split("\n"):
+        assert re.match(
+            r"^buffs: [a-z0-9_]+(\.[A-Za-z0-9_]+)?( 🌟)?( 💤)?$", line
+        ) or line.startswith("garak LLM security probe v")
+
+
 def test_run_all_probes(capsys):
     cli.main(["-m", "test", "-p", "all", "-d", "always.Pass", "-g", "1"])
     result = capsys.readouterr()
