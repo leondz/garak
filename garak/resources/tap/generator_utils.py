@@ -28,6 +28,21 @@ def load_generator(
     max_tokens: int = 150,
     temperature: float = None,
 ):
+    """
+    Function to load a generator
+
+    Parameters
+    ----------
+    model_name : Name of the model to load
+    generations : Number of outputs to generate per call
+    max_tokens : Maximum output tokens
+    temperature : Model temperature
+
+    Returns
+    -------
+    Generator object
+
+    """
     if model_name.lower() in hf_dict.keys():
         model_name = hf_dict[model_name]
 
@@ -54,6 +69,9 @@ def load_generator(
 
 
 class OpenAIConvGenerator(OpenAIGenerator):
+    """
+    Helper class for taking full conversations
+    """
     def __init__(
         self, model_name, max_tokens: int = 150, temperature: float = 0.0, generations=1
     ):
