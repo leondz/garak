@@ -37,7 +37,7 @@ dependencies = [
   "cohere>=4.5.1",
   "openai>=0.27.7,<1.0.0",
   "replicate>=0.8.3",
-  "pytest>=7.3",
+  "pytest>=8.0",
   "google-api-python-client>=2.0",
   "backoff>=2.1.1",
   "torch",
