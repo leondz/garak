@@ -4,6 +4,7 @@ system:
   narrow_output: false
   parallel_requests: false
   parallel_attempts: false
+  lite: true
 
 run:
   seed:

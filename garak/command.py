@@ -39,6 +39,10 @@ def start_run():
 
     logging.info("started at %s", _config.transient.starttime_iso)
     # print("ASSIGN UUID", args)
+    if _config.system.lite and "probes" not in _config.transient.cli_args:  # type: ignore
+        print(
+            "⚠️ The current/default config is optimised for speed rather than thoroughness. Try e.g. --config full for a stronger test, or specify some probes."
+        )
     _config.transient.run_id = str(uuid.uuid4())  # uuid1 is safe but leaks host info
     if not _config.reporting.report_prefix:
         if not os.path.isdir(_config.reporting.report_dir):
