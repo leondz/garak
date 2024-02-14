@@ -25,3 +25,4 @@ sentencepiece>=0.1.99
 markdown
 zalgolib>=0.2.2
 ecoji>=0.1.0
+deepl==1.17.0
