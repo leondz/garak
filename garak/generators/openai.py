@@ -70,9 +70,7 @@ class OpenAIGenerator(Generator):
                 e.g.: export OPENAI_API_KEY="sk-123XXXXXXXXXXXX"'
             )
 
-        self.client = openai.OpenAI(
-            api_key=api_key
-        )
+        self.client = openai.OpenAI(api_key=api_key)
 
         if self.name in completion_models:
             self.generator = self.client.completions
@@ -112,8 +110,10 @@ class OpenAIGenerator(Generator):
     def _call_model(self, prompt: Union[str, list[dict]]) -> List[str]:
         if self.generator == self.client.completions:
             if not isinstance(prompt, str):
-                msg = (f"Expected a string for OpenAI completions model {self.name}, but got {type(prompt)}. "
-                       f"Returning nothing!")
+                msg = (
+                    f"Expected a string for OpenAI completions model {self.name}, but got {type(prompt)}. "
+                    f"Returning nothing!"
+                )
                 logging.error(msg)
                 print(msg)
                 return list()
@@ -137,8 +137,10 @@ class OpenAIGenerator(Generator):
             elif isinstance(prompt, list):
                 messages = prompt
             else:
-                msg = (f"Expected a list of dicts for OpenAI Chat model {self.name}, but got {type(prompt)} instead. "
-                       f"Returning nothing!")
+                msg = (
+                    f"Expected a list of dicts for OpenAI Chat model {self.name}, but got {type(prompt)} instead. "
+                    f"Returning nothing!"
+                )
                 logging.error(msg)
                 print(msg)
                 return list()

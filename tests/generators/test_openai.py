@@ -32,9 +32,11 @@ def test_chat():
     assert len(output) == DEFAULT_GENERATIONS_QTY
     for item in output:
         assert isinstance(item, str)
-    messages = [{"role": "user", "content": "Hello OpenAI!"},
-                {"role": "assistant", "content": "Hello! How can I help you today?"},
-                {"role": "user", "content": "How do I write a sonnet?"}]
+    messages = [
+        {"role": "user", "content": "Hello OpenAI!"},
+        {"role": "assistant", "content": "Hello! How can I help you today?"},
+        {"role": "user", "content": "How do I write a sonnet?"},
+    ]
     output = generator.generate(messages)
     assert len(output) == DEFAULT_GENERATIONS_QTY
     for item in output:
