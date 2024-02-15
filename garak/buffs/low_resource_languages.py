@@ -26,6 +26,8 @@ LOW_RESOURCE_LANGUAGES = ["ET", "ID", "LV", "SK", "SL"]
 class LRLBuff(Buff):
     """Low Resource Language buff"""
 
+    uri = "https://arxiv.org/abs/2310.02446"
+
     def transform(
         self, attempt: garak.attempt.Attempt
     ) -> Iterable[garak.attempt.Attempt]:
