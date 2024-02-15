@@ -55,6 +55,7 @@ dependencies = [
   "markdown",
   "zalgolib>=0.2.2",
   "ecoji>=0.1.0",
+  "deepl==1.17.0",
 ]
 
 [project.urls]

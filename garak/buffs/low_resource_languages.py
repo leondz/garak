@@ -32,7 +32,10 @@ class LRLBuff(Buff):
         api_key = getenv("DEEPL_API_KEY", None)
         if api_key is None:
             msg = "DEEPL_API_KEY not set in env, cannot use LRLBuff."
-            user_msg = msg + " If you do not have a DeepL API key, sign up at https://www.deepl.com/docs-api"
+            user_msg = (
+                msg
+                + " If you do not have a DeepL API key, sign up at https://www.deepl.com/docs-api"
+            )
             logging.error(msg)
             print(user_msg)
             yield attempt
