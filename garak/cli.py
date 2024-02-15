@@ -288,6 +288,8 @@ def main(arguments=[]) -> None:
 
     del args
     args = cli_args
+    # stash cli_args
+    _config.transient.cli_args = cli_args
 
     # save args info into config
     # need to know their type: plugin, system, or run

@@ -1,4 +1,7 @@
 ---
+system:
+  lite: false
+
 run:
   generations: 100
 
