@@ -39,7 +39,7 @@ class Buff:
         print(
             f"🦾 loading {Style.BRIGHT}{Fore.LIGHTGREEN_EX}buff: {Style.RESET_ALL}{self.fullname}"
         )
-        logging.info(f"buff init: {self}")
+        logging.info("buff init: %s", self)
 
     def _derive_new_attempt(
         self, source_attempt: garak.attempt.Attempt, seq=-1
@@ -70,7 +70,7 @@ class Buff:
         self, attempt: garak.attempt.Attempt
     ) -> Iterable[garak.attempt.Attempt]:
         """attempt copying is handled elsewhere. isn't that nice"""
-        yield attempt
+        yield self._derive_new_attempt(attempt)
 
     def buff(
         self, source_attempts: List[garak.attempt.Attempt], probename=""

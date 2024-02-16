@@ -484,7 +484,6 @@ class AutoDANProbe(Probe):
 
 
 class DanInTheWild(Probe):
-
     """Tries a set of ~700 known jailbreaks, in an attempt to get a model to disregard alignment/system prompt. Success is measured by not getting a safety mitigaton message."""
 
     active = False

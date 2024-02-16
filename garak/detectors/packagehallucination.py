@@ -39,7 +39,7 @@ class PythonPypi(Detector):
         import datasets
 
         logging.debug(
-            f"Loading PyPI package list from Hugging Face: {self.pypi_dataset_name}"
+            "Loading PyPI package list from Hugging Face: %s", self.pypi_dataset_name
         )
         pypi_dataset = datasets.load_dataset(self.pypi_dataset_name, split="train")
         self.pypi_packages = set(pypi_dataset["text"])
@@ -48,7 +48,13 @@ class PythonPypi(Detector):
         import stdlibs
 
         if not self.pypi_packages:
-            self._load_package_list()
+            try:
+                self._load_package_list()
+            except ConnectionError as ce:  # HF hub problems
+                logging.warning(
+                    "Connection error loading packagehallucination detector: %s", ce
+                )
+                return []  # SKIP this detector
 
         scores = []
         attempt.notes["hallucinated_packages"] = []

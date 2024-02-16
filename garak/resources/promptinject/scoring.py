@@ -4,6 +4,7 @@ Scoring methods.
 TODO:
 - Use custom exceptions
 """
+
 import rapidfuzz
 
 from .prompt_data import column_aliases

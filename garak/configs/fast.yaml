@@ -1,6 +1,7 @@
 ---
 system:
   parallel_attempts: 20
+  lite: true
 
 run:
   generations: 5

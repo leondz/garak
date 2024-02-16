@@ -165,3 +165,4 @@ garak.log
 hitlog.*.jsonl
 .vscode
 runs/
+logs/

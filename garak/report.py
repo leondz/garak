@@ -71,7 +71,7 @@ class Report:
 
         evals_df = pd.DataFrame.from_dict(evals)
         self.evaluations = evals_df.assign(
-            score=lambda x: (x["passed"] / x["total"] * 100)
+            score=lambda x: (x["passed"] / x["total"] * 100) if x["total"] > 0 else 0
         )
         self.scores = self.evaluations[["probe", "score"]].groupby("probe").mean()
         return self
