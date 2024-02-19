@@ -57,7 +57,6 @@ plugins.generators = {}
 plugins.detectors = {}
 plugins.buffs = {}
 plugins.harnesses = {}
-reporting.report_dir = "runs"
 reporting.taxonomy = None  # set here to enable report_digest to be called directly
 
 

@@ -31,3 +31,4 @@ plugins:
 reporting:
   report_prefix:
   taxonomy:
+  report_dir: garak_runs
