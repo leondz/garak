@@ -241,7 +241,7 @@ def list_config():
     print("_config:")
     _enumerate_obj_values(_config)
 
-    for section in "system transient run plugins".split():
+    for section in "system transient run plugins reporting".split():
         print(f"{section}:")
         _enumerate_obj_values(getattr(_config, section))
 

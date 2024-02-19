@@ -164,5 +164,6 @@ garak.*.jsonl
 garak.log
 hitlog.*.jsonl
 .vscode
+garak_runs/
 runs/
 logs/
