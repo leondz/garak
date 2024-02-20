@@ -1,7 +1,19 @@
-import gc
-import numpy as np
+#!/usr/bin/env python3
+
+import argparse
+from logging import getLogger
+import os
+from pathlib import Path
 import torch
 import torch.nn as nn
+from tqdm import tqdm
+import numpy as np
+
+import gc
+
+from garak.generators import Generator
+from garak.generators.huggingface import Model
+import garak._config
 from garak.resources.autodan.genetic import (
     get_score_autodan,
     autodan_ga,
@@ -12,13 +24,7 @@ from garak.resources.autodan.model_utils import (
     load_conversation_template,
     check_for_attack_success,
 )
-import argparse
-import os
-from logging import getLogger
-from garak.generators import Generator
-from garak.generators.huggingface import Model
-from pathlib import Path
-from tqdm import tqdm
+
 
 logger = getLogger(__name__)
 
@@ -48,13 +54,13 @@ autodan_parser.add_argument(
 autodan_parser.add_argument(
     "--init_prompt_path",
     type=str,
-    default=f"{Path(__file__).parents[0]}/data/autodan_init.txt",
+    default=garak._config.transient.basedir / "resources/autodan/data/autodan_init.txt",
     help="Path to initial prompt",
 )
 autodan_parser.add_argument(
     "--reference",
     type=str,
-    default=f"{Path(__file__).parents[0]}/data/prompt_group.pth",
+    default=garak._config.transient.basedir / "resources/autodan/data/prompt_group.pth",
     help="Path to refernces",
 )
 autodan_parser.add_argument(
@@ -112,9 +118,15 @@ def autodan_generate(
     num_points: int = 5,
     mutation_rate: float = 0.1,
     hierarchical: bool = False,
-    out_path: str = f"{Path(__file__).parents[0]}/data/autodan_prompts.txt",
-    init_prompt_path: str = f"{Path(__file__).parents[0]}/data/autodan_init.txt",
-    reference_path: str = f"{Path(__file__).parents[0]}/data/prompt_group.pth",
+    out_path: str = str(
+        garak._config.transient.basedir / "resources/autodan/data/autodan_prompts.txt"
+    ),
+    init_prompt_path: str = str(
+        garak._config.transient.basedir / "resources/autodan/data/autodan_init.txt"
+    ),
+    reference_path: str = str(
+        garak._config.transient.basedir / "resources/autodan/data/prompt_group.pth"
+    ),
     low_memory: bool = False,
     random_seed: int = None,
 ):
