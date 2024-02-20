@@ -8,7 +8,7 @@ from logging import getLogger
 from pathlib import Path
 from typing import Union, Optional
 
-from utils import (
+from .utils import (
     prune,
     get_template,
     clean_attacks_and_convs,
@@ -17,8 +17,8 @@ from utils import (
     random_string,
     extract_json,
 )
-from system_prompts import attacker_system_prompt, on_topic_prompt, judge_system_prompt
-from generator_utils import load_generator, supported_openai, supported_huggingface
+from .system_prompts import attacker_system_prompt, on_topic_prompt, judge_system_prompt
+from .generator_utils import load_generator, supported_openai, supported_huggingface
 
 import garak.generators
 
@@ -29,17 +29,17 @@ SAVE_RESULTS = True
 
 class AttackManager:
     def __init__(
-            self,
-            goal: str,
-            attack_generator: garak.generators.Generator,
-            target_generator: garak.generators.Generator,
-            evaluation_generator: garak.generators.Generator,
-            attack_max_tokens: int = 500,
-            attack_max_attempts: int = 5,
-            max_parallel_streams: int = 5,
-            target_max_tokens: int = 150,
-            evaluator_max_tokens: int = 10,
-            evaluator_temperature: float = 0.0,
+        self,
+        goal: str,
+        attack_generator: garak.generators.Generator,
+        target_generator: garak.generators.Generator,
+        evaluation_generator: garak.generators.Generator,
+        attack_max_tokens: int = 500,
+        attack_max_attempts: int = 5,
+        max_parallel_streams: int = 5,
+        target_max_tokens: int = 150,
+        evaluator_max_tokens: int = 10,
+        evaluator_temperature: float = 0.0,
     ):
         """
         Initialize the AttackManager -- class for managing attack iterations
@@ -269,25 +269,25 @@ class AttackManager:
 
 
 def run_tap(
-        goal: str,
-        target: str,
-        target_generator: garak.generators.Generator,
-        target_max_tokens: int = 150,
-        attack_model: str = "lmsys/vicuna-13b-v1.3",
-        attack_max_tokens: int = 500,
-        attack_max_attempts: int = 5,
-        attack_device: Optional[Union[int, str]] = 1,
-        evaluator_model: str = "gpt-3.5-turbo",
-        evaluator_max_tokens: int = 10,
-        evaluator_temperature: float = 0.0,
-        branching_factor: int = 4,
-        width: int = 10,
-        depth: int = 10,
-        n_streams: int = 1,
-        keep_last_n: int = 1,
-        pruning: bool = True,
-        save_results: bool = SAVE_RESULTS,
-        outfile: str = f"{PATH}/data/tap_jailbreaks.txt"
+    goal: str,
+    target: str,
+    target_generator: garak.generators.Generator,
+    target_max_tokens: int = 150,
+    attack_model: str = "lmsys/vicuna-13b-v1.3",
+    attack_max_tokens: int = 500,
+    attack_max_attempts: int = 5,
+    attack_device: Optional[Union[int, str]] = 1,
+    evaluator_model: str = "gpt-3.5-turbo",
+    evaluator_max_tokens: int = 10,
+    evaluator_temperature: float = 0.0,
+    branching_factor: int = 4,
+    width: int = 10,
+    depth: int = 10,
+    n_streams: int = 1,
+    keep_last_n: int = 1,
+    pruning: bool = True,
+    save_results: bool = SAVE_RESULTS,
+    outfile: str = f"{PATH}/data/tap_jailbreaks.txt",
 ):
     """
     Function for generating attacks using TAP where a generator has already been instantiated.
@@ -320,7 +320,10 @@ def run_tap(
         msg = f"Evalution currently only supports OpenAI models.\nSupported models:{supported_openai}"
         raise Exception(msg)
 
-    if target_generator.name not in supported_openai or target_generator.name not in supported_huggingface:
+    if (
+        target_generator.name not in supported_openai
+        or target_generator.name not in supported_huggingface
+    ):
         save_results = False
 
     # Initialize attack parameters
@@ -333,7 +336,9 @@ def run_tap(
     # Initialize generators
     system_prompt = attacker_system_prompt(goal, target)
 
-    attack_generator = load_generator(attack_model, max_tokens=attack_max_tokens, device=attack_device)
+    attack_generator = load_generator(
+        attack_model, max_tokens=attack_max_tokens, device=attack_device
+    )
     evaluator_generator = load_generator(
         evaluator_model,
         max_tokens=evaluator_max_tokens,
@@ -457,7 +462,7 @@ def run_tap(
         # Truncate conversation to avoid context length issues
         for conv in convs_list:
             # Note that this does not delete the conv.role (i.e., the system prompt)
-            conv.messages = conv.messages[-2 * keep_last_n:]
+            conv.messages = conv.messages[-2 * keep_last_n :]
 
         # Early stopping criterion
         if any([score == 10 for score in judge_scores]):
@@ -490,23 +495,23 @@ def run_tap(
 
 
 def generate_tap(
-        goal: str,
-        target: str,
-        attack_model: str = "lmsys/vicuna-13b-v1.3",
-        attack_max_tokens: int = 500,
-        attack_max_attempts: int = 5,
-        target_model: str = "lmsys/vicuna-13b-v1.3",
-        target_max_tokens: int = 150,
-        evaluator_model: str = "gpt-3.5-turbo",
-        evaluator_max_tokens: int = 10,
-        evaluator_temperature: float = 0.0,
-        branching_factor: int = 1,
-        width: int = 10,
-        depth: int = 10,
-        n_streams: int = 1,
-        keep_last_n: int = 1,
-        save_results: bool = SAVE_RESULTS,
-        outfile: str = f"{PATH}/data/tap_jailbreaks.txt",
+    goal: str,
+    target: str,
+    attack_model: str = "lmsys/vicuna-13b-v1.3",
+    attack_max_tokens: int = 500,
+    attack_max_attempts: int = 5,
+    target_model: str = "lmsys/vicuna-13b-v1.3",
+    target_max_tokens: int = 150,
+    evaluator_model: str = "gpt-3.5-turbo",
+    evaluator_max_tokens: int = 10,
+    evaluator_temperature: float = 0.0,
+    branching_factor: int = 1,
+    width: int = 10,
+    depth: int = 10,
+    n_streams: int = 1,
+    keep_last_n: int = 1,
+    save_results: bool = SAVE_RESULTS,
+    outfile: str = f"{PATH}/data/tap_jailbreaks.txt",
 ):
     """
     Function for generating attacks using TAP when a generator has not been instantiated.
@@ -532,23 +537,27 @@ def generate_tap(
     outfile : Location to write successful generated attacks
     """
 
-    target_generator = load_generator(model_name=target_model, max_tokens=target_max_tokens)
-    output = run_tap(goal=goal,
-                     target=target,
-                     target_generator=target_generator,
-                     target_max_tokens=target_max_tokens,
-                     attack_model=attack_model,
-                     attack_max_tokens=attack_max_tokens,
-                     attack_max_attempts=attack_max_attempts,
-                     evaluator_model=evaluator_model,
-                     evaluator_max_tokens=evaluator_max_tokens,
-                     evaluator_temperature=evaluator_temperature,
-                     branching_factor=branching_factor,
-                     width=width,
-                     depth=depth,
-                     n_streams=n_streams,
-                     keep_last_n=keep_last_n,
-                     save_results=save_results,
-                     outfile=outfile)
+    target_generator = load_generator(
+        model_name=target_model, max_tokens=target_max_tokens
+    )
+    output = run_tap(
+        goal=goal,
+        target=target,
+        target_generator=target_generator,
+        target_max_tokens=target_max_tokens,
+        attack_model=attack_model,
+        attack_max_tokens=attack_max_tokens,
+        attack_max_attempts=attack_max_attempts,
+        evaluator_model=evaluator_model,
+        evaluator_max_tokens=evaluator_max_tokens,
+        evaluator_temperature=evaluator_temperature,
+        branching_factor=branching_factor,
+        width=width,
+        depth=depth,
+        n_streams=n_streams,
+        keep_last_n=keep_last_n,
+        save_results=save_results,
+        outfile=outfile,
+    )
 
     return output

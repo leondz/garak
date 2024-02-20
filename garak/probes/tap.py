@@ -35,8 +35,8 @@ class TAPCachedProbe(Probe):
     uri = "https://arxiv.org/abs/2312.02119"
 
     def __init__(
-            self,
-            prompts_location: str = f"{_config.transient.basedir}/resources/tap/data/tap_jailbreaks.txt",
+        self,
+        prompts_location: str = f"{_config.transient.basedir}/resources/tap/data/tap_jailbreaks.txt",
     ):
         self.prompts_location = prompts_location
 
@@ -64,21 +64,21 @@ class TAPProbe(Probe):
     active = False
 
     def __init__(
-            self,
-            goal: str = GOAL,
-            target: str = TARGET,
-            attack_model: str = "lmsys/vicuna-13b-v1.3",
-            attack_max_tokens: int = 500,
-            attack_max_attempts: int = 5,
-            evaluator_model: str = "gpt-3.5-turbo",
-            evaluator_max_tokens: int = 10,
-            evaluator_temperature: float = 0.0,
-            branching_factor: int = 4,
-            width: int = 10,
-            depth: int = 10,
-            n_streams: int = 1,
-            keep_last_n: int = 1,
-            pruning: bool = True
+        self,
+        goal: str = GOAL,
+        target: str = TARGET,
+        attack_model: str = "lmsys/vicuna-13b-v1.3",
+        attack_max_tokens: int = 500,
+        attack_max_attempts: int = 5,
+        evaluator_model: str = "gpt-3.5-turbo",
+        evaluator_max_tokens: int = 10,
+        evaluator_temperature: float = 0.0,
+        branching_factor: int = 4,
+        width: int = 10,
+        depth: int = 10,
+        n_streams: int = 1,
+        keep_last_n: int = 1,
+        pruning: bool = True,
     ):
         self.goal = goal
         self.target = target
@@ -99,23 +99,24 @@ class TAPProbe(Probe):
     def probe(self, generator) -> List[garak.attempt.Attempt]:
         self.generator = generator
 
-        tap_outputs = run_tap(goal=self.goal,
-                              target=self.target,
-                              target_generator=self.generator,
-                              target_max_tokens=150,
-                              attack_model=self.attack_model,
-                              attack_max_tokens=self.attack_max_tokens,
-                              attack_max_attempts=self.attack_max_attempts,
-                              evaluator_model=self.evaluator_model,
-                              evaluator_max_tokens=self.evaluator_max_tokens,
-                              evaluator_temperature=self.evaluator_temperature,
-                              branching_factor=self.branching_factor,
-                              width=self.width,
-                              depth=self.depth,
-                              n_streams=self.n_streams,
-                              keep_last_n=self.keep_last_n,
-                              pruning=self.pruning
-                              )
+        tap_outputs = run_tap(
+            goal=self.goal,
+            target=self.target,
+            target_generator=self.generator,
+            target_max_tokens=150,
+            attack_model=self.attack_model,
+            attack_max_tokens=self.attack_max_tokens,
+            attack_max_attempts=self.attack_max_attempts,
+            evaluator_model=self.evaluator_model,
+            evaluator_max_tokens=self.evaluator_max_tokens,
+            evaluator_temperature=self.evaluator_temperature,
+            branching_factor=self.branching_factor,
+            width=self.width,
+            depth=self.depth,
+            n_streams=self.n_streams,
+            keep_last_n=self.keep_last_n,
+            pruning=self.pruning,
+        )
 
         if tap_outputs:
             self.prompts = tap_outputs
@@ -133,10 +134,10 @@ class TAPProbe(Probe):
             attempts_completed = []
 
             if (
-                    _config.system.parallel_attempts
-                    and _config.system.parallel_attempts > 1
-                    and self.parallelisable_attempts
-                    and len(attempts_todo) > 1
+                _config.system.parallel_attempts
+                and _config.system.parallel_attempts > 1
+                and self.parallelisable_attempts
+                and len(attempts_todo) > 1
             ):
                 from multiprocessing import Pool
 
@@ -145,7 +146,7 @@ class TAPProbe(Probe):
 
                 with Pool(_config.system.parallel_attempts) as attempt_pool:
                     for result in attempt_pool.imap_unordered(
-                            self._execute_attempt, attempts_todo
+                        self._execute_attempt, attempts_todo
                     ):
                         attempts_completed.append(
                             result
@@ -183,19 +184,19 @@ class PAIRProbe(Probe):
     active = False
 
     def __init__(
-            self,
-            goal: str = GOAL,
-            target: str = TARGET,
-            attack_model: str = "lmsys/vicuna-13b-v1.3",
-            attack_max_tokens: int = 500,
-            attack_max_attempts: int = 5,
-            evaluator_model: str = "gpt-3.5-turbo",
-            evaluator_max_tokens: int = 10,
-            evaluator_temperature: float = 0.0,
-            width: int = 10,
-            depth: int = 10,
-            n_streams: int = 1,
-            keep_last_n: int = 1,
+        self,
+        goal: str = GOAL,
+        target: str = TARGET,
+        attack_model: str = "lmsys/vicuna-13b-v1.3",
+        attack_max_tokens: int = 500,
+        attack_max_attempts: int = 5,
+        evaluator_model: str = "gpt-3.5-turbo",
+        evaluator_max_tokens: int = 10,
+        evaluator_temperature: float = 0.0,
+        width: int = 10,
+        depth: int = 10,
+        n_streams: int = 1,
+        keep_last_n: int = 1,
     ):
         self.goal = goal
         self.target = target
@@ -216,23 +217,24 @@ class PAIRProbe(Probe):
     def probe(self, generator) -> List[garak.attempt.Attempt]:
         self.generator = generator
 
-        pair_outputs = run_tap(goal=self.goal,
-                               target=self.target,
-                               target_generator=self.generator,
-                               target_max_tokens=150,
-                               attack_model=self.attack_model,
-                               attack_max_tokens=self.attack_max_tokens,
-                               attack_max_attempts=self.attack_max_attempts,
-                               evaluator_model=self.evaluator_model,
-                               evaluator_max_tokens=self.evaluator_max_tokens,
-                               evaluator_temperature=self.evaluator_temperature,
-                               branching_factor=self.branching_factor,
-                               width=self.width,
-                               depth=self.depth,
-                               n_streams=self.n_streams,
-                               keep_last_n=self.keep_last_n,
-                               pruning=self.pruning
-                               )
+        pair_outputs = run_tap(
+            goal=self.goal,
+            target=self.target,
+            target_generator=self.generator,
+            target_max_tokens=150,
+            attack_model=self.attack_model,
+            attack_max_tokens=self.attack_max_tokens,
+            attack_max_attempts=self.attack_max_attempts,
+            evaluator_model=self.evaluator_model,
+            evaluator_max_tokens=self.evaluator_max_tokens,
+            evaluator_temperature=self.evaluator_temperature,
+            branching_factor=self.branching_factor,
+            width=self.width,
+            depth=self.depth,
+            n_streams=self.n_streams,
+            keep_last_n=self.keep_last_n,
+            pruning=self.pruning,
+        )
 
         if pair_outputs:
             self.prompts = pair_outputs
@@ -250,10 +252,10 @@ class PAIRProbe(Probe):
             attempts_completed = []
 
             if (
-                    _config.system.parallel_attempts
-                    and _config.system.parallel_attempts > 1
-                    and self.parallelisable_attempts
-                    and len(attempts_todo) > 1
+                _config.system.parallel_attempts
+                and _config.system.parallel_attempts > 1
+                and self.parallelisable_attempts
+                and len(attempts_todo) > 1
             ):
                 from multiprocessing import Pool
 
@@ -262,7 +264,7 @@ class PAIRProbe(Probe):
 
                 with Pool(_config.system.parallel_attempts) as attempt_pool:
                     for result in attempt_pool.imap_unordered(
-                            self._execute_attempt, attempts_todo
+                        self._execute_attempt, attempts_todo
                     ):
                         attempts_completed.append(
                             result

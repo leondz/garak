@@ -24,7 +24,7 @@ def load_generator(
     generations: int = 1,
     max_tokens: int = 150,
     temperature: float = None,
-    device: Union[int, str] = 0
+    device: Union[int, str] = 0,
 ):
     """
     Function to load a generator
