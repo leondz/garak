@@ -9,8 +9,6 @@ Probes designed to disrupt a system prompt, for example the DAN (do anything
 now) probes and others in a similar vein.
 """
 
-from pathlib import Path
-
 import garak._config
 from garak.probes.base import Probe
 
@@ -470,7 +468,9 @@ class AutoDANProbe(Probe):
 
     def __init__(
         self,
-        autodan_prompt_location: str = f"{Path(__file__).parents[1]}/resources/autodan/autodan_prompts.txt",
+        autodan_prompt_location: str = str(
+            garak._config.transient.basedir / "resources/autodan/autodan_prompts.txt"
+        ),
     ):
         self.autodan_prompt_location = autodan_prompt_location
 
