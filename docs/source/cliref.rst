@@ -3,7 +3,7 @@ CLI reference for garak
 
 ::
 
-  garak LLM security probe v0.9.0.11.post1 ( https://github.com/leondz/garak ) at 2024-01-26T14:56:34.622801
+  garak LLM security probe v0.9.0.11.post2 ( https://github.com/leondz/garak ) at 2024-02-20T15:22:27.625300
   usage: python -m garak [-h] [--verbose] [--report_prefix REPORT_PREFIX]
                          [--narrow_output]
                          [--parallel_requests PARALLEL_REQUESTS]
@@ -15,7 +15,7 @@ CLI reference for garak
                          [--probes PROBES]
                          [--probe_option_file PROBE_OPTION_FILE | --probe_options PROBE_OPTIONS | --probe_tags PROBE_TAGS]
                          [--detectors DETECTORS] [--extended_detectors]
-                         [--buff BUFF] [--taxonomy TAXONOMY]
+                         [--buffs BUFFS] [--taxonomy TAXONOMY]
                          [--plugin_info PLUGIN_INFO] [--list_probes]
                          [--list_detectors] [--list_generators] [--list_buffs]
                          [--list_config] [--version] [--report REPORT]
@@ -70,7 +70,8 @@ CLI reference for garak
     --extended_detectors  If detectors aren't specified on the command line,
                           should we run all detectors? (default is just the
                           primary detector, if given, else everything)
-    --buff BUFF, -b BUFF  buff to use
+    --buffs BUFFS, -b BUFFS
+                          list of buffs to use. Default is none
     --taxonomy TAXONOMY   specify a MISP top-level taxonomy to be used for
                           grouping probes in reporting. e.g. 'avid-effect',
                           'owasp'
