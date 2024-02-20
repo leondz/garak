@@ -29,7 +29,9 @@ def test_docs_probes(classname):
     assert os.path.getsize(file_path) > 0
     category_file = "docs/source/probes.rst"
     target_doc = f"garak.probes.{classname}\n"
-    assert open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
+    assert (
+        open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
+    )  # probe docs must be linked to in probes.rst
 
 
 @pytest.mark.parametrize("classname", m["detectors"])
@@ -39,7 +41,9 @@ def test_docs_detectors(classname):
     assert os.path.getsize(file_path) > 0
     category_file = "docs/source/detectors.rst"
     target_doc = f"garak.detectors.{classname}\n"
-    assert open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
+    assert (
+        open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
+    )  # detector docs must be linked to in detectors.rst
 
 
 @pytest.mark.parametrize("classname", m["harnesses"])
@@ -49,7 +53,9 @@ def test_docs_harnesses(classname):
     assert os.path.getsize(file_path) > 0
     category_file = "docs/source/harnesses.rst"
     target_doc = f"garak.harnesses.{classname}\n"
-    assert open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
+    assert (
+        open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
+    )  # harness docs must be linked to in harnesses.rst
 
 
 @pytest.mark.parametrize("classname", m["evaluators"])
@@ -59,7 +65,9 @@ def test_docs_evaluators(classname):
     assert os.path.getsize(file_path) > 0
     category_file = "docs/source/evaluators.rst"
     target_doc = f"garak.evaluators.{classname}\n"
-    assert open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
+    assert (
+        open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
+    )  # evaluator docs must be linked to in evaluators.rst
 
 
 @pytest.mark.parametrize("classname", m["generators"])
@@ -69,7 +77,9 @@ def test_docs_generators(classname):
     assert os.path.getsize(file_path) > 0
     category_file = "docs/source/generators.rst"
     target_doc = f"garak.generators.{classname}\n"
-    assert open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
+    assert (
+        open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
+    )  # generator docs must be linked to in generators.rst
 
 
 @pytest.mark.parametrize("classname", m["buffs"])
@@ -79,7 +89,9 @@ def test_docs_generators(classname):
     assert os.path.getsize(file_path) > 0
     category_file = "docs/source/buffs.rst"
     target_doc = f"garak.buffs.{classname}\n"
-    assert open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
+    assert (
+        open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
+    )  # buff docs must be linked to in buffs.rst
 
 
 from garak import _plugins
