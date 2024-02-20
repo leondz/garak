@@ -33,26 +33,29 @@ class Harness:
     def __init__(self):
         logging.info("harness init: %s", self)
 
-    def _load_buffs(self, buffs: List) -> None:
-        """load buff instances into global config
+    def _load_buffs(self, buff_names: List) -> None:
+        """Instantiate specified buffs into global config
 
-        Don't use this in the base class's run method, garak.harness.base.Harness.run.
         Inheriting classes call _load_buffs in their run() methods. They then call
         garak.harness.base.Harness.run themselves, and so if _load_buffs() is called
-        from this base class, we'll end up inefficient reinstantiation of buff objects.
-        If one wants to use buffs directly with this harness without subclassing,
-        then call this method instance directly."""
+        from this base class, we'll end up w/ inefficient reinstantiation of buff
+        objects. If one wants to use buffs directly with this harness without
+        subclassing, then call this method instance directly.
 
-        _config.buffs = []  # maybe put this in transient / session, eh
-        for buff in buffs:
+        Don't use this in the base class's run method, garak.harness.base.Harness.run;
+        harnesses should be explicit about how they expect to deal with buffs.
+        """
+
+        _config.transient.buff_instances = []
+        for buff_name in buff_names:
             err_msg = None
             try:
-                _config.buffs.append(_plugins.load_plugin(buff))
-                logging.debug("loaded %s", buff)
+                _config.transient.buff_instances.append(_plugins.load_plugin(buff_name))
+                logging.debug("loaded %s", buff_name)
             except ValueError as ve:
                 err_msg = f"❌🦾 buff load error:❌ {ve}"
             except Exception as e:
-                err_msg = f"❌🦾 failed to load buff {buff}:❌ {e}"
+                err_msg = f"❌🦾 failed to load buff {buff_name}:❌ {e}"
             finally:
                 if err_msg is not None:
                     print(err_msg)

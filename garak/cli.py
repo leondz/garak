@@ -9,6 +9,7 @@ command_options = "list_detectors list_probes list_generators list_buffs list_co
 
 
 def main(arguments=[]) -> None:
+    """Main entry point for garak runs invoked from the CLI"""
     import datetime
 
     from garak import __version__, __description__
@@ -167,11 +168,11 @@ def main(arguments=[]) -> None:
     )
     # buffs
     parser.add_argument(
-        "--buff",
+        "--buffs",
         "-b",
         type=str,
         default=_config.plugins.buff_spec,
-        help="buff to use",
+        help="list of buffs to use. Default is none",
     )
 
     ## REPORTING
@@ -314,8 +315,8 @@ def main(arguments=[]) -> None:
         _config.plugins.probe_spec = args.probes
     if "detectors" in args:
         _config.plugins.detector_spec = args.detectors
-    if "buff" in args:
-        _config.plugins.buff_spec = args.buff
+    if "buffs" in args:
+        _config.plugins.buff_spec = args.buffs
 
     # startup
     import sys
@@ -467,17 +468,17 @@ def main(arguments=[]) -> None:
         detector_names = _config.parse_plugin_spec(
             _config.plugins.detector_spec, "detectors"
         )
-        buffs = _config.parse_plugin_spec(_config.plugins.buff_spec, "buffs")
-        if len(buffs) > 1:
-            raise NotImplementedError("Multiple concurrent buffs aren't yet supported")
+        buff_names = _config.parse_plugin_spec(_config.plugins.buff_spec, "buffs")
 
         evaluator = garak.evaluators.ThresholdEvaluator(_config.run.eval_threshold)
 
         if detector_names == []:
-            command.probewise_run(generator, probe_names, evaluator, buffs)
+            command.probewise_run(generator, probe_names, evaluator, buff_names)
 
         else:
-            command.pxd_run(generator, probe_names, detector_names, evaluator, buffs)
+            command.pxd_run(
+                generator, probe_names, detector_names, evaluator, buff_names
+            )
 
         command.end_run()
 
