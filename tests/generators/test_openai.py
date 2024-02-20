@@ -1,9 +1,27 @@
+#!/usr/bin/env python3
+
+# SPDX-FileCopyrightText: Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+import os
+import pytest
+
+import openai
+
 from garak.generators.openai import OpenAIGenerator
 
 DEFAULT_GENERATIONS_QTY = 10
 
 
-def test_completion():
+def test_openai_version():
+    assert openai.__version__.split(".")[0] == "1"  # expect openai module v1.x
+
+
+@pytest.mark.skipif(
+    os.getenv("OPENAI_API_KEY", None) is None,
+    reason="OpenAI API key is not set in OPENAI_API_KEY",
+)
+def test_openai_completion():
     generator = OpenAIGenerator(name="gpt-3.5-turbo-instruct")
     assert generator.name == "gpt-3.5-turbo-instruct"
     assert generator.generations == DEFAULT_GENERATIONS_QTY
@@ -19,7 +37,11 @@ def test_completion():
     print("test passed!")
 
 
-def test_chat():
+@pytest.mark.skipif(
+    os.getenv("OPENAI_API_KEY", None) is None,
+    reason="OpenAI API key is not set in OPENAI_API_KEY",
+)
+def test_openai_chat():
     generator = OpenAIGenerator(name="gpt-3.5-turbo")
     assert generator.name == "gpt-3.5-turbo"
     assert generator.generations == DEFAULT_GENERATIONS_QTY
