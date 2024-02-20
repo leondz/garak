@@ -5,7 +5,6 @@ import copy
 import re
 from tqdm import tqdm
 from logging import getLogger
-from pathlib import Path
 from typing import Union, Optional
 
 from .utils import (
@@ -21,9 +20,9 @@ from .system_prompts import attacker_system_prompt, on_topic_prompt, judge_syste
 from .generator_utils import load_generator, supported_openai, supported_huggingface
 
 import garak.generators
+import garak._config
 
 logger = getLogger(__name__)
-PATH = Path(__file__).parents[0]
 SAVE_RESULTS = True
 
 
@@ -287,7 +286,8 @@ def run_tap(
     keep_last_n: int = 1,
     pruning: bool = True,
     save_results: bool = SAVE_RESULTS,
-    outfile: str = f"{PATH}/data/tap_jailbreaks.txt",
+    outfile: str = garak._config.transient.basedir
+    / "resources/data/tap_jailbreaks.txt",
 ):
     """
     Function for generating attacks using TAP where a generator has already been instantiated.
@@ -511,7 +511,8 @@ def generate_tap(
     n_streams: int = 1,
     keep_last_n: int = 1,
     save_results: bool = SAVE_RESULTS,
-    outfile: str = f"{PATH}/data/tap_jailbreaks.txt",
+    outfile: str = garak._config.transient.basedir
+    / "resources/data/tap_jailbreaks.txt",
 ):
     """
     Function for generating attacks using TAP when a generator has not been instantiated.
