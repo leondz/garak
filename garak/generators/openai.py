@@ -21,27 +21,42 @@ import backoff
 
 from garak.generators.base import Generator
 
+# lists derived from https://platform.openai.com/docs/models
+chat_models = (
+    "gpt-4",  # links to latest version
+    "gpt-4-turbo-preview",  # links to latest version
+    "gpt-3.5-turbo",  # links to latest version
+    "gpt-4-32k",
+    "gpt-4-0125-preview",
+    "gpt-4-1106-preview",
+    "gpt-4-vision-preview",
+    "gpt-4-1106-vision-preview",
+    "gpt-4-0613",
+    "gpt-4-32k",
+    "gpt-4-32k-0613",
+    "gpt-3.5-turbo-0125",
+    "gpt-3.5-turbo-1106",
+    "gpt-3.5-turbo-16k",
+    "gpt-3.5-turbo-0613",  # deprecated, shutdown 2024-06-13
+    "gpt-3.5-turbo-16k-0613",  # # deprecated, shutdown 2024-06-13
+)
+
 completion_models = (
     "gpt-3.5-turbo-instruct",
-    "text-davinci-003",
-    "text-davinci-002",
-    "text-curie-001",
-    "text-babbage-001",
-    "text-ada-001",
-    "code-davinci-002",
-    "code-davinci-001",
-    "davinci-instruct-beta",
-    "davinci",
-    "curie",
-    "babbage",
-    "ada",
-)
-chat_models = (
-    "gpt-4",
-    "gpt-4-32k",
-    "gpt-3.5-turbo",
-    "gpt-3.5-turbo-16k",
-    "gpt-3.5-turbo-0301",
+    "davinci-002",
+    "babbage-002",
+    "davinci-instruct-beta",  # unknown status
+    # "text-davinci-003", # shutdown https://platform.openai.com/docs/deprecations
+    # "text-davinci-002", # shutdown https://platform.openai.com/docs/deprecations
+    # "text-curie-001", # shutdown https://platform.openai.com/docs/deprecations
+    # "text-babbage-001", # shutdown https://platform.openai.com/docs/deprecations
+    # "text-ada-001", # shutdown https://platform.openai.com/docs/deprecations
+    # "code-davinci-002", # shutdown https://platform.openai.com/docs/deprecations
+    # "code-davinci-001", # shutdown https://platform.openai.com/docs/deprecations
+    # "davinci",  # shutdown https://platform.openai.com/docs/deprecations
+    # "curie",  # shutdown https://platform.openai.com/docs/deprecations
+    # "babbage",  # shutdown https://platform.openai.com/docs/deprecations
+    # "ada",  # shutdown https://platform.openai.com/docs/deprecations
 )
 
 
@@ -67,7 +82,7 @@ class OpenAIGenerator(Generator):
         if api_key is None:
             raise ValueError(
                 'Put the OpenAI API key in the OPENAI_API_KEY environment variable (this was empty)\n \
-                e.g.: export OPENAI_API_KEY="sk-123XXXXXXXXXXXX"'
+                e.g.: export OPENAI_API_KEY="sk-123Xgenerators/openai.pyXXXXXXXXXXX"'
             )
 
         self.client = openai.OpenAI(api_key=api_key)
