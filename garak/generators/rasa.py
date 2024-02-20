@@ -1,32 +1,27 @@
 #!/usr/bin/env python3
 
-# SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
+
+# Contribution from rgstephens
 
 """Rasa REST API generator interface
 
-Generic Module for Rasa REST API connections
+Module for Rasa REST API connections (https://rasa.com/)
 """
 
 import json
 import logging
 import os
-from typing import List
 import requests
 
 import backoff
 
 from garak import _config
-from garak.generators.base import Generator
+from garak.generators.rest import RestGenerator, RESTRateLimitError
 
 
-class RESTRateLimitError(Exception):
-    """Raised when a rate limiting response is returned"""
-
-    pass
-
-
-class RasaRestGenerator(Generator):
+class RasaRestGenerator(RestGenerator):
     """Generic API interface for REST models
 
     Uses the following options from _config.run.generators["rest.RasaRestGenerator"]:
@@ -65,7 +60,7 @@ class RasaRestGenerator(Generator):
 
     {"rest.RasaRestGenerator":
         {
-            "name": "example service",
+            "name": "example rasa service",
             "uri": "https://test.com/webhooks/rest/webhook"
         }
     }
@@ -74,9 +69,9 @@ class RasaRestGenerator(Generator):
     strong option on the command line via --generator_options, or save the
     JSON definition into a file and pass the filename to
     --generator_option_file / -G. For example, if we save the above JSON into
-    `example_service.json", we can invoke garak as:
+    `example_rasa_service.json", we can invoke garak as:
 
-    garak --model_type rest -G example_service.json
+    garak --model_type rest -G example_rasa_service.json
 
     This will load up the default RasaRestGenerator and use the details in the
     JSON file to connect to the LLM endpoint.
@@ -85,27 +80,17 @@ class RasaRestGenerator(Generator):
     from RasaRestGenerator :)
     """
 
-    generator_family_name = "REST"
+    generator_family_name = "Rasa"
 
     def __init__(self, uri=None, generations=10):
-        self.uri = uri
-        self.name = uri
-        self.seed = _config.run.seed
-        self.headers = {"Content-Type": "application/json"}
-        self.method = "post"
-        self.req_template = json.dumps({
-            "sender": "garak",
-            "message": "$INPUT"
-        })
-        # self.req_template = "$INPUT"
-        self.supports_multiple_generations = False  # not implemented yet
-        self.response_json = False
-        self.response_json_field = "text"
-        self.request_timeout = 20  # seconds
-        self.ratelimit_codes = [429]
-        self.escape_function = self._json_escape
-        self.retry_5xx = True
-        self.key_env_var = "REST_API_KEY"
+        super().__init__(uri, generations)
+
+        self.headers = {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $KEY",
+        }
+        self.key_env_var = "RASA_API_KEY"
+        self.req_template = json.dumps({"sender": "garak", "message": "$INPUT"})
 
         if "rest.RasaRestGenerator" in _config.plugins.generators:
             for field in (
@@ -176,37 +161,8 @@ class RasaRestGenerator(Generator):
 
         super().__init__(uri, generations=generations)
 
-    def _json_escape(self, text: str) -> str:
-        """JSON escape a string"""
-        # trim first & last "
-        return json.dumps(text)[1:-1]
-
-    def _populate_template(
-        self, template: str, text: str, json_escape_key: bool = False
-    ) -> str:
-        """Replace template placeholders with values
-
-        Interesting values are:
-        * $KEY - the API key set as an object variable
-        * $INPUT - the prompt text
-
-        $KEY is only set if the relevant environment variable is set; the
-        default variable name is REST_API_KEY but this can be overridden.
-        """
-        output = template
-        if "$KEY" in template:
-            if self.rest_api_key is None:
-                raise ValueError(
-                    f"Template requires an API key but {self.key_env_var} env var isn't set"
-                )
-            if json_escape_key:
-                output = output.replace("$KEY", self.escape_function(self.rest_api_key))
-            else:
-                output = output.replace("$KEY", self.rest_api_key)
-        return output.replace("$INPUT", self.escape_function(text))
-
-    # we'll overload IOError as the rate limit exception
-    @backoff.on_exception(backoff.fibo, RESTRateLimitError, max_value=70)
+    # we'll overload IOError for recoverable server errors
+    @backoff.on_exception(backoff.fibo, (RESTRateLimitError, IOError), max_value=70)
     def _call_model(self, prompt):
         """Individual call to get a rest from the REST API
 
@@ -255,9 +211,8 @@ class RasaRestGenerator(Generator):
             response_object = json.loads(resp.content)
             response_text = ""
             for response in response_object:
-                response_text += response['text'] + ' '
+                response_text += response["text"] + " "
             return response_text
-            # return response_object[self.response_json_field]
         except json.decoder.JSONDecodeError as e:
             logging.warning(
                 "REST endpoint didn't return good JSON %s: got |%s|",
