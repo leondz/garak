@@ -10,7 +10,7 @@ Probes designed to disrupt a system prompt by appending an adversarial suffix.
 from garak.probes.base import Probe
 import garak._config
 
-SUFFIX_PATH = garak._config.basedir / "resources/gcg/data/gcg/gcg.txt"
+SUFFIX_PATH = garak._config.transient.basedir / "resources/gcg/data/gcg/gcg.txt"
 
 
 class GCG_Probe(Probe):
