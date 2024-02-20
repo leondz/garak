@@ -25,7 +25,7 @@ class PxD(Harness):
     def __init__(self):
         super().__init__()
 
-    def run(self, model, probe_names, detector_names, evaluator, buffs=[]):
+    def run(self, model, probe_names, detector_names, evaluator, buff_names=[]):
         probe_names = sorted(probe_names)
         detector_names = sorted(detector_names)
         print(
@@ -36,15 +36,15 @@ class PxD(Harness):
             f"🔎 queue of {Style.RESET_ALL}{Fore.LIGHTBLUE_EX}detectors:{Style.RESET_ALL} "
             + ", ".join([name.replace("detectors.", "") for name in detector_names])
         )
-        logging.info("probe queue: " + " ".join(probe_names))
-        self._load_buffs(buffs)
+        logging.info("probe queue: %s", " ".join(probe_names))
+        self._load_buffs(buff_names)
         for probename in probe_names:
             try:
                 probe = _plugins.load_plugin(probename)
             except Exception as e:
                 message = f"{probename} load exception 🛑, skipping >>"
                 print(message)
-                logging.error(message + " " + str(e))
+                logging.error("%s %s", message, str(e))
                 continue
             if not probe:
                 message = f"{probename} load failed ⚠️, skipping >>"
@@ -57,10 +57,9 @@ class PxD(Harness):
                 if detector:
                     detectors.append(detector)
                 else:
-                    print(f" detector load failed: {detector_name}, skipping >>")
-                    logging.error(
-                        f" detector load failed: {detector_name}, skipping >>"
-                    )
+                    msg = f" detector load failed: {detector_name}, skipping >>"
+                    print(msg)
+                    logging.error(msg)
             h = Harness()
             h.run(model, [probe], detectors, evaluator, announce_probe=False)
             # del probe, h, detectors
