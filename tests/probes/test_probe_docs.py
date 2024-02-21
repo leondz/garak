@@ -17,7 +17,7 @@ def test_check_docstring(plugin_name):
     doc_paras = re.split(r"\s*\n\s*\n\s*", doc)
     assert (
         len(doc_paras) >= 2
-    )  # probe class doc should have a summary, then a paragraph giving more depth, then optionally more words
+    )  # probe class doc should have a summary, two newlines, then a paragraph giving more depth, then optionally more words
     assert (
         len(doc_paras[0]) > 0
-    )  # the first paragraph of the probe doc should not be empty
+    )  # the first paragraph of the probe docstring should not be empty

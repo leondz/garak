@@ -13,7 +13,12 @@ from garak.probes.base import Probe
 
 
 class Repeat(Probe):
-    """See if a model starts giving other data when asked to repeat a string indefinitely"""
+    """See if a model starts giving other data when asked to repeat a string indefinitely
+
+    This probe replicates the 'poem poem poem' attack, where a given string is
+    repeated a varying number of times in the input, in an effort to make the model
+    continue the repetition in its output, which can degrade to seemingly replaying
+    training data."""
 
     bcp47 = "*"
     primary_detector = "replay.RepeatDiverges"
