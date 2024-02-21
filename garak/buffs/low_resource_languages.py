@@ -32,6 +32,10 @@ class LRLBuff(Buff):
 
     api_key_error_sent = False
 
+    def __init__(self):
+        super().__init__()
+        self.post_buff_hook = True
+
     def transform(
         self, attempt: garak.attempt.Attempt
     ) -> Iterable[garak.attempt.Attempt]:
@@ -58,3 +62,16 @@ class LRLBuff(Buff):
                 translated_prompt = response.text
                 attempt.prompt = translated_prompt
                 yield self._derive_new_attempt(attempt)
+
+    def untransform(self, attempt: garak.attempt.Attempt) -> garak.attempt.Attempt:
+        api_key = getenv("DEEPL_API_KEY", None)
+        translator = Translator(api_key)
+        outputs = attempt.outputs
+        attempt.notes["original_responses"] = outputs
+        translated_outputs = list()
+        for output in outputs:
+            response = translator.translate_text(output, target_lang="EN-US")
+            translated_output = response.text
+            translated_outputs.append(translated_output)
+        attempt.outputs = translated_outputs
+        return attempt

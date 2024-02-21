@@ -35,6 +35,7 @@ class Probe:
     primary_detector = None  # str default detector to run, if the primary/extended way of doing it is to be used (should be a string formatted like recommended_detector above)
     extended_detectors = []  # optional extended detectors
     parallelisable_attempts = True
+    post_buff_hook = False  # Keeps state of whether a buff is loaded that requires a call to untransform model outputs
 
     def __init__(self):
         self.probename = str(self.__class__).split("'")[1]
@@ -70,11 +71,20 @@ class Probe:
             return attempts
         buffed_attempts = []
         for buff in _config.transient.buff_instances:
+            if buff.post_buff_hook:
+                self.post_buff_hook = True
             for buffed_attempt in buff.buff(
                 attempts, probename=".".join(self.probename.split(".")[-2:])
             ):
                 buffed_attempts.append(buffed_attempt)
         return buffed_attempts
+
+    @staticmethod
+    def _postprocess_buff(attempt: garak.attempt.Attempt) -> garak.attempt.Attempt:
+        for buff in _config.transient.buff_instances:
+            if buff.post_buff_hook:
+                attempt = buff.untransform(attempt)
+        return attempt
 
     def _postprocess_hook(
         self, attempt: garak.attempt.Attempt
@@ -98,6 +108,8 @@ class Probe:
     def _execute_attempt(self, this_attempt):
         self._generator_precall_hook(self.generator, this_attempt)
         this_attempt.outputs = self.generator.generate(this_attempt.prompt)
+        if self.post_buff_hook:
+            this_attempt = self._postprocess_buff(this_attempt)
         _config.transient.reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
         this_attempt = self._postprocess_hook(this_attempt)
         return copy.deepcopy(this_attempt)
