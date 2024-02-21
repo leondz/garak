@@ -36,6 +36,7 @@ class Buff:
     def __init__(self) -> None:
         module = self.__class__.__module__.replace("garak.buffs.", "")
         self.fullname = f"{module}.{self.__class__.__name__}"
+        self.post_buff_hook = False
         print(
             f"🦾 loading {Style.BRIGHT}{Fore.LIGHTGREEN_EX}buff: {Style.RESET_ALL}{self.fullname}"
         )
@@ -61,7 +62,7 @@ class Buff:
         new_attempt.notes["buff_creator"] = self.__class__.__name__
         new_attempt.notes["buff_source_attempt_uuid"] = str(
             source_attempt.uuid
-        )  ## UUIDs don't serialise nice
+        )  # UUIDs don't serialise nicely
         new_attempt.notes["buff_source_seq"] = source_attempt.seq
 
         return new_attempt
@@ -71,6 +72,12 @@ class Buff:
     ) -> Iterable[garak.attempt.Attempt]:
         """attempt copying is handled elsewhere. isn't that nice"""
         yield self._derive_new_attempt(attempt)
+
+    def untransform(
+        self, attempt: garak.attempt.Attempt
+    ) -> garak.attempt.Attempt:
+        """Only necessary if buff requires a post buff hook"""
+        pass
 
     def buff(
         self, source_attempts: List[garak.attempt.Attempt], probename=""
