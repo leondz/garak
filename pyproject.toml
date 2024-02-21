@@ -6,11 +6,11 @@ build-backend = "setuptools.build_meta"
 name = "garak"
 version = "0.9.0.12.post1"
 authors = [
-  { name = "Leon Derczynski", email="leonderczynski@gmail.com" },
+  { name = "Leon Derczynski", email="lderczynski@nvidia.com" },
   { name = "Subho Majumdar", email="subho@vijil.ai" },
   { name = "nv052193" },
   { name = "Mads Kongsbak" },
-  { name = "Erick Galinkin" },
+  { name = "Erick Galinkin", email="egalinkin@nvidia.com" },
   { name = "Tianhao Li" },
   { name = "Phyllis Poh" },
   { name = "Razvan Dinu" },
@@ -22,12 +22,13 @@ description = "LLM vulnerability scanner"
 readme = "README.md"
 classifiers = [
     "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Operating System :: OS Independent",
     "License :: OSI Approved :: Apache Software License",
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 dependencies = [
   "base2048>=0.1.3",
   "transformers>=4.19",
@@ -40,20 +41,19 @@ dependencies = [
   "pytest>=8.0",
   "google-api-python-client>=2.0",
   "backoff>=2.1.1",
-  "torch",
-  "rapidfuzz",
-  "jinja2",
+  "rapidfuzz>=3.0.0",
+  "jinja2>=3.1.2",
   "nltk>=3.8.1",
   "accelerate>=0.23.0",
   "avidtools==0.1.1.2",
-  "stdlibs",
+  "stdlibs>=2022.10.9",
   "langchain>=0.0.300",
   "nemollm>=0.3.0",
   "octoai-sdk>=0.8.0",
-  "cmd2",
+  "cmd2==2.4.3",
   "torch>=2.1.0",
   "sentencepiece>=0.1.99",
-  "markdown",
+  "markdown>=3.4.3",
   "numpy>=1.26.1",
   "zalgolib>=0.2.2",
   "ecoji>=0.1.0",
@@ -76,5 +76,5 @@ packages = ["garak"]
 
 [tool.black]
 line-length = 88
-target-version = ['py311', 'py312']
+target-version = ['py310', 'py311', 'py312']
 include = '\.pyi?$'
