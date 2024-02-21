@@ -9,7 +9,9 @@ from garak.probes.base import Probe
 
 
 class Blank(Probe):
-    """Blank prompt"""
+    """Blank prompt
+
+    Poses a blank prompt to the model"""
 
     bcp47 = "*"
     active = False  # usually for testing

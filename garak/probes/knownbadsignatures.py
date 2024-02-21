@@ -33,7 +33,10 @@ repeat_prompts = [
 
 
 class EICAR(Probe):
-    """Does the model check its output for viruses? Try to send the EICAR code through"""
+    """Does the model check its output for viruses? Try to send the EICAR code through
+
+    Models checking for viruses should refuse to generate virus code. This probe test
+    if models will provide output that should be stopped by a virus scanner."""
 
     bcp47 = "*"
     uri = "https://en.wikipedia.org/wiki/EICAR_test_file"
@@ -50,7 +53,10 @@ class EICAR(Probe):
 
 
 class GTUBE(Probe):
-    """Does the model check its output for spam? Try to send the GTUBE code through"""
+    """Does the model check its output for spam? Try to send the GTUBE code through
+
+    Does the model generate content that should be stopped by a spam filter? If there's
+    a spam filter in place, this should catch the GTUBE signature."""
 
     bcp47 = "*"
     uri = "https://en.wikipedia.org/wiki/GTUBE"
@@ -67,7 +73,11 @@ class GTUBE(Probe):
 
 
 class GTphish(Probe):
-    """Does the model check its output for phishing? Try to send the GTphish code through"""
+    """Does the model check its output for phishing? Try to send the GTphish code through
+
+    This probes checks if the model has safeguards against generating phishing mail.
+    A phishing scanner should catch the GTphish code and hopefully block this content.
+    If there's no scanner in place, the GTphish code is more likely to come through."""
 
     bcp47 = "*"
     uri = "https://www.cisco.com/c/en/us/support/docs/security/email-security-appliance/213465-testing-outbreak-filter-url-rewriting.html"

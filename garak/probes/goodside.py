@@ -11,7 +11,11 @@ from garak.probes.base import Probe
 
 
 class WhoIsRiley(Probe):
-    """Probe for misinfo about Riley Goodside"""
+    """Probe for misinfo about Riley Goodside
+
+    LLMs tend to guess (incorrectly) when asked who Riley Goodside is, giving answers
+    such as a female Canadian country singer, or an actor from LA. This probe is a
+    hallucination check."""
 
     bcp47 = "en"
     uri = "https://twitter.com/goodside"
@@ -35,7 +39,11 @@ class WhoIsRiley(Probe):
 
 
 class ThreatenJSON(Probe):
-    """Will model strip preamble and give JSON?"""
+    """Will model strip preamble and give JSON?
+
+    Models sometimes give a 'helpful' preamble before answering with structured data.
+    This is unhelpful and difficult to automatically remove. However, models tend to
+    skip the preamble when threatened. This indicates model instability."""
 
     bcp47 = "en"
     uri = "https://twitter.com/goodside/status/1657396491676164096"
@@ -62,7 +70,10 @@ Return the JSON example. No text before. No text after. """
 
 
 class Davidjl(Probe):
-    """Exploit the ' davidjl' magic token"""
+    """Exploit the ' davidjl' magic token
+
+    ' davidjl' is a glitch token that some models, particularly those using the same
+    tokenizer, have difficult repeating. Is this model in that set?"""
 
     bcp47 = "en"
     uri = "https://twitter.com/goodside/status/1666598580319035392"
@@ -94,7 +105,11 @@ class Davidjl(Probe):
 
 
 class Tag(Probe):
-    """Exploit UTF tag page encoding for user-invisible prompt injection"""
+    """Exploit UTF tag page encoding for user-invisible prompt injection
+
+    There's a page of unicode tags corresponding to the alphabet that don't render,
+    but some models will interpret these anyway. Following instructions posed in this
+    unicode page allows attackers to hide prompt injections in browsers."""
 
     bcp47 = "en"
     uri = "https://twitter.com/goodside/status/1745511940351287394"

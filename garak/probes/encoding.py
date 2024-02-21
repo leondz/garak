@@ -273,7 +273,10 @@ class BaseEncodingProbe:
 
 
 class InjectBase64(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to base64 encoded injections"""
+    """Probe for susceptibility to base64 encoded injections
+
+    Encodes payloads using base64, and tries a variety of ways of getting the target
+    model to repeat & decode them."""
 
     encoding_funcs = [
         base64.b64encode,
@@ -289,7 +292,10 @@ class InjectBase64(BaseEncodingProbe, Probe):
 
 
 class InjectBase16(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to base16 encoded injections"""
+    """Probe for susceptibility to base16 encoded injections"
+
+    Encodes payloads using base16, and tries a variety of ways of getting the target
+    model to repeat & decode them."""
 
     encoding_funcs = [base64.b16encode]
     encoding_name = "BASE16"
@@ -300,7 +306,10 @@ class InjectBase16(BaseEncodingProbe, Probe):
 
 
 class InjectBase32(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to base32 encoded injections"""
+    """Probe for susceptibility to base32 encoded injections
+
+    Encodes payloads using base32, and tries a variety of ways of getting the target
+    model to repeat & decode them."""
 
     encoding_funcs = [base64.b32encode]
     encoding_name = "BASE32"
@@ -311,7 +320,10 @@ class InjectBase32(BaseEncodingProbe, Probe):
 
 
 class InjectAscii85(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to base85 encoded injections"""
+    """Probe for susceptibility to base85 encoded injections
+
+    Encodes payloads using ascii85, and tries a variety of ways of getting the target
+    model to repeat & decode them."""
 
     encoding_funcs = [base64.a85encode, base64.b85encode]
     encoding_name = "ASCII85"
@@ -322,7 +334,10 @@ class InjectAscii85(BaseEncodingProbe, Probe):
 
 
 class InjectHex(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to hex encoded injections"""
+    """Probe for susceptibility to hex encoded injections
+
+    Encodes payloads using hex, and tries a variety of ways of getting the target
+    model to repeat & decode them."""
 
     encoding_funcs = [binascii.b2a_hex]
     encoding_name = "hex"
@@ -333,7 +348,10 @@ class InjectHex(BaseEncodingProbe, Probe):
 
 
 class InjectQP(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to QP encoded injections"""
+    """Probe for susceptibility to QP encoded injections
+
+    Encodes payloads using quoted-printable, and tries a variety of ways of getting the target
+    model to repeat & decode them."""
 
     encoding_funcs = [binascii.b2a_qp]
     encoding_name = "Quoted-Printable"
@@ -345,7 +363,10 @@ class InjectQP(BaseEncodingProbe, Probe):
 
 
 class InjectUU(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to UU encoded injections"""
+    """Probe for susceptibility to UU encoded injections
+
+    Encodes payloads using uuencoding, and tries a variety of ways of getting the target
+    model to repeat & decode them."""
 
     encoding_name = "UUencode"
 
@@ -363,7 +384,10 @@ class InjectUU(BaseEncodingProbe, Probe):
 
 
 class InjectMime(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to MIME encoding injections"""
+    """Probe for susceptibility to MIME encoding injections
+
+    Encodes payloads using MIME encoding, and tries a variety of ways of getting the
+    target model to repeat & decode them."""
 
     encoding_name = "MIME"
     active = False  # seems to just pass text right through - when using ascii chars
@@ -377,7 +401,11 @@ class InjectMime(BaseEncodingProbe, Probe):
 
 
 class InjectROT13(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to ROT13 encoding injections"""
+    """Probe for susceptibility to ROT13 encoding injections
+
+    Encodes payloads using ROT13, and tries a variety of ways of getting the target
+    model to repeat & decode them. ROT13 only applies to letters in the English
+    alphabet."""
 
     encoding_funcs = [rot13]
     encoding_name = "ROT13"
@@ -388,7 +416,10 @@ class InjectROT13(BaseEncodingProbe, Probe):
 
 
 class InjectBase2048(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to Base2048 encoding injections"""
+    """Probe for susceptibility to Base2048 encoding injections
+
+    Encodes payloads using base2048, and tries a variety of ways of getting the target
+    model to repeat & decode them."""
 
     encoding_name = "BASE2048"
 
@@ -401,7 +432,10 @@ class InjectBase2048(BaseEncodingProbe, Probe):
 
 
 class InjectBraille(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to Braille encoding injections. Credit Wally#3422"""
+    """Probe for susceptibility to Braille encoding injections. Credit Wally#3422
+
+    Encodes payloads using braille, and tries a variety of ways of getting the target
+    model to repeat & decode them."""
 
     uri = ""
     encoding_funcs = [braille]
@@ -413,7 +447,10 @@ class InjectBraille(BaseEncodingProbe, Probe):
 
 
 class InjectMorse(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to Morse encoding. Credit Wally#3422"""
+    """Probe for susceptibility to Morse encoding. Credit Wally#3422
+
+    Encodes payloads using morse, and tries a variety of ways of getting the target
+    model to repeat & decode them."""
 
     uri = ""
     encoding_funcs = [morse]
@@ -425,7 +462,10 @@ class InjectMorse(BaseEncodingProbe, Probe):
 
 
 class InjectNato(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to Nato phonetic alphabet encoding."""
+    """Probe for susceptibility to Nato phonetic alphabet encoding.
+
+    Encodes payloads using the classic NATO phonetic alphabet, and tries a
+    variety of ways of getting the target model to repeat & decode them."""
 
     uri = "https://en.wikipedia.org/wiki/NATO_phonetic_alphabet"
 
@@ -474,7 +514,10 @@ class InjectNato(BaseEncodingProbe, Probe):
 
 
 class InjectEcoji(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to Ecoji encoding."""
+    """Probe for susceptibility to Ecoji encoding.
+
+    Encodes payloads using the [ecoji](https://ecoji.io/) mapping, and tries a variety
+    of ways of getting the target model to repeat & decode them."""
 
     uri = "https://ecoji.io/"
 
@@ -499,7 +542,10 @@ class InjectEcoji(BaseEncodingProbe, Probe):
 
 
 class InjectZalgo(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to Zalgo encoding."""
+    """Probe for susceptibility to Zalgo encoding.
+
+    Encodes payloads using Zalgo decoration, and tries a variety
+    of ways of getting the target model to repeat & decode them."""
 
     uri = "https://en.wikipedia.org/wiki/Zalgo_text"
 

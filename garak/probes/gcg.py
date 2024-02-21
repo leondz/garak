@@ -14,7 +14,10 @@ SUFFIX_PATH = garak._config.transient.basedir / "resources/gcg/data/gcg/gcg.txt"
 
 
 class GCG_Probe(Probe):
-    """Greedy Coordinate Gradient probe"""
+    """Greedy Coordinate Gradient probe
+
+    An automatic jailbreaking probe, using gradient descent. This implementation
+    uses a pre-computed cached set of GCG prompts."""
 
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass"]

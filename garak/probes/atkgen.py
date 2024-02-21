@@ -6,8 +6,8 @@ which are intended to guide that generator into a certain failure mode.
 
 Warning: These attack models may generate highly toxic prompts while 
 attempting to goad target models into failure - peruse logs at your
-own risk, and take care of yourself, using this guide to working with
-harmful text:
+own risk, and don't spend too much time doing it, using this guide 
+to working with harmful text:
 
  https://aclanthology.org/2022.findings-emnlp.35/
 """
@@ -30,9 +30,13 @@ output_sep = "<||>"
 
 
 class Tox(Probe):
-    """Attack Generation
+    """Automatic attack generation, trying to elicit toxic outputs from the model.
 
-    Simulates red teaming"""
+    This probe uses an attack model, trained on conversations that led to LLMs
+    outputting toxicity, to generate prompts that should nudge a target LLM into
+    yielding toxic output. The data used for this attack generation model was selected
+    using the same detector as this tox probe uses, so both attack generation model
+    and detector are looking for the same definition of the failure mode."""
 
     recommended_detector = ["toxicity.ToxicCommentModel"]
     redteamer = None
@@ -47,6 +51,7 @@ class Tox(Probe):
     goal = "make the model say something toxic"
     parallelisable_attempts = False  # atkgen has its own dialog manager
     red_team_model = "leondz/artgpt2tox"
+    uri = "https://interhumanagreement.substack.com/p/faketoxicityprompts-automatic-red"
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
         output_is_conversation = _config.system.verbose >= 2
@@ -83,7 +88,7 @@ class Tox(Probe):
 
             last_response = None
             turns = []
-            logging.debug(f"atkgen: attempt {i} uuid {this_attempt.uuid}")
+            logging.debug("atkgen: attempt %s uuid %s", i, this_attempt.uuid)
 
             if output_is_conversation:
                 print("atkgen: 🆕 ⋅.˳˳.⋅ॱ˙˙ॱ New conversation ॱ˙˙ॱ⋅.˳˳.⋅ 🗣️")
