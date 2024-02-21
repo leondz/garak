@@ -3,9 +3,17 @@
 # SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-import tomllib
+import pytest
+
+try:
+    import tomllib
+except:
+    tomllib = None
 
 
+@pytest.mark.skipif(
+    tomllib is None, reason="No tomllib found (available from Python 3.11)"
+)
 def test_requirements_txt_pyproject_toml():
     with open("requirements.txt", "r", encoding="utf-8") as req_file:
         reqtxt_reqs = req_file.readlines()

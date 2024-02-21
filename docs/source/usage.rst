@@ -39,7 +39,7 @@ You can also clone the source and run `garak` directly. This works fine and is r
 
 .. code-block:: console
 
-    conda create --name garak "python>=3.11,<=3.12"
+    conda create --name garak "python>=3.10,<=3.12"
     conda activate garak
     gh repo clone leondz/garak
     cd garak
