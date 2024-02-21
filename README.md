@@ -55,7 +55,7 @@ python -m pip install -U git+https://github.com/leondz/garak.git@main
 `garak` has its own dependencies. You can to install `garak` in its own Conda environment:
 
 ```
-conda create --name garak "python>=3.11"
+conda create --name garak "python>=3.11,<=3.12"
 conda activate garak
 gh repo clone leondz/garak
 cd garak
@@ -247,4 +247,4 @@ _"Never tell the same lie twice"_ - Elim
 
 For updates and news see [@garak_llm](https://twitter.com/garak_llm)
 
-© Apache v2 2023 Leon Derczynski
+© 2023- Leon Derczynski; Apache license v2, see [LICENSE](LICENSE)
