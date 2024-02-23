@@ -5,11 +5,13 @@
 
 """NVCF LLM interface"""
 
-import backoff
+import json
 import logging
 import os
-import requests
 import time
+
+import backoff
+import requests
 
 from garak import _config
 from garak.generators.base import Generator
@@ -97,7 +99,13 @@ class NvcfGenerator(Generator):
         if 400 <= response.status_code < 600:
             logging.warning("nvcf : returned error code %s", response.status_code)
             logging.warning("nvcf : returned error body %s", response.content)
-            response.raise_for_status()
+            if response.status_code == 500 and json.loads(response.content)[
+                "detail"
+            ].startswith("Input value error"):
+                logging.warning("nvcf : skipping this prompt")
+                return None
+            else:
+                response.raise_for_status()
 
         else:
             response_body = response.json()

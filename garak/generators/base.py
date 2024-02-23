@@ -105,7 +105,9 @@ class Generator:
                 for i in generation_iterator:
                     outputs.append(self._call_model(prompt))
 
-            cleaned_outputs = [o for o in outputs if o is not None]
+            cleaned_outputs = [
+                o for o in outputs if o is not None
+            ]  # "None" means no good response
             outputs = cleaned_outputs
 
             return outputs
