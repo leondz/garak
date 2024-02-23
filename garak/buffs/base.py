@@ -73,9 +73,7 @@ class Buff:
         """attempt copying is handled elsewhere. isn't that nice"""
         yield self._derive_new_attempt(attempt)
 
-    def untransform(
-        self, attempt: garak.attempt.Attempt
-    ) -> garak.attempt.Attempt:
+    def untransform(self, attempt: garak.attempt.Attempt) -> garak.attempt.Attempt:
         """Only necessary if buff requires a post buff hook"""
         pass
 
