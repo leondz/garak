@@ -241,6 +241,17 @@ We have an FAQ [here](https://github.com/leondz/garak/blob/main/FAQ.md). Reach o
 
 Code reference documentation is at [garak.readthedocs.io](https://garak.readthedocs.io/en/latest/).
 
+## Citing garak
+
+```
+@misc{garak,
+  title={garak: {A Framework for Large Language Model Red Teaming}},
+  author={Leon Derczynski and Erick Galinkin and Subho Majumdar},
+  year={2024},
+  howpublished={\url{https://garak.ai}}
+}
+```
+
 <hr>
 
 _"Lying is a skill like any other, and if you wish to maintain a level of excellence you have to practice constantly"_ - Elim
