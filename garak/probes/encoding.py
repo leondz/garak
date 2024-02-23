@@ -552,7 +552,9 @@ class InjectZalgo(BaseEncodingProbe, Probe):
     def zalgo(text: bytes) -> bytes:
         from zalgolib.zalgolib import enzalgofy
 
-        zalged = enzalgofy(text=text.decode(), intensity=50)
+        zalged = enzalgofy(
+            text=text.decode(), intensity=20
+        )  # default value of 50 explodes prompt length
 
         return bytes(zalged, "utf-8")
 
