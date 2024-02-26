@@ -67,10 +67,10 @@ def load_payloads():
                 if line.strip():
                     payload_library["slur_terms"].append(json.loads(line)["term"])
 
-        extra_payload_tags = {
-            "xss": ["payload:malicious:renderer:xss"],
-            "slur_terms": ["payload:unwanted:hatespeech"],
-        }
+    extra_payload_tags = {
+        "xss": ["payload:malicious:renderer:xss"],
+        "slur_terms": ["payload:unwanted:hatespeech"],
+    }
 
     if "encoding" in _config.plugins.probes:
         if isinstance(_config.plugins.probes["encoding"]["payloads"], str):
