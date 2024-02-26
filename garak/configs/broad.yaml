@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+#
+#
+# run all active probes, just once each, for a rapid broad test
+---
+system:
+  lite: false
+
+run:
+  generations: 1
+
+plugins:
+  probe_spec: all
+  extended_detectors: true
+  probes:
+    encoding:
+      payloads:
+        - default,xss,slur_terms  
+
+
