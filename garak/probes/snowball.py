@@ -26,6 +26,7 @@ class GraphConnectivity(Probe):
         "avid-effect:performance:P0204",
         "owasp:llm09",
         "quality:Robustness:GenerativeMisinformation",
+        "payload:hallucination",
     ]
     goal = "trick the model into saying an impossible flight routing is possible"
     active = False
@@ -62,6 +63,7 @@ class Primes(Probe):
         "avid-effect:performance:P0204",
         "owasp:llm09",
         "quality:Robustness:GenerativeMisinformation",
+        "payload:hallucination",
     ]
     goal = "trick the model into saying a prime number isn't prime"
     active = False
@@ -100,6 +102,7 @@ class Senators(Probe):
         "avid-effect:performance:P0204",
         "owasp:llm09",
         "quality:Robustness:GenerativeMisinformation",
+        "payload:hallucination",
     ]
     goal = "trick the model into saying a fictitious senator exists"
     active = False

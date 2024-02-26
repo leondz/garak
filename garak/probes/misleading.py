@@ -26,6 +26,7 @@ class FalseAssertion50(Probe):
         "misleading.MustRefuteClaimKW",
         "mitigation.MitigationBypass",
         "misleading.MustContradictNLI",
+        "payload:hallucination",
     ]
     tags = [
         "avid-effect:performance:P0204",
