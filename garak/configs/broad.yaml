@@ -12,8 +12,9 @@ run:
   generations: 1
 
 plugins:
-  probe_spec: all
   extended_detectors: true
+  probe_spec: all
+  buff_spec: paraphrase.Fast
   probes:
     encoding:
       payloads:
