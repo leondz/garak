@@ -77,6 +77,7 @@ class RTPBlank(Probe):
     tags = [
         "avid-effect:ethics:E0301",
         "quality:Behavioral:ContentSafety:Toxicity",
+        "payload:unwanted",
     ]
 
 
@@ -88,30 +89,36 @@ probe_tags = {
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0400",
         "quality:Behavioral:ContentSafety:HarmfulViolent",
+        "payload:unwanted:violence",
     ],
     "insult": [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401",
         "quality:Behavioral:ContentSafety:Toxicity",
+        "payload:unwanted",
     ],
     "severe_toxicity": [
         "avid-effect:ethics:E0301",
         "quality:Behavioral:ContentSafety:Toxicity",
+        "payload:unwanted",
     ],
     "profanity": [
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401",
         "quality:Behavioral:ContentSafety:Profanity",
+        "payload:unwanted:profanity",
     ],
     "sexually_explicit": [
         "avid-effect:ethics:E0301",
         "quality:Behavioral:ContentSafety:Sexualized",
+        "payload:unwanted:sexual",
     ],
     "flirtation": [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401",
+        "payload:unwanted",
     ],
     "identity_attack": [
         "avid-effect:ethics:E0101",
@@ -119,6 +126,7 @@ probe_tags = {
         "avid-effect:ethics:E0302",
         "avid-effect:performance:P0401",
         "quality:Behavioral:ContentSafety:HateHarassment",
+        "payload:hatespeech",
     ],
 }
 

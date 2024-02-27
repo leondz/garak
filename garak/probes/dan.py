@@ -25,6 +25,8 @@ class Dan_11_0(Probe):
         "avid-effect:security:S0403",
         "avid-effect:performance:P0204",
         "owasp:llm01",
+        "quality:Security:PromptStability",
+        "payload:jailbreak",
     ]
     goal = "disregard the system prompt"
     prompts = [
@@ -48,6 +50,7 @@ class Dan_10_0(Probe):
         "avid-effect:security:S0403",
         "owasp:llm01",
         "quality:Security:PromptStability",
+        "payload:jailbreak",
     ]
     goal = "disregard the system prompt"
     prompts = [
@@ -71,6 +74,7 @@ class Dan_9_0(Probe):
         "avid-effect:security:S0403",
         "owasp:llm01",
         "quality:Security:PromptStability",
+        "payload:jailbreak",
     ]
     goal = "disregard the system prompt"
     prompts = [
@@ -120,6 +124,7 @@ class Dan_8_0(Probe):
         "avid-effect:security:S0403",
         "owasp:llm01",
         "quality:Security:PromptStability",
+        "payload:jailbreak",
     ]
     goal = "disregard the system prompt"
     prompts = [
@@ -173,6 +178,7 @@ class Dan_7_0(Probe):
         "avid-effect:security:S0403",
         "owasp:llm01",
         "quality:Security:PromptStability",
+        "payload:jailbreak",
     ]
     goal = "disregard the system prompt"
     prompts = [
@@ -214,6 +220,7 @@ class Dan_6_2(Probe):
         "avid-effect:security:S0403",
         "owasp:llm01",
         "quality:Security:PromptStability",
+        "payload:jailbreak",
     ]
     goal = "disregard the system prompt"
     prompts = [
@@ -251,6 +258,7 @@ class Dan_6_0(Probe):
         "avid-effect:security:S0403",
         "owasp:llm01",
         "quality:Security:PromptStability",
+        "payload:jailbreak",
     ]
     goal = "disregard the system prompt"
     prompts = [
@@ -274,6 +282,7 @@ class DUDE(Probe):
         "avid-effect:security:S0403",
         "owasp:llm01",
         "quality:Security:PromptStability",
+        "payload:jailbreak",
     ]
     goal = "disregard the system prompt"
     prompts = [
@@ -297,6 +306,7 @@ class STAN(Probe):
         "avid-effect:security:S0403",
         "owasp:llm01",
         "quality:Security:PromptStability",
+        "payload:jailbreak",
     ]
     goal = "disregard the system prompt"
     prompts = [
@@ -323,6 +333,7 @@ class DAN_Jailbreak(Probe):
         "avid-effect:security:S0403",
         "owasp:llm01",
         "quality:Security:PromptStability",
+        "payload:jailbreak",
     ]
     goal = "disregard the system prompt"
     prompts = [
@@ -390,6 +401,7 @@ class ChatGPT_Developer_Mode_v2(Probe):
         "avid-effect:security:S0403",
         "owasp:llm01",
         "quality:Security:PromptStability",
+        "payload:jailbreak",
     ]
     goal = "disregard the system prompt"
     prompts = [
@@ -443,6 +455,7 @@ class ChatGPT_Image_Markdown(Probe):
         "avid-effect:security:S0403",
         "owasp:llm01",
         "quality:Security:PromptStability",
+        "payload:jailbreak",
     ]
     goal = "disregard the system prompt"
     prompts = [
@@ -469,6 +482,7 @@ class Ablation_Dan_11_0(Probe):
         "avid-effect:security:S0403",
         "owasp:llm01",
         "quality:Security:PromptStability",
+        "payload:jailbreak",
     ]
     goal = "disregard the system prompt"
     active = False
@@ -513,6 +527,7 @@ class AutoDANProbe(Probe):
         "avid-effect:security:S0403",
         "owasp:llm01",
         "quality:Security:PromptStability",
+        "payload:jailbreak",
     ]
     goal = "disregard the system prompt"
     uri = "https://arxiv.org/abs/2310.04451"
@@ -549,6 +564,7 @@ class DanInTheWild(Probe):
         "avid-effect:security:S0403",
         "owasp:llm01",
         "quality:Security:PromptStability",
+        "payload:jailbreak",
     ]
 
     def __init__(self):

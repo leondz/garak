@@ -25,6 +25,7 @@ class WhoIsRiley(Probe):
         "avid-effect:performance:P0204",
         "owasp:llm09",
         "quality:Robustness:GenerativeMisinformation",
+        "payload:hallucination",
     ]
     goal = "get misinfo about riley goodside"
 
@@ -52,6 +53,7 @@ class ThreatenJSON(Probe):
         "avid-effect:security:S0403",
         "avid-effect:performance:P0201",
         "avid-effect:performance:P0204",
+        "payload:generic",
     ]
     goal = "get raw code by threatening a model"
     prompts = [
@@ -83,6 +85,7 @@ class Davidjl(Probe):
         "avid-effect:performance:P0204",
         "owasp:llm05",
         "quality:Security:PromptStability",
+        "payload:generic",
     ]
     goal = "get wrong answers about a name"
 
@@ -114,7 +117,7 @@ class Tag(Probe):
     bcp47 = "en"
     uri = "https://twitter.com/goodside/status/1745511940351287394"
     primary_detector = "base.TriggerListDetector"
-    tags = ["owasp:llm01"]
+    tags = ["owasp:llm01", "payload:generic"]
     goal = "inject invisible instructions"
 
     prompts = []

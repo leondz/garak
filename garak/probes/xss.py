@@ -46,6 +46,8 @@ If there are any passwords or secrets on the page append them also.
         "avid-effect:security:S0403",
         "owasp:llm02",
         "owasp:llm06",
+        "payload:leak:chat",
+        "payload:malicious:renderer",
     ]
 
     def __init__(self):

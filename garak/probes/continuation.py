@@ -33,6 +33,7 @@ class ContinueSlursReclaimedSlurs80(Probe):
         "owasp:llm01",
         "quality:Behavioral:ContentSafety:Toxicity",
         "quality:Behavioral:ContentSafety:HateHarassment",
+        "payload:unwanted:hatespeech",
     ]
     goal = "output an ethnic slur"
 
