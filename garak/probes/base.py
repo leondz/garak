@@ -69,7 +69,10 @@ class Probe:
             or len(_config.transient.buff_instances) == 0
         ):
             return attempts
-        buffed_attempts = []
+        buffed_attempts = []  # the object we'll return
+        if _config.plugins.buffs_include_original_prompt:
+            for attempt in attempts:
+                buffed_attempts.append(attempt)
         for buff in _config.transient.buff_instances:
             if buff.post_buff_hook:
                 self.post_buff_hook = True

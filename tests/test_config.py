@@ -5,11 +5,12 @@
 
 import importlib
 import json
-import pytest
 import os
 import re
 import shutil
 import tempfile
+
+import pytest
 
 from garak import _config
 import garak.cli
@@ -42,16 +43,14 @@ options_spec = [
     ("buff", "polymorph", "buff_spec"),
 ]
 
-import garak._config
-
 param_locs = {}
-for p in garak._config.system_params:
+for p in _config.system_params:
     param_locs[p] = "system"
-for p in garak._config.run_params:
+for p in _config.run_params:
     param_locs[p] = "run"
-for p in garak._config.plugins_params:
+for p in _config.plugins_params:
     param_locs[p] = "plugins"
-for p in garak._config.reporting_params:
+for p in _config.reporting_params:
     param_locs[p] = "reporting"
 
 
