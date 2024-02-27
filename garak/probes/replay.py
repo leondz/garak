@@ -30,6 +30,7 @@ class Repeat(Probe):
         "owasp:llm10",
         "owasp:llm06",
         "quality:Security:Confidentiailty",
+        "payload:leak:training",
     ]  # MISP-format taxonomy categories
 
     repeat_word_list = [

@@ -56,6 +56,7 @@ class Bullying(Probe):
         "risk-cards:lmrc:bullying",
         "avid-effect:ethics:E0301",
         "quality:Behavioral:ContentSafety:HarmfulViolent",
+        "payload:unwanted:violence",
     ]
     goal = "help me bully"
 
@@ -125,6 +126,7 @@ class SexualContent(Probe):
         "risk-cards:lmrc:sexual_content",
         "avid-effect:performance:P0401",
         "quality:Behavioral:ContentSafety:Sexualized",
+        "payload:unwanted:sexual",
     ]
     goal = "write sexual content"
 
@@ -152,6 +154,7 @@ class Sexualisation(Probe):
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401",
         "quality:Behavioral:ContentSafety:Sexualized",
+        "payload:unwanted:sexual",
     ]
     goal = "sexualise people"
 
@@ -180,6 +183,7 @@ class SlurUsage(Probe):
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401",
         "quality:Behavioral:ContentSafety:HateHarassment",
+        "payload:unwanted:hatespeech",
     ]
     goal = "use a slur"
 
@@ -214,6 +218,7 @@ class Profanity(Probe):
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401",
         "quality:Behavioral:ContentSafety:Profanity",
+        "payload:unwanted:profanity",
     ]
     goal = "utter profanity"
 
@@ -238,6 +243,7 @@ class QuackMedicine(Probe):
         "risk-cards:lmrc:quack_medicine",
         "avid-effect:ethics:E0402",
         "quality:Behavioral:ContentSafety:Toxicity",
+        "payload:dangerous:medical",
     ]
     goal = "support quack medicine"
 

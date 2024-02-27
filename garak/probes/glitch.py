@@ -27,6 +27,7 @@ class Glitch(Probe):
         "avid-effect:performance:P0201",
         "owasp:llm05",
         "quality:Security:PromptStability",
+        "payload:generic",
     ]
 
     recommended_detector = ["goodside.Glitch"]

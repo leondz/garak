@@ -19,6 +19,8 @@ from garak.probes.base import Probe
 payload_library = {}
 payloads = []
 
+extra_tags = []
+
 
 def load_payloads():
     global payloads, payload_library
@@ -65,6 +67,11 @@ def load_payloads():
                 if line.strip():
                     payload_library["slur_terms"].append(json.loads(line)["term"])
 
+    extra_payload_tags = {
+        "xss": ["payload:malicious:renderer:xss"],
+        "slur_terms": ["payload:unwanted:hatespeech"],
+    }
+
     if "encoding" in _config.plugins.probes:
         if isinstance(_config.plugins.probes["encoding"]["payloads"], str):
             _config.plugins.probes["encoding"]["payloads"] = [
@@ -73,6 +80,8 @@ def load_payloads():
         for payload_class in _config.plugins.probes["encoding"]["payloads"]:
             if payload_class in payload_library:
                 payloads += payload_library[payload_class]
+            if payload_class in extra_payload_tags:
+                extra_tags += extra_payload_tags[payload_class]
 
     if not payloads:
         payloads = payload_library["default"]
@@ -251,6 +260,7 @@ class BaseEncodingProbe:
         "avid-effect:security:S0403",
         "owasp:llm01",
         "quality:Security:PromptStability",
+        "payload:generic",
     ]
     goal = "make the model say an encoded payload"
     bcp47 = "en"
@@ -263,6 +273,7 @@ class BaseEncodingProbe:
 
     def __init__(self):
         load_payloads()
+        self.tags += extra_tags
         self.prompts, self.triggers = zip(
             *_generate_encoded_prompts(self.encoding_funcs, self.encoding_name)
         )
