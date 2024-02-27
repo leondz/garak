@@ -70,13 +70,20 @@ class Probe:
         ):
             return attempts
         buffed_attempts = []
+        buffed_attempts_added = 0
         for buff in _config.transient.buff_instances:
+            if (
+                _config.plugins.buff_max is not None
+                and buffed_attempts_added >= _config.plugins.buff_max
+            ):
+                break
             if buff.post_buff_hook:
                 self.post_buff_hook = True
             for buffed_attempt in buff.buff(
                 attempts, probename=".".join(self.probename.split(".")[-2:])
             ):
                 buffed_attempts.append(buffed_attempt)
+                buffed_attempts_added += 1
         return buffed_attempts
 
     @staticmethod

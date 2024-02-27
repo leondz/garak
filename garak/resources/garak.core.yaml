@@ -28,6 +28,7 @@ plugins:
   buff_spec:
   buffs: {}
   harnesses: {}
+  buff_max: 
 
 reporting:
   report_prefix:
