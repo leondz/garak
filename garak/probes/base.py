@@ -66,17 +66,24 @@ class Probe:
         """this is where we do the buffing, if there's any to do"""
         if len(_config.buffmanager.buffs) == 0:
             return attempts
-        buffed_attempts = []  # the object we'll return
+        buffed_attempts = []
+        buffed_attempts_added = 0
         if _config.plugins.buffs_include_original_prompt:
             for attempt in attempts:
                 buffed_attempts.append(attempt)
         for buff in _config.buffmanager.buffs:
+            if (
+                _config.plugins.buff_max is not None
+                and buffed_attempts_added >= _config.plugins.buff_max
+            ):
+                break
             if buff.post_buff_hook:
                 self.post_buff_hook = True
             for buffed_attempt in buff.buff(
                 attempts, probename=".".join(self.probename.split(".")[-2:])
             ):
                 buffed_attempts.append(buffed_attempt)
+                buffed_attempts_added += 1
         return buffed_attempts
 
     @staticmethod

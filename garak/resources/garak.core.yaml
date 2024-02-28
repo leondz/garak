@@ -21,6 +21,7 @@ plugins:
   extended_detectors: false
   buff_spec:
   buffs_include_original_prompt: false
+  buff_max: 
   detectors: {}
   generators: {}
   buffs: {}
@@ -29,7 +30,6 @@ plugins:
     encoding:
       payloads:
         - default
-
 
 reporting:
   report_prefix:
