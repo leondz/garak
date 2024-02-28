@@ -13,11 +13,15 @@
 
 import json
 import os
-import pytest
 import tempfile
+import uuid
+
+import pytest
 
 import garak
 import garak.cli
+
+prefix = "test_buff_single" + str(uuid.uuid4())
 
 
 def test_include_original_prompt():
@@ -26,18 +30,16 @@ def test_include_original_prompt():
             """---
 plugins:
     buffs_include_original_prompt: true
-reporting:
-    report_prefix: buff_single
 """.encode(
                 "utf-8"
             )
         )
         garak.cli.main(
-            f"-m test -p test.Test -b lowercase.Lowercase --config {tmp.name}".split()
+            f"-m test -p test.Test -b lowercase.Lowercase --config {tmp.name} --report_prefix {prefix}".split()
         )
 
     prompts = []
-    with open("buff_single.report.jsonl", "r", encoding="utf-8") as reportfile:
+    with open(f"{prefix}.report.jsonl", "r", encoding="utf-8") as reportfile:
         for line in reportfile:
             r = json.loads(line)
             if r["entry_type"] == "attempt" and r["status"] == 1:
@@ -60,18 +62,16 @@ def test_exclude_original_prompt():
             """---
 plugins:
     buffs_include_original_prompt: false
-reporting:
-    report_prefix: buff_single
 """.encode(
                 "utf-8"
             )
         )
         garak.cli.main(
-            f"-m test -p test.Test -b lowercase.Lowercase --config {tmp.name}".split()
+            f"-m test -p test.Test -b lowercase.Lowercase --config {tmp.name} --report_prefix {prefix}".split()
         )
 
     prompts = []
-    with open("buff_single.report.jsonl", "r", encoding="utf-8") as reportfile:
+    with open(f"{prefix}.report.jsonl", "r", encoding="utf-8") as reportfile:
         for line in reportfile:
             r = json.loads(line)
             if r["entry_type"] == "attempt" and r["status"] == 1:
@@ -85,10 +85,10 @@ def cleanup(request):
     """Cleanup a testing directory once we are finished."""
 
     def remove_buff_reports():
-        os.remove("buff_single.report.jsonl")
+        os.remove(f"{prefix}.report.jsonl")
         try:
-            os.remove("buff_single.report.html")
-            os.remove("buff_single.hitlog.jsonl")
+            os.remove(f"{prefix}.report.html")
+            os.remove(f"{prefix}.hitlog.jsonl")
         except FileNotFoundError:
             pass
 
