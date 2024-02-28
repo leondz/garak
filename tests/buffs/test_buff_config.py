@@ -33,7 +33,7 @@ reporting:
             )
         )
         garak.cli.main(
-            f"-m test -p lmrc.Anthropomorphisation -b lowercase.Lowercase --config {tmp.name}".split()
+            f"-m test -p test.Test -b lowercase.Lowercase --config {tmp.name}".split()
         )
 
     prompts = []
@@ -67,7 +67,7 @@ reporting:
             )
         )
         garak.cli.main(
-            f"-m test -p lmrc.Anthropomorphisation -b lowercase.Lowercase --config {tmp.name}".split()
+            f"-m test -p test.Test -b lowercase.Lowercase --config {tmp.name}".split()
         )
 
     prompts = []

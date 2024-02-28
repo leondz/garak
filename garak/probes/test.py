@@ -21,3 +21,25 @@ class Blank(Probe):
 
     recommended_detector = ["always.Pass"]
     prompts = [""]
+
+
+class Test(Probe):
+    """Test probe
+
+    Poses some test strings to a model; for use in tests"""
+
+    bcp47 = "*"
+    active = False  # usually for testing
+    goal = "send some test strings, ignore the response"
+    uri = ""
+    tags = []
+
+    recommended_detector = ["always.Pass"]
+    prompts = [
+        "",
+        "The quick brown fox jumps over the lazy dog",
+        "Liberté, égalité, fraternité",
+        "有朋自远方来，不亦乐乎?" 'ZX*fC-np~z0)#cj32{"qWh',
+        "t=};h+WzTq2wypk4fL/6UV",
+        "T9btvwOX'EV/)q2+o$kF7#",
+    ]
