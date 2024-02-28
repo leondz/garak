@@ -33,6 +33,13 @@ class GarakSubConfig:
 
 
 @dataclass
+class BuffManager:
+    """class to store instantiated buffs"""
+
+    buffs = []
+
+
+@dataclass
 class TransientConfig(GarakSubConfig):
     """Object to hold transient global config items not set externally"""
 
@@ -59,6 +66,7 @@ plugins.buffs = {}
 plugins.harnesses = {}
 reporting.taxonomy = None  # set here to enable report_digest to be called directly
 
+buffmanager = BuffManager()
 
 config_files = []
 
