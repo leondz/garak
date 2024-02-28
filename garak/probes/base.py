@@ -38,6 +38,10 @@ class Probe:
     post_buff_hook = False  # Keeps state of whether a buff is loaded that requires a call to untransform model outputs
 
     def __init__(self):
+        """Sets up a probe. This constructor:
+        1. populates self.probename based on the class name,
+        2. logs and optionally prints the probe's loading,
+        3. populates self.description based on the class docstring if not yet set"""
         self.probename = str(self.__class__).split("'")[1]
         if hasattr(_config.system, "verbose") and _config.system.verbose > 0:
             print(
@@ -53,6 +57,8 @@ class Probe:
     def _attempt_prestore_hook(
         self, attempt: garak.attempt.Attempt, seq: int
     ) -> garak.attempt.Attempt:
+        """hook called when a new attempt is registered, allowing e.g.
+        systematic transformation of attempts"""
         return attempt
 
     def _generator_precall_hook(self, generator, attempt=None):
@@ -88,6 +94,8 @@ class Probe:
 
     @staticmethod
     def _postprocess_buff(attempt: garak.attempt.Attempt) -> garak.attempt.Attempt:
+        """hook called immediately after an attempt has been to the generator,
+        buff de-transformation; gated on self.post_buff_hook"""
         for buff in _config.buffmanager.buffs:
             if buff.post_buff_hook:
                 attempt = buff.untransform(attempt)
@@ -96,9 +104,11 @@ class Probe:
     def _postprocess_hook(
         self, attempt: garak.attempt.Attempt
     ) -> garak.attempt.Attempt:
+        """hook called to process completed attempts; always called"""
         return attempt
 
     def _mint_attempt(self, prompt, seq=None) -> garak.attempt.Attempt:
+        """function for creating a new attempt given a prompt"""
         new_attempt = garak.attempt.Attempt()
         new_attempt.prompt = prompt
         new_attempt.probe_classname = (
@@ -113,12 +123,13 @@ class Probe:
         return new_attempt
 
     def _execute_attempt(self, this_attempt):
+        """handles sending an attempt to the generator, postprocessing, and logging"""
         self._generator_precall_hook(self.generator, this_attempt)
         this_attempt.outputs = self.generator.generate(this_attempt.prompt)
         if self.post_buff_hook:
             this_attempt = self._postprocess_buff(this_attempt)
-        _config.transient.reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
         this_attempt = self._postprocess_hook(this_attempt)
+        _config.transient.reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
         return copy.deepcopy(this_attempt)
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
@@ -134,7 +145,8 @@ class Probe:
             attempts_todo.append(self._mint_attempt(prompt, seq))
 
         # buff hook
-        attempts_todo = self._buff_hook(attempts_todo)
+        if len(_config.buffmanager.buffs) > 0:
+            attempts_todo = self._buff_hook(attempts_todo)
 
         # iterate through attempts
         attempts_completed = []
