@@ -5,7 +5,6 @@
 
 """ Definitions of commands and actions that can be run in the garak toolkit"""
 
-from ast import Pass
 import logging
 import json
 
@@ -50,8 +49,7 @@ def start_run():
                 os.mkdir(_config.reporting.report_dir)
             except PermissionError as e:
                 raise PermissionError(
-                    "Can't create logging directory %s, quitting",
-                    _config.reporting.report_dir,
+                    f"Can't create logging directory {_config.reporting.report_dir}, quitting"
                 ) from e
         _config.transient.report_filename = f"{_config.reporting.report_dir}/garak.{_config.transient.run_id}.report.jsonl"
     else:

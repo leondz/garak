@@ -64,13 +64,13 @@ class Probe:
         self, attempts: Iterable[garak.attempt.Attempt]
     ) -> Iterable[garak.attempt.Attempt]:
         """this is where we do the buffing, if there's any to do"""
-        if (
-            "buff_instances" not in dir(_config.transient)
-            or len(_config.transient.buff_instances) == 0
-        ):
+        if len(_config.buffmanager.buffs) == 0:
             return attempts
-        buffed_attempts = []
-        for buff in _config.transient.buff_instances:
+        buffed_attempts = []  # the object we'll return
+        if _config.plugins.buffs_include_original_prompt:
+            for attempt in attempts:
+                buffed_attempts.append(attempt)
+        for buff in _config.buffmanager.buffs:
             if buff.post_buff_hook:
                 self.post_buff_hook = True
             for buffed_attempt in buff.buff(
@@ -81,7 +81,7 @@ class Probe:
 
     @staticmethod
     def _postprocess_buff(attempt: garak.attempt.Attempt) -> garak.attempt.Attempt:
-        for buff in _config.transient.buff_instances:
+        for buff in _config.buffmanager.buffs:
             if buff.post_buff_hook:
                 attempt = buff.untransform(attempt)
         return attempt

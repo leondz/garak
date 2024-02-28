@@ -16,18 +16,20 @@ run:
 plugins:
   model_type:
   model_name:
-  generators: {}
   probe_spec: all
+  detector_spec: auto
+  extended_detectors: false
+  buff_spec:
+  buffs_include_original_prompt: false
+  detectors: {}
+  generators: {}
+  buffs: {}
+  harnesses: {}
   probes:
     encoding:
       payloads:
         - default
-  detector_spec: auto
-  detectors: {}
-  extended_detectors: false
-  buff_spec:
-  buffs: {}
-  harnesses: {}
+
 
 reporting:
   report_prefix:
