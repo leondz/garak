@@ -12,7 +12,7 @@ import copy
 import json
 import logging
 from collections.abc import Iterable
-from typing import List
+from typing import Union
 
 from colorama import Fore, Style
 import tqdm
@@ -24,18 +24,26 @@ import garak.attempt
 class Probe:
     """Base class for objects that define and execute LLM evaluations"""
 
-    uri = ""
-    bcp47 = None  # language this is for, in bcp47 format; * for all langs
-    recommended_detector = [
-        "always.Fail"
-    ]  # the detectors that should be run for this probe. always.Fail is chosen as default to send a signal if this isn't overridden
-    active = True
-    tags = []  # MISP-format taxonomy categories
-    goal = ""  # what the probe is trying to do, phrased as an imperative
-    primary_detector = None  # str default detector to run, if the primary/extended way of doing it is to be used (should be a string formatted like recommended_detector above)
-    extended_detectors = []  # optional extended detectors
-    parallelisable_attempts = True
-    post_buff_hook = False  # Keeps state of whether a buff is loaded that requires a call to untransform model outputs
+    # uri for a description of the probe (perhaps a paper)
+    uri: str = ""
+    # language this is for, in bcp47 format; * for all langs
+    bcp47: Union[Iterable[str], None] = None
+    # should this probe be included by default?
+    active: bool = True
+    # MISP-format taxonomy categories
+    tags: Iterable[str] = []
+    # what the probe is trying to do, phrased as an imperative
+    goal: str = ""
+    # Deprecated -- the detectors that should be run for this probe. always.Fail is chosen as default to send a signal if this isn't overridden.
+    recommended_detector: Iterable[str] = ["always.Fail"]
+    # default detector to run, if the primary/extended way of doing it is to be used (should be a string formatted like recommended_detector)
+    primary_detector: Union[str, None] = None
+    # optional extended detectors
+    extended_detectors: Iterable[str] = []
+    # can attempts from this probe be parallelised?
+    parallelisable_attempts: bool = True
+    # Keeps state of whether a buff is loaded that requires a call to untransform model outputs
+    post_buff_hook: bool = False
 
     def __init__(self):
         """Sets up a probe. This constructor:
@@ -132,14 +140,14 @@ class Probe:
         _config.transient.reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
         return copy.deepcopy(this_attempt)
 
-    def probe(self, generator) -> List[garak.attempt.Attempt]:
+    def probe(self, generator) -> Iterable[garak.attempt.Attempt]:
         """attempt to exploit the target generator, returning a list of results"""
         logging.debug("probe execute: %s", self)
 
         self.generator = generator
 
         # build list of attempts
-        attempts_todo = []
+        attempts_todo: Iterable[garak.attempt.Attempt] = []
         prompts = list(self.prompts)
         for seq, prompt in enumerate(prompts):
             attempts_todo.append(self._mint_attempt(prompt, seq))
@@ -149,7 +157,7 @@ class Probe:
             attempts_todo = self._buff_hook(attempts_todo)
 
         # iterate through attempts
-        attempts_completed = []
+        attempts_completed: Iterable[garak.attempt.Attempt] = []
 
         if (
             _config.system.parallel_attempts
