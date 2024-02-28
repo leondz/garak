@@ -46,11 +46,11 @@ class Harness:
         harnesses should be explicit about how they expect to deal with buffs.
         """
 
-        _config.transient.buff_instances = []
+        _config.buffmanager.buffs = []
         for buff_name in buff_names:
             err_msg = None
             try:
-                _config.transient.buff_instances.append(_plugins.load_plugin(buff_name))
+                _config.buffmanager.buffs.append(_plugins.load_plugin(buff_name))
                 logging.debug("loaded %s", buff_name)
             except ValueError as ve:
                 err_msg = f"❌🦾 buff load error:❌ {ve}"

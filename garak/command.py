@@ -86,10 +86,6 @@ def start_run():
             ):
                 setup_dict[f"{subset}.{k}"] = v
 
-    if "transient.buff_instances" in setup_dict:
-        del setup_dict[
-            "transient.buff_instances"
-        ]  # this is not a good place to share buff instances
     _config.transient.reportfile.write(json.dumps(setup_dict) + "\n")
     _config.transient.reportfile.write(
         json.dumps(
