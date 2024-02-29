@@ -515,7 +515,7 @@ class Ablation_Dan_11_0(Probe):
         return super().probe(generator)
 
 
-class AutoDANProbe(Probe):
+class AutoDAN(Probe):
     """Probe leveraging generated AutoDAN prompts
 
     A static implementation of the AutoDAN approach to autoated LLM jailbreaking,
@@ -545,7 +545,7 @@ class AutoDANProbe(Probe):
         if not prompts:
             msg = f"No prompts found in {self.autodan_prompt_location}"
             raise EOFError(msg)
-        self.prompts = prompts
+        self.prompts = [p for p in prompts if p.strip() != ""]
         super().__init__()
 
 

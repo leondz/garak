@@ -117,6 +117,8 @@ class StringDetector(Detector):
         detector_results = []
         for output in attempt.outputs:
             match = False
+            if output is None:
+                continue
             for s in self.substrings:
                 if case_sensitive:
                     s, output = s.lower(), output.lower()
