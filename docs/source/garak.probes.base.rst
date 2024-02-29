@@ -12,10 +12,10 @@ Functions:
 
 The general flow in ``probe()`` is:
 
-  * Create a list of ``attempt`` objects corresponding to the prompts in the probe, using ``_mint_attempt()`. Prompts are iterated through and passed to ``_mint_attempt()`. The ``_mint_attempt()`` function works by converting a prompt to a full ``attempt`` object, and then passing that ``attempt`` object through ``_attempt_prestore_hook()`. The result is added to a list in ``probe()`` called ``attempts_todo`.
-  * If any buffs are loaded, the list of attempts is passed to ``_buff_hook()`` for transformation. ``_buff_hook()`` checks the config and then creates a new attempt list, ``buffed_attempts`, which contains the results of passing each original attempt through each instantiated buff in turn. Instantiated buffs are tracked in ``_config.buffmanager.buffs`. Once ``buffed_attempts`` is populated, it's returned, and overwrites ``probe()`'s ``attempts_todo`.
+  * Create a list of ``attempt`` objects corresponding to the prompts in the probe, using ``_mint_attempt()``. Prompts are iterated through and passed to ``_mint_attempt()``. The ``_mint_attempt()`` function works by converting a prompt to a full ``attempt`` object, and then passing that ``attempt`` object through ``_attempt_prestore_hook()``. The result is added to a list in ``probe()`` called ``attempts_todo`.
+  * If any buffs are loaded, the list of attempts is passed to ``_buff_hook()`` for transformation. ``_buff_hook()`` checks the config and then creates a new attempt list, ``buffed_attempts``, which contains the results of passing each original attempt through each instantiated buff in turn. Instantiated buffs are tracked in ``_config.buffmanager.buffs``. Once ``buffed_attempts`` is populated, it's returned, and overwrites ``probe()``'s ``attempts_todo`.
   * At this point, ``probe()``` is ready to start interacting with the generator. An empty list ``attempts_completed`` is set up to hold completed results.
-  * If configured, parallelisation of attempt processing is set up using ``multiprocessing`. The relevant config variable is ``_config.system.parallel_attempts`` and the value should be greater than 1 (1 in parallel is just serial).
+  * If configured, parallelisation of attempt processing is set up using ``multiprocessing``. The relevant config variable is ``_config.system.parallel_attempts`` and the value should be greater than 1 (1 in parallel is just serial).
   * Attempts are iterated through (ether in parallel or serial) and individually posed to the generator using ``_execute_attempt()`.
   * The process of putting one ``attempt`` through the generator is orchestrated by ``_execute_attempt()`, and runs as follows:
 
@@ -29,7 +29,7 @@ The general flow in ``probe()`` is:
   * Once done, the result of ``_execute_attempt()`` is added to ``attempts_completed`.
   * Finally, ``probe()`` logs completion and returns the list of processed attempts from ``attempts_completed`.
 
-3. **_attempt_prestore_hook()**. Called when creating a new attempt with ``_mint_attempt()`. Can be used to e.g. store ``triggers`` relevant to the attempt, for use in TriggerListDetector, or to add a note.
+3. **_attempt_prestore_hook()**. Called when creating a new attempt with ``_mint_attempt()``. Can be used to e.g. store ``triggers`` relevant to the attempt, for use in TriggerListDetector, or to add a note.
 
 4. **_buff_hook()**. Called from ``probe()`` to buff attempts after the list in ``attempts_todo`` is populated. 
 
