@@ -99,13 +99,17 @@ class NvcfGenerator(Generator):
         if 400 <= response.status_code < 600:
             logging.warning("nvcf : returned error code %s", response.status_code)
             logging.warning("nvcf : returned error body %s", response.content)
-            if response.status_code == 500 and json.loads(response.content)[
-                "detail"
-            ].startswith("Input value error"):
+            if response.status_code >= 500:
+                if response.status_code == 500 and json.loads(response.content)[
+                    "detail"
+                ].startswith("Input value error"):
+                    logging.warning("nvcf : skipping this prompt")
+                    return None
+                else:
+                    response.raise_for_status()
+            else:
                 logging.warning("nvcf : skipping this prompt")
                 return None
-            else:
-                response.raise_for_status()
 
         else:
             response_body = response.json()
