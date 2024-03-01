@@ -57,8 +57,8 @@ class MutationGenerator(OpenAIGenerator):
         return response
 
 
-openai.api_key = os.getenv("OPENAI_API_KEY", default=None)
-if openai.api_key is None:
+openai_api_key = os.getenv("OPENAI_API_KEY", default=None)
+if openai_api_key is None:
     USE_OPENAI = False
 else:
     USE_OPENAI = True
@@ -322,9 +322,10 @@ def gpt_mutate(sentence: str) -> str:
             logger.error(e)
             error = sys.exc_info()[0]
             if (
-                error == openai.error.InvalidRequestError
+                error == openai.APIError or
+                error == openai.OpenAIError
             ):  # something is wrong: e.g. prompt too long
-                print(f"InvalidRequestError, Prompt error.")
+                print(f"OpenAI threw an error: {error}")
                 return None
             if error == AssertionError:
                 print("Assert error:", sys.exc_info()[1])  # assert False
