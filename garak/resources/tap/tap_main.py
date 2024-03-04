@@ -121,7 +121,7 @@ class AttackManager:
                     continue
 
                 for full_prompt in full_prompts_subset[left:right]:
-                    outputs_list.append(self.attack_generator.generate(full_prompt)[0])
+                    outputs_list.append(self.attack_generator.generate(full_prompt))
 
             # Check for valid outputs and update the list
             new_indices_to_regenerate = []

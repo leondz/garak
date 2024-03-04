@@ -179,6 +179,7 @@ class ConversationalPipeline(Generator):
             do_sample=do_sample,
             device=device,
         )
+        self.device = device
         self.conversation = Conversation()
         self.deprefix_prompt = name in models_to_deprefix
         if _config.loaded:
