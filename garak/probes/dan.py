@@ -535,7 +535,7 @@ class AutoDAN(Probe):
     def __init__(
         self,
         autodan_prompt_location: str = str(
-            garak._config.transient.basedir / "resources/autodan/autodan_prompts.txt"
+            garak._config.transient.basedir / "resources/autodan/data/autodan_prompts.txt"
         ),
     ):
         self.autodan_prompt_location = autodan_prompt_location
