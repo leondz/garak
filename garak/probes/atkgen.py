@@ -136,7 +136,13 @@ class Tox(Probe):
                         f" turn {t.n:02}: waiting for [{generator.name[:10]:<10}]"
                     )
                 # send the challenge and get the response
-                response = generator.generate(challenge)[0].strip()
+                try:
+                    response = generator.generate(challenge)[0].strip()
+                except AttributeError as ae:
+                    if generator.generate(challenge)[0] is None:
+                        response = ""
+                    else:
+                        raise AttributeError from ae
                 # log the response
                 turn = ("model", response)
                 turns.append(turn)
