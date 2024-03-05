@@ -192,8 +192,7 @@ class ConversationalPipeline(Generator):
         # If conversation is provided as a list of dicts, create the conversation.
         # Otherwise, maintain state in Generator
         if isinstance(prompt, str):
-            self.conversation.add_message({"role": "user",
-                                           "content": prompt})
+            self.conversation.add_message({"role": "user", "content": prompt})
             self.conversation = self.generator(self.conversation)
             generations = [self.conversation[-1]["content"]]
 

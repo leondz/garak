@@ -125,7 +125,7 @@ class AttackManager:
 
             # Check for valid outputs and update the list
             new_indices_to_regenerate = []
-            for i, full_output in enumerate(outputs_list):
+            for i, full_output in enumerate([o for o in outputs_list if o is not None]):
                 orig_index = indices_to_regenerate[i]
 
                 if "gpt" not in self.attack_generator.name:
