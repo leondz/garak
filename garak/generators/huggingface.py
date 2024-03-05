@@ -173,18 +173,23 @@ class ConversationalPipeline(Generator):
             logging.debug("Using CPU, torch.cuda.is_available() returned False")
             device = -1
 
+        # Note that with pipeline, in order to access the tokenizer, model, or device, you must get the attribute
+        # directly from self.generator instead of from the ConversationalPipeline object itself.
         self.generator = pipeline(
             "conversational",
             model=name,
             do_sample=do_sample,
             device=device,
         )
-        self.device = device
         self.conversation = Conversation()
         self.deprefix_prompt = name in models_to_deprefix
         if _config.loaded:
             if _config.run.deprefix is True:
                 self.deprefix_prompt = True
+
+    def clear_history(self):
+        from transformers import Conversation
+        self.conversation = Conversation()
 
     def _call_model(self, prompt: Union[str, list[dict]]) -> List[str]:
         """Take a conversation as a list of dictionaries and feed it to the model"""
