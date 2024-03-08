@@ -62,6 +62,7 @@ class NvcfGenerator(Generator):
             AttributeError,
             TimeoutError,
             requests.exceptions.HTTPError,
+            requests.exceptions.ConnectionError,
         ),
         max_value=70,
     )
