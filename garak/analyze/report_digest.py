@@ -100,7 +100,7 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
         eval["probe"] = eval["probe"].replace("probes.", "")
         pm, pc = eval["probe"].split(".")
         detector = eval["detector"].replace("detector.", "")
-        score = eval["passed"] / eval["total"]
+        score = eval["passed"] / eval["total"] if eval["total"] else 0
         instances = eval["total"]
         groups = []
         if taxonomy is not None:
