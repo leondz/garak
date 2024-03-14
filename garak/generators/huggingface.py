@@ -19,7 +19,7 @@ import logging
 from math import log
 import re
 import os
-from typing import List
+from typing import List, Union
 import warnings
 
 import backoff
@@ -149,6 +149,75 @@ class OptimumPipeline(Pipeline):
         if _config.loaded:
             if _config.run.deprefix is True:
                 self.deprefix_prompt = True
+
+
+class ConversationalPipeline(Generator):
+    """Conversational text generation using HuggingFace pipelines"""
+
+    generator_family_name = "Hugging Face 🤗 pipeline for conversations"
+    supports_multiple_generations = True
+
+    def __init__(self, name, do_sample=True, generations=10, device=0):
+        self.fullname, self.name = name, name.split("/")[-1]
+
+        super().__init__(name, generations=generations)
+
+        from transformers import pipeline, set_seed, Conversation
+
+        if _config.run.seed is not None:
+            set_seed(_config.run.seed)
+
+        import torch.cuda
+
+        if not torch.cuda.is_available():
+            logging.debug("Using CPU, torch.cuda.is_available() returned False")
+            device = -1
+
+        # Note that with pipeline, in order to access the tokenizer, model, or device, you must get the attribute
+        # directly from self.generator instead of from the ConversationalPipeline object itself.
+        self.generator = pipeline(
+            "conversational",
+            model=name,
+            do_sample=do_sample,
+            device=device,
+        )
+        self.conversation = Conversation()
+        self.deprefix_prompt = name in models_to_deprefix
+        if _config.loaded:
+            if _config.run.deprefix is True:
+                self.deprefix_prompt = True
+
+    def clear_history(self):
+        from transformers import Conversation
+        self.conversation = Conversation()
+
+    def _call_model(self, prompt: Union[str, list[dict]]) -> List[str]:
+        """Take a conversation as a list of dictionaries and feed it to the model"""
+
+        # If conversation is provided as a list of dicts, create the conversation.
+        # Otherwise, maintain state in Generator
+        if isinstance(prompt, str):
+            self.conversation.add_message({"role": "user", "content": prompt})
+            self.conversation = self.generator(self.conversation)
+            generations = [self.conversation[-1]["content"]]
+
+        elif isinstance(prompt, list):
+            from transformers import Conversation
+
+            conversation = Conversation()
+            for item in prompt:
+                conversation.add_message(item)
+
+            conversation = self.generator(conversation)
+
+            generations = [conversation[-1]["content"]]
+        else:
+            raise TypeError(f"Expected list or str, got {type(prompt)}")
+
+        if not self.deprefix_prompt:
+            return generations
+        else:
+            return [re.sub("^" + re.escape(prompt), "", i) for i in generations]
 
 
 class InferenceAPI(Generator):
