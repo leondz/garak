@@ -755,6 +755,7 @@ class MultiPromptAttack(object):
             )
             for worker in workers
         ]
+        self.success = False
 
     @property
     def control_str(self):
@@ -874,6 +875,7 @@ class MultiPromptAttack(object):
                 if all(
                     all(tests for tests in model_test) for model_test in model_tests_jb
                 ):
+                    self.success = True
                     logger.info(f"Writing successful jailbreak to {self.outfile}")
                     with open(self.outfile, "a") as f:
                         f.write(f"{self.control_str}\n")
@@ -927,13 +929,14 @@ class MultiPromptAttack(object):
         if not stop_on_success:
             model_tests_jb, model_tests_mb, _ = self.test(self.workers, self.prompts)
             if all(all(tests for tests in model_test) for model_test in model_tests_jb):
+                self.success = True
                 logger.info(f"Writing successful jailbreak to {self.outfile}")
                 with open(self.outfile, "a") as f:
                     f.write(f"{self.control_str}\n")
             else:
                 logger.info("No successful jailbreak found!")
 
-        return self.control_str, loss, steps
+        return self.control_str, loss, steps, self.success
 
     @staticmethod
     def test(workers, prompts, include_loss=False):
@@ -1231,6 +1234,7 @@ class ProgressiveMultiPromptAttack(object):
         step = 0
         stop_inner_on_success = self.progressive_goals
         loss = np.infty
+        success = False
 
         while step < n_steps:
             attack = self.managers["MPA"](
@@ -1248,7 +1252,7 @@ class ProgressiveMultiPromptAttack(object):
             )
             if num_goals == len(self.goals) and num_workers == len(self.workers):
                 stop_inner_on_success = False
-            control, loss, inner_steps = attack.run(
+            control, loss, inner_steps, success = attack.run(
                 n_steps=n_steps - step,
                 batch_size=batch_size,
                 topk=topk,
@@ -1299,7 +1303,7 @@ class ProgressiveMultiPromptAttack(object):
                         else:
                             stop_inner_on_success = False
 
-        return self.control, step
+        return self.control, step, success
 
 
 class IndividualPromptAttack(object):
@@ -1505,7 +1509,7 @@ class IndividualPromptAttack(object):
                 test_workers=self.test_workers,
                 **self.mpa_kwargs,
             )
-            attack.run(
+            self.control, loss, steps, success = attack.run(
                 n_steps=n_steps,
                 batch_size=batch_size,
                 topk=topk,
@@ -1524,7 +1528,7 @@ class IndividualPromptAttack(object):
             )
             pbar.update(1)
 
-        return self.control, n_steps
+        return self.control, n_steps, success
 
 
 class EvaluateAttack(object):

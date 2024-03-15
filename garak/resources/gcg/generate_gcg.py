@@ -244,7 +244,7 @@ def run_gcg(
         )
     else:
         logger.info("Beginning GCG generation")
-    attack.run(
+    adv_suffix, _, success = attack.run(
         n_steps=n_steps,
         batch_size=batch_size,
         topk=topk,
@@ -267,3 +267,8 @@ def run_gcg(
     if not save_logs:
         p = Path(logfile)
         p.unlink()
+
+    if success:
+        return adv_suffix
+    else:
+        return None
