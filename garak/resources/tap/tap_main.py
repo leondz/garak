@@ -243,10 +243,13 @@ class AttackManager:
             # Iteratively reduce the prompt length
             while judge_system_prompt_tokens + prompt_tokens >= self.evaluator_token_limit:
                 excess_tokens = judge_system_prompt_tokens + prompt_tokens - self.evaluator_token_limit
-                # Truncate excess text
-                excess_words = int(excess_tokens/.75)
-                full_prompt = full_prompt[excess_words:]
-                prompt_tokens = token_count(full_prompt, self.evaluation_generator.name)
+                if excess_tokens > 0:
+                    # Truncate excess text
+                    excess_words = int(excess_tokens/.75)
+                    full_prompt = full_prompt[excess_words:]
+                    prompt_tokens = token_count(full_prompt, self.evaluation_generator.name)
+                else:
+                    break
 
         conv.append_message(conv.roles[0], full_prompt)
 
