@@ -17,7 +17,7 @@ from .utils import (
     extract_json,
 )
 from .system_prompts import attacker_system_prompt, on_topic_prompt, judge_system_prompt
-from .generator_utils import load_generator, supported_openai, supported_huggingface
+from .generator_utils import load_generator, supported_openai, supported_huggingface, token_count, get_token_limit
 
 import garak.generators
 import garak._config
@@ -65,6 +65,7 @@ class AttackManager:
         self.target_max_tokens = target_max_tokens
         self.evaluator_max_tokens = evaluator_max_tokens
         self.evaluator_temperature = evaluator_temperature
+        self.evaluator_token_limit = get_token_limit(evaluation_generator.name)
         self.system_prompt_judge = judge_system_prompt(goal)
         self.system_prompt_on_topic = on_topic_prompt(goal)
 
@@ -233,6 +234,20 @@ class AttackManager:
 
         conv = get_template(self.evaluation_generator.name)
         conv.set_system_message(system_prompt)
+        # Avoid sending overly long prompts.
+        # Crude and fast heuristic -- 100 tokens is about 75 words
+        if len(full_prompt.split())/.75 > self.evaluator_token_limit:
+            # More expensive check yielding actual information.
+            judge_system_prompt_tokens = token_count(system_prompt, self.evaluation_generator.name)
+            prompt_tokens = token_count(full_prompt, self.evaluation_generator.name)
+            # Iteratively reduce the prompt length
+            while judge_system_prompt_tokens + prompt_tokens >= self.evaluator_token_limit:
+                excess_tokens = judge_system_prompt_tokens + prompt_tokens - self.evaluator_token_limit
+                # Truncate excess text
+                excess_words = int(excess_tokens/.75)
+                full_prompt = full_prompt[excess_words:]
+                prompt_tokens = token_count(full_prompt, self.evaluation_generator.name)
+
         conv.append_message(conv.roles[0], full_prompt)
 
         return conv.to_openai_api_messages()

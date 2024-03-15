@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+import tiktoken
 from typing import Union
 
 from garak.generators.openai import chat_models, OpenAIGenerator
@@ -67,3 +68,24 @@ def load_generator(
         generator.temperature = temperature
 
     return generator
+
+
+def token_count(string: str, model_name: str) -> int:
+    encoding = tiktoken.encoding_for_model(model_name)
+    num_tokens = len(encoding.encode(string))
+    return num_tokens
+
+
+def get_token_limit(model_name: str) -> int:
+    match model_name:
+        case "gpt-3.5-turbo":
+            return 16385
+        case "gpt-4":
+            return 8192
+        case "gpt-4-32k":
+            return 32768
+        case "gpt-4-turbo-preview":
+            return 128000
+        case _:
+            # Base case, return smallest context
+            return 4096
