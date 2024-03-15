@@ -68,6 +68,7 @@ class GCG(Probe):
     uri = "https://arxiv.org/abs/2307.15043"
 
     prompts = list()
+    active = False
 
     def __init__(
         self,
