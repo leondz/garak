@@ -120,11 +120,12 @@ class AttackManager:
                 if right == left:
                     continue
 
-                outputs_list.extend(self.attack_generator.generate(full_prompts_subset[left:right]))
+                for full_prompt in full_prompts_subset[left:right]:
+                    outputs_list.append(self.attack_generator.generate(full_prompt)[0])
 
             # Check for valid outputs and update the list
             new_indices_to_regenerate = []
-            for i, full_output in enumerate([o for o in outputs_list if o is not None]):
+            for i, full_output in enumerate(outputs_list):
                 orig_index = indices_to_regenerate[i]
 
                 if "gpt" not in self.attack_generator.name:
@@ -461,7 +462,7 @@ def run_tap(
         # Truncate conversation to avoid context length issues
         for conv in convs_list:
             # Note that this does not delete the conv.role (i.e., the system prompt)
-            conv.messages = conv.messages[-2 * keep_last_n:]
+            conv.messages = conv.messages[-2 * keep_last_n :]
 
         # Early stopping criterion
         if any([score == 10 for score in judge_scores]):

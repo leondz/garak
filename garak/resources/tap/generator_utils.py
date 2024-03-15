@@ -4,11 +4,12 @@
 from typing import Union
 
 from garak.generators.openai import chat_models, OpenAIGenerator
-from garak.generators.huggingface import ConversationalPipeline
+from garak.generators.huggingface import Model
 
 supported_openai = chat_models
 supported_huggingface = [
     "lmsys/vicuna-13b-v1.3",
+    "lmsys/vicuna-7b-v1.3"
     "mistralai/Mistral-7B-Instruct-v0.2",
     "meta-llama/Llama-2-7b-chat-hf",
 ]
@@ -51,9 +52,7 @@ def load_generator(
             generations=generations,
         )
     elif model_name in supported_huggingface:
-        generator = ConversationalPipeline(
-            model_name, generations=generations, device=device
-        )
+        generator = Model(model_name, generations=generations, device=device)
     else:
         msg = (
             f"{model_name} is not currently supported for TAP generation. Support is available for the following "
@@ -61,9 +60,7 @@ def load_generator(
             f"Your jailbreaks will *NOT* be saved."
         )
         print(msg)
-        generator = ConversationalPipeline(
-            model_name, generations=generations, device=device
-        )
+        generator = Model(model_name, generations=generations, device=device)
 
     generator.max_tokens = max_tokens
     if temperature is not None:
