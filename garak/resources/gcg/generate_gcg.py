@@ -28,6 +28,7 @@ from logging import getLogger
 
 CONTROL_INIT = "! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !"
 
+from garak.generators.huggingface import Model
 from garak.resources.gcg import attack_manager
 from garak.resources.gcg import gcg_attack
 
@@ -83,8 +84,9 @@ gcg_parser.add_argument(
 )
 
 
-def generate_gcg(
-    model_names: list[str],
+def run_gcg(
+    target_generator: garak.generators.Generator = None,
+    model_names: list[str] = None,
     transfer: bool = False,
     progressive: bool = False,
     stop_success: bool = True,
@@ -113,6 +115,7 @@ def generate_gcg(
     """
     Function to generate GCG attack strings
     Args:
+        target_generator (Generator): Generator to target with GCG attack
         transfer (bool): Whether the attack generated is for a transfer attack
         progressive (bool): Whether to use progressive goals
         stop_success (bool): Whether to stop on a successful attack
@@ -143,6 +146,11 @@ def generate_gcg(
     Returns:
         None
     """
+    if target_generator is not None and model_names is not None:
+        msg = "You must specify either a target generator *or* a list of model names to run GCG, not both."
+        logger.error(msg)
+        raise Exception(msg)
+
     mp.set_start_method("spawn")
 
     if "test_data" in kwargs:
@@ -154,10 +162,17 @@ def generate_gcg(
         logfile = kwargs["logfile"]
     else:
         timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
-        model_string = "_".join([x.replace("/", "-") for x in model_names])
+        if target_generator is not None:
+            model_string = target_generator.name
+        elif model_names is not None:
+            model_string = "_".join([x.replace("/", "-") for x in model_names])
+        else:
+            msg = "You must specify either a target generator or a list of model names to run GCG!"
+            logger.error(msg)
+            raise Exception(msg)
         logfile = (
             garak._config.transient.basedir
-            / "resources/gcg/data/logs/{timestamp}_{model_string}.json"
+            / f"resources/gcg/data/logs/{timestamp}_{model_string}.json"
         )
 
     logger.debug("Loading goals and targets for GCG attack.")
@@ -171,8 +186,13 @@ def generate_gcg(
     )
 
     logger.debug("Loading workers for GCG attack")
+    generators = list()
+    if target_generator:
+        generators.append(target_generator)
+    elif model_names:
+        generators.append(Model(model_name) for model_name in model_names)
     # TODO: Specify additional args for get_workers
-    workers, test_workers = attack_manager.get_workers(model_names=model_names)
+    workers, test_workers = attack_manager.get_workers(generators=generators)
 
     managers = {
         "AP": gcg_attack.GCGAttackPrompt,

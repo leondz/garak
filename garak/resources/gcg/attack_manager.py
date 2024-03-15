@@ -1834,13 +1834,13 @@ class ModelWorker(object):
         return self
 
 
-def get_workers(model_names: list, n_train_models=1, evaluate=False):
+def get_workers(generators: list, n_train_models=1, evaluate=False):
     """
     Get workers for GCG generation and testing
 
     Parameters
     ----------
-    model_names : List of model names to load
+    generators : List generators to evaluate
     n_train_models : Number of models to use for training
     evaluate : Boolean -- is the worker being used for eval. Will prevent starting the workers.
 
@@ -1849,13 +1849,7 @@ def get_workers(model_names: list, n_train_models=1, evaluate=False):
     tuple of train workers and test workers.
 
     """
-    generators = list()
-    for model_name in model_names:
-        generators.append(Model(model_name))
-
-    logger.debug(f"Loaded {len(generators)} generators")
-
-    conv_model_names = [get_conv_name(model_name) for model_name in model_names]
+    conv_model_names = [get_conv_name(generator.name) for generator in generators]
     raw_conv_templates = [
         get_conversation_template(conv_model) for conv_model in conv_model_names
     ]
@@ -1871,7 +1865,7 @@ def get_workers(model_names: list, n_train_models=1, evaluate=False):
     logger.debug(f"Loaded {len(conv_templates)} conversation templates")
     workers = [
         ModelWorker(generator, conv_template)
-        for generator, conv_template in zip(model_names, conv_templates)
+        for generator, conv_template in zip([generator.name for generator in generators], conv_templates)
     ]
     if not evaluate:
         for worker in workers:
