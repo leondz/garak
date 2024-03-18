@@ -205,7 +205,8 @@ def autodan_generate(
             best_new_adv_prefix = new_adv_prefixes[best_new_adv_prefix_id]
 
             adv_prefix = best_new_adv_prefix
-            success, gen_str = check_for_attack_success(adv_prefix, test_prefixes)
+            gen_str = generator.generate(prompt=adv_prefix)[0]
+            success, gen_str = check_for_attack_success(gen_str, test_prefixes)
             if success:
                 logger.info(
                     f"Found a successful AutoDAN prompt!\n{adv_prefix}\nAppending to {out_path}."
@@ -236,6 +237,7 @@ def autodan_generate(
                 )
 
             new_adv_prefixes = unfiltered_new_adv_prefixes
+            generator.clear_history()
             gc.collect()
             torch.cuda.empty_cache()
 

@@ -31,38 +31,12 @@ except LookupError as e:
     nltk.download("punkt")
     nltk.download("wordnet")
 
-
-class MutationGenerator(OpenAIGenerator):
-    def __init__(self, name, generations=10):
-        """
-        Initialize MutationGenerator class. Superclassing OpenAI Generator to allow multiple messages.
-        Args:
-            name (str): Model name
-            generations (int): Number of generations
-        """
-        super().__init__(name, generations=generations)
-
-    def generate_completion(self, messages: list):
-        response = self.generator.create(
-            model=self.name,
-            messages=messages,
-            temperature=self.temperature,
-            top_p=self.top_p,
-            n=self.generations,
-            stop=self.stop,
-            max_tokens=self.max_tokens,
-            presence_penalty=self.presence_penalty,
-            frequency_penalty=self.frequency_penalty,
-        )
-        return response
-
-
 openai_api_key = os.getenv("OPENAI_API_KEY", default=None)
 if openai_api_key is None:
     USE_OPENAI = False
 else:
     USE_OPENAI = True
-    mutation_generator = MutationGenerator("gpt-3.5-turbo")
+    mutation_generator = OpenAIGenerator("gpt-3.5-turbo")
 
 
 # TODO: Could probably clean up the inputs here by using imports.
@@ -265,8 +239,11 @@ def crossover(str1: str, str2: str, num_points: int) -> Tuple[str, str]:
     if not max_swaps >= 0:
         max_swaps = 0
     num_swaps = min(num_points, max_swaps)
-
-    swap_indices = sorted(random.sample(range(1, max_swaps), num_swaps))
+    # Catch error in random.sample when num_swaps gets weird.
+    try:
+        swap_indices = sorted(random.sample(range(1, max_swaps), num_swaps))
+    except ValueError:
+        return str1, str2
 
     new_str1, new_str2 = [], []
     last_swap = 0
