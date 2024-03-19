@@ -27,6 +27,7 @@ import re
 import string
 import logging
 import numpy as np
+import json
 
 from fastchat.model import get_conversation_template
 
@@ -92,7 +93,8 @@ def extract_json(s):
         prompt = prompt_match.group(1) if prompt_match is not None else None
         if prompt:
             parsed = {"improvement": improvement, "prompt": prompt}
-            return parsed, s
+            json_str = json.dumps(parsed)
+            return parsed, json_str
         else:
             return None, None
 
