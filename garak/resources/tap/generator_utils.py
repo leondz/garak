@@ -10,7 +10,7 @@ from garak.generators.huggingface import Model
 supported_openai = chat_models
 supported_huggingface = [
     "lmsys/vicuna-13b-v1.3",
-    "lmsys/vicuna-7b-v1.3"
+    "lmsys/vicuna-7b-v1.3",
     "mistralai/Mistral-7B-Instruct-v0.2",
     "meta-llama/Llama-2-7b-chat-hf",
 ]

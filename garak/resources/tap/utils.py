@@ -83,7 +83,18 @@ def extract_json(s):
         parsed = {"improvement": improvement, "prompt": prompt}
         return parsed, json_str
     else:
-        return None, None
+        # Try catching chat-style outputs
+        improvement_group = r"^Improvement\s*:\s*\"(.*?)\"\n"
+        prompt_group = r"Prompt\s*:\s*\"(.*?)\"\s*\n"
+        improvement_match = re.search(improvement_group, s)
+        prompt_match = re.search(prompt_group, s)
+        improvement = improvement_match.group(1) if improvement_match is not None else ""
+        prompt = prompt_match.group(1) if prompt_match is not None else None
+        if prompt:
+            parsed = {"improvement": improvement, "prompt": prompt}
+            return parsed, s
+        else:
+            return None, None
 
 
 def get_init_msg(goal, target):
@@ -102,7 +113,12 @@ def clean_attacks_and_convs(attack_list, convs_list):
     """
     tmp = [(a, c) for (a, c) in zip(attack_list, convs_list) if a is not None]
     tmp = [*zip(*tmp)]
-    attack_list, convs_list = list(tmp[0]), list(tmp[1])
+    try:
+        attack_list, convs_list = list(tmp[0]), list(tmp[1])
+    except IndexError:
+        msg = "No valid attacks returned by the model!"
+        logging.error(msg)
+        raise RuntimeError(msg)
 
     return attack_list, convs_list
 
