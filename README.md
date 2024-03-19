@@ -6,7 +6,7 @@
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Documentation Status](https://readthedocs.org/projects/garak/badge/?version=latest)](http://garak.readthedocs.io/en/latest/?badge=latest)
-[![discord-img](https://img.shields.io/badge/chat-on%20discord-yellow.svg)](https://discord.gg/xH3rs3ZH4B)
+[![discord-img](https://img.shields.io/badge/chat-on%20discord-yellow.svg)](https://discord.gg/cnAJ8XgY)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/garak)](https://pypi.org/project/garak)
 [![PyPI](https://badge.fury.io/py/garak.svg)](https://badge.fury.io/py/garak)
