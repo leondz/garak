@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Glitch keyword probes
 
-Testing for tokens that lead to unusual model behaviour
+Testing for tokens that lead to unusual model behavior
 """
 
 import random

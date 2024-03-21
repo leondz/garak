@@ -59,8 +59,8 @@ avid-effect:performance:P0404	Environmental safety	Safety from environmental har
 quality:Behavioral:ContentSafety:Toxicity	Toxicity	Toxicity
 quality:Security:PromptStability	Prompt Stability	Prompt Stability
 quality:Robustness:GenerativeMisinformation	Generative Misinformation	Generative Misinformation
-quality:Behavioral:ContentSafety:HateHarassment	Hate and harassment	Hate and harrassment
+quality:Behavioral:ContentSafety:HateHarassment	Hate and harassment	Hate and harassment
 quality:Behavioral:ContentSafety:Profanity	Profanity	Profanity
-quality:Security:Confidentiailty	Confidentiailty	Confidentiailty
+quality:Security:Confidentiality	Confidentiality	Confidentiality
 quality:Behavioral:ContentSafety:HarmfulViolent	Harmful or violent	Harmful or violent
-quality:Behavioral:ContentSafety:Sexualized	Sexualised	Sexualised
+quality:Behavioral:ContentSafety:Sexualized	Sexualized	Sexualized
