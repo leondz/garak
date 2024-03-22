@@ -23,6 +23,7 @@ from typing import List, Union
 import warnings
 
 import backoff
+import torch
 
 from garak import _config
 from garak.generators.base import Generator
@@ -80,18 +81,19 @@ class Pipeline(Generator):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=UserWarning)
             try:
-                # workaround for pipeline to truncate the input
-                encoded_prompt = self.generator.tokenizer(prompt, truncation=True)
-                truncated_prompt = self.generator.tokenizer.decode(
-                    encoded_prompt["input_ids"], skip_special_tokens=True
-                )
-                raw_output = self.generator(
-                    truncated_prompt,
-                    pad_token_id=self.generator.tokenizer.eos_token_id,
-                    max_new_tokens=self.max_tokens,
-                    num_return_sequences=self.generations,
-                    # max_length = 1024,
-                )
+                with torch.no_grad():
+                    # workaround for pipeline to truncate the input
+                    encoded_prompt = self.generator.tokenizer(prompt, truncation=True)
+                    truncated_prompt = self.generator.tokenizer.decode(
+                        encoded_prompt["input_ids"], skip_special_tokens=True
+                    )
+                    raw_output = self.generator(
+                        truncated_prompt,
+                        pad_token_id=self.generator.tokenizer.eos_token_id,
+                        max_new_tokens=self.max_tokens,
+                        num_return_sequences=self.generations,
+                        # max_length = 1024,
+                    )
             except Exception:
                 raw_output = []  # could handle better than this..
 
@@ -207,8 +209,8 @@ class ConversationalPipeline(Generator):
             conversation = Conversation()
             for item in prompt:
                 conversation.add_message(item)
-
-            conversation = self.generator(conversation)
+            with torch.no_grad():
+                conversation = self.generator(conversation)
 
             generations = [conversation[-1]["content"]]
         else:
@@ -411,7 +413,7 @@ class Model(Generator):
         self.init_device = "cuda:" + str(self.device)
         import torch.cuda
 
-        if torch.cuda.is_available() == False:
+        if not torch.cuda.is_available():
             logging.debug("Using CPU, torch.cuda.is_available() returned False")
             self.device = -1
             self.init_device = "cpu"
@@ -460,22 +462,23 @@ class Model(Generator):
         text_output = []
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=UserWarning)
-            inputs = self.tokenizer(prompt, truncation=True, return_tensors="pt").to(
-                self.init_device
-            )
-
-            try:
-                outputs = self.model.generate(
-                    **inputs, generation_config=self.generation_config
+            with torch.no_grad():
+                inputs = self.tokenizer(prompt, truncation=True, return_tensors="pt").to(
+                    self.init_device
                 )
-            except IndexError as e:
-                if len(prompt) == 0:
-                    return [""] * self.generations
-                else:
-                    raise e
-            text_output = self.tokenizer.batch_decode(
-                outputs, skip_special_tokens=True, device=self.device
-            )
+
+                try:
+                    outputs = self.model.generate(
+                        **inputs, generation_config=self.generation_config
+                    )
+                except IndexError as e:
+                    if len(prompt) == 0:
+                        return [""] * self.generations
+                    else:
+                        raise e
+                text_output = self.tokenizer.batch_decode(
+                    outputs, skip_special_tokens=True, device=self.device
+                )
 
         if not self.deprefix_prompt:
             return text_output
