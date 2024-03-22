@@ -3,7 +3,7 @@ transformers>=4.19
 datasets>=2.14.6,<2.17
 colorama>=0.4.3
 tqdm>=4.64.0
-cohere>=4.5.1
+cohere>=4.5.1,<5
 openai==1.12.0
 replicate>=0.8.3
 pytest>=8.0
