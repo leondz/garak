@@ -167,3 +167,31 @@ class TriggerListDetector(Detector):
                 detector_results.append(1 if match else 0)
 
         return detector_results
+
+
+class MultiModalDetector(Detector):
+    """Subclass of Detector to support multi-modal feature"""
+    
+    def __init__(self):
+        super().__init__()
+        
+    def detect():
+        pass
+    
+class AutoDetector(Detector):
+    """Subclass of Detector to support LLM-driven auto detection feature"""
+    
+    def __init__(self):
+        super().__init__()
+        
+    def detect():
+        pass
+    
+class MAutoDetector(MultiModalDetector):
+    """Subclass of Detector to support multi-modal LLM-driven auto detection feature"""
+    
+    def __init__(self):
+        super().__init__()
+        
+    def detect():
+        pass
