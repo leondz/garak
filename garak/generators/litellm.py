@@ -5,6 +5,7 @@ Support for LiteLLM, which allows calling LLM APIs using the OpenAI format.
 
 import logging
 
+from os import getenv
 from typing import List, Union
 
 import backoff
@@ -36,12 +37,14 @@ class LiteLLMGenerator(Generator):
         self.fullname = f"LiteLLM {self.name}"
         self.generations = generations
         self.api_base = None
+        self.api_key = None
         self.provider = None
 
         super().__init__(name, generations=generations)
 
         if "litellm.LiteLLMGenerator" in _config.plugins.generators:
             for field in (
+                "api_key",
                 "provider",
                 "api_base",
                 "temperature",
@@ -55,6 +58,15 @@ class LiteLLMGenerator(Generator):
                         field,
                         _config.plugins.generators["litellm.LiteLLMGenerator"][field],
                     )
+
+                    if field == "provider" and self.api_key is None:
+                        if self.provider == "openai":
+                            self.api_key = getenv("OPENAI_API_KEY", None)
+                            if self.api_key is None:
+                                raise ValueError(
+                                    "Please supply an OpenAI API key in the OPENAI_API_KEY environment variable"
+                                    " or in the configuration file"
+                                )
 
     @backoff.on_exception(backoff.fibo, Exception, max_value=70)
     def _call_model(self, prompt: Union[str, List[dict]]) -> List[str] | str | None:
@@ -83,6 +95,7 @@ class LiteLLMGenerator(Generator):
             presence_penalty=self.presence_penalty,
             api_base=self.api_base,
             custom_llm_provider=self.provider,
+            api_key=self.api_key,
         )
 
         return [c.message.content for c in response.choices]
