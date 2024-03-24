@@ -21,6 +21,31 @@ litellm.drop_params = True
 litellm.verbose_logger.disabled = True
 # litellm.set_verbose = True
 
+# Based on the param support matrix below:
+# https://docs.litellm.ai/docs/completion/input
+# Some providers do not support the `n` parameter
+# and thus cannot generate multiple completions in one request
+unsupported_multiple_gen_providers = (
+    "openrouter/",
+    "claude",
+    "replicate/",
+    "bedrock",
+    "petals," "palm/",
+    "together_ai/",
+    "text-bison",
+    "text-bison@001",
+    "chat-bison",
+    "chat-bison@001",
+    "chat-bison-32k",
+    "code-bison",
+    "code-bison@001",
+    "code-gecko@001",
+    "code-gecko@latest",
+    "codechat-bison",
+    "codechat-bison@001",
+    "codechat-bison-32k",
+)
+
 
 class LiteLLMGenerator(Generator):
     supports_multiple_generations = True
@@ -39,6 +64,10 @@ class LiteLLMGenerator(Generator):
         self.api_base = None
         self.api_key = None
         self.provider = None
+        self.supports_multiple_generations = not any(
+            self.name.startswith(provider)
+            for provider in unsupported_multiple_gen_providers
+        )
 
         super().__init__(name, generations=generations)
 
@@ -98,7 +127,10 @@ class LiteLLMGenerator(Generator):
             api_key=self.api_key,
         )
 
-        return [c.message.content for c in response.choices]
+        if self.supports_multiple_generations:
+            return [c.message.content for c in response.choices]
+        else:
+            return response.choices[0].message.content
 
 
 default_class = "LiteLLMGenerator"
