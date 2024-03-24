@@ -1,6 +1,24 @@
 """LiteLLM model support
 
 Support for LiteLLM, which allows calling LLM APIs using the OpenAI format.
+
+Depending on the model name provider, LiteLLM automatically
+reads API keys from the respective environment variables.
+(e.g. OPENAI_API_KEY for OpenAI models)
+
+API key can also be directly set in the supplied generator json config.
+This also enables support for any custom provider that follows the OAI format.
+
+e.g Supply a JSON like this for Ollama's OAI api:
+```json
+{
+    "litellm.LiteLLMGenerator" : {
+        "api_base" : "http://localhost:11434/v1",
+        "provider" : "openai",
+        "api_key" : "test"
+    }
+}
+```
 """
 
 import logging
@@ -49,6 +67,10 @@ unsupported_multiple_gen_providers = (
 
 
 class LiteLLMGenerator(Generator):
+    """Generator wrapper using LiteLLM to allow access to different
+    providers using the OpenAI API format.
+    """
+
     supports_multiple_generations = True
     generator_family_name = "LiteLLM"
 
