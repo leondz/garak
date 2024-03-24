@@ -82,6 +82,7 @@ class LiteLLMGenerator(Generator):
             frequency_penalty=self.frequency_penalty,
             presence_penalty=self.presence_penalty,
             api_base=self.api_base,
+            custom_llm_provider=self.provider,
         )
 
         return [c.message.content for c in response.choices]
