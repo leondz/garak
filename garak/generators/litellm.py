@@ -9,10 +9,16 @@ from typing import List, Union
 
 import backoff
 
-from litellm import completion
+import litellm
 
 from garak import _config
 from garak.generators.base import Generator
+
+# Fix issue with Ollama which does not support `presence_penalty`
+litellm.drop_params = True
+# Suppress log messages from LiteLLM
+litellm.verbose_logger.disabled = True
+# litellm.set_verbose = True
 
 
 class LiteLLMGenerator(Generator):
@@ -65,7 +71,7 @@ class LiteLLMGenerator(Generator):
             print(msg)
             return list()
 
-        response = completion(
+        response = litellm.completion(
             model=self.name,
             messages=prompt,
             temperature=self.temperature,
