@@ -9,7 +9,7 @@ Both 'a's like a in English hat, or à in French, or æ in IPA.
 
 ## What's this tool for?
 
-`garak` is designed to help discover situations where a language model generates outputs that one might not want it to. If you know `nmap` or `metasplot` for traditional netsec/infosec analysis, then `garak` aims to operate in a similar space for language models.
+`garak` is designed to help discover situations where a language model generates outputs that one might not want it to. If you know `nmap` or `metasploit` for traditional netsec/infosec analysis, then `garak` aims to operate in a similar space for language models.
 
 ## How does it work?
 
