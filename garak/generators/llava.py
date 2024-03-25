@@ -16,6 +16,7 @@ class LLaVA(Generator):
             'http': 'http://127.0.0.1:7890',
             'https': 'http://127.0.0.1:7890'
         }
+        # TODO: add error handle
         self.processor = LlavaNextProcessor.from_pretrained("llava-hf/llava-v1.6-mistral-7b-hf", proxies = proxies)
         self.model = LlavaNextForConditionalGeneration.from_pretrained("llava-hf/llava-v1.6-mistral-7b-hf", torch_dtype=torch.float16, low_cpu_mem_usage=True, proxies = proxies) 
         self.model.to("cuda:0")
