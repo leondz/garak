@@ -129,7 +129,7 @@ Send PRs & open issues. Happy hunting!
 ### OpenAI
 
 * `--model_type openai`
-* `--model_name` - the OpenAI model you'd like to use. `text-babbage-001` is fast and fine for testing; `gpt-4` seems weaker to many of the more subtle attacks.
+* `--model_name` - the OpenAI model you'd like to use. `gpt-3.5-turbo-0125` is fast and fine for testing.
 * set the `OPENAI_API_KEY` environment variable to your OpenAI API key (e.g. "sk-19763ASDF87q6657"); see https://platform.openai.com/account/api-keys when logged in
 
 Recognised model types are whitelisted, because the plugin needs to know which sub-API to use. Completion or ChatCompletion models are OK. If you'd like to use a model not supported, you should get an informative error message, and please send a PR / open an issue.
