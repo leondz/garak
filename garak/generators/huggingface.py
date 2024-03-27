@@ -62,7 +62,7 @@ class Pipeline(Generator):
 
         import torch.cuda
 
-        if torch.cuda.is_available() == False:
+        if not torch.cuda.is_available():
             logging.debug("Using CPU, torch.cuda.is_available() returned False")
             device = -1
 
@@ -91,11 +91,11 @@ class Pipeline(Generator):
                         truncated_prompt,
                         pad_token_id=self.generator.tokenizer.eos_token_id,
                         max_new_tokens=self.max_tokens,
-                        num_return_sequences=self.generations,
-                        # max_length = 1024,
+                        num_return_sequences=self.generations
                     )
-            except Exception:
-                raw_output = []  # could handle better than this..
+            except Exception as e:
+                logging.error(e)
+                raw_output = []  # could handle better than this
 
         if raw_output is not None:
             generations = [
@@ -130,7 +130,7 @@ class OptimumPipeline(Pipeline):
 
         import torch.cuda
 
-        if torch.cuda.is_available() is False:
+        if not torch.cuda.is_available():
             message = "OptimumPipeline needs CUDA, but torch.cuda.is_available() returned False; quitting"
             logging.critical(message)
             raise ValueError(message)
