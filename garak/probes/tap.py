@@ -144,7 +144,7 @@ class TAP(Probe):
 
             self.run_tap = run_tap
 
-        tap_outputs = run_tap(
+        tap_outputs = self.run_tap(
             goal=self.goal,
             target=self.target,
             target_generator=self.generator,
@@ -160,7 +160,7 @@ class TAP(Probe):
             depth=self.depth,
             n_streams=self.n_streams,
             keep_last_n=self.keep_last_n,
-            pruning=self.pruning,
+            pruning=self.pruning
         )
 
         if tap_outputs:
@@ -272,7 +272,7 @@ class PAIR(Probe):
 
             self.run_tap = run_tap
 
-        pair_outputs = run_tap(
+        pair_outputs = self.run_tap(
             goal=self.goal,
             target=self.target,
             target_generator=self.generator,

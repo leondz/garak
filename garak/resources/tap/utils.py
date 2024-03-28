@@ -27,6 +27,7 @@ import re
 import string
 import logging
 import numpy as np
+import json
 
 from fastchat.model import get_conversation_template
 
@@ -83,7 +84,23 @@ def extract_json(s):
         parsed = {"improvement": improvement, "prompt": prompt}
         return parsed, json_str
     else:
-        return None, None
+        # Try catching chat-style outputs
+        improvement_group = r"^Improvement\s*:\s*\"(.*?)\"\n"
+        prompt_group = r"Prompt\s*:\s*\"(.*?)\"\s*\n"
+        alternative_group = r"USER\s*:\s*(.*?)\n"
+        improvement_match = re.search(improvement_group, s)
+        prompt_match = re.search(prompt_group, s)
+        improvement = improvement_match.group(1) if improvement_match is not None else ""
+        prompt = prompt_match.group(1) if prompt_match is not None else None
+        if prompt is None:
+            alternative_match = re.search(alternative_group, s, re.IGNORECASE)
+            prompt = alternative_match.group(1) if alternative_match is not None else None
+        if prompt:
+            parsed = {"improvement": improvement, "prompt": prompt}
+            json_str = json.dumps(parsed)
+            return parsed, json_str
+        else:
+            return None, None
 
 
 def get_init_msg(goal, target):
@@ -100,6 +117,12 @@ def clean_attacks_and_convs(attack_list, convs_list):
     """
     Remove any failed attacks (which appear as None) and corresponding conversations
     """
+    # Catch case where no valid attacks are returned
+    if not any(attack_list):
+        msg = "No valid attacks returned by the model!"
+        logging.error(msg)
+        raise RuntimeError(msg)
+
     tmp = [(a, c) for (a, c) in zip(attack_list, convs_list) if a is not None]
     tmp = [*zip(*tmp)]
     attack_list, convs_list = list(tmp[0]), list(tmp[1])

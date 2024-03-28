@@ -1,14 +1,16 @@
 # SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+import tiktoken
 from typing import Union
 
 from garak.generators.openai import chat_models, OpenAIGenerator
-from garak.generators.huggingface import ConversationalPipeline
+from garak.generators.huggingface import Model
 
 supported_openai = chat_models
 supported_huggingface = [
     "lmsys/vicuna-13b-v1.3",
+    "lmsys/vicuna-7b-v1.3",
     "mistralai/Mistral-7B-Instruct-v0.2",
     "meta-llama/Llama-2-7b-chat-hf",
 ]
@@ -51,9 +53,7 @@ def load_generator(
             generations=generations,
         )
     elif model_name in supported_huggingface:
-        generator = ConversationalPipeline(
-            model_name, generations=generations, device=device
-        )
+        generator = Model(model_name, generations=generations, device=device)
     else:
         msg = (
             f"{model_name} is not currently supported for TAP generation. Support is available for the following "
@@ -61,12 +61,31 @@ def load_generator(
             f"Your jailbreaks will *NOT* be saved."
         )
         print(msg)
-        generator = ConversationalPipeline(
-            model_name, generations=generations, device=device
-        )
+        generator = Model(model_name, generations=generations, device=device)
 
     generator.max_tokens = max_tokens
     if temperature is not None:
         generator.temperature = temperature
 
     return generator
+
+
+def token_count(string: str, model_name: str) -> int:
+    encoding = tiktoken.encoding_for_model(model_name)
+    num_tokens = len(encoding.encode(string))
+    return num_tokens
+
+
+def get_token_limit(model_name: str) -> int:
+    match model_name:
+        case "gpt-3.5-turbo":
+            return 16385
+        case "gpt-4":
+            return 8192
+        case "gpt-4-32k":
+            return 32768
+        case "gpt-4-turbo-preview":
+            return 128000
+        case _:
+            # Base case, return smallest context
+            return 4096

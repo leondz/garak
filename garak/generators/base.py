@@ -60,6 +60,9 @@ class Generator:
     def _pre_generate_hook(self):
         pass
 
+    def clear_history(self):
+        pass
+
     def generate(self, prompt: str) -> List[str]:
         """Manages the process of getting generations out from a prompt
 
