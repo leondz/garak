@@ -2,7 +2,7 @@
 
 *Generative AI Red-teaming & Assessment Kit*
 
-`garak` checks if an LLM can be made to fail in an way we don't want. `garak` probes for hallucination, data leakage, prompt injection, misinformation, toxicity generation, jailbreaks, and many other weaknesses. If you know `nmap`, it's `nmap` for LLMs. 
+`garak` checks if an LLM can be made to fail in a way we don't want. `garak` probes for hallucination, data leakage, prompt injection, misinformation, toxicity generation, jailbreaks, and many other weaknesses. If you know `nmap`, it's `nmap` for LLMs.
 
 `garak`'s a free tool. We love developing it and are always interested in adding functionality to support applications. 
 
