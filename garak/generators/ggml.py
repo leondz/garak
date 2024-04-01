@@ -55,6 +55,8 @@ class GgmlGenerator(Generator):
 
     def __init__(self, name, generations=10):
         self.path_to_ggml_main = os.getenv("GGML_MAIN_PATH")
+        if self.path_to_ggml_main is None:
+            raise RuntimeError("Executable not provided by environment GGML_MAIN_PATH")
         if not os.path.isfile(self.path_to_ggml_main):
             raise RuntimeError("Unable to locate executable")
 
@@ -62,7 +64,9 @@ class GgmlGenerator(Generator):
         # when llama.cpp version < 1046 format supported is `.ggml` also provided as `.bin`
         # version >= 1046 file format it `.guff`
 
-        self.seed = _config.run.seed
+        self.seed = _config.run.seed if _config.run.seed is not None else 0
+        if not os.path.isfile(name):
+            raise RuntimeError("Unable to locate model {name}")
         super().__init__(name, generations=generations)
         # consider validating name here as it is really a filename
         # the extension could be validated and warn if does not match a supported
