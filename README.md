@@ -20,7 +20,7 @@
 ### > See our user guide! [docs.garak.ai](https://docs.garak.ai/)
 ### > Join our [Discord](https://discord.gg/xH3rs3ZH4B)!
 ### > Project links & home: [garak.ai](https://garak.ai/)
-### > Twitter: [@arak_llm](https://twitter.com/garak_llm)
+### > Twitter: [@garak_llm](https://twitter.com/garak_llm)
 
 <hr>
 
