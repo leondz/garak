@@ -223,12 +223,16 @@ class RestGenerator(Generator):
         for k, v in self.headers.items():
             request_headers[k] = self._populate_template(v, prompt)
 
-        resp = self.http_function(
-            self.uri,
-            data=request_data,
-            headers=request_headers,
-            timeout=self.request_timeout,
-        )
+        # the prompt should not be sent via data when using a GET request. Prompt should be
+        # serialized as parameters, in general a method could be created to add
+        # the prompt data to a request via params or data based on the action verb
+        data_kw = "params" if self.http_function == requests.get else "data"
+        req_kArgs = {
+            data_kw: request_data,
+            "headers": request_headers,
+            "timeout": self.request_timeout,
+        }
+        resp = self.http_function(self.uri, **req_kArgs)
         if resp.status_code in self.ratelimit_codes:
             raise RESTRateLimitError(
                 f"Rate limited: {resp.status_code} - {resp.reason}"
