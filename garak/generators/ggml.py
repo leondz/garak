@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """ggml generator support
 
-This generator works with ggml models like llama.cpp.
+This generator works with ggml models in guff format like llama.cpp.
 
 Put the path to your ggml executable (e.g. "/home/leon/llama.cpp/main") in
 an environment variable named GGML_MAIN_PATH, and pass the path to the
@@ -21,9 +21,10 @@ import subprocess
 from garak import _config
 from garak.generators.base import Generator
 
+GGUF_MAGIC = bytes([0x47, 0x47, 0x55, 0x46])
 
 class GgmlGenerator(Generator):
-    """Generator interface for ggml models.
+    """Generator interface for ggml models in guff format.
 
     Set the path to the model as the model name, and put the path to the ggml executable in environment variable GGML_MAIN_PATH.
     """
@@ -49,7 +50,7 @@ class GgmlGenerator(Generator):
             "--top-k": self.top_k,
             "--top-p": self.top_p,
             "--temp": self.temperature,
-            "-s": self.seed, # this value cannot be `None` it requires an integer value 0 could be consistent not provided will be a constant and `-1` would produce random seeds
+            "-s": self.seed,
         }
 
 
@@ -60,17 +61,19 @@ class GgmlGenerator(Generator):
         if not os.path.isfile(self.path_to_ggml_main):
             raise RuntimeError("Unable to locate executable")
 
-        # check for valid executable here
-        # when llama.cpp version < 1046 format supported is `.ggml` also provided as `.bin`
-        # version >= 1046 file format it `.guff`
-
+        # this value cannot be `None`, 0 is consistent and `-1` would produce random seeds
         self.seed = _config.run.seed if _config.run.seed is not None else 0
+
+        # model is a file, validate exists and sanity check file header for supported format
         if not os.path.isfile(name):
             raise RuntimeError("Unable to locate model {name}")
+        else:
+            with open(name, 'rb') as model_file:
+                magic_num = model_file.read(len(GGUF_MAGIC))
+                if magic_num != GGUF_MAGIC:
+                    raise RuntimeError(f"{name} is not in GGUF format")
+
         super().__init__(name, generations=generations)
-        # consider validating name here as it is really a filename
-        # the extension could be validated and warn if does not match a supported
-        # type, also the file should be validated to exist in for that time being
 
     def _call_model(self, prompt):
         command = [
@@ -78,7 +81,7 @@ class GgmlGenerator(Generator):
             "-p",
             prompt,
         ]
-        # test are required params for None type
+        # test all params for None type
         for key, value in self.command_params().items():
             if value is not None:
                 command.append(key)
