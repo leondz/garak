@@ -285,15 +285,13 @@ def gpt_mutate(sentence: str) -> str:
     while not received:
         try:
             # TODO: Make the model configurable.
-            response = mutation_generator.generate_completion(
-                messages=[
+            response = mutation_generator.generate(
+                prompt=[
                     {"role": "system", "content": system_msg},
                     {"role": "user", "content": user_message},
                 ]
             )
-            revised_sentence = response["choices"][0]["message"]["content"].replace(
-                "\n", ""
-            )
+            revised_sentence = response[0].replace("\n", "")
             received = True
         except Exception as e:
             logger.error(e)

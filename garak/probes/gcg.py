@@ -137,3 +137,5 @@ class GCG(Probe):
 
         else:
             logging.warning("GCG failed to find a jailbreak!")
+            # Return an empty list to avoid throwing assertion errors upstream
+            return list()

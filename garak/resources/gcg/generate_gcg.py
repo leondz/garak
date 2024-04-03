@@ -179,7 +179,6 @@ def run_gcg(
     p = Path(logfile).parent
     p.mkdir(parents=True, exist_ok=True)
 
-    logger.debug("Loading goals and targets for GCG attack.")
     (
         train_goals,
         train_targets,
@@ -189,7 +188,6 @@ def run_gcg(
         train_data=train_data, test_data=test_data, n_train=n_train, n_test=n_test
     )
 
-    logger.debug("Loading workers for GCG attack")
     generators = list()
     if target_generator:
         generators.append(target_generator)
@@ -269,8 +267,6 @@ def run_gcg(
 
     for worker in workers + test_workers:
         worker.stop()
-
-    logger.debug("GCG generation complete!")
 
     if not save_logs:
         p = Path(logfile)

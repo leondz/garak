@@ -217,6 +217,8 @@ class TAP(Probe):
 
         else:
             logging.debug("TAP failed to find a jailbreak!")
+            # Return an empty list to avoid throwing assertion errors upstream
+            return list()
 
 
 class PAIR(Probe):

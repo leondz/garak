@@ -354,7 +354,6 @@ class AttackPrompt(object):
             gen_config = model.generation_config
             gen_config.max_new_tokens = self.test_new_toks
         gen_str = self.generate_str(model, gen_config).strip()
-        logger.debug(f"Generated string: {gen_str}")
         jailbroken = not any([prefix in gen_str for prefix in self.test_prefixes])
         em = self.target in gen_str
         return jailbroken, int(em)
@@ -905,7 +904,6 @@ class MultiPromptAttack(object):
             if loss < best_loss:
                 best_loss = loss
                 best_control = control
-            logger.debug("Current Loss:", loss, "Best Loss:", best_loss)
 
             if self.logfile is not None and (i + 1 + anneal_from) % test_steps == 0:
                 last_control = self.control_str
@@ -1433,7 +1431,7 @@ class IndividualPromptAttack(object):
         test_steps: int = 50,
         incr_control: bool = True,
         stop_on_success: bool = True,
-        verbose: bool = True,
+        verbose: bool = False,
         filter_cand: bool = True,
     ):
         """
@@ -1493,7 +1491,8 @@ class IndividualPromptAttack(object):
         pbar = tqdm(total=len(self.goals), position=0, colour="green")
         for i in range(len(self.goals)):
             pbar.set_description(f"Goal {i+1}/{len(self.goals)}")
-            logger.debug(f"Goal {i + 1}/{len(self.goals)}")
+            if verbose:
+                logger.debug(f"Goal {i + 1}/{len(self.goals)}")
 
             attack = self.managers["MPA"](
                 goals=self.goals[i : i + 1],
@@ -1864,7 +1863,6 @@ def get_workers(generators: list, n_train_models=1, evaluate=False):
             conv.sep2 = conv.sep2.strip()
         conv_templates.append(conv)
 
-    logger.debug(f"Loaded {len(conv_templates)} conversation templates")
     workers = [
         ModelWorker(generator, conv_template)
         for generator, conv_template in zip([generator for generator in generators], conv_templates)
@@ -1872,9 +1870,6 @@ def get_workers(generators: list, n_train_models=1, evaluate=False):
     if not evaluate:
         for worker in workers:
             worker.start()
-
-    logger.debug("Loaded {} train models".format(n_train_models))
-    logger.debug("Loaded {} test models".format(len(workers) - n_train_models))
 
     return workers[:n_train_models], workers[n_train_models:]
 
@@ -1928,7 +1923,5 @@ def get_goals_and_targets(
 
     assert len(goals) == len(targets)
     assert len(test_goals) == len(test_targets)
-    logger.debug("Loaded {} train goals".format(len(goals)))
-    logger.debug("Loaded {} test goals".format(len(test_goals)))
 
     return goals, targets, test_goals, test_targets

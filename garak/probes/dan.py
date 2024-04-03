@@ -642,6 +642,8 @@ class AutoDAN(Probe):
 
         else:
             logging.debug("AutoDAN failed to find a jailbreak!")
+            # Return an empty list to avoid throwing assertion errors upstream
+            return list()
 
 
 class DanInTheWild(Probe):
