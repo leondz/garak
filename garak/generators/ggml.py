@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """ggml generator support
 
-This generator works with ggml models in guff format like llama.cpp.
+This generator works with ggml models in gguf format like llama.cpp.
 
 Put the path to your ggml executable (e.g. "/home/leon/llama.cpp/main") in
 an environment variable named GGML_MAIN_PATH, and pass the path to the
@@ -24,7 +24,7 @@ from garak.generators.base import Generator
 GGUF_MAGIC = bytes([0x47, 0x47, 0x55, 0x46])
 
 class GgmlGenerator(Generator):
-    """Generator interface for ggml models in guff format.
+    """Generator interface for ggml models in gguf format.
 
     Set the path to the model as the model name, and put the path to the ggml executable in environment variable GGML_MAIN_PATH.
     """
@@ -59,14 +59,14 @@ class GgmlGenerator(Generator):
         if self.path_to_ggml_main is None:
             raise RuntimeError("Executable not provided by environment GGML_MAIN_PATH")
         if not os.path.isfile(self.path_to_ggml_main):
-            raise RuntimeError("Unable to locate executable")
+            raise FileNotFoundError(f"Path provided is not a file: {self.path_to_ggml_main}")
 
         # this value cannot be `None`, 0 is consistent and `-1` would produce random seeds
         self.seed = _config.run.seed if _config.run.seed is not None else 0
 
         # model is a file, validate exists and sanity check file header for supported format
         if not os.path.isfile(name):
-            raise RuntimeError("Unable to locate model {name}")
+            raise FileNotFoundError(f"File not found, unable to load model: {name}")
         else:
             with open(name, 'rb') as model_file:
                 magic_num = model_file.read(len(GGUF_MAGIC))
