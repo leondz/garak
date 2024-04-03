@@ -146,12 +146,12 @@ def run_gcg(
     Returns:
         None
     """
-    if target_generator is not None and model_names is not None:
-        msg = "You must specify either a target generator *or* a list of model names to run GCG, not both."
-        logger.error(msg)
-        raise Exception(msg)
+    mp.set_start_method("spawn", force=True)
 
-    mp.set_start_method("spawn")
+    if target_generator is not None and model_names is not None:
+        msg = "You have specified a list of model names and a target generator. Using the already loaded generator!"
+        print(msg)
+        logger.warning(msg)
 
     if "test_data" in kwargs:
         test_data = kwargs["test_data"]
@@ -175,6 +175,10 @@ def run_gcg(
             / f"resources/gcg/data/logs/{timestamp}_{model_string}.json"
         )
 
+    # Create logfile directory
+    p = Path(logfile).parent
+    p.mkdir(parents=True, exist_ok=True)
+
     logger.debug("Loading goals and targets for GCG attack.")
     (
         train_goals,
@@ -191,6 +195,10 @@ def run_gcg(
         generators.append(target_generator)
     elif model_names:
         generators.append(Model(model_name) for model_name in model_names)
+    else:
+        msg = "You must specify either a target generator or a list of model names to run GCG!"
+        logger.error(msg)
+        raise Exception(msg)
     # TODO: Specify additional args for get_workers
     workers, test_workers = attack_manager.get_workers(generators=generators)
 

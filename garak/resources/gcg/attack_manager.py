@@ -1771,14 +1771,13 @@ class EvaluateAttack(object):
 
 
 class ModelWorker(object):
-    def __init__(self, model_name, conv_template):
+    def __init__(self, generator, conv_template):
         """
         Worker for running against models
         Args:
-            model_name (str): Name of model to run against
+            generator (garak.Generator): Generator to run against
             conv_template (fastchat.Conversation): Conversation template
         """
-        generator = garak.generators.huggingface.Model(model_name)
         self.model = generator.model
         self.model.requires_grad_(False)  # Disable grads to reduce memory consumption
         self.tokenizer = generator.tokenizer
@@ -1794,7 +1793,7 @@ class ModelWorker(object):
     def run(tasks, results):
         while True:
             task = tasks.get()
-            if task is None:
+            if not task:
                 break
             ob, fn, args, kwargs = task
             if fn == "grad":
@@ -1814,7 +1813,6 @@ class ModelWorker(object):
                     else:
                         results.put(fn(*args, **kwargs))
             tasks.task_done()
-            del task
 
     def start(self):
         self.process = mp.Process(
@@ -1869,7 +1867,7 @@ def get_workers(generators: list, n_train_models=1, evaluate=False):
     logger.debug(f"Loaded {len(conv_templates)} conversation templates")
     workers = [
         ModelWorker(generator, conv_template)
-        for generator, conv_template in zip([generator.name for generator in generators], conv_templates)
+        for generator, conv_template in zip([generator for generator in generators], conv_templates)
     ]
     if not evaluate:
         for worker in workers:
