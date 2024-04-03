@@ -241,7 +241,10 @@ def autodan_generate(
             gc.collect()
             torch.cuda.empty_cache()
 
-    if not success:
+    if success:
+        return adv_prefix
+
+    else:
         logger.info(
             f"Ran through {num_steps} iterations and found no successful prompts"
         )

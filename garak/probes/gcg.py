@@ -81,7 +81,12 @@ class GCG(Probe):
     def probe(self, generator) -> List[garak.attempt.Attempt]:
         self.generator = generator
 
-        gcg_output = self.run_gcg(target_generator=self.generator)
+        try:
+            gcg_output = self.run_gcg(target_generator=self.generator)
+        except Exception as e:
+            logging.error(e)
+            print(f"GCG generation encountered an error:\n{e}")
+            gcg_output = None
 
         if gcg_output:
             self.prompts = [self.goal + gcg_output]
