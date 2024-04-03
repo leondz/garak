@@ -94,7 +94,7 @@ def run_gcg(
     / "resources/gcg/data/advbench/harmful_behaviors.csv",
     n_train: int = 50,
     n_test: int = 0,
-    outfile: str = garak._config.transient.basedir / "resources/data/gcg/gcg.txt",
+    outfile: str = garak._config.transient.basedir / "resources/gcg/data/gcg/gcg.txt",
     control_init: str = CONTROL_INIT,
     deterministic: bool = True,
     n_steps: int = 500,
