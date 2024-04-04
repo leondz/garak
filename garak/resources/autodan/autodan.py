@@ -206,7 +206,7 @@ def autodan_generate(
 
             adv_prefix = best_new_adv_prefix
             gen_str = generator.generate(prompt=adv_prefix)[0]
-            success, gen_str = check_for_attack_success(gen_str, test_prefixes)
+            success = check_for_attack_success(gen_str, test_prefixes)
             if success:
                 logger.info(
                     f"Found a successful AutoDAN prompt!\n{adv_prefix}\nAppending to {out_path}."
