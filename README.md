@@ -30,7 +30,7 @@ currently supports:
 * [hugging face hub](https://huggingface.co/models) generative models
 * [replicate](https://replicate.com/) text models
 * [openai api](https://platform.openai.com/docs/introduction) chat & continuation models
-* ggml models like [llama.cpp](https://github.com/ggerganov/llama.cpp)
+* gguf models like [llama.cpp](https://github.com/ggerganov/llama.cpp) version >= 1046
 * .. and many more LLMs!
 
 ## Install:
