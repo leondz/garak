@@ -312,7 +312,7 @@ def run_tap(
     pruning: bool = True,
     save_results: bool = SAVE_RESULTS,
     outfile: str = garak._config.transient.basedir
-    / "resources/data/tap_jailbreaks.txt",
+    / "resources/tap/data/tap_jailbreaks.txt",
 ):
     """
     Function for generating attacks using TAP where a generator has already been instantiated.
@@ -347,7 +347,7 @@ def run_tap(
 
     if (
             target_generator.name not in supported_openai
-            or target_generator.name not in supported_huggingface
+            and target_generator.name not in supported_huggingface
     ):
         save_results = False
 
@@ -538,7 +538,7 @@ def generate_tap(
         keep_last_n: int = 1,
         save_results: bool = SAVE_RESULTS,
         outfile: str = garak._config.transient.basedir
-                       / "resources/data/tap_jailbreaks.txt",
+                       / "resources/tap/data/tap_jailbreaks.txt",
 ):
     """
     Function for generating attacks using TAP when a generator has not been instantiated.
