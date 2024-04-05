@@ -264,6 +264,9 @@ def main(arguments=[]) -> None:
                 arg_names[raw_option_string] = action.option_strings
 
     for arg, val in vars(args).items():
+        if arg == 'verbose':
+            # the 'verbose' flag is currently unique and retrieved from `args` directly
+            continue
         if isinstance(val, bool):
             if val:
                 aux_parser.add_argument(*arg_names[arg], action="store_true")
