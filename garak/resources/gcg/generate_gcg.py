@@ -150,7 +150,6 @@ def run_gcg(
 
     if target_generator is not None and model_names is not None:
         msg = "You have specified a list of model names and a target generator. Using the already loaded generator!"
-        print(msg)
         logger.warning(msg)
 
     if "test_data" in kwargs:
@@ -161,7 +160,6 @@ def run_gcg(
     if "logfile" in kwargs:
         logfile = kwargs["logfile"]
     else:
-        timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
         if target_generator is not None:
             model_string = target_generator.name
         elif model_names is not None:
@@ -169,11 +167,19 @@ def run_gcg(
         else:
             msg = "You must specify either a target generator or a list of model names to run GCG!"
             logger.error(msg)
-            raise Exception(msg)
-        logfile = (
-            garak._config.transient.basedir
-            / f"resources/gcg/data/logs/{timestamp}_{model_string}.json"
-        )
+            raise RuntimeError(msg)
+        if garak._config.transient.run_id is not None:
+            run_id = garak._config.transient.run_id
+            logfile = (
+                garak._config.transient.basedir
+                / f"resources/gcg/data/logs/{run_id}_{model_string}.json"
+            )
+        else:
+            timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
+            logfile = (
+                garak._config.transient.basedir
+                / f"resources/gcg/data/logs/{timestamp}_{model_string}.json"
+            )
 
     # Create logfile directory
     p = Path(logfile).parent
