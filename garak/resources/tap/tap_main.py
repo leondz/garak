@@ -131,6 +131,7 @@ class AttackManager:
                         if len(outputs_list) > 0:
                             break
                         else:
+                            logger.critical("CUDA OOM during TAP generation")
                             raise e
 
             # Check for valid outputs and update the list
