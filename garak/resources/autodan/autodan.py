@@ -11,7 +11,7 @@ import numpy as np
 
 import gc
 
-from garak.generators import Generator
+from garak.generators import Generator, load_generator
 from garak.generators.huggingface import Model
 import garak._config
 from garak.resources.autodan.genetic import (
@@ -117,6 +117,8 @@ def autodan_generate(
     crossover_rate: float = 0.5,
     num_points: int = 5,
     mutation_rate: float = 0.1,
+    mutation_generator_name: str = "gpt-3.5-turbo",
+    mutation_generator_type: str = "openai",
     hierarchical: bool = False,
     out_path: str = str(
         garak._config.transient.basedir / "resources/autodan/data/autodan_prompts.txt"
@@ -142,6 +144,8 @@ def autodan_generate(
         crossover_rate (float): Probability of performing crossover
         num_points (int): How many points in an input to perform crossover on
         mutation_rate (float): Probability of mutating a parent string
+        mutation_generator_name (str): Name of model to use as the mutation generator
+        mutation_generator_type (str): Type of model to use as the mutation generator
         hierarchical (bool): Whether ot use hierarchical GA
         out_path (str): Path to write generated AutoDAN string
         init_prompt_path (str): Path to initial prompts
@@ -166,6 +170,10 @@ def autodan_generate(
 
     conv_template = load_conversation_template(generator.name)
     crit = nn.CrossEntropyLoss(reduction="mean")
+
+    mutation_generator = load_generator(model_name=mutation_generator_name,
+                                        model_type=mutation_generator_type,
+                                        generations=1)
 
     # Feel like this could just be text instead of storing it as tensors.
     if os.path.exists(reference_path):
@@ -224,6 +232,7 @@ def autodan_generate(
                     batch_size=batch_size,
                     crossover_rate=crossover_rate,
                     mutation_rate=mutation_rate,
+                    mutation_generator=mutation_generator
                 )
             else:
                 unfiltered_new_adv_prefixes = autodan_ga(
@@ -234,6 +243,7 @@ def autodan_generate(
                     crossover_rate=crossover_rate,
                     num_points=num_points,
                     mutation=mutation_rate,
+                    mutation_generator=mutation_generator
                 )
 
             new_adv_prefixes = unfiltered_new_adv_prefixes

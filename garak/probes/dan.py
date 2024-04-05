@@ -556,7 +556,7 @@ class AutoDANCached(Probe):
 class AutoDAN(Probe):
     """Probe leveraging AutoDAN attack generation
 
-    Dynamic, generative implementation. Requires OpenAI key to be set."""
+    Dynamic, generative implementation. Requires OpenAI key to be set in the OPENAI_API_KEY environment variable."""
 
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
