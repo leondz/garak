@@ -17,7 +17,6 @@ from logging import getLogger
 from typing import Tuple
 
 from garak.resources.autodan.model_utils import AutoDanPrefixManager, forward
-from garak.generators.openai import OpenAIGenerator
 
 logger = getLogger(__name__)
 
@@ -32,39 +31,6 @@ except LookupError as e:
     nltk.download("wordnet")
 
 
-class MutationGenerator(OpenAIGenerator):
-    def __init__(self, name, generations=10):
-        """
-        Initialize MutationGenerator class. Superclassing OpenAI Generator to allow multiple messages.
-        Args:
-            name (str): Model name
-            generations (int): Number of generations
-        """
-        super().__init__(name, generations=generations)
-
-    def generate_completion(self, messages: list):
-        response = self.generator.create(
-            model=self.name,
-            messages=messages,
-            temperature=self.temperature,
-            top_p=self.top_p,
-            n=self.generations,
-            stop=self.stop,
-            max_tokens=self.max_tokens,
-            presence_penalty=self.presence_penalty,
-            frequency_penalty=self.frequency_penalty,
-        )
-        return response
-
-
-openai_api_key = os.getenv("OPENAI_API_KEY", default=None)
-if openai_api_key is None:
-    USE_OPENAI = False
-else:
-    USE_OPENAI = True
-    mutation_generator = MutationGenerator("gpt-3.5-turbo")
-
-
 # TODO: Could probably clean up the inputs here by using imports.
 def autodan_ga(
     control_prefixes: list,
@@ -75,7 +41,7 @@ def autodan_ga(
     num_points=5,
     mutation=0.01,
     if_softmax=True,
-    if_api=USE_OPENAI,
+    mutation_generator=None,
 ) -> list:
     """
     Genetic algorithm for creating AutoDAN samples.
@@ -88,7 +54,7 @@ def autodan_ga(
         num_points (int): Number of points to perform crossover
         mutation (float): Rate to perform mutation on offspring
         if_softmax (bool): Whether to use softmax weighting for roulette selection
-        if_api (bool): Whether to use API
+        mutation_generator : Generator to use for mutation. Defaults to None.
 
     Returns:
         List of length `batch_size` consisting of `num_elites` elite parents and crossover/mutated offspring
@@ -114,7 +80,7 @@ def autodan_ga(
         crossover_probability=crossover_rate,
         num_points=num_points,
         mutation_rate=mutation,
-        if_api=if_api,
+        mutation_generator=mutation_generator,
     )
     # Combine elites with the mutated offspring
     next_generation = elites + mutated_offspring
@@ -133,7 +99,7 @@ def autodan_hga(
     batch_size,
     crossover_rate=0.5,
     mutation_rate=0.01,
-    if_api=USE_OPENAI,
+    mutation_generator=None,
 ) -> Tuple[list, dict]:
     """
     Hierarchical genetic algorithm for AutoDAN sample generation
@@ -145,7 +111,7 @@ def autodan_hga(
         batch_size (int): Total size of batch to pass to next iteration
         crossover_rate (float): Rate to perform crossover
         mutation_rate (float): Rate to perform mutation
-        if_api (bool): Whether to use OpenAI API
+        mutation_generator : Generator to use for mutation. Defaults to None.
 
     Returns:
         Tuple of next generation parents and word dictionary.
@@ -166,7 +132,7 @@ def autodan_hga(
 
     # Step 4: Apply word replacement with roulette wheel selection
     offspring = apply_word_replacement(word_dict, parents_list, crossover_rate)
-    offspring = apply_gpt_mutation(offspring, mutation_rate, if_api=if_api)
+    offspring = apply_gpt_mutation(offspring, mutation_rate, mutation_generator=mutation_generator)
 
     # Combine elites with the mutated offspring
     next_generation = elites + offspring
@@ -209,7 +175,7 @@ def apply_crossover_and_mutation(
     crossover_probability=0.5,
     num_points=3,
     mutation_rate=0.01,
-    if_api=USE_OPENAI,
+    mutation_generator=None,
 ) -> list:
     """
     Perform crossover and mutation on selected parents.
@@ -219,7 +185,7 @@ def apply_crossover_and_mutation(
         crossover_probability (float): Probability of performing crossover operation on selected parents.
         num_points (int): Number of points to perform crossover.
         mutation_rate (float): How frequently to apply gpt mutation to offspring.
-        if_api (bool): Whether to use API
+        mutation_generator : Generator to use for mutation. Defaults to None.
 
     Returns:
         A list of crossed over and mutated children
@@ -240,7 +206,7 @@ def apply_crossover_and_mutation(
             offspring.append(parent1)
             offspring.append(parent2)
 
-    mutated_offspring = apply_gpt_mutation(offspring, mutation_rate, if_api=if_api)
+    mutated_offspring = apply_gpt_mutation(offspring, mutation_rate, mutation_generator=mutation_generator)
 
     return mutated_offspring
 
@@ -265,8 +231,11 @@ def crossover(str1: str, str2: str, num_points: int) -> Tuple[str, str]:
     if not max_swaps >= 0:
         max_swaps = 0
     num_swaps = min(num_points, max_swaps)
-
-    swap_indices = sorted(random.sample(range(1, max_swaps), num_swaps))
+    # Catch error in random.sample when num_swaps gets weird.
+    try:
+        swap_indices = sorted(random.sample(range(1, max_swaps), num_swaps))
+    except ValueError:
+        return str1, str2
 
     new_str1, new_str2 = [], []
     last_swap = 0
@@ -289,7 +258,7 @@ def crossover(str1: str, str2: str, num_points: int) -> Tuple[str, str]:
     return " ".join(new_str1), " ".join(new_str2)
 
 
-def gpt_mutate(sentence: str) -> str:
+def gpt_mutate(mutation_generator, sentence: str) -> str:
     """
     Call OpenAI API to mutate input sentences
     Args:
@@ -308,15 +277,13 @@ def gpt_mutate(sentence: str) -> str:
     while not received:
         try:
             # TODO: Make the model configurable.
-            response = mutation_generator.generate_completion(
-                messages=[
+            response = mutation_generator.generate(
+                prompt=[
                     {"role": "system", "content": system_msg},
                     {"role": "user", "content": user_message},
                 ]
             )
-            revised_sentence = response["choices"][0]["message"]["content"].replace(
-                "\n", ""
-            )
+            revised_sentence = response[0].replace("\n", "")
             received = True
         except Exception as e:
             logger.error(e)
@@ -343,7 +310,7 @@ def gpt_mutate(sentence: str) -> str:
 
 
 def apply_gpt_mutation(
-    offspring: list, mutation_rate=0.01, reference: list = None, if_api=USE_OPENAI
+    offspring: list, mutation_rate=0.01, reference: list = None, mutation_generator=None
 ) -> list:
     # TODO: Allow for use of local models in lieu of OpenAI
     """
@@ -353,20 +320,20 @@ def apply_gpt_mutation(
         offspring (list): list of offspring to apply mutation to
         mutation_rate (float): How frequently to mutate offspring using GPT or reference corpus
         reference (list): List of pregenerated prompts
-        if_api (bool): Whether to use OpenAI API
+        mutation_generator : Generator to use for mutation. Defaults to None.
 
     Returns:
         List of mutated offspring
     """
-    if if_api:
+    if mutation_generator:
         for i in range(len(offspring)):
             if random.random() < mutation_rate:
-                offspring[i] = gpt_mutate(offspring[i])
+                offspring[i] = gpt_mutate(mutation_generator=mutation_generator, sentence=offspring[i])
     else:
         for i in range(len(offspring)):
             if random.random() < mutation_rate:
                 if reference is not None:
-                    offspring[i] = random.choice(reference[(len(offspring)) :])
+                    offspring[i] = random.choice(reference[(len(offspring)):])
                 else:
                     offspring[i] = replace_with_synonyms(offspring[i])
     return offspring
