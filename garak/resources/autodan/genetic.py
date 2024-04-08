@@ -223,8 +223,8 @@ def crossover(str1: str, str2: str, num_points: int) -> Tuple[str, str]:
     Returns:
         Tuple of strings after `num_points` crossovers.
     """
-    sentences1 = [s for s in re.split("(?<=[.!?])\s+", str1) if s]
-    sentences2 = [s for s in re.split("(?<=[.!?])\s+", str2) if s]
+    sentences1 = [s for s in re.split(r"(?<=[.!?])\s+", str1) if s]
+    sentences2 = [s for s in re.split(r"(?<=[.!?])\s+", str2) if s]
 
     max_swaps = min(len(sentences1), len(sentences2)) - 1
     # Catch rare case where max_swaps is negative
