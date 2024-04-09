@@ -16,7 +16,7 @@ class VisualJailbreak(Probe):
     """
 
     bcp47 = "en"
-    recommended_detector = ["mitigation.MitigationBypass"]
+    recommended_detector = ["visual_jailbreak.VisualJailbreak"]
     tags = [
         # "avid-effect:security:S0403",
         # "avid-effect:performance:P0204",
