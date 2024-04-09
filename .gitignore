@@ -167,4 +167,3 @@ hitlog.*.jsonl
 garak_runs/
 runs/
 logs/
-garak/__main__.py
