@@ -58,8 +58,11 @@ class LangChainServeLLMGenerator(Generator):
                                      headers=headers,
                                      data=json.dumps(payload))
             response.raise_for_status()
-            result = response.json()
-            return result.get("output", {}).get("content", "")
+            if "output" not in response.json():
+                logging.error("No output found in response: %s", response.json())
+                raise ValueError("No output found in response")
+            result = response.json().get("output")
+            return result
         except requests.exceptions.RequestException as e:
             logging.error("HTTP Request failed: %s", e)
             return ""
