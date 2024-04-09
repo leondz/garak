@@ -354,7 +354,6 @@ class AttackPrompt(object):
             gen_config = model.generation_config
             gen_config.max_new_tokens = self.test_new_toks
         gen_str = self.generate_str(model, gen_config).strip()
-        logger.debug(f"Generated string: {gen_str}")
         jailbroken = not any([prefix in gen_str for prefix in self.test_prefixes])
         em = self.target in gen_str
         return jailbroken, int(em)
@@ -755,6 +754,7 @@ class MultiPromptAttack(object):
             )
             for worker in workers
         ]
+        self.success = False
 
     @property
     def control_str(self):
@@ -874,6 +874,7 @@ class MultiPromptAttack(object):
                 if all(
                     all(tests for tests in model_test) for model_test in model_tests_jb
                 ):
+                    self.success = True
                     logger.info(f"Writing successful jailbreak to {self.outfile}")
                     with open(self.outfile, "a") as f:
                         f.write(f"{self.control_str}\n")
@@ -903,7 +904,6 @@ class MultiPromptAttack(object):
             if loss < best_loss:
                 best_loss = loss
                 best_control = control
-            logger.debug("Current Loss:", loss, "Best Loss:", best_loss)
 
             if self.logfile is not None and (i + 1 + anneal_from) % test_steps == 0:
                 last_control = self.control_str
@@ -927,13 +927,14 @@ class MultiPromptAttack(object):
         if not stop_on_success:
             model_tests_jb, model_tests_mb, _ = self.test(self.workers, self.prompts)
             if all(all(tests for tests in model_test) for model_test in model_tests_jb):
+                self.success = True
                 logger.info(f"Writing successful jailbreak to {self.outfile}")
                 with open(self.outfile, "a") as f:
                     f.write(f"{self.control_str}\n")
             else:
                 logger.info("No successful jailbreak found!")
 
-        return self.control_str, loss, steps
+        return self.control_str, loss, steps, self.success
 
     @staticmethod
     def test(workers, prompts, include_loss=False):
@@ -1231,6 +1232,7 @@ class ProgressiveMultiPromptAttack(object):
         step = 0
         stop_inner_on_success = self.progressive_goals
         loss = np.infty
+        success = False
 
         while step < n_steps:
             attack = self.managers["MPA"](
@@ -1248,7 +1250,7 @@ class ProgressiveMultiPromptAttack(object):
             )
             if num_goals == len(self.goals) and num_workers == len(self.workers):
                 stop_inner_on_success = False
-            control, loss, inner_steps = attack.run(
+            control, loss, inner_steps, success = attack.run(
                 n_steps=n_steps - step,
                 batch_size=batch_size,
                 topk=topk,
@@ -1299,7 +1301,7 @@ class ProgressiveMultiPromptAttack(object):
                         else:
                             stop_inner_on_success = False
 
-        return self.control, step
+        return self.control, step, success
 
 
 class IndividualPromptAttack(object):
@@ -1429,7 +1431,7 @@ class IndividualPromptAttack(object):
         test_steps: int = 50,
         incr_control: bool = True,
         stop_on_success: bool = True,
-        verbose: bool = True,
+        verbose: bool = False,
         filter_cand: bool = True,
     ):
         """
@@ -1489,7 +1491,8 @@ class IndividualPromptAttack(object):
         pbar = tqdm(total=len(self.goals), position=0, colour="green")
         for i in range(len(self.goals)):
             pbar.set_description(f"Goal {i+1}/{len(self.goals)}")
-            logger.debug(f"Goal {i + 1}/{len(self.goals)}")
+            if verbose:
+                logger.debug(f"Goal {i + 1}/{len(self.goals)}")
 
             attack = self.managers["MPA"](
                 goals=self.goals[i : i + 1],
@@ -1505,7 +1508,7 @@ class IndividualPromptAttack(object):
                 test_workers=self.test_workers,
                 **self.mpa_kwargs,
             )
-            attack.run(
+            self.control, loss, steps, success = attack.run(
                 n_steps=n_steps,
                 batch_size=batch_size,
                 topk=topk,
@@ -1524,7 +1527,7 @@ class IndividualPromptAttack(object):
             )
             pbar.update(1)
 
-        return self.control, n_steps
+        return self.control, n_steps, success
 
 
 class EvaluateAttack(object):
@@ -1767,14 +1770,13 @@ class EvaluateAttack(object):
 
 
 class ModelWorker(object):
-    def __init__(self, model_name, conv_template):
+    def __init__(self, generator, conv_template):
         """
         Worker for running against models
         Args:
-            model_name (str): Name of model to run against
+            generator (garak.Generator): Generator to run against
             conv_template (fastchat.Conversation): Conversation template
         """
-        generator = garak.generators.huggingface.Model(model_name)
         self.model = generator.model
         self.model.requires_grad_(False)  # Disable grads to reduce memory consumption
         self.tokenizer = generator.tokenizer
@@ -1790,7 +1792,7 @@ class ModelWorker(object):
     def run(tasks, results):
         while True:
             task = tasks.get()
-            if task is None:
+            if not task:
                 break
             ob, fn, args, kwargs = task
             if fn == "grad":
@@ -1810,7 +1812,6 @@ class ModelWorker(object):
                     else:
                         results.put(fn(*args, **kwargs))
             tasks.task_done()
-            del task
 
     def start(self):
         self.process = mp.Process(
@@ -1834,13 +1835,13 @@ class ModelWorker(object):
         return self
 
 
-def get_workers(model_names: list, n_train_models=1, evaluate=False):
+def get_workers(generators: list, n_train_models=1, evaluate=False):
     """
     Get workers for GCG generation and testing
 
     Parameters
     ----------
-    model_names : List of model names to load
+    generators : List generators to evaluate
     n_train_models : Number of models to use for training
     evaluate : Boolean -- is the worker being used for eval. Will prevent starting the workers.
 
@@ -1849,13 +1850,7 @@ def get_workers(model_names: list, n_train_models=1, evaluate=False):
     tuple of train workers and test workers.
 
     """
-    generators = list()
-    for model_name in model_names:
-        generators.append(Model(model_name))
-
-    logger.debug(f"Loaded {len(generators)} generators")
-
-    conv_model_names = [get_conv_name(model_name) for model_name in model_names]
+    conv_model_names = [get_conv_name(generator.name) for generator in generators]
     raw_conv_templates = [
         get_conversation_template(conv_model) for conv_model in conv_model_names
     ]
@@ -1868,17 +1863,13 @@ def get_workers(model_names: list, n_train_models=1, evaluate=False):
             conv.sep2 = conv.sep2.strip()
         conv_templates.append(conv)
 
-    logger.debug(f"Loaded {len(conv_templates)} conversation templates")
     workers = [
         ModelWorker(generator, conv_template)
-        for generator, conv_template in zip(model_names, conv_templates)
+        for generator, conv_template in zip([generator for generator in generators], conv_templates)
     ]
     if not evaluate:
         for worker in workers:
             worker.start()
-
-    logger.debug("Loaded {} train models".format(n_train_models))
-    logger.debug("Loaded {} test models".format(len(workers) - n_train_models))
 
     return workers[:n_train_models], workers[n_train_models:]
 
@@ -1932,7 +1923,5 @@ def get_goals_and_targets(
 
     assert len(goals) == len(targets)
     assert len(test_goals) == len(test_targets)
-    logger.debug("Loaded {} train goals".format(len(goals)))
-    logger.debug("Loaded {} test goals".format(len(test_goals)))
 
     return goals, targets, test_goals, test_targets

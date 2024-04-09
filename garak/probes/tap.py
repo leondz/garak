@@ -119,7 +119,7 @@ class TAP(Probe):
         keep_last_n: int = 1,
         pruning: bool = True,
     ):
-        self.goal = goal
+        self.goal_str = goal
         self.target = target
         self.attack_model = attack_model
         self.attack_max_tokens = attack_max_tokens
@@ -144,24 +144,29 @@ class TAP(Probe):
 
             self.run_tap = run_tap
 
-        tap_outputs = run_tap(
-            goal=self.goal,
-            target=self.target,
-            target_generator=self.generator,
-            target_max_tokens=150,
-            attack_model=self.attack_model,
-            attack_max_tokens=self.attack_max_tokens,
-            attack_max_attempts=self.attack_max_attempts,
-            evaluator_model=self.evaluator_model,
-            evaluator_max_tokens=self.evaluator_max_tokens,
-            evaluator_temperature=self.evaluator_temperature,
-            branching_factor=self.branching_factor,
-            width=self.width,
-            depth=self.depth,
-            n_streams=self.n_streams,
-            keep_last_n=self.keep_last_n,
-            pruning=self.pruning,
-        )
+        try:
+            tap_outputs = self.run_tap(
+                goal=self.goal_str,
+                target=self.target,
+                target_generator=self.generator,
+                target_max_tokens=150,
+                attack_model=self.attack_model,
+                attack_max_tokens=self.attack_max_tokens,
+                attack_max_attempts=self.attack_max_attempts,
+                evaluator_model=self.evaluator_model,
+                evaluator_max_tokens=self.evaluator_max_tokens,
+                evaluator_temperature=self.evaluator_temperature,
+                branching_factor=self.branching_factor,
+                width=self.width,
+                depth=self.depth,
+                n_streams=self.n_streams,
+                keep_last_n=self.keep_last_n,
+                pruning=self.pruning
+            )
+        except Exception as e:
+            logging.error(e)
+            print(f"TAP generation encountered an error:\n{e}")
+            tap_outputs = None
 
         if tap_outputs:
             self.prompts = tap_outputs
@@ -212,6 +217,8 @@ class TAP(Probe):
 
         else:
             logging.debug("TAP failed to find a jailbreak!")
+            # Return an empty list to avoid throwing assertion errors upstream
+            return list()
 
 
 class PAIR(Probe):
@@ -272,24 +279,29 @@ class PAIR(Probe):
 
             self.run_tap = run_tap
 
-        pair_outputs = run_tap(
-            goal=self.goal,
-            target=self.target,
-            target_generator=self.generator,
-            target_max_tokens=150,
-            attack_model=self.attack_model,
-            attack_max_tokens=self.attack_max_tokens,
-            attack_max_attempts=self.attack_max_attempts,
-            evaluator_model=self.evaluator_model,
-            evaluator_max_tokens=self.evaluator_max_tokens,
-            evaluator_temperature=self.evaluator_temperature,
-            branching_factor=self.branching_factor,
-            width=self.width,
-            depth=self.depth,
-            n_streams=self.n_streams,
-            keep_last_n=self.keep_last_n,
-            pruning=self.pruning,
-        )
+        try:
+            pair_outputs = self.run_tap(
+                goal=self.goal,
+                target=self.target,
+                target_generator=self.generator,
+                target_max_tokens=150,
+                attack_model=self.attack_model,
+                attack_max_tokens=self.attack_max_tokens,
+                attack_max_attempts=self.attack_max_attempts,
+                evaluator_model=self.evaluator_model,
+                evaluator_max_tokens=self.evaluator_max_tokens,
+                evaluator_temperature=self.evaluator_temperature,
+                branching_factor=self.branching_factor,
+                width=self.width,
+                depth=self.depth,
+                n_streams=self.n_streams,
+                keep_last_n=self.keep_last_n,
+                pruning=self.pruning,
+            )
+        except Exception as e:
+            logging.error(e)
+            print(f"PAIR generation encountered an error:\n{e}")
+            pair_outputs = None
 
         if pair_outputs:
             self.prompts = pair_outputs

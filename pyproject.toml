@@ -58,7 +58,8 @@ dependencies = [
   "zalgolib>=0.2.2",
   "ecoji>=0.1.0",
   "deepl==1.17.0",
-  "fschat>=0.2.36"
+  "fschat>=0.2.36",
+  "typing>=3.7,<3.8; python_version<'3.5'"
 ]
 
 [project.urls]

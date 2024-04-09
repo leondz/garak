@@ -54,10 +54,13 @@ class Generator:
         succeed or raise an exception. The @backoff decorator can be helpful
         here - see garak.generators.openai for an example usage.
 
-        Can return None if no reponse was elicited"""
+        Can return None if no response was elicited"""
         raise NotImplementedError
 
     def _pre_generate_hook(self):
+        pass
+
+    def clear_history(self):
         pass
 
     def generate(self, prompt: str) -> List[str]:
