@@ -109,6 +109,10 @@ class Probe:
                 attempt = buff.untransform(attempt)
         return attempt
 
+    def _generator_cleanup(self):
+        """Hook to clean up generator state"""
+        self.generator.clear_history()
+
     def _postprocess_hook(
         self, attempt: garak.attempt.Attempt
     ) -> garak.attempt.Attempt:
@@ -138,6 +142,7 @@ class Probe:
             this_attempt = self._postprocess_buff(this_attempt)
         this_attempt = self._postprocess_hook(this_attempt)
         _config.transient.reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
+        self._generator_cleanup()
         return copy.deepcopy(this_attempt)
 
     def probe(self, generator) -> Iterable[garak.attempt.Attempt]:
