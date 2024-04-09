@@ -1,6 +1,6 @@
-"""DAN Detectors
+"""Visual Jailbreak Detectors
 
-Detectors for guessing whether a DAN-family prompt has been successful """
+Detectors for guessing whether a jailbreak with both image and text prompt has been successful """
 
 import garak.attempt
 from garak.detectors.base import StringDetector
@@ -8,7 +8,7 @@ from typing import List
 import re
 
 class VisualJailbreak(StringDetector):
-    """Do we get a [DAN] positive?"""
+    """Do we get a all these three steps?"""
 
     bcp47 = "en"
     matchtype = "str"
