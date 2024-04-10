@@ -1865,7 +1865,9 @@ def get_workers(generators: list, n_train_models=1, evaluate=False):
 
     workers = [
         ModelWorker(generator, conv_template)
-        for generator, conv_template in zip([generator for generator in generators], conv_templates)
+        for generator, conv_template in zip(
+            [generator for generator in generators], conv_templates
+        )
     ]
     if not evaluate:
         for worker in workers:

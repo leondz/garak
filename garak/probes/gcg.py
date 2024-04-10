@@ -70,10 +70,7 @@ class GCG(Probe):
     prompts = list()
     active = False
 
-    def __init__(
-        self,
-        goal: str = GOAL
-    ):
+    def __init__(self, goal: str = GOAL):
         self.goal = goal
         self.run_gcg = run_gcg
         super().__init__()

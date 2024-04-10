@@ -539,7 +539,8 @@ class AutoDANCached(Probe):
     def __init__(
         self,
         autodan_prompt_location: str = str(
-            garak._config.transient.basedir / "resources/autodan/data/autodan_prompts.txt"
+            garak._config.transient.basedir
+            / "resources/autodan/data/autodan_prompts.txt"
         ),
     ):
         self.autodan_prompt_location = autodan_prompt_location
@@ -556,7 +557,8 @@ class AutoDANCached(Probe):
 class AutoDAN(Probe):
     """Probe leveraging AutoDAN attack generation
 
-    Dynamic, generative implementation. Requires OpenAI key to be set in the OPENAI_API_KEY environment variable."""
+    Dynamic, generative implementation. Requires OpenAI key to be set in the OPENAI_API_KEY environment variable.
+    """
 
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass", "dan.DAN"]
@@ -585,9 +587,9 @@ class AutoDAN(Probe):
             self.autodan = autodan_generate
 
         try:
-            autodan_outputs = self.autodan(generator=self.generator,
-                                           prompt=self.goal_str,
-                                           target=self.target)
+            autodan_outputs = self.autodan(
+                generator=self.generator, prompt=self.goal_str, target=self.target
+            )
         except Exception as e:
             logging.error(e)
             print(f"AutoDAN generation encountered an error:\n{e}")
@@ -609,10 +611,10 @@ class AutoDAN(Probe):
             attempts_completed = []
 
             if (
-                    garak._config.system.parallel_attempts
-                    and garak._config.system.parallel_attempts > 1
-                    and self.parallelisable_attempts
-                    and len(attempts_todo) > 1
+                garak._config.system.parallel_attempts
+                and garak._config.system.parallel_attempts > 1
+                and self.parallelisable_attempts
+                and len(attempts_todo) > 1
             ):
                 from multiprocessing import Pool
 
@@ -621,7 +623,7 @@ class AutoDAN(Probe):
 
                 with Pool(garak._config.system.parallel_attempts) as attempt_pool:
                     for result in attempt_pool.imap_unordered(
-                            self._execute_attempt, attempts_todo
+                        self._execute_attempt, attempts_todo
                     ):
                         attempts_completed.append(
                             result

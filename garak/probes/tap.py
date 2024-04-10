@@ -161,7 +161,7 @@ class TAP(Probe):
                 depth=self.depth,
                 n_streams=self.n_streams,
                 keep_last_n=self.keep_last_n,
-                pruning=self.pruning
+                pruning=self.pruning,
             )
         except Exception as e:
             logging.error(e)
