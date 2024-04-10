@@ -1,6 +1,6 @@
 name: Garak pytest
 
-on: [push]
+on: [push,pull_request_target,workflow_dispatch]
 
 jobs:
   build:
