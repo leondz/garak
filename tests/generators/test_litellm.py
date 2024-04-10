@@ -12,8 +12,9 @@ DEFAULT_GENERATIONS_QTY = 10
     reason="OpenAI API key is not set in OPENAI_API_KEY",
 )
 def test_litellm_openai():
-    generator = LiteLLMGenerator(name="gpt-3.5-turbo")
-    assert generator.name == "gpt-3.5-turbo"
+    model_name = "gpt-3.5-turbo"
+    generator = LiteLLMGenerator(name=model_name)
+    assert generator.name == model_name
     assert generator.generations == DEFAULT_GENERATIONS_QTY
     assert isinstance(generator.max_tokens, int)
 
@@ -30,8 +31,9 @@ def test_litellm_openai():
     reason="OpenRouter API key is not set in OPENROUTER_API_KEY",
 )
 def test_litellm_openrouter():
-    generator = LiteLLMGenerator(name="openrouter/google/gemma-7b-it")
-    assert generator.name == "openrouter/google/gemma-7b-it"
+    model_name = "openrouter/google/gemma-7b-it"
+    generator = LiteLLMGenerator(name=model_name)
+    assert generator.name == model_name
     assert generator.generations == DEFAULT_GENERATIONS_QTY
     assert isinstance(generator.max_tokens, int)
 

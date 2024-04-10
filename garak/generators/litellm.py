@@ -138,7 +138,7 @@ class LiteLLMGenerator(Generator):
             )
 
     @backoff.on_exception(backoff.fibo, Exception, max_value=70)
-    def _call_model(self, prompt: Union[str, List[dict]]) -> List[str] | str | None:
+    def _call_model(self, prompt: Union[str, List[dict]]) -> Union[List[str], str, None]:
         if isinstance(prompt, str):
             prompt = [{"role": "user", "content": prompt}]
         elif isinstance(prompt, list):
