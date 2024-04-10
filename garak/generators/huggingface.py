@@ -48,7 +48,6 @@ class HFConfigurable:
     def _load_hf_config(self):
         if "huggingface" in _config.plugins.generators:
             generator_classname = self.__class__.__name__
-            print(generator_classname)
             if generator_classname in _config.plugins.generators["huggingface"]:
                 for k, v in _config.plugins.generators["huggingface"][
                     generator_classname
