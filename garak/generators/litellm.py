@@ -19,6 +19,14 @@ e.g Supply a JSON like this for Ollama's OAI api:
     }
 }
 ```
+
+The above is an example of a config to connect LiteLLM with Ollama's OpenAI compatible API.
+
+Then, when invoking garak, we pass it the path to the generator option file.
+
+```
+python -m garak --model_type litellm --model_name "phi" --generator_option_file ollama_base.json -p dan
+```
 """
 
 import logging
@@ -119,6 +127,11 @@ class LiteLLMGenerator(Generator):
                                     "Please supply an OpenAI API key in the OPENAI_API_KEY environment variable"
                                     " or in the configuration file"
                                 )
+                else:
+                    if field in ("provider"):  # required fields here
+                        raise ValueError(
+                            "litellm generator needs to have a provider value configured - see docs"
+                        )
 
     @backoff.on_exception(backoff.fibo, Exception, max_value=70)
     def _call_model(self, prompt: Union[str, List[dict]]) -> List[str] | str | None:
