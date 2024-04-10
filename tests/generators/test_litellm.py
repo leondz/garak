@@ -12,8 +12,9 @@ DEFAULT_GENERATIONS_QTY = 10
     reason="OpenAI API key is not set in OPENAI_API_KEY",
 )
 def test_litellm_openai():
-    generator = LiteLLMGenerator(name="gpt-3.5-turbo")
-    assert generator.name == "gpt-3.5-turbo"
+    model_name = "gpt-3.5-turbo"
+    generator = LiteLLMGenerator(name=model_name)
+    assert generator.name == model_name
     assert generator.generations == DEFAULT_GENERATIONS_QTY
     assert isinstance(generator.max_tokens, int)
 
