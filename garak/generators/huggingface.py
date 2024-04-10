@@ -44,7 +44,19 @@ class HFInternalServerError(Exception):
     pass
 
 
-class Pipeline(Generator):
+class HFConfigurable:
+    def _load_hf_config(self):
+        if "huggingface" in _config.plugins.generators:
+            generator_classname = self.__class__.__name__
+            print(generator_classname)
+            if generator_classname in _config.plugins.generators["huggingface"]:
+                for k, v in _config.plugins.generators["huggingface"][
+                    generator_classname
+                ].items():
+                    setattr(self, k, v)
+
+
+class Pipeline(Generator, HFConfigurable):
     """Get text generations from a locally-run Hugging Face pipeline"""
 
     generator_family_name = "Hugging Face 🤗 pipeline"
@@ -76,6 +88,7 @@ class Pipeline(Generator):
         if _config.loaded:
             if _config.run.deprefix is True:
                 self.deprefix_prompt = True
+            self._load_hf_config()
 
     def _call_model(self, prompt: str) -> List[str]:
         with warnings.catch_warnings():
@@ -91,7 +104,7 @@ class Pipeline(Generator):
                         truncated_prompt,
                         pad_token_id=self.generator.tokenizer.eos_token_id,
                         max_new_tokens=self.max_tokens,
-                        num_return_sequences=self.generations
+                        num_return_sequences=self.generations,
                     )
             except Exception as e:
                 logging.error(e)
@@ -110,7 +123,7 @@ class Pipeline(Generator):
             return [re.sub("^" + re.escape(prompt), "", i) for i in generations]
 
 
-class OptimumPipeline(Pipeline):
+class OptimumPipeline(Pipeline, HFConfigurable):
     """Get text generations from a locally-run Hugging Face pipeline using NVIDIA Optimum"""
 
     generator_family_name = "NVIDIA Optimum Hugging Face 🤗 pipeline"
@@ -153,7 +166,7 @@ class OptimumPipeline(Pipeline):
                 self.deprefix_prompt = True
 
 
-class ConversationalPipeline(Generator):
+class ConversationalPipeline(Generator, HFConfigurable):
     """Conversational text generation using HuggingFace pipelines"""
 
     generator_family_name = "Hugging Face 🤗 pipeline for conversations"
@@ -191,6 +204,7 @@ class ConversationalPipeline(Generator):
 
     def clear_history(self):
         from transformers import Conversation
+
         self.conversation = Conversation()
 
     def _call_model(self, prompt: Union[str, list[dict]]) -> List[str]:
@@ -222,7 +236,7 @@ class ConversationalPipeline(Generator):
             return [re.sub("^" + re.escape(prompt), "", i) for i in generations]
 
 
-class InferenceAPI(Generator):
+class InferenceAPI(Generator, HFConfigurable):
     """Get text generations from Hugging Face Inference API"""
 
     generator_family_name = "Hugging Face 🤗 Inference API"
@@ -340,7 +354,7 @@ class InferenceAPI(Generator):
         self.wait_for_model = False
 
 
-class InferenceEndpoint(InferenceAPI):
+class InferenceEndpoint(InferenceAPI, HFConfigurable):
     """Interface for Hugging Face private endpoints
     Pass the model URL as the name, e.g. https://xxx.aws.endpoints.huggingface.cloud
     """
@@ -393,7 +407,7 @@ class InferenceEndpoint(InferenceAPI):
         return output
 
 
-class Model(Generator):
+class Model(Generator, HFConfigurable):
     """Get text generations from a locally-run Hugging Face model"""
 
     generator_family_name = "Hugging Face 🤗 model"
@@ -463,9 +477,9 @@ class Model(Generator):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=UserWarning)
             with torch.no_grad():
-                inputs = self.tokenizer(prompt, truncation=True, return_tensors="pt").to(
-                    self.init_device
-                )
+                inputs = self.tokenizer(
+                    prompt, truncation=True, return_tensors="pt"
+                ).to(self.init_device)
 
                 try:
                     outputs = self.model.generate(
