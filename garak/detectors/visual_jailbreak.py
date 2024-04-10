@@ -47,3 +47,4 @@ class VisualJailbreak(StringDetector):
             detector_results.append(1 if match else 0)
 
         return detector_results
+    

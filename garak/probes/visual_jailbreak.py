@@ -35,3 +35,4 @@ class VisualJailbreak(Probe):
     def probe(self, generator):
         # self.prompts = [prompt.format(generator=generator) for prompt in self.prompts]
         return super().probe(generator)
+    
