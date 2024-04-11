@@ -77,7 +77,7 @@ class Pipeline(Generator):
             if _config.run.deprefix is True:
                 self.deprefix_prompt = True
 
-    def _call_model(self, prompt: str) -> List[str]:
+    def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[str]:
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=UserWarning)
             try:
@@ -91,23 +91,22 @@ class Pipeline(Generator):
                         truncated_prompt,
                         pad_token_id=self.generator.tokenizer.eos_token_id,
                         max_new_tokens=self.max_tokens,
-                        num_return_sequences=self.generations
+                        num_return_sequences=generations_this_call,
                     )
             except Exception as e:
                 logging.error(e)
                 raw_output = []  # could handle better than this
 
+        outputs = []
         if raw_output is not None:
-            generations = [
+            outputs = [
                 i["generated_text"] for i in raw_output
             ]  # generator returns 10 outputs by default in __init__
-        else:
-            generations = []
 
         if not self.deprefix_prompt:
-            return generations
+            return outputs
         else:
-            return [re.sub("^" + re.escape(prompt), "", i) for i in generations]
+            return [re.sub("^" + re.escape(prompt), "", _o) for _o in outputs]
 
 
 class OptimumPipeline(Pipeline):
@@ -191,9 +190,12 @@ class ConversationalPipeline(Generator):
 
     def clear_history(self):
         from transformers import Conversation
+
         self.conversation = Conversation()
 
-    def _call_model(self, prompt: Union[str, list[dict]]) -> List[str]:
+    def _call_model(
+        self, prompt: Union[str, list[dict]], generations_this_call: int = 1
+    ) -> List[str]:
         """Take a conversation as a list of dictionaries and feed it to the model"""
 
         # If conversation is provided as a list of dicts, create the conversation.
@@ -212,14 +214,14 @@ class ConversationalPipeline(Generator):
             with torch.no_grad():
                 conversation = self.generator(conversation)
 
-            generations = [conversation[-1]["content"]]
+            outputs = [conversation[-1]["content"]]
         else:
             raise TypeError(f"Expected list or str, got {type(prompt)}")
 
         if not self.deprefix_prompt:
-            return generations
+            return outputs
         else:
-            return [re.sub("^" + re.escape(prompt), "", i) for i in generations]
+            return [re.sub("^" + re.escape(prompt), "", _o) for _o in outputs]
 
 
 class InferenceAPI(Generator):
@@ -257,7 +259,7 @@ class InferenceAPI(Generator):
         ),
         max_value=125,
     )
-    def _call_model(self, prompt: str) -> List[str]:
+    def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[str]:
         import json
         import requests
 
@@ -265,7 +267,7 @@ class InferenceAPI(Generator):
             "inputs": prompt,
             "parameters": {
                 "return_full_text": not self.deprefix_prompt,
-                "num_return_sequences": self.generations,
+                "num_return_sequences": generations_this_call,
                 "max_time": self.max_time,
             },
             "options": {
@@ -275,7 +277,7 @@ class InferenceAPI(Generator):
         if self.max_tokens:
             payload["parameters"]["max_new_tokens"] = self.max_tokens
 
-        if self.generations > 1:
+        if generations_this_call > 1:
             payload["parameters"]["do_sample"] = True
 
         req_response = requests.request(
@@ -348,6 +350,8 @@ class InferenceEndpoint(InferenceAPI):
     supports_multiple_generations = False
     import requests
 
+    timeout = 120
+
     def __init__(self, name="", generations=10):
         super().__init__(name, generations=generations)
         self.api_url = name
@@ -362,7 +366,7 @@ class InferenceEndpoint(InferenceAPI):
         ),
         max_value=125,
     )
-    def _call_model(self, prompt: str) -> List[str]:
+    def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[str]:
         import requests
 
         payload = {
@@ -378,18 +382,18 @@ class InferenceEndpoint(InferenceAPI):
         if self.max_tokens:
             payload["parameters"]["max_new_tokens"] = self.max_tokens
 
-        if self.generations > 1:
+        if generations_this_call > 1:
             payload["parameters"]["do_sample"] = True
 
         response = requests.post(
-            self.api_url, headers=self.headers, json=payload
+            self.api_url, headers=self.headers, json=payload, timeout=self.timeout
         ).json()
         try:
             output = response[0]["generated_text"]
-        except:
+        except Exception as exc:
             raise IOError(
                 "Hugging Face 🤗 endpoint didn't generate a response. Make sure the endpoint is active."
-            )
+            ) from exc
         return output
 
 
@@ -450,10 +454,10 @@ class Model(Generator):
         self.generation_config.eos_token_id = self.model.config.eos_token_id
         self.generation_config.pad_token_id = self.model.config.eos_token_id
 
-    def _call_model(self, prompt):
+    def _call_model(self, prompt: str, generations_this_call: int = 1):
         self.generation_config.max_new_tokens = self.max_tokens
         self.generation_config.do_sample = self.do_sample
-        self.generation_config.num_return_sequences = self.generations
+        self.generation_config.num_return_sequences = generations_this_call
         if self.temperature is not None:
             self.generation_config.temperature = self.temperature
         if self.top_k is not None:
@@ -463,9 +467,9 @@ class Model(Generator):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=UserWarning)
             with torch.no_grad():
-                inputs = self.tokenizer(prompt, truncation=True, return_tensors="pt").to(
-                    self.init_device
-                )
+                inputs = self.tokenizer(
+                    prompt, truncation=True, return_tensors="pt"
+                ).to(self.init_device)
 
                 try:
                     outputs = self.model.generate(
@@ -473,7 +477,7 @@ class Model(Generator):
                     )
                 except IndexError as e:
                     if len(prompt) == 0:
-                        return [""] * self.generations
+                        return [""] * generations_this_call
                     else:
                         raise e
                 text_output = self.tokenizer.batch_decode(
