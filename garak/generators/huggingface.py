@@ -499,19 +499,34 @@ class LLaVA(Generator):
         'in': {'text', 'image'}, 
         'out': {'text'}
     }
+
+    # Support Image-Text-to-Text models
+    # https://huggingface.co/llava-hf#:~:text=Llava-,Models,-9
+    supported_models = [
+        "llava-hf/llava-v1.6-34b-hf", 
+        "llava-hf/llava-v1.6-vicuna-13b-hf", 
+        "llava-hf/llava-v1.6-vicuna-7b-hf", 
+        "llava-hf/llava-v1.6-mistral-7b-hf"
+    ]
     
     def __init__(self, name="", generations=10):
         proxies = {
             'http': 'http://127.0.0.1:7890',
             'https': 'http://127.0.0.1:7890'
         }
-        self.processor = LlavaNextProcessor.from_pretrained("llava-hf/llava-v1.6-mistral-7b-hf", 
+
+        if name not in self.supported_models:
+            raise ValueError(
+                f"Invalid modal name {name}, current support: {self.supported_models}."
+            )
+
+        self.processor = LlavaNextProcessor.from_pretrained(name, 
                                                             proxies = proxies)
-        self.model = LlavaNextForConditionalGeneration.from_pretrained("llava-hf/llava-v1.6-mistral-7b-hf", 
+        self.model = LlavaNextForConditionalGeneration.from_pretrained(name, 
                                                                        torch_dtype=torch.float16, 
                                                                        low_cpu_mem_usage=True,
                                                                        proxies = proxies) 
-        self.model.to("cuda:0")
+        self.model.to("cuda:1")
         
     def generate(self, prompt: str) -> List[str]:
         text_prompt = prompt['text']
