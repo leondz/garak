@@ -5,8 +5,8 @@
 
 """Visual Jailbreak"""
 
-# import garak._config
 from garak.probes.base import Probe
+from garak.generators.base import Generator
 
 class VisualJailbreak(Probe):
     """
@@ -32,7 +32,19 @@ class VisualJailbreak(Probe):
         ]
     ]
 
+    modality: dict = {
+        'in': {'text', 'image'}
+    }
+
     def probe(self, generator):
+        if not isinstance(generator, Generator):
+            pass
+        if not generator.modality['in'] == self.modality['in']:
+            raise ValueError(
+                f"Incorrect generator input modality {generator.modality['in']}, expect {self.modality['in']} for this probe."
+            )
+        
+
         # self.prompts = [prompt.format(generator=generator) for prompt in self.prompts]
         return super().probe(generator)
     
