@@ -544,7 +544,8 @@ class LLaVA(Generator):
             raise Exception(e)
         
         inputs = self.processor(text_prompt, image_prompt, return_tensors="pt").to("cuda:0")
-        output = self.model.generate(**inputs, max_new_tokens = self.max_tokens)
+        exist_token_number: int = inputs.data['input_ids'].shape[1]
+        output = self.model.generate(**inputs, max_new_tokens = self.max_tokens - exist_token_number)
         output = self.processor.decode(output[0], skip_special_tokens=True)
         
         return [output]
