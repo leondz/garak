@@ -15,6 +15,7 @@ class VisualJailbreak(Probe):
         https://arxiv.org/pdf/2311.05608.pdf
     """
 
+    uri = "https://arxiv.org/abs/2311.05608"
     bcp47 = "en"
     recommended_detector = ["visual_jailbreak.VisualJailbreak"]
     tags = [
