@@ -514,15 +514,21 @@ class LLaVA(Generator):
         self.model.to("cuda:0")
         
     def generate(self, prompt: str) -> List[str]:
-        text_prompt = prompt[0]
-        image_prompt = Image.open(prompt[1])
+        text_prompt = prompt['text']
+        try:
+            image_prompt = Image.open(prompt['image'])
+        except FileNotFoundError:
+            raise FileNotFoundError(
+                f"Cannot open image {prompt['image']}."
+            )
+        except Exception as e:
+            raise Exception(e)
 
 
         inputs = self.processor(text_prompt, image_prompt, return_tensors="pt").to("cuda:0")
 
         # autoregressively complete prompt
         output = self.model.generate(**inputs, max_new_tokens = self.max_tokens)
-
         output = self.processor.decode(output[0], skip_special_tokens=True)
         
         return [output]
