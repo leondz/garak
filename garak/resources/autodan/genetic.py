@@ -132,7 +132,9 @@ def autodan_hga(
 
     # Step 4: Apply word replacement with roulette wheel selection
     offspring = apply_word_replacement(word_dict, parents_list, crossover_rate)
-    offspring = apply_gpt_mutation(offspring, mutation_rate, mutation_generator=mutation_generator)
+    offspring = apply_gpt_mutation(
+        offspring, mutation_rate, mutation_generator=mutation_generator
+    )
 
     # Combine elites with the mutated offspring
     next_generation = elites + offspring
@@ -206,7 +208,9 @@ def apply_crossover_and_mutation(
             offspring.append(parent1)
             offspring.append(parent2)
 
-    mutated_offspring = apply_gpt_mutation(offspring, mutation_rate, mutation_generator=mutation_generator)
+    mutated_offspring = apply_gpt_mutation(
+        offspring, mutation_rate, mutation_generator=mutation_generator
+    )
 
     return mutated_offspring
 
@@ -289,8 +293,7 @@ def gpt_mutate(mutation_generator, sentence: str) -> str:
             logger.error(e)
             error = sys.exc_info()[0]
             if (
-                error == openai.APIError or
-                error == openai.OpenAIError
+                error == openai.APIError or error == openai.OpenAIError
             ):  # something is wrong: e.g. prompt too long
                 print(f"OpenAI threw an error: {error}")
                 return None
@@ -328,12 +331,14 @@ def apply_gpt_mutation(
     if mutation_generator:
         for i in range(len(offspring)):
             if random.random() < mutation_rate:
-                offspring[i] = gpt_mutate(mutation_generator=mutation_generator, sentence=offspring[i])
+                offspring[i] = gpt_mutate(
+                    mutation_generator=mutation_generator, sentence=offspring[i]
+                )
     else:
         for i in range(len(offspring)):
             if random.random() < mutation_rate:
                 if reference is not None:
-                    offspring[i] = random.choice(reference[(len(offspring)):])
+                    offspring[i] = random.choice(reference[(len(offspring)) :])
                 else:
                     offspring[i] = replace_with_synonyms(offspring[i])
     return offspring
