@@ -525,10 +525,14 @@ class LLaVA(Generator):
         self.model = LlavaNextForConditionalGeneration.from_pretrained(name, 
                                                                        torch_dtype=torch.float16, 
                                                                        low_cpu_mem_usage=True,
-                                                                       proxies = proxies) 
-        self.model.to("cuda:1")
+                                                                       proxies = proxies)
+
+        if torch.cuda.is_available():
+            self.model.to("cuda:0")  
+        else:
+            raise RuntimeError("CUDA is not supported on this device. Please make sure CUDA is installed and configured properly.") 
         
-    def generate(self, prompt: str) -> List[str]:
+    def generate(self, prompt) -> List[str]:
         text_prompt = prompt['text']
         try:
             image_prompt = Image.open(prompt['image'])
