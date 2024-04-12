@@ -542,11 +542,8 @@ class LLaVA(Generator):
             )
         except Exception as e:
             raise Exception(e)
-
-
+        
         inputs = self.processor(text_prompt, image_prompt, return_tensors="pt").to("cuda:0")
-
-        # autoregressively complete prompt
         output = self.model.generate(**inputs, max_new_tokens = self.max_tokens)
         output = self.processor.decode(output[0], skip_special_tokens=True)
         

@@ -44,7 +44,5 @@ class VisualJailbreak(Probe):
                 f"Incorrect generator input modality {generator.modality['in']}, expect {self.modality['in']} for this probe."
             )
         
-
-        # self.prompts = [prompt.format(generator=generator) for prompt in self.prompts]
         return super().probe(generator)
     
