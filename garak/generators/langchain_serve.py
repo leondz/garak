@@ -58,6 +58,6 @@ class LangChainServeLLMGenerator(Generator):
             return result
         except requests.exceptions.RequestException as e:
             logging.error("HTTP Request failed: %s", e)
-            return ""
+            return None
 
 default_class = "LangChainServeLLMGenerator"
