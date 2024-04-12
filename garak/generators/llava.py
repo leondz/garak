@@ -14,6 +14,7 @@ class LLaVA(Generator):
     # "exist_tokens + max_new_tokens < 4K is the golden rule."
     # https://github.com/haotian-liu/LLaVA/issues/1095#:~:text=Conceptually%2C%20as%20long%20as%20the%20total%20tokens%20are%20within%204K%2C%20it%20would%20be%20fine%2C%20so%20exist_tokens%20%2B%20max_new_tokens%20%3C%204K%20is%20the%20golden%20rule.
     max_tokens = 4000
+    uri = "https://huggingface.co/docs/transformers/en/model_doc/llava"
     
     def __init__(self, name="", generations=10):
         self.processor = LlavaNextProcessor.from_pretrained("llava-hf/llava-v1.6-mistral-7b-hf")
