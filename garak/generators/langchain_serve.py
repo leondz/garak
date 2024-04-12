@@ -12,16 +12,17 @@ class LangChainServeLLMGenerator(Generator):
 
     This class facilitates communication with LangChain Serve's LLMs through a web API, making it possible
     to utilize external LLMs not directly integrated into the LangChain library. It requires setting up
-    an API endpoint using langchain serve.
+    an API endpoint using LangChain Serve.
 
     Utilizes the HTTP POST method to send prompts to the specified LLM and retrieves the generated text
     response. It is necessary to ensure that the API endpoint is correctly set up and accessible.
 
     Inherits from Garak's base Generator class, extending its capabilities to support web-based LLM services.
+    The API endpoint is set through the 'LANGCHAIN_SERVE_URI' environment variable, which should be the base URI 
+    of the LangChain Serve deployment. The 'invoke' endpoint is then appended to this URI to form the full API endpoint URL.
 
-    Set endpoint name with --model_name. Example: --model_name=http://127.0.0.1:8000/rag-chroma-private and it's "invoke" endpoint will be used.
-
-    To use, set the appropriate API endpoint and configuration hash (if needed) before invoking the LLM with a prompt.
+    Example of setting up the environment variable:
+        export LANGCHAIN_SERVE_URI=http://127.0.0.1:8000/rag-chroma-private
     """
 
     generator_family_name = "LangChainServe"
@@ -58,8 +59,12 @@ class LangChainServeLLMGenerator(Generator):
             response = requests.post(f"{self.api_endpoint}?config_hash={self.config_hash}", headers=headers, data=json.dumps(payload))
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:
-            logging.error(f"HTTP error occurred: {e}")
-            return None
+            if 400 <= response.status_code < 500:
+                logging.error(f"Client error for prompt {prompt}: {e}")
+                return None
+            elif 500 <= response.status_code < 600:
+                logging.error(f"Server error for prompt {prompt}: {e}")
+                raise
         except requests.exceptions.RequestException as e:
             logging.error(f"Request failed: {e}")
             return None
