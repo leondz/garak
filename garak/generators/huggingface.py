@@ -510,23 +510,14 @@ class LLaVA(Generator):
     ]
     
     def __init__(self, name="", generations=10):
-        proxies = {
-            'http': 'http://127.0.0.1:7890',
-            'https': 'http://127.0.0.1:7890'
-        }
-
         if name not in self.supported_models:
             raise ValueError(
                 f"Invalid modal name {name}, current support: {self.supported_models}."
             )
-
-        self.processor = LlavaNextProcessor.from_pretrained(name, 
-                                                            proxies = proxies)
+        self.processor = LlavaNextProcessor.from_pretrained(name)
         self.model = LlavaNextForConditionalGeneration.from_pretrained(name, 
                                                                        torch_dtype=torch.float16, 
-                                                                       low_cpu_mem_usage=True,
-                                                                       proxies = proxies)
-
+                                                                       low_cpu_mem_usage=True)
         if torch.cuda.is_available():
             self.model.to("cuda:0")  
         else:
