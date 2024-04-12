@@ -495,8 +495,16 @@ class LLaVA(Generator):
     max_tokens = 4000
     
     def __init__(self, name="", generations=10):
-        self.processor = LlavaNextProcessor.from_pretrained("llava-hf/llava-v1.6-mistral-7b-hf")
-        self.model = LlavaNextForConditionalGeneration.from_pretrained("llava-hf/llava-v1.6-mistral-7b-hf", torch_dtype=torch.float16, low_cpu_mem_usage=True) 
+        proxies = {
+            'http': 'http://127.0.0.1:7890',
+            'https': 'http://127.0.0.1:7890'
+        }
+        self.processor = LlavaNextProcessor.from_pretrained("llava-hf/llava-v1.6-mistral-7b-hf", 
+                                                            proxies = proxies)
+        self.model = LlavaNextForConditionalGeneration.from_pretrained("llava-hf/llava-v1.6-mistral-7b-hf", 
+                                                                       torch_dtype=torch.float16, 
+                                                                       low_cpu_mem_usage=True,
+                                                                       proxies = proxies) 
         self.model.to("cuda:0")
         
     def generate(self, prompt: str) -> List[str]:

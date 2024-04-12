@@ -2,6 +2,7 @@
 
 import sys
 
+sys.path.append("/home/sda/tianhaoli/garak")
 from garak import cli
 
 
