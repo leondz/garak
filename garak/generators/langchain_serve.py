@@ -22,13 +22,6 @@ class LangChainServeLLMGenerator(Generator):
     To use, set the appropriate API endpoint and configuration hash (if needed) before invoking the LLM with a prompt.
     """
 
-    temperature = 0.750
-    k = 0
-    p = 0.75
-    preset = None
-    frequency_penalty = 0.0
-    presence_penalty = 0.0
-    stop = []
     generator_family_name = "LangChainServe"
     config_hash = "default"
 
