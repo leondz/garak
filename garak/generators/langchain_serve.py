@@ -76,7 +76,10 @@ class LangChainServeLLMGenerator(Generator):
                 return None
             return response_data.get("output")
         except json.JSONDecodeError as e:
-            logging.error(f"Failed to decode JSON from response: {e}")
+            logging.error(f"Failed to decode JSON from response: {response.text}, error: {e}")
+            return None
+        except Exception as e:
+            logging.error(f"Unexpected error processing response: {e}")
             return None
 
 default_class = "LangChainServeLLMGenerator"
