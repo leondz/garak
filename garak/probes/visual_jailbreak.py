@@ -40,7 +40,9 @@ class VisualJailbreak(Probe):
 
     def probe(self, generator):
         if not isinstance(generator, Generator):
-            pass
+            raise ValueError(
+                "Incorrect class type of incoming argument `generator`."
+            )
         if not generator.modality['in'] == self.modality['in']:
             raise ValueError(
                 f"Incorrect generator input modality {generator.modality['in']}, expect {self.modality['in']} for this probe."
