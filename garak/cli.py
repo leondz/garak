@@ -264,7 +264,7 @@ def main(arguments=[]) -> None:
                 arg_names[raw_option_string] = action.option_strings
 
     for arg, val in vars(args).items():
-        if arg == 'verbose':
+        if arg == "verbose":
             # the 'verbose' flag is currently unique and retrieved from `args` directly
             continue
         if isinstance(val, bool):
@@ -419,7 +419,8 @@ def main(arguments=[]) -> None:
     # model is specified, we're doing something
     elif _config.plugins.model_type:
         if (
-            _config.plugins.model_type in ("openai", "replicate", "ggml", "huggingface")
+            _config.plugins.model_type
+            in ("openai", "replicate", "ggml", "huggingface", "litellm")
             and not _config.plugins.model_name
         ):
             message = f"⚠️  Model type '{_config.plugins.model_type}' also needs a model name\n You can set one with e.g. --model_name \"billwurtz/gpt-1.0\""

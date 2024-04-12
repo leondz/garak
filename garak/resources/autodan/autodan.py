@@ -171,9 +171,11 @@ def autodan_generate(
     conv_template = load_conversation_template(generator.name)
     crit = nn.CrossEntropyLoss(reduction="mean")
 
-    mutation_generator = load_generator(model_name=mutation_generator_name,
-                                        model_type=mutation_generator_type,
-                                        generations=1)
+    mutation_generator = load_generator(
+        model_name=mutation_generator_name,
+        model_type=mutation_generator_type,
+        generations=1,
+    )
 
     # Feel like this could just be text instead of storing it as tensors.
     if os.path.exists(reference_path):
@@ -232,7 +234,7 @@ def autodan_generate(
                     batch_size=batch_size,
                     crossover_rate=crossover_rate,
                     mutation_rate=mutation_rate,
-                    mutation_generator=mutation_generator
+                    mutation_generator=mutation_generator,
                 )
             else:
                 unfiltered_new_adv_prefixes = autodan_ga(
@@ -243,7 +245,7 @@ def autodan_generate(
                     crossover_rate=crossover_rate,
                     num_points=num_points,
                     mutation=mutation_rate,
-                    mutation_generator=mutation_generator
+                    mutation_generator=mutation_generator,
                 )
 
             new_adv_prefixes = unfiltered_new_adv_prefixes

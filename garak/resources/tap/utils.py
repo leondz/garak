@@ -90,11 +90,15 @@ def extract_json(s):
         alternative_group = r"USER\s*:\s*(.*?)\n"
         improvement_match = re.search(improvement_group, s)
         prompt_match = re.search(prompt_group, s)
-        improvement = improvement_match.group(1) if improvement_match is not None else ""
+        improvement = (
+            improvement_match.group(1) if improvement_match is not None else ""
+        )
         prompt = prompt_match.group(1) if prompt_match is not None else None
         if prompt is None:
             alternative_match = re.search(alternative_group, s, re.IGNORECASE)
-            prompt = alternative_match.group(1) if alternative_match is not None else None
+            prompt = (
+                alternative_match.group(1) if alternative_match is not None else None
+            )
         if prompt:
             parsed = {"improvement": improvement, "prompt": prompt}
             json_str = json.dumps(parsed)

@@ -13,7 +13,10 @@ logger = getLogger(__name__)
 def load_generator(
     model_name: str, model_type: str, generations: int = 10
 ) -> Generator:
-    if model_type in ("openai", "replicate", "ggml", "huggingface") and not model_name:
+    if (
+        model_type in ("openai", "replicate", "ggml", "huggingface", "litellm")
+        and not model_name
+    ):
         message = f"⚠️  Model type '{model_type}' also needs a model name"
         logger.error(message)
         raise ValueError(message)
