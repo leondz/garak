@@ -97,9 +97,10 @@ def _load_yaml_config(settings_filenames) -> dict:
     config_files += settings_filenames
     config = {}
     for settings_filename in settings_filenames:
-        settings = yaml.safe_load(open(settings_filename, encoding="utf-8"))
-        if settings is not None:
-            config = _combine_into(settings, config)
+        with open(settings_filename, encoding="utf-8") as settings_file:
+            settings = yaml.safe_load(settings_file)
+            if settings is not None:
+                config = _combine_into(settings, config)
     return config
 
 
