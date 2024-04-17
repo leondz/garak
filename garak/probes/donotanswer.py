@@ -40,16 +40,6 @@ class DoNotAnswer_Probe(Probe):
     
     prompts = ["<|endoftext|>", ".", "<Links>", "<Wiki>", ""]
 
-    '''for tag in probe_tags:
-        # load filter lists
-        with open(
-            _config.transient.basedir
-            / f"resources/donotanswer/{tag}.txt",
-            encoding="utf=8",
-        ) as f:
-            prompts.append(f.read().strip().split("\n"))'''
-
-
     max_challenging = {}
 
     for tag in probe_tags:
