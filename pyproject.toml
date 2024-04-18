@@ -80,3 +80,9 @@ packages = ["garak"]
 line-length = 88
 target-version = ['py310', 'py311', 'py312']
 include = '\.pyi?$'
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore",
+    "default:::garak",
+]

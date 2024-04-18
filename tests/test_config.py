@@ -95,6 +95,11 @@ def test_cli_shortform():
 
     garak.cli.main(["-s", "444", "--list_config"])
     assert _config.run.seed == 444
+    if _config.transient.reportfile is not None:
+        _config.transient.reportfile.close()
+        if os.path.exists(_config.transient.report_filename):
+            os.remove(_config.transient.report_filename)
+
     garak.cli.main(
         ["-g", "444", "--list_config"]
     )  # seed gets special treatment, try another
@@ -466,14 +471,23 @@ def test_report_prefix_with_hitlog_no_explode():
     assert os.path.isfile("kjsfhgkjahpsfdg.hitlog.jsonl")
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(autouse=True)
 def cleanup(request):
-    """Cleanup a testing directory once we are finished."""
+    """Cleanup a testing and report directory once we are finished."""
 
-    def remove_laurelhurst_log():
-        os.remove("laurelhurst.report.jsonl")
-        os.remove("kjsfhgkjahpsfdg.report.jsonl")
-        os.remove("kjsfhgkjahpsfdg.report.html")
-        os.remove("kjsfhgkjahpsfdg.hitlog.jsonl")
+    def remove_log_files():
+        files = [
+            "laurelhurst.report.jsonl",
+            "kjsfhgkjahpsfdg.report.jsonl",
+            "kjsfhgkjahpsfdg.report.html",
+            "kjsfhgkjahpsfdg.hitlog.jsonl",
+        ]
+        if _config.transient.reportfile is not None:
+            _config.transient.reportfile.close()
+            files.append(_config.transient.report_filename)
 
-    request.addfinalizer(remove_laurelhurst_log)
+        for file in files:
+            if os.path.exists(file):
+                os.remove(file)
+
+    request.addfinalizer(remove_log_files)
