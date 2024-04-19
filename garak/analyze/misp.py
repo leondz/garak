@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # report probes per tag
 # look for untagged probes
 # look for tags without description entries
