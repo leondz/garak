@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Hugging Face generator
 
 Supports pipelines, inference API, and models.
@@ -91,7 +90,7 @@ class Pipeline(Generator):
                         truncated_prompt,
                         pad_token_id=self.generator.tokenizer.eos_token_id,
                         max_new_tokens=self.max_tokens,
-                        num_return_sequences=self.generations
+                        num_return_sequences=self.generations,
                     )
             except Exception as e:
                 logging.error(e)
@@ -191,6 +190,7 @@ class ConversationalPipeline(Generator):
 
     def clear_history(self):
         from transformers import Conversation
+
         self.conversation = Conversation()
 
     def _call_model(self, prompt: Union[str, list[dict]]) -> List[str]:
@@ -463,9 +463,9 @@ class Model(Generator):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=UserWarning)
             with torch.no_grad():
-                inputs = self.tokenizer(prompt, truncation=True, return_tensors="pt").to(
-                    self.init_device
-                )
+                inputs = self.tokenizer(
+                    prompt, truncation=True, return_tensors="pt"
+                ).to(self.init_device)
 
                 try:
                     outputs = self.model.generate(

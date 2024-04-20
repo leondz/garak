@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """PromptInject
 
 Uses the PromptInject framework, https://openreview.net/forum?id=qiaRo_7Zmug,

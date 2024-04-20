@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """ggml generator support
 
 This generator works with ggml models in gguf format like llama.cpp.

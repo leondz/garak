@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """garak global config"""
 
 # SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.

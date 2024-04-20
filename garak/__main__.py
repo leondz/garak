@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """garak entry point script"""
 
 import sys

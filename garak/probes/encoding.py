@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Encoding-based prompt injection
 
 Probes that try to get a model to generate a specific piece of given text

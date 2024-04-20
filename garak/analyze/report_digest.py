@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 """Generate reports from garak report JSONL"""
 
 from collections import defaultdict
