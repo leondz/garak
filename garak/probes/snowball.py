@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Snowball probe
 
 Checks if the system gives wrong answers to complex reasoning questions,

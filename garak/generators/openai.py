@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """OpenAI API generator
 
 Supports chat + chatcompletion models. Put your OpenAI API key in

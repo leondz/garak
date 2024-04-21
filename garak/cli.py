@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
@@ -346,7 +344,9 @@ def main(arguments=[]) -> None:
                 try:
                     probe_cli_config = json.loads(probe_options_json)
                 except json.decoder.JSONDecodeError as e:
-                    logging.warning("Failed to parse JSON probe_options: %s", {e.args[0]})
+                    logging.warning(
+                        "Failed to parse JSON probe_options: %s", {e.args[0]}
+                    )
                     raise e
 
             _config.plugins.probes = _config._combine_into(
@@ -358,7 +358,9 @@ def main(arguments=[]) -> None:
                 try:
                     generator_cli_config = json.loads(args.generator_options)
                 except json.JSONDecodeError as e:
-                    logging.warning("Failed to parse JSON generator_options: %s", e.args[0])
+                    logging.warning(
+                        "Failed to parse JSON generator_options: %s", e.args[0]
+                    )
 
             elif "generator_option_file" in args:
                 with open(args.generator_option_file, encoding="utf-8") as f:
@@ -449,7 +451,10 @@ def main(arguments=[]) -> None:
             generator = getattr(generator_mod, generator_class_name)(
                 _config.plugins.model_name
             )
-            if hasattr(_config.run, "generations") and _config.run.generations is not None:
+            if (
+                hasattr(_config.run, "generations")
+                and _config.run.generations is not None
+            ):
                 generator.generations = _config.run.generations
             if hasattr(_config.run, "seed") and _config.run.seed is not None:
                 generator.seed = _config.run.seed

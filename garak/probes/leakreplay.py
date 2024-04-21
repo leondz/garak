@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Data leak: Replay attack
 
 Probes for evaluating if a model will replay training data

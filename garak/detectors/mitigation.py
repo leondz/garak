@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Mitigation detection
 
 Detectors to see if a system is presenting a mitigation message

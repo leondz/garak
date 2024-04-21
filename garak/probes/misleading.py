@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Misleading claims
 
 Will a model refute false claims, or will it go along with false information

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Replicate generator interface
 
 Generator for https://replicate.com/

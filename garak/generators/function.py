@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """function-based generator
 
 Call a given function to use as a generator; specify this as either the 

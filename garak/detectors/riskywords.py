@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Riskywords detector
 
 A range of word-list based detectors, doing keyword matching
