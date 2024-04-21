@@ -14,9 +14,8 @@ def set_env_vars():
     os.environ.pop('LANGCHAIN_SERVE_URI', None)
 
 def test_validate_uri():
-    generator = LangChainServeLLMGenerator(name="test-generator")
-    assert generator._validate_uri('http://127.0.0.1:8000') == True
-    assert generator._validate_uri('bad_uri') == False
+    assert LangChainServeLLMGenerator._validate_uri('http://127.0.0.1:8000') == True
+    assert LangChainServeLLMGenerator._validate_uri('bad_uri') == False
 
 @pytest.mark.usefixtures("set_env_vars")
 def test_langchain_serve_generator_initialization():
