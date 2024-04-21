@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-
-"""garak entry point script"""
+"""garak entry point wrapper"""
 
 import sys
 
