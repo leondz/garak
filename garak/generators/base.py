@@ -76,10 +76,15 @@ class Generator:
 
         self._pre_generate_hook()
 
+        assert (
+            generations_this_call >= -1
+        ), f"Unexpected value for generations_per_call: {generations_this_call}"
+
         if generations_this_call == -1:
             generations_this_call = self.generations
 
         elif generations_this_call == 0:
+            logging.debug("generate() called with generations_this_call = 0")
             return []
 
         if self.supports_multiple_generations:
