@@ -49,6 +49,11 @@ class Pipeline(Generator):
     generator_family_name = "Hugging Face 🤗 pipeline"
     supports_multiple_generations = True
 
+    def _set_pipeline_context_len(self):
+        if hasattr(self.generator.config, "n_ctx"):
+            if isinstance(self.generator.config.n_ctx, int):
+                self.context_len = self.generator.config.n_ctx
+
     def __init__(self, name, do_sample=True, generations=10, device=0):
         self.fullname, self.name = name, name.split("/")[-1]
 
@@ -75,6 +80,8 @@ class Pipeline(Generator):
         if _config.loaded:
             if _config.run.deprefix is True:
                 self.deprefix_prompt = True
+
+        self._set_pipeline_context_len()
 
     def _call_model(self, prompt: str) -> List[str]:
         with warnings.catch_warnings():
@@ -151,6 +158,8 @@ class OptimumPipeline(Pipeline):
             if _config.run.deprefix is True:
                 self.deprefix_prompt = True
 
+        self._set_pipeline_context_len()
+
 
 class ConversationalPipeline(Generator):
     """Conversational text generation using HuggingFace pipelines"""
@@ -187,6 +196,8 @@ class ConversationalPipeline(Generator):
         if _config.loaded:
             if _config.run.deprefix is True:
                 self.deprefix_prompt = True
+
+        self._set_pipeline_context_len()
 
     def clear_history(self):
         from transformers import Conversation
@@ -426,6 +437,10 @@ class Model(Generator):
         self.config.init_device = (
             self.init_device  # or "cuda:0" For fast initialization directly on GPU!
         )
+
+        if hasattr(self.config, "n_ctx"):
+            if isinstance(self.config.n_ctx, int):
+                self.context_len = self.config.n_ctx
 
         self.model = transformers.AutoModelForCausalLM.from_pretrained(
             self.fullname,
