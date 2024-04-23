@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import os
 import pytest
 import tempfile
@@ -52,4 +50,4 @@ def test_init_good_model():
         file.write(garak.generators.ggml.GGUF_MAGIC)
         file.seek(0)
         g = garak.generators.ggml.GgmlGenerator(file.name)
-        assert g is not None
+        assert type(g) is garak.generators.ggml.GgmlGenerator
