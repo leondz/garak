@@ -33,6 +33,14 @@ from garak.generators.huggingface import Model
 logger = getLogger(__name__)
 SAVE_RESULTS = True
 
+resources_tap_data_file = (
+    garak._config.transient.basedir
+    / "resources"
+    / "tap"
+    / "data"
+    / "tap_jailbreaks.txt"
+)
+
 
 class AttackManager:
     def __init__(
@@ -332,8 +340,7 @@ def run_tap(
     keep_last_n: int = 1,
     pruning: bool = True,
     save_results: bool = SAVE_RESULTS,
-    outfile: str = garak._config.transient.basedir
-    / "resources/tap/data/tap_jailbreaks.txt",
+    outfile: str = resources_tap_data_file,
 ):
     """
     Function for generating attacks using TAP where a generator has already been instantiated.
@@ -558,8 +565,7 @@ def generate_tap(
     n_streams: int = 1,
     keep_last_n: int = 1,
     save_results: bool = SAVE_RESULTS,
-    outfile: str = garak._config.transient.basedir
-    / "resources/tap/data/tap_jailbreaks.txt",
+    outfile: str = resources_tap_data_file,
 ):
     """
     Function for generating attacks using TAP when a generator has not been instantiated.
