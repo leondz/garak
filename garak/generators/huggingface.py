@@ -43,11 +43,23 @@ class HFInternalServerError(Exception):
     pass
 
 
-class Pipeline(Generator):
+class HFCompatible:
+    def _set_hf_context_len(self, config):
+        if hasattr(config, "n_ctx"):
+            if isinstance(config.n_ctx, int):
+                self.context_len = config.n_ctx
+
+
+class Pipeline(Generator, HFCompatible):
     """Get text generations from a locally-run Hugging Face pipeline"""
 
     generator_family_name = "Hugging Face 🤗 pipeline"
     supports_multiple_generations = True
+
+    def _set_hf_context_len(self, config):
+        if hasattr(config, "n_ctx"):
+            if isinstance(config.n_ctx, int):
+                self.context_len = config.n_ctx
 
     def __init__(self, name, do_sample=True, generations=10, device=0):
         self.fullname, self.name = name, name.split("/")[-1]
@@ -75,6 +87,8 @@ class Pipeline(Generator):
         if _config.loaded:
             if _config.run.deprefix is True:
                 self.deprefix_prompt = True
+
+        self._set_hf_context_len(self.generator.model.config)
 
     def _call_model(self, prompt: str) -> List[str]:
         with warnings.catch_warnings():
@@ -109,7 +123,7 @@ class Pipeline(Generator):
             return [re.sub("^" + re.escape(prompt), "", i) for i in generations]
 
 
-class OptimumPipeline(Pipeline):
+class OptimumPipeline(Pipeline, HFCompatible):
     """Get text generations from a locally-run Hugging Face pipeline using NVIDIA Optimum"""
 
     generator_family_name = "NVIDIA Optimum Hugging Face 🤗 pipeline"
@@ -151,8 +165,10 @@ class OptimumPipeline(Pipeline):
             if _config.run.deprefix is True:
                 self.deprefix_prompt = True
 
+        self._set_hf_context_len(self.generator.model.config)
 
-class ConversationalPipeline(Generator):
+
+class ConversationalPipeline(Generator, HFCompatible):
     """Conversational text generation using HuggingFace pipelines"""
 
     generator_family_name = "Hugging Face 🤗 pipeline for conversations"
@@ -188,6 +204,8 @@ class ConversationalPipeline(Generator):
             if _config.run.deprefix is True:
                 self.deprefix_prompt = True
 
+        self._set_hf_context_len(self.generator.model.config)
+
     def clear_history(self):
         from transformers import Conversation
 
@@ -222,7 +240,7 @@ class ConversationalPipeline(Generator):
             return [re.sub("^" + re.escape(prompt), "", i) for i in generations]
 
 
-class InferenceAPI(Generator):
+class InferenceAPI(Generator, HFCompatible):
     """Get text generations from Hugging Face Inference API"""
 
     generator_family_name = "Hugging Face 🤗 Inference API"
@@ -340,7 +358,7 @@ class InferenceAPI(Generator):
         self.wait_for_model = False
 
 
-class InferenceEndpoint(InferenceAPI):
+class InferenceEndpoint(InferenceAPI, HFCompatible):
     """Interface for Hugging Face private endpoints
     Pass the model URL as the name, e.g. https://xxx.aws.endpoints.huggingface.cloud
     """
@@ -393,7 +411,7 @@ class InferenceEndpoint(InferenceAPI):
         return output
 
 
-class Model(Generator):
+class Model(Generator, HFCompatible):
     """Get text generations from a locally-run Hugging Face model"""
 
     generator_family_name = "Hugging Face 🤗 model"
@@ -427,10 +445,13 @@ class Model(Generator):
             self.init_device  # or "cuda:0" For fast initialization directly on GPU!
         )
 
+        self._set_hf_context_len(self.config)
+
         self.model = transformers.AutoModelForCausalLM.from_pretrained(
             self.fullname,
             config=self.config,
         ).to(self.init_device)
+
         self.deprefix_prompt = name in models_to_deprefix
 
         if self.config.tokenizer_class:

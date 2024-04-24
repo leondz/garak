@@ -58,6 +58,29 @@ completion_models = (
     # "ada",  # shutdown https://platform.openai.com/docs/deprecations
 )
 
+context_lengths = {
+    "gpt-3.5-turbo-0125": 16385,
+    "gpt-3.5-turbo": 16385,
+    "gpt-3.5-turbo-1106": 16385,
+    "gpt-3.5-turbo-instruct": 4096,
+    "gpt-3.5-turbo-16k": 16385,
+    "gpt-3.5-turbo-0613": 4096,
+    "gpt-3.5-turbo-16k-0613": 16385,
+    "babbage-002": 16384,
+    "davinci-002": 16384,
+    "gpt-4-turbo": 128000,
+    "gpt-4-turbo-2024-04-09": 128000,
+    "gpt-4-turbo-preview": 128000,
+    "gpt-4-0125-preview": 128000,
+    "gpt-4-1106-preview": 128000,
+    "gpt-4-vision-preview": 128000,
+    "gpt-4-1106-vision-preview": 128000,
+    "gpt-4": 8192,
+    "gpt-4-0613": 8192,
+    "gpt-4-32k": 32768,
+    "gpt-4-32k-0613": 32768,
+}
+
 
 class OpenAIGenerator(Generator):
     """Generator wrapper for OpenAI text2text models. Expects API key in the OPENAI_API_KEY environment variable"""
@@ -94,6 +117,9 @@ class OpenAIGenerator(Generator):
             r"^.+-[01][0-9][0-3][0-9]$", self.name
         ):  # handle model names -MMDDish suffix
             self.generator = self.client.completions
+
+        if self.name in context_lengths:
+            self.context_len = context_lengths[self.name]
 
         elif self.name == "":
             openai_model_list = sorted([m.id for m in self.client.models.list().data])

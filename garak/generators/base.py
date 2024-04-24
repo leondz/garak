@@ -23,6 +23,7 @@ class Generator:
     top_k = None
     active = True
     generator_family_name = None
+    context_len = None
 
     supports_multiple_generations = (
         False  # can more than one generation be extracted per request?
