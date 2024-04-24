@@ -527,7 +527,7 @@ def run_tap(
             jailbreaks = list(set(jailbreaks))
             msg = f"Found {len(jailbreaks)} jailbreak(s). Exiting."
             if save_results:
-                with open(outfile, "a") as f:
+                with open(outfile, "a", encoding="utf-8") as f:
                     for jailbreak in jailbreaks:
                         f.write(f"{jailbreak}\n")
             logger.info(msg)

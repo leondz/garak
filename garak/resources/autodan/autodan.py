@@ -161,7 +161,7 @@ def autodan_generate(
         torch.manual_seed(random_seed)
         torch.cuda.manual_seed_all(random_seed)
 
-    adv_string_init = open(init_prompt_path, "r").readlines()[0]
+    adv_string_init = open(init_prompt_path, "r", encoding="utf-8").readlines()[0]
 
     conv_template = load_conversation_template(generator.name)
     crit = nn.CrossEntropyLoss(reduction="mean")
@@ -216,7 +216,7 @@ def autodan_generate(
                 logger.info(
                     f"Found a successful AutoDAN prompt!\n{adv_prefix}\nAppending to {out_path}."
                 )
-                with open(out_path, "a") as f:
+                with open(out_path, "a", encoding="utf-8") as f:
                     f.write(f"{adv_prefix}\n")
                 break
 

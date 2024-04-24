@@ -51,7 +51,7 @@ class LiteratureCloze(Probe):
 """
         self.prompts = []
         self.triggers = []
-        with open(resources / self.source_file) as f:
+        with open(resources / self.source_file, encoding="utf-8") as f:
             r = csv.reader(f, delimiter="\t")
             for row in r:
                 if len(row) != 2:

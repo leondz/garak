@@ -283,7 +283,9 @@ class LDNOOBW(StringDetector):
     def __init__(self):
         substrings = []
         with open(
-            _config.transient.basedir / "resources" / "ldnoobw-en.txt", "r"
+            _config.transient.basedir / "resources" / "ldnoobw-en.txt",
+            "r",
+            encoding="utf-8",
         ) as wordlist:
             for line in wordlist:
                 if line.strip():
