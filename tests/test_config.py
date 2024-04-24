@@ -110,8 +110,9 @@ def test_yaml_param_settings(param):
     importlib.reload(_config)
 
     option, value = param
-    with tempfile.NamedTemporaryFile(buffering=0) as tmp:
+    with tempfile.NamedTemporaryFile(buffering=0, delete_on_close=False) as tmp:
         tmp.write(f"---\n{param_locs[option]}:\n  {option}: {value}\n".encode("utf-8"))
+        tmp.close()
         garak.cli.main(
             ["--config", tmp.name, "--list_config"]
         )  # add list_config as the action so we don't actually run
@@ -173,8 +174,9 @@ def test_cli_overrides_run_yaml():
 
     orig_seed = 10101
     override_seed = 37176
-    with tempfile.NamedTemporaryFile(buffering=0) as tmp:
+    with tempfile.NamedTemporaryFile(buffering=0, delete_on_close=False) as tmp:
         tmp.write(f"---\nrun:\n  seed: {orig_seed}\n".encode("utf-8"))
+        tmp.close()
         garak.cli.main(
             ["--config", tmp.name, "-s", f"{override_seed}", "--list_config"]
         )  # add list_config as the action so we don't actually run
@@ -185,7 +187,7 @@ def test_cli_overrides_run_yaml():
 def test_probe_options_yaml(capsys):
     importlib.reload(_config)
 
-    with tempfile.NamedTemporaryFile(buffering=0) as tmp:
+    with tempfile.NamedTemporaryFile(buffering=0, delete_on_close=False) as tmp:
         tmp.write(
             """
 ---
@@ -198,6 +200,7 @@ plugins:
                 "utf-8"
             )
         )
+        tmp.close()
         garak.cli.main(
             ["--config", tmp.name, "--list_config"]
         )  # add list_config as the action so we don't actually run
@@ -208,12 +211,13 @@ plugins:
 def test_generator_options_yaml(capsys):
     importlib.reload(_config)
 
-    with tempfile.NamedTemporaryFile(buffering=0) as tmp:
+    with tempfile.NamedTemporaryFile(buffering=0, delete_on_close=False) as tmp:
         tmp.write(
             "---\nplugins:\n  model_type: test.Blank\n  probe_spec: test.Blank\n  generators:\n    test.Blank:\n      gen_x: 37176\n".encode(
                 "utf-8"
             )
         )
+        tmp.close()
         garak.cli.main(
             ["--config", tmp.name, "--list_config"]
         )  # add list_config as the action so we don't actually run
@@ -224,12 +228,13 @@ def test_generator_options_yaml(capsys):
 def test_run_from_yaml(capsys):
     importlib.reload(_config)
 
-    with tempfile.NamedTemporaryFile(buffering=0) as tmp:
+    with tempfile.NamedTemporaryFile(buffering=0, delete_on_close=False) as tmp:
         tmp.write(
             "---\nrun:\n  generations: 10\n\nplugins:\n  model_type: test.Blank\n  probe_spec: test.Blank\n".encode(
                 "utf-8"
             )
         )
+        tmp.close()
         garak.cli.main(["--config", tmp.name])
     result = capsys.readouterr()
     output = result.out
@@ -251,9 +256,9 @@ def test_cli_generator_options_file():
     importlib.reload(_config)
 
     # write an options file
-    with tempfile.NamedTemporaryFile(mode="w+") as tmp:
+    with tempfile.NamedTemporaryFile(mode="w+", delete_on_close=False) as tmp:
         json.dump({"test.Blank": {"this_is_a": "generator"}}, tmp)
-        tmp.flush()
+        tmp.close()
         # invoke cli
         garak.cli.main(
             ["--generator_option_file", tmp.name, "--list_config"]
@@ -268,9 +273,9 @@ def test_cli_probe_options_file():
     importlib.reload(_config)
 
     # write an options file
-    with tempfile.NamedTemporaryFile(mode="w+") as tmp:
+    with tempfile.NamedTemporaryFile(mode="w+", delete_on_close=False) as tmp:
         json.dump({"test.Blank": {"probes_in_this_config": 1}}, tmp)
-        tmp.flush()
+        tmp.close()
         # invoke cli
         garak.cli.main(
             ["--probe_option_file", tmp.name, "--list_config"]
@@ -285,10 +290,14 @@ def test_cli_probe_options_overrides_yaml_probe_options():
     importlib.reload(_config)
 
     # write an options file
-    with tempfile.NamedTemporaryFile(mode="w+") as probe_json_file:
+    with tempfile.NamedTemporaryFile(
+        mode="w+", delete_on_close=False
+    ) as probe_json_file:
         json.dump({"test.Blank": {"goal": "taken from CLI JSON"}}, probe_json_file)
-        probe_json_file.flush()
-        with tempfile.NamedTemporaryFile(buffering=0) as probe_yaml_file:
+        probe_json_file.close()
+        with tempfile.NamedTemporaryFile(
+            buffering=0, delete_on_close=False
+        ) as probe_yaml_file:
             probe_yaml_file.write(
                 """
 ---
@@ -300,7 +309,7 @@ plugins:
                     "utf-8"
                 )
             )
-            probe_yaml_file.flush()
+            probe_yaml_file.close()
             # invoke cli
             garak.cli.main(
                 [
@@ -320,7 +329,9 @@ def test_cli_generator_options_overrides_yaml_probe_options():
     importlib.reload(_config)
 
     cli_generations_count = 9001
-    with tempfile.NamedTemporaryFile(buffering=0) as generator_yaml_file:
+    with tempfile.NamedTemporaryFile(
+        buffering=0, delete_on_close=False
+    ) as generator_yaml_file:
         generator_yaml_file.write(
             """
 ---
@@ -330,6 +341,7 @@ run:
                 "utf-8"
             )
         )
+        generator_yaml_file.close()
         args = [
             "--config",
             generator_yaml_file.name,
@@ -349,13 +361,13 @@ def test_blank_probe_instance_loads_yaml_config():
 
     probe_name = "test.Blank"
     revised_goal = "TEST GOAL make the model forget what to output"
-    with tempfile.NamedTemporaryFile(buffering=0) as tmp:
+    with tempfile.NamedTemporaryFile(buffering=0, delete_on_close=False) as tmp:
         tmp.write(
             f"---\nplugins:\n  probes:\n    {probe_name}:\n      goal: {revised_goal}\n".encode(
                 "utf-8"
             )
         )
-        tmp.flush()
+        tmp.close()
         garak.cli.main(["--config", tmp.name, "-p", probe_name])
     probe = garak._plugins.load_plugin(f"probes.{probe_name}")
     assert probe.goal == revised_goal
@@ -384,13 +396,13 @@ def test_blank_generator_instance_loads_yaml_config():
 
     generator_name = "test.Blank"
     revised_temp = 0.9001
-    with tempfile.NamedTemporaryFile(buffering=0) as tmp:
+    with tempfile.NamedTemporaryFile(buffering=0, delete_on_close=False) as tmp:
         tmp.write(
             f"---\nplugins:\n  generators:\n    {generator_name}:\n      temperature: {revised_temp}\n".encode(
                 "utf-8"
             )
         )
-        tmp.flush()
+        tmp.close()
         garak.cli.main(
             ["--config", tmp.name, "--model_type", generator_name, "--probes", "none"]
         )
