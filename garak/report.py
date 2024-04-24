@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Defines the Report class and associated functions to process and export a native garak report"""
 
 import importlib

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
@@ -85,11 +83,15 @@ def cleanup(request):
     """Cleanup a testing directory once we are finished."""
 
     def remove_buff_reports():
-        os.remove(f"{prefix}.report.jsonl")
-        try:
-            os.remove(f"{prefix}.report.html")
-            os.remove(f"{prefix}.hitlog.jsonl")
-        except FileNotFoundError:
-            pass
+        files = [
+            f"{prefix}.report.jsonl",
+            f"{prefix}.report.html",
+            f"{prefix}.hitlog.jsonl",
+        ]
+        for file in files:
+            try:
+                os.remove(file)
+            except FileNotFoundError:
+                pass
 
     request.addfinalizer(remove_buff_reports)

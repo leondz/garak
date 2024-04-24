@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Base detectors.
 
 These detectors show expectations and operations of any detector implemented 

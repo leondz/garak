@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Base Generator
 
 All `garak` generators must inherit from this.
@@ -24,6 +23,7 @@ class Generator:
     top_k = None
     active = True
     generator_family_name = None
+    context_len = None
 
     supports_multiple_generations = (
         False  # can more than one generation be extracted per request?

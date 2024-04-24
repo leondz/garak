@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Encoding detectors
 
 Detectors for assessing how well a given payload from probes.encoding is 

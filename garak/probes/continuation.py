@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Probes to check if a generator will continue a contentious term.
 
 Operates by giving high-risk context as a prompt, extracted from e.g. Urban

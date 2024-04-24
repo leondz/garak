@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Test generators
 
 These give simple system responses, intended for testing.

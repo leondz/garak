@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Cohere AI model support
 
 Support for Cohere's text generation API. Uses the command model by default,
