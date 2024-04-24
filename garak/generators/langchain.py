@@ -56,7 +56,7 @@ class LangChainLLMGenerator(Generator):
 
         self.generator = llm
 
-    def _call_model(self, prompt: str) -> str:
+    def _call_model(self, prompt: str, generations_this_call: int = 1) -> str:
         """
         Continuation generation method for LangChain LLM integrations.
 

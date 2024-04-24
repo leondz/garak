@@ -15,8 +15,8 @@ class Blank(Generator):
     generator_family_name = "Test"
     name = "Blank"
 
-    def _call_model(self, prompt: str) -> List[str]:
-        return [""] * self.generations
+    def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[str]:
+        return [""] * generations_this_call
 
 
 class Repeat(Generator):
@@ -26,8 +26,8 @@ class Repeat(Generator):
     generator_family_name = "Test"
     name = "Repeat"
 
-    def _call_model(self, prompt: str) -> List[str]:
-        return [prompt] * self.generations
+    def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[str]:
+        return [prompt] * generations_this_call
 
 
 default_class = "Blank"

@@ -50,7 +50,7 @@ class ReplicateGenerator(Generator):
     @backoff.on_exception(
         backoff.fibo, replicate.exceptions.ReplicateError, max_value=70
     )
-    def _call_model(self, prompt):
+    def _call_model(self, prompt: str, generations_this_call: int = 1):
         response_iterator = self.replicate.run(
             self.name,
             input={

@@ -64,7 +64,7 @@ class NvcfGenerator(Generator):
         ),
         max_value=70,
     )
-    def _call_model(self, prompt: str) -> str:
+    def _call_model(self, prompt: str, generations_this_call: int = 1) -> str:
         if prompt == "":
             return ""
 

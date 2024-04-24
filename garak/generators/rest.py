@@ -210,7 +210,7 @@ class RestGenerator(Generator):
 
     # we'll overload IOError as the rate limit exception
     @backoff.on_exception(backoff.fibo, RESTRateLimitError, max_value=70)
-    def _call_model(self, prompt):
+    def _call_model(self, prompt: str, generations_this_call: int = 1):
         """Individual call to get a rest from the REST API
 
         :param prompt: the input to be placed into the request template and sent to the endpoint

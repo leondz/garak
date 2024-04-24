@@ -147,7 +147,9 @@ class OpenAIGenerator(Generator):
         ),
         max_value=70,
     )
-    def _call_model(self, prompt: Union[str, list[dict]]) -> List[str]:
+    def _call_model(
+        self, prompt: Union[str, list[dict]], generations_this_call: int = 1
+    ) -> List[str]:
         if self.generator == self.client.completions:
             if not isinstance(prompt, str):
                 msg = (
@@ -163,7 +165,7 @@ class OpenAIGenerator(Generator):
                 prompt=prompt,
                 temperature=self.temperature,
                 max_tokens=self.max_tokens,
-                n=self.generations,
+                n=generations_this_call,
                 top_p=self.top_p,
                 frequency_penalty=self.frequency_penalty,
                 presence_penalty=self.presence_penalty,
@@ -189,7 +191,7 @@ class OpenAIGenerator(Generator):
                 messages=messages,
                 temperature=self.temperature,
                 top_p=self.top_p,
-                n=self.generations,
+                n=generations_this_call,
                 stop=self.stop,
                 max_tokens=self.max_tokens,
                 presence_penalty=self.presence_penalty,

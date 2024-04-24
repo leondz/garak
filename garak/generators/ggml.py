@@ -16,6 +16,7 @@ import logging
 import os
 import re
 import subprocess
+from typing import List, Union
 
 from garak import _config
 from garak.generators.base import Generator
@@ -77,7 +78,14 @@ class GgmlGenerator(Generator):
 
         super().__init__(name, generations=generations)
 
-    def _call_model(self, prompt):
+    def _call_model(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> Union[List[str], str, None]:
+        if generations_this_call != 1:
+            logging.warning(
+                "GgmlGenerator._call_model invokes with generations_this_call=%s but only 1 supported",
+                generations_this_call,
+            )
         command = [
             self.path_to_ggml_main,
             "-p",
