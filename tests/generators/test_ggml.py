@@ -37,17 +37,21 @@ def test_init_missing_model():
 
 
 def test_init_bad_model():
-    with tempfile.NamedTemporaryFile(mode="w", suffix="_test_model.gguf") as file:
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix="_test_model.gguf", encoding="utf-8", delete=False
+    ) as file:
         file.write(file.name)
-        file.seek(0)
+        file.close()
         with pytest.raises(RuntimeError) as exc_info:
             garak.generators.ggml.GgmlGenerator(file.name)
+        os.remove(file.name)
         assert "not in GGUF" in str(exc_info.value)
 
 
 def test_init_good_model():
-    with tempfile.NamedTemporaryFile(suffix="_test_model.gguf") as file:
+    with tempfile.NamedTemporaryFile(suffix="_test_model.gguf", delete=False) as file:
         file.write(garak.generators.ggml.GGUF_MAGIC)
-        file.seek(0)
+        file.close()
         g = garak.generators.ggml.GgmlGenerator(file.name)
+        os.remove(file.name)
         assert type(g) is garak.generators.ggml.GgmlGenerator
