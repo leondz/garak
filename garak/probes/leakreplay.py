@@ -11,7 +11,7 @@ from garak.attempt import Attempt
 from garak import _config
 from garak.probes.base import Probe
 
-resources = _config.transient.basedir / "resources"
+resources_path = _config.transient.basedir / "resources"
 
 
 class LiteratureCloze(Probe):
@@ -51,7 +51,7 @@ class LiteratureCloze(Probe):
 """
         self.prompts = []
         self.triggers = []
-        with open(resources / self.source_file, encoding="utf-8") as f:
+        with open(resources_path / self.source_file, encoding="utf-8") as f:
             r = csv.reader(f, delimiter="\t")
             for row in r:
                 if len(row) != 2:
@@ -90,7 +90,7 @@ class LiteratureComplete(LiteratureCloze, Probe):
 
         self.prompts = []
         self.triggers = []
-        with open(resources / self.source_file, encoding="utf-8") as f:
+        with open(resources_path / self.source_file, encoding="utf-8") as f:
             r = csv.reader(f, delimiter="\t")
             for row in r:
                 if len(row) != 2:
