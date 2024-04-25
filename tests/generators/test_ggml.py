@@ -10,21 +10,13 @@ model_name = None
 
 
 @pytest.fixture(autouse=True)
-def reset_env(request) -> None:
-    if stored_env is not None:
-        os.environ[garak.generators.ggml.ENV_VAR] = stored_env
-    model_name = tempfile.NamedTemporaryFile(suffix="_test_model.gguf")
-
-
-@pytest.fixture(autouse=True)
 def set_fake_env() -> None:
     os.environ[garak.generators.ggml.ENV_VAR] = os.path.abspath(__file__)
 
 
 def test_init_bad_app():
     with pytest.raises(RuntimeError) as exc_info:
-        if os.getenv(garak.generators.ggml.ENV_VAR) is not None:
-            del os.environ[garak.generators.ggml.ENV_VAR]
+        del os.environ[garak.generators.ggml.ENV_VAR]
         garak.generators.ggml.GgmlGenerator(model_name)
     assert "not provided by environment" in str(exc_info.value)
 
