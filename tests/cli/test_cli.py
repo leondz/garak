@@ -8,11 +8,24 @@ ansi_escape = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
 
 
 @pytest.fixture(autouse=True)
-def close_report_file():
-    if _config.transient.reportfile is not None:
-        _config.transient.reportfile.close()
-        if os.path.exists(_config.transient.report_filename):
-            os.remove(_config.transient.report_filename)
+def cleanup(request):
+    """Cleanup a testing and report directory once we are finished."""
+
+    def remove_log_files():
+        files = []
+        if _config.transient.reportfile is not None:
+            _config.transient.reportfile.close()
+            report_html_file = _config.transient.report_filename.replace(
+                ".jsonl", ".html"
+            )
+            files.append(_config.transient.report_filename)
+            files.append(report_html_file)
+
+        for file in files:
+            if os.path.exists(file):
+                os.remove(file)
+
+    request.addfinalizer(remove_log_files)
 
 
 def test_version_command(capsys):
