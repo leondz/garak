@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
@@ -9,6 +11,7 @@ Generic Module for REST API connections
 import json
 import logging
 import os
+import re
 from typing import List
 import requests
 
@@ -254,9 +257,24 @@ class RestGenerator(Generator):
         if not self.response_json:
             return str(resp.content)
 
+        def parse_keys_string(keys_string):
+            if not keys_string:
+                raise ValueError("keys_string is empty or doesn't exist")
+            # Use regex to split the string into a list of keys
+            keys = re.findall(r'\[([^]]*)\]', keys_string)
+            # Convert numeric keys to integers
+            keys = [int(key) if key.isdigit() else key.strip("'") for key in keys]
+            return keys
+
+        def get_nested_dict_value(data, keys_string):
+            keys_list = parse_keys_string(keys_string)
+            for key in keys_list:
+                data = data[key]
+            return data
         try:
             response_object = json.loads(resp.content)
-            return response_object[self.response_json_field]
+            return get_nested_dict_value(response_object, self.response_json_field)
+
         except json.decoder.JSONDecodeError as e:
             logging.warning(
                 "REST endpoint didn't return good JSON %s: got |%s|",
