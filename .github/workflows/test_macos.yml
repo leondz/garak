@@ -20,6 +20,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          cd garak
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
