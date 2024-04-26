@@ -68,7 +68,11 @@ class TAPCached(Probe):
 
     def __init__(
         self,
-        prompts_location: str = f"{_config.transient.basedir}/resources/tap/data/tap_jailbreaks.txt",
+        prompts_location: str = _config.transient.basedir
+        / "resources"
+        / "tap"
+        / "data"
+        / "tap_jailbreaks.txt",
     ):
         self.prompts_location = prompts_location
 

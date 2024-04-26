@@ -7,7 +7,6 @@ safeguards on input filtering.
 optional variable: "encoding.payloads" -> a list of payload types to be used
 """
 
-
 import base64
 import binascii
 import json
@@ -58,7 +57,7 @@ def load_payloads():
 
         payload_library["slur_terms"] = []
         with open(
-            _config.transient.basedir / "resources/slurprompts_80.jsonl",
+            _config.transient.basedir / "resources" / "slurprompts_80.jsonl",
             "r",
             encoding="utf-8",
         ) as slurfile:

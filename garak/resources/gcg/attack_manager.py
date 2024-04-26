@@ -876,7 +876,7 @@ class MultiPromptAttack(object):
                 ):
                     self.success = True
                     logger.info(f"Writing successful jailbreak to {self.outfile}")
-                    with open(self.outfile, "a") as f:
+                    with open(self.outfile, "a", encoding="utf-8") as f:
                         f.write(f"{self.control_str}\n")
                     break
                 else:
@@ -929,7 +929,7 @@ class MultiPromptAttack(object):
             if all(all(tests for tests in model_test) for model_test in model_tests_jb):
                 self.success = True
                 logger.info(f"Writing successful jailbreak to {self.outfile}")
-                with open(self.outfile, "a") as f:
+                with open(self.outfile, "a", encoding="utf-8") as f:
                     f.write(f"{self.control_str}\n")
             else:
                 logger.info("No successful jailbreak found!")
@@ -1008,7 +1008,7 @@ class MultiPromptAttack(object):
         tests["n_loss"] = n_loss
         tests["total"] = total_tests
 
-        with open(self.logfile, "r") as f:
+        with open(self.logfile, "r", encoding="utf-8") as f:
             log = json.load(f)
 
         log["controls"].append(control)
@@ -1016,7 +1016,7 @@ class MultiPromptAttack(object):
         log["runtimes"].append(runtime)
         log["tests"].append(tests)
 
-        with open(self.logfile, "w") as f:
+        with open(self.logfile, "w", encoding="utf-8") as f:
             json.dump(log, f, indent=4, cls=NpEncoder)
 
         if verbose:
@@ -1113,7 +1113,7 @@ class ProgressiveMultiPromptAttack(object):
         self.mpa_kwargs = ProgressiveMultiPromptAttack.filter_mpa_kwargs(**kwargs)
 
         if logfile is not None:
-            with open(logfile, "w") as f:
+            with open(logfile, "w", encoding="utf-8") as f:
                 json.dump(
                     {
                         "params": {
@@ -1209,7 +1209,7 @@ class ProgressiveMultiPromptAttack(object):
         """
 
         if self.logfile is not None:
-            with open(self.logfile, "r") as f:
+            with open(self.logfile, "r", encoding="utf-8") as f:
                 log = json.load(f)
 
             log["params"]["n_steps"] = n_steps
@@ -1224,7 +1224,7 @@ class ProgressiveMultiPromptAttack(object):
             log["params"]["incr_control"] = incr_control
             log["params"]["stop_on_success"] = stop_on_success
 
-            with open(self.logfile, "w") as f:
+            with open(self.logfile, "w", encoding="utf-8") as f:
                 json.dump(log, f, indent=4)
 
         num_goals = 1 if self.progressive_goals else len(self.goals)
@@ -1374,7 +1374,7 @@ class IndividualPromptAttack(object):
         self.mpa_kwargs = IndividualPromptAttack.filter_mpa_kwargs(**kwargs)
 
         if logfile is not None:
-            with open(logfile, "w") as f:
+            with open(logfile, "w", encoding="utf-8") as f:
                 json.dump(
                     {
                         "params": {
@@ -1468,7 +1468,7 @@ class IndividualPromptAttack(object):
         """
 
         if self.logfile is not None:
-            with open(self.logfile, "r") as f:
+            with open(self.logfile, "r", encoding="utf-8") as f:
                 log = json.load(f)
 
             log["params"]["n_steps"] = n_steps
@@ -1483,7 +1483,7 @@ class IndividualPromptAttack(object):
             log["params"]["incr_control"] = incr_control
             log["params"]["stop_on_success"] = stop_on_success
 
-            with open(self.logfile, "w") as f:
+            with open(self.logfile, "w", encoding="utf-8") as f:
                 json.dump(log, f, indent=4)
 
         stop_inner_on_success = stop_on_success
@@ -1597,7 +1597,7 @@ class EvaluateAttack(object):
         assert len(self.workers) == 1
 
         if logfile is not None:
-            with open(logfile, "w") as f:
+            with open(logfile, "w", encoding="utf-8") as f:
                 json.dump(
                     {
                         "params": {
@@ -1647,12 +1647,12 @@ class EvaluateAttack(object):
         tokenizer.padding_side = "left"
 
         if self.logfile is not None:
-            with open(self.logfile, "r") as f:
+            with open(self.logfile, "r", encoding="utf-8") as f:
                 log = json.load(f)
 
             log["params"]["num_tests"] = len(controls)
 
-            with open(self.logfile, "w") as f:
+            with open(self.logfile, "w", encoding="utf-8") as f:
                 json.dump(log, f, indent=4)
 
         total_jb, total_em, total_outputs = [], [], []

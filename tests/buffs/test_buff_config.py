@@ -23,7 +23,8 @@ prefix = "test_buff_single" + str(uuid.uuid4())
 
 
 def test_include_original_prompt():
-    with tempfile.NamedTemporaryFile(buffering=0) as tmp:
+    # https://github.com/python/cpython/pull/97015 to ensure Windows compatibility
+    with tempfile.NamedTemporaryFile(buffering=0, delete=False) as tmp:
         tmp.write(
             """---
 plugins:
@@ -32,9 +33,11 @@ plugins:
                 "utf-8"
             )
         )
+        tmp.close()
         garak.cli.main(
             f"-m test -p test.Test -b lowercase.Lowercase --config {tmp.name} --report_prefix {prefix}".split()
         )
+        os.remove(tmp.name)
 
     prompts = []
     with open(f"{prefix}.report.jsonl", "r", encoding="utf-8") as reportfile:
@@ -55,7 +58,7 @@ plugins:
 
 
 def test_exclude_original_prompt():
-    with tempfile.NamedTemporaryFile(buffering=0) as tmp:
+    with tempfile.NamedTemporaryFile(buffering=0, delete=False) as tmp:
         tmp.write(
             """---
 plugins:
@@ -64,9 +67,11 @@ plugins:
                 "utf-8"
             )
         )
+        tmp.close()
         garak.cli.main(
             f"-m test -p test.Test -b lowercase.Lowercase --config {tmp.name} --report_prefix {prefix}".split()
         )
+        os.remove(tmp.name)
 
     prompts = []
     with open(f"{prefix}.report.jsonl", "r", encoding="utf-8") as reportfile:

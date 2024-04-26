@@ -114,7 +114,7 @@ def _store_config(settings_files) -> None:
 
 def load_base_config() -> None:
     global loaded
-    settings_files = [str(transient.basedir / "resources/garak.core.yaml")]
+    settings_files = [str(transient.basedir / "resources" / "garak.core.yaml")]
     logging.debug("Loading configs from: %s", ",".join(settings_files))
     _store_config(settings_files=settings_files)
     loaded = True
@@ -127,7 +127,7 @@ def load_config(
     # and then not have cli be upset when these are not given as cli params
     global loaded
 
-    settings_files = [str(transient.basedir / "resources/garak.core.yaml")]
+    settings_files = [str(transient.basedir / "resources" / "garak.core.yaml")]
 
     fq_site_config_filename = str(transient.basedir / site_config_filename)
     if os.path.isfile(fq_site_config_filename):

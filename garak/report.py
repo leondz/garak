@@ -41,7 +41,7 @@ class Report:
         """
         Loads a garak report.
         """
-        with open(self.report_location, "r") as reportfile:
+        with open(self.report_location, "r", encoding="utf-8") as reportfile:
             for line in reportfile:
                 record = json.loads(line.strip())
                 self.records.append(record)
@@ -145,5 +145,5 @@ class Report:
 
         # save final output
         self.write_location = self.report_location.replace(".report", ".avid")
-        with open(self.write_location, "w") as f:
+        with open(self.write_location, "w", encoding="utf-8") as f:
             f.writelines(r.json() + "\n" for r in all_reports)

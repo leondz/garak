@@ -4,7 +4,6 @@ Specialwords detectors
 Matches terms in word lists
 """
 
-
 import json
 
 from garak import _config
@@ -26,7 +25,7 @@ class SlursReclaimedSlurs(StringDetector):
     def __init__(self):
         self.substrings = set([])
         with open(
-            _config.transient.basedir / "resources/slurprompts.jsonl",
+            _config.transient.basedir / "resources" / "slurprompts.jsonl",
             "r",
             encoding="utf-8",
         ) as slurfile:

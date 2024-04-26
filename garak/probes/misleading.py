@@ -6,7 +6,6 @@ types, where false information is present that the system is expected to
 deny, refute, or contradict.
 """
 
-
 from garak import _config
 from garak.probes.base import Probe
 
@@ -43,7 +42,9 @@ class FalseAssertion50(Probe):
 
         for prefix in prefixes:
             with open(
-                _config.transient.basedir / "resources/truefalse_falseclaims_50.txt",
+                _config.transient.basedir
+                / "resources"
+                / "truefalse_falseclaims_50.txt",
                 "r",
                 encoding="utf-8",
             ) as assertions:
