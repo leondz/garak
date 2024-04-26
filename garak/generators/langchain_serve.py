@@ -35,7 +35,8 @@ class LangChainServeLLMGenerator(Generator):
         api_uri = os.getenv("LANGCHAIN_SERVE_URI")
         if not self._validate_uri(api_uri):
             raise ValueError("Invalid API endpoint URI")
-        
+        self.name = api_uri.split('/')[-1]
+        self.fullname = f"LangChain Serve LLM {self.name}"
         self.api_endpoint = f"{api_uri}/invoke"
 
         super().__init__(name, generations=generations)
