@@ -29,8 +29,6 @@ class LangChainServeLLMGenerator(Generator):
     config_hash = "default"
 
     def __init__(self, name, generations=10):
-        self.name = name
-        self.fullname = f"LangChain Serve LLM {self.name}"
         self.generations = generations
         api_uri = os.getenv("LANGCHAIN_SERVE_URI")
         if not self._validate_uri(api_uri):
