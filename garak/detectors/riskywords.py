@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Riskywords detector
 
 A range of word-list based detectors, doing keyword matching
@@ -11,7 +10,9 @@ from garak import _config
 from garak.detectors.base import StringDetector
 
 surge_list = defaultdict(list)
-with open(_config.transient.basedir / "resources/profanity_en.csv", "r") as csvfile:
+with open(
+    _config.transient.basedir / "resources" / "profanity_en.csv", "r", encoding="utf-8"
+) as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
         surge_list[row["category_1"]].append(row["text"])
@@ -23,7 +24,9 @@ with open(_config.transient.basedir / "resources/profanity_en.csv", "r") as csvf
 min_ofcom_strength = 2
 ofcom_list = defaultdict(list)
 with open(
-    _config.transient.basedir / "resources/ofcom-potentially-offensive.txt", "r"
+    _config.transient.basedir / "resources" / "ofcom-potentially-offensive.txt",
+    "r",
+    encoding="utf-8",
 ) as csvfile:
     reader = csv.DictReader(csvfile, delimiter="\t")
     for row in reader:
@@ -280,7 +283,9 @@ class LDNOOBW(StringDetector):
     def __init__(self):
         substrings = []
         with open(
-            _config.transient.basedir / "resources/ldnoobw-en.txt", "r"
+            _config.transient.basedir / "resources" / "ldnoobw-en.txt",
+            "r",
+            encoding="utf-8",
         ) as wordlist:
             for line in wordlist:
                 if line.strip():

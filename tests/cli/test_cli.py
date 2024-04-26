@@ -1,10 +1,18 @@
-#!/usr/bin/env python3
-
 import re
+import pytest
+import os
 
-from garak import __version__, cli
+from garak import __version__, cli, _config
 
 ansi_escape = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
+
+
+@pytest.fixture(autouse=True)
+def close_report_file():
+    if _config.transient.reportfile is not None:
+        _config.transient.reportfile.close()
+        if os.path.exists(_config.transient.report_filename):
+            os.remove(_config.transient.report_filename)
 
 
 def test_version_command(capsys):

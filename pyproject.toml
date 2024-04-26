@@ -38,7 +38,6 @@ dependencies = [
   "cohere>=4.5.1,<5",
   "openai==1.12.0",
   "replicate>=0.8.3",
-  "pytest>=8.0",
   "google-api-python-client>=2.0",
   "backoff>=2.1.1",
   "rapidfuzz>=3.0.0",
@@ -64,6 +63,14 @@ dependencies = [
   "requests-mock==1.12.1"
 ]
 
+[project.optional-dependencies]
+tests = [
+  "pytest>=8.0",
+]
+lint = [
+  "black>=22.3",
+]
+
 [project.urls]
 "Homepage" = "https://github.com/leondz/garak"
 "Bug Tracker" = "https://github.com/leondz/garak/issues"
@@ -81,3 +88,9 @@ packages = ["garak"]
 line-length = 88
 target-version = ['py310', 'py311', 'py312']
 include = '\.pyi?$'
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore",
+    "default:::garak",
+]

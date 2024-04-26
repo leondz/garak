@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """ggml generator support
 
 This generator works with ggml models in gguf format like llama.cpp.
@@ -17,11 +16,13 @@ import logging
 import os
 import re
 import subprocess
+from typing import List, Union
 
 from garak import _config
 from garak.generators.base import Generator
 
 GGUF_MAGIC = bytes([0x47, 0x47, 0x55, 0x46])
+ENV_VAR = "GGML_MAIN_PATH"
 
 
 class GgmlGenerator(Generator):
@@ -55,9 +56,9 @@ class GgmlGenerator(Generator):
         }
 
     def __init__(self, name, generations=10):
-        self.path_to_ggml_main = os.getenv("GGML_MAIN_PATH")
+        self.path_to_ggml_main = os.getenv(ENV_VAR)
         if self.path_to_ggml_main is None:
-            raise RuntimeError("Executable not provided by environment GGML_MAIN_PATH")
+            raise RuntimeError(f"Executable not provided by environment {ENV_VAR}")
         if not os.path.isfile(self.path_to_ggml_main):
             raise FileNotFoundError(
                 f"Path provided is not a file: {self.path_to_ggml_main}"
@@ -77,7 +78,14 @@ class GgmlGenerator(Generator):
 
         super().__init__(name, generations=generations)
 
-    def _call_model(self, prompt):
+    def _call_model(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> Union[List[str], str, None]:
+        if generations_this_call != 1:
+            logging.warning(
+                "GgmlGenerator._call_model invokes with generations_this_call=%s but only 1 supported",
+                generations_this_call,
+            )
         command = [
             self.path_to_ggml_main,
             "-p",

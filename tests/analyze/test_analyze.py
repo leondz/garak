@@ -1,10 +1,9 @@
-#!/usr/bin/env python3
-
 # SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 import os
 import subprocess
+import sys
 
 import pytest
 
@@ -20,7 +19,12 @@ def garak_tiny_run() -> None:
 
 def test_analyze_log_runs():
     result = subprocess.run(
-        ["python3", "-m", "garak.analyze.analyze_log", temp_prefix + ".report.jsonl"],
+        [
+            sys.executable,
+            "-m",
+            "garak.analyze.analyze_log",
+            temp_prefix + ".report.jsonl",
+        ],
         check=True,
     )
     assert result.returncode == 0
@@ -28,7 +32,12 @@ def test_analyze_log_runs():
 
 def test_report_digest_runs():
     result = subprocess.run(
-        ["python3", "-m", "garak.analyze.report_digest", temp_prefix + ".report.jsonl"],
+        [
+            sys.executable,
+            "-m",
+            "garak.analyze.report_digest",
+            temp_prefix + ".report.jsonl",
+        ],
         check=True,
     )
     assert result.returncode == 0
@@ -39,7 +48,14 @@ def cleanup(request):
     """Cleanup a testing directory once we are finished."""
 
     def remove_logs():
-        os.remove(temp_prefix + ".report.jsonl")
-        os.remove(temp_prefix + ".report.html")
+        logs = [
+            temp_prefix + ".report.jsonl",
+            temp_prefix + ".report.html",
+        ]
+        for file in logs:
+            try:
+                os.remove(file)
+            except FileNotFoundError:
+                pass
 
     request.addfinalizer(remove_logs)

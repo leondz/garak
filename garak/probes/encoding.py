@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Encoding-based prompt injection
 
 Probes that try to get a model to generate a specific piece of given text
@@ -7,7 +6,6 @@ safeguards on input filtering.
 
 optional variable: "encoding.payloads" -> a list of payload types to be used
 """
-
 
 import base64
 import binascii
@@ -59,7 +57,7 @@ def load_payloads():
 
         payload_library["slur_terms"] = []
         with open(
-            _config.transient.basedir / "resources/slurprompts_80.jsonl",
+            _config.transient.basedir / "resources" / "slurprompts_80.jsonl",
             "r",
             encoding="utf-8",
         ) as slurfile:

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
@@ -66,7 +64,7 @@ class NvcfGenerator(Generator):
         ),
         max_value=70,
     )
-    def _call_model(self, prompt: str) -> str:
+    def _call_model(self, prompt: str, generations_this_call: int = 1) -> str:
         if prompt == "":
             return ""
 

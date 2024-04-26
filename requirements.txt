@@ -6,7 +6,6 @@ tqdm>=4.64.0
 cohere>=4.5.1,<5
 openai==1.12.0
 replicate>=0.8.3
-pytest>=8.0
 google-api-python-client>=2.0
 backoff>=2.1.1
 rapidfuzz>=3.0.0
@@ -29,4 +28,8 @@ deepl==1.17.0
 fschat>=0.2.36
 litellm>=1.33.8
 typing>=3.7,<3.8; python_version<'3.5'
+# tests
+pytest>=8.0
 requests-mock==1.12.1
+# lint
+black>=22.3
