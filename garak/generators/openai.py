@@ -100,23 +100,14 @@ class OpenAIGenerator(Generator):
 
         super().__init__(name, generations=generations)
 
-        api_key = os.getenv("OPENAI_API_KEY", default=None)
-        if api_key is None:
+        self.api_key = os.getenv("OPENAI_API_KEY", default=None)
+        if self.api_key is None:
             raise ValueError(
                 'Put the OpenAI API key in the OPENAI_API_KEY environment variable (this was empty)\n \
                 e.g.: export OPENAI_API_KEY="sk-123Xgenerators/openai.pyXXXXXXXXXXX"'
             )
 
-        self.client = openai.OpenAI(api_key=api_key)
-
-        if self.name in completion_models:
-            self.generator = self.client.completions
-        elif self.name in chat_models:
-            self.generator = self.client.chat.completions
-        elif "-".join(self.name.split("-")[:-1]) in chat_models and re.match(
-            r"^.+-[01][0-9][0-3][0-9]$", self.name
-        ):  # handle model names -MMDDish suffix
-            self.generator = self.client.completions
+        self._load_client()
 
         if self.name in context_lengths:
             self.context_len = context_lengths[self.name]
@@ -134,6 +125,25 @@ class OpenAIGenerator(Generator):
             raise ValueError(
                 f"No OpenAI API defined for '{self.name}' in generators/openai.py - please add one!"
             )
+        self._clear_client()
+
+    # this could also be __setstate__
+    def _load_client(self):
+        self.client = openai.OpenAI(api_key=self.api_key)
+
+        if self.name in completion_models:
+            self.generator = self.client.completions
+        elif self.name in chat_models:
+            self.generator = self.client.chat.completions
+        elif "-".join(self.name.split("-")[:-1]) in chat_models and re.match(
+            r"^.+-[01][0-9][0-3][0-9]$", self.name
+        ):  # handle model names -MMDDish suffix
+            self.generator = self.client.completions
+
+    # this could also just be __getstate__
+    def _clear_client(self):
+        self.generator = None
+        self.client = None
 
     # noinspection PyArgumentList
     @backoff.on_exception(
@@ -150,6 +160,8 @@ class OpenAIGenerator(Generator):
     def _call_model(
         self, prompt: Union[str, list[dict]], generations_this_call: int = 1
     ) -> List[str]:
+        if self.client is None:
+            self._load_client()
         if self.generator == self.client.completions:
             if not isinstance(prompt, str):
                 msg = (
