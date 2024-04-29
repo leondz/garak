@@ -1,7 +1,7 @@
-garak.probes.misinfo
+garak.generators.nim
 ====================
 
-.. automodule:: garak.probes.misinfo
+.. automodule:: garak.generators.nim
    :members:
    :undoc-members:
    :show-inheritance:   
