@@ -94,9 +94,7 @@ def cleanup(request):
             f"{prefix}.hitlog.jsonl",
         ]
         for file in files:
-            try:
+            if os.path.exists(file):
                 os.remove(file)
-            except FileNotFoundError:
-                pass
 
     request.addfinalizer(remove_buff_reports)

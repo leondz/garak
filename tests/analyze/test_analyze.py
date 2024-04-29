@@ -12,7 +12,7 @@ from garak import cli
 temp_prefix = "_garak_internal_test_temp"
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(autouse=True)
 def garak_tiny_run() -> None:
     cli.main(["-m", "test.Blank", "-p", "test.Blank", "--report_prefix", temp_prefix])
 
@@ -41,21 +41,3 @@ def test_report_digest_runs():
         check=True,
     )
     assert result.returncode == 0
-
-
-@pytest.fixture(scope="session", autouse=True)
-def cleanup(request):
-    """Cleanup a testing directory once we are finished."""
-
-    def remove_logs():
-        logs = [
-            temp_prefix + ".report.jsonl",
-            temp_prefix + ".report.html",
-        ]
-        for file in logs:
-            try:
-                os.remove(file)
-            except FileNotFoundError:
-                pass
-
-    request.addfinalizer(remove_logs)
