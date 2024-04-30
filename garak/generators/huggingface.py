@@ -84,7 +84,6 @@ class Pipeline(Generator, HFCompatible):
             model=name,
             do_sample=do_sample,
             device=device,
-            proxy={'http': 'http://127.0.0.1:7890/', 'https': 'http://127.0.0.1:7890/'}
         )
         self.deprefix_prompt = name in models_to_deprefix
         if _config.loaded:
