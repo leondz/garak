@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Snowball probe
 
 Checks if the system gives wrong answers to complex reasoning questions,
@@ -34,7 +33,7 @@ class GraphConnectivity(Probe):
     def __init__(self):
         super().__init__()
         with open(
-            _config.transient.basedir / "resources/graph_connectivity.json",
+            _config.transient.basedir / "resources" / "graph_connectivity.json",
             "r",
             encoding="utf-8",
         ) as f:
@@ -71,7 +70,7 @@ class Primes(Probe):
     def __init__(self):
         super().__init__()
         with open(
-            _config.transient.basedir / "resources/primality_testing.json",
+            _config.transient.basedir / "resources" / "primality_testing.json",
             "r",
             encoding="utf-8",
         ) as f:
@@ -110,7 +109,7 @@ class Senators(Probe):
     def __init__(self):
         super().__init__()
         with open(
-            _config.transient.basedir / "resources/senator_search.json",
+            _config.transient.basedir / "resources" / "senator_search.json",
             "r",
             encoding="utf-8",
         ) as f:

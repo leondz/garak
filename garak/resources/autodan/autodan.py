@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import argparse
 from logging import getLogger
 import os
@@ -28,6 +26,9 @@ from garak.resources.autodan.model_utils import (
 
 logger = getLogger(__name__)
 
+autodan_resource_data = (
+    garak._config.transient.basedir / "resources" / "autodan" / "data"
+)
 autodan_parser = argparse.ArgumentParser(description="AutoDAN config")
 autodan_parser.add_argument(
     "--num_steps", type=int, default=100, help="Number of steps to run generation"
@@ -54,13 +55,13 @@ autodan_parser.add_argument(
 autodan_parser.add_argument(
     "--init_prompt_path",
     type=str,
-    default=garak._config.transient.basedir / "resources/autodan/data/autodan_init.txt",
+    default=autodan_resource_data / "autodan_init.txt",
     help="Path to initial prompt",
 )
 autodan_parser.add_argument(
     "--reference",
     type=str,
-    default=garak._config.transient.basedir / "resources/autodan/data/prompt_group.pth",
+    default=autodan_resource_data / "prompt_group.pth",
     help="Path to refernces",
 )
 autodan_parser.add_argument(
@@ -120,15 +121,9 @@ def autodan_generate(
     mutation_generator_name: str = "gpt-3.5-turbo",
     mutation_generator_type: str = "openai",
     hierarchical: bool = False,
-    out_path: str = str(
-        garak._config.transient.basedir / "resources/autodan/data/autodan_prompts.txt"
-    ),
-    init_prompt_path: str = str(
-        garak._config.transient.basedir / "resources/autodan/data/autodan_init.txt"
-    ),
-    reference_path: str = str(
-        garak._config.transient.basedir / "resources/autodan/data/prompt_group.pth"
-    ),
+    out_path: str = str(autodan_resource_data / "autodan_prompts.txt"),
+    init_prompt_path: str = str(autodan_resource_data / "autodan_init.txt"),
+    reference_path: str = str(autodan_resource_data / "prompt_group.pth"),
     low_memory: bool = False,
     random_seed: int = None,
 ):
@@ -166,7 +161,7 @@ def autodan_generate(
         torch.manual_seed(random_seed)
         torch.cuda.manual_seed_all(random_seed)
 
-    adv_string_init = open(init_prompt_path, "r").readlines()[0]
+    adv_string_init = open(init_prompt_path, "r", encoding="utf-8").readlines()[0]
 
     conv_template = load_conversation_template(generator.name)
     crit = nn.CrossEntropyLoss(reduction="mean")
@@ -221,7 +216,7 @@ def autodan_generate(
                 logger.info(
                     f"Found a successful AutoDAN prompt!\n{adv_prefix}\nAppending to {out_path}."
                 )
-                with open(out_path, "a") as f:
+                with open(out_path, "a", encoding="utf-8") as f:
                     f.write(f"{adv_prefix}\n")
                 break
 

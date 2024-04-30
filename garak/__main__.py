@@ -1,4 +1,4 @@
-"""garak entry point script"""
+"""garak entry point wrapper"""
 
 import sys
 

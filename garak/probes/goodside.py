@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Goodside
 
 Implementations of [Riley Goodside](https://twitter.com/goodside) attacks"""

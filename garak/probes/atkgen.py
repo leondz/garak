@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """atkgen: Attack Generation. 
 
 This probe uses a separate model to create prompts for a generator,

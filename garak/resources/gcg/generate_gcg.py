@@ -36,6 +36,8 @@ import garak._config
 
 logger = getLogger(__name__)
 
+gpg_resource_data = garak._config.transient.basedir / "resources" / "gcg" / "data"
+
 # GCG parser used by interactive mode
 gcg_parser = ArgumentParser()
 gcg_parser.add_argument("--model_names", nargs="+", help="Model names for generation")
@@ -49,8 +51,7 @@ gcg_parser.add_argument("--stop_success", action="store_true", help="Stop on suc
 gcg_parser.add_argument(
     "--train_data",
     type=str,
-    default=garak._config.transient.basedir
-    / "resources/gcg/data/advbench/harmful_behaviors.csv",
+    default=gpg_resource_data / "advbench" / "harmful_behaviors.csv",
     help="Path to training data",
 )
 gcg_parser.add_argument(
@@ -62,7 +63,7 @@ gcg_parser.add_argument(
 gcg_parser.add_argument(
     "--outfile",
     type=str,
-    default=garak._config.transient.basedir / "resources/gcg/data/gcg_prompts.txt",
+    default=gpg_resource_data / "gcg_prompts.txt",
     help="Location to write GCG attack output",
 )
 gcg_parser.add_argument(
@@ -90,11 +91,10 @@ def run_gcg(
     transfer: bool = False,
     progressive: bool = False,
     stop_success: bool = True,
-    train_data: str = garak._config.transient.basedir
-    / "resources/gcg/data/advbench/harmful_behaviors.csv",
+    train_data: str = gpg_resource_data / "advbench" / "harmful_behaviors.csv",
     n_train: int = 50,
     n_test: int = 0,
-    outfile: str = garak._config.transient.basedir / "resources/gcg/data/gcg/gcg.txt",
+    outfile: str = gpg_resource_data / "gcg" / "gcg.txt",
     control_init: str = CONTROL_INIT,
     deterministic: bool = True,
     n_steps: int = 500,
@@ -168,18 +168,13 @@ def run_gcg(
             msg = "You must specify either a target generator or a list of model names to run GCG!"
             logger.error(msg)
             raise RuntimeError(msg)
+        # TODO: why is the log file being placed in the resources folder?
         if garak._config.transient.run_id is not None:
             run_id = garak._config.transient.run_id
-            logfile = (
-                garak._config.transient.basedir
-                / f"resources/gcg/data/logs/{run_id}_{model_string}.json"
-            )
+            logfile = gpg_resource_data / "logs" / f"{run_id}_{model_string}.json"
         else:
             timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
-            logfile = (
-                garak._config.transient.basedir
-                / f"resources/gcg/data/logs/{timestamp}_{model_string}.json"
-            )
+            logfile = gpg_resource_data / "logs" f"{timestamp}_{model_string}.json"
 
     # Create logfile directory
     p = Path(logfile).parent

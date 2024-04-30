@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # SPDX-FileCopyrightText: Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
@@ -135,14 +133,14 @@ if openai.__version__[0] == "0":
             ),
             max_value=70,
         )
-        def _call_model(self, prompt: str) -> List[str]:
+        def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[str]:
             if self.generator == openai.Completion:
                 response = self.generator.create(
                     model=self.name,
                     prompt=prompt,
                     temperature=self.temperature,
                     max_tokens=self.max_tokens,
-                    n=self.generations,
+                    n=generations_this_call,
                     top_p=self.top_p,
                     frequency_penalty=self.frequency_penalty,
                     presence_penalty=self.presence_penalty,
@@ -156,7 +154,7 @@ if openai.__version__[0] == "0":
                     messages=[{"role": "user", "content": prompt}],
                     temperature=self.temperature,
                     top_p=self.top_p,
-                    n=self.generations,
+                    n=generations_this_call,
                     stop=self.stop,
                     max_tokens=self.max_tokens,
                     presence_penalty=self.presence_penalty,

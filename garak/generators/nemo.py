@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
@@ -72,7 +70,7 @@ class NeMoGenerator(Generator):
         ),
         max_value=70,
     )
-    def _call_model(self, prompt):
+    def _call_model(self, prompt: str, generations_this_call: int = 1):
         # avoid:
         #    doesn't match schema #/components/schemas/CompletionRequestBody: Error at "/prompt": minimum string length is 1
         if prompt == "":
@@ -82,7 +80,7 @@ class NeMoGenerator(Generator):
         if self.seed is None:  # nemo gives the same result every time
             reset_none_seed = True
             self.seed = random.randint(0, 2147483648 - 1)
-        elif self.generations > 1:
+        elif generations_this_call > 1:
             logging.info(
                 "fixing a seed means nemollm gives the same result every time, recommend setting generations=1"
             )

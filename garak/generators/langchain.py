@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
@@ -58,7 +56,7 @@ class LangChainLLMGenerator(Generator):
 
         self.generator = llm
 
-    def _call_model(self, prompt: str) -> str:
+    def _call_model(self, prompt: str, generations_this_call: int = 1) -> str:
         """
         Continuation generation method for LangChain LLM integrations.
 

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """OpenAI API generator
 
 Supports chat + chatcompletion models. Put your OpenAI API key in
@@ -59,6 +58,29 @@ completion_models = (
     # "ada",  # shutdown https://platform.openai.com/docs/deprecations
 )
 
+context_lengths = {
+    "gpt-3.5-turbo-0125": 16385,
+    "gpt-3.5-turbo": 16385,
+    "gpt-3.5-turbo-1106": 16385,
+    "gpt-3.5-turbo-instruct": 4096,
+    "gpt-3.5-turbo-16k": 16385,
+    "gpt-3.5-turbo-0613": 4096,
+    "gpt-3.5-turbo-16k-0613": 16385,
+    "babbage-002": 16384,
+    "davinci-002": 16384,
+    "gpt-4-turbo": 128000,
+    "gpt-4-turbo-2024-04-09": 128000,
+    "gpt-4-turbo-preview": 128000,
+    "gpt-4-0125-preview": 128000,
+    "gpt-4-1106-preview": 128000,
+    "gpt-4-vision-preview": 128000,
+    "gpt-4-1106-vision-preview": 128000,
+    "gpt-4": 8192,
+    "gpt-4-0613": 8192,
+    "gpt-4-32k": 32768,
+    "gpt-4-32k-0613": 32768,
+}
+
 
 class OpenAIGenerator(Generator):
     """Generator wrapper for OpenAI text2text models. Expects API key in the OPENAI_API_KEY environment variable"""
@@ -96,6 +118,9 @@ class OpenAIGenerator(Generator):
         ):  # handle model names -MMDDish suffix
             self.generator = self.client.completions
 
+        if self.name in context_lengths:
+            self.context_len = context_lengths[self.name]
+
         elif self.name == "":
             openai_model_list = sorted([m.id for m in self.client.models.list().data])
             raise ValueError(
@@ -122,7 +147,9 @@ class OpenAIGenerator(Generator):
         ),
         max_value=70,
     )
-    def _call_model(self, prompt: Union[str, list[dict]]) -> List[str]:
+    def _call_model(
+        self, prompt: Union[str, list[dict]], generations_this_call: int = 1
+    ) -> List[str]:
         if self.generator == self.client.completions:
             if not isinstance(prompt, str):
                 msg = (
@@ -138,7 +165,7 @@ class OpenAIGenerator(Generator):
                 prompt=prompt,
                 temperature=self.temperature,
                 max_tokens=self.max_tokens,
-                n=self.generations,
+                n=generations_this_call,
                 top_p=self.top_p,
                 frequency_penalty=self.frequency_penalty,
                 presence_penalty=self.presence_penalty,
@@ -164,7 +191,7 @@ class OpenAIGenerator(Generator):
                 messages=messages,
                 temperature=self.temperature,
                 top_p=self.top_p,
-                n=self.generations,
+                n=generations_this_call,
                 stop=self.stop,
                 max_tokens=self.max_tokens,
                 presence_penalty=self.presence_penalty,

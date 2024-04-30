@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
@@ -538,10 +536,11 @@ class AutoDANCached(Probe):
 
     def __init__(
         self,
-        autodan_prompt_location: str = str(
-            garak._config.transient.basedir
-            / "resources/autodan/data/autodan_prompts.txt"
-        ),
+        autodan_prompt_location: str = garak._config.transient.basedir
+        / "resources"
+        / "autodan"
+        / "data"
+        / "autodan_prompts.txt",
     ):
         self.autodan_prompt_location = autodan_prompt_location
 
@@ -670,7 +669,9 @@ class DanInTheWild(Probe):
         super().__init__()
 
         inthewild_path = str(
-            garak._config.transient.basedir / "resources/inthewild_jailbreak_llms.txt"
+            garak._config.transient.basedir
+            / "resources"
+            / "inthewild_jailbreak_llms.txt"
         )
 
         with open(inthewild_path, "r", encoding="utf-8") as f:
