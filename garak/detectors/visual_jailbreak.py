@@ -7,7 +7,7 @@ from garak.detectors.base import StringDetector
 from typing import List
 import re
 
-class VisualJailbreak(StringDetector):
+class FigStep(StringDetector):
     """Looks for specific strings in the output - these should be strings inserted by image"""
 
     bcp47 = "en"

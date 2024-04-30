@@ -11,7 +11,7 @@ from garak import _config
 from garak.probes.base import Probe
 from garak.generators.base import Generator
 
-class VisualJailbreak(Probe):
+class FigStep(Probe):
     """
         Using another modal - image to assist jailbreak
 
@@ -20,7 +20,7 @@ class VisualJailbreak(Probe):
 
     uri = "https://arxiv.org/abs/2311.05608"
     bcp47 = "en"
-    recommended_detector = ["visual_jailbreak.VisualJailbreak"]
+    recommended_detector = ["visual_jailbreak.FigStep"]
     tags = [
         # "avid-effect:security:S0403",
         # "avid-effect:performance:P0204",
