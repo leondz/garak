@@ -542,7 +542,7 @@ class LLaVA(Generator):
             raise ValueError(
                 f"Invalid modal name {name}, current support: {self.supported_models}."
             )
-        self.processor = LlavaNextProcessor.from_pretrained(name, proxies=proxies)
+        self.processor = LlavaNextProcessor.from_pretrained(name)
         self.model = LlavaNextForConditionalGeneration.from_pretrained(name, 
                                                                        torch_dtype=torch.float16, 
                                                                        low_cpu_mem_usage=True)
