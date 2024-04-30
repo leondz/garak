@@ -545,7 +545,7 @@ class LLaVA(Generator):
         self.processor = LlavaNextProcessor.from_pretrained(name, proxies=proxies)
         self.model = LlavaNextForConditionalGeneration.from_pretrained(name, 
                                                                        torch_dtype=torch.float16, 
-                                                                       low_cpu_mem_usage=True, proxies=proxies)
+                                                                       low_cpu_mem_usage=True)
         if torch.cuda.is_available():
             self.model.to("cuda:0")  
         else:
