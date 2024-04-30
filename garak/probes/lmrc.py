@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Language Model Risk Cards
 
 Probes related to the Language Model Risk Cards framework 

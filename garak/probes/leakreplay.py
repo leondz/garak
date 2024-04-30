@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Data leak: Replay attack
 
 Probes for evaluating if a model will replay training data
@@ -11,6 +10,8 @@ from typing import List
 from garak.attempt import Attempt
 from garak import _config
 from garak.probes.base import Probe
+
+resources_path = _config.transient.basedir / "resources"
 
 
 class LiteratureCloze(Probe):
@@ -31,7 +32,7 @@ class LiteratureCloze(Probe):
         "quality:Security:Confidentiailty",
         "payload:leak:training",
     ]  # MISP-format taxonomy categories
-    source_file = "resources/book_cloze.tsv"
+    source_file = "book_cloze.tsv"
 
     def __init__(self):
         super().__init__()
@@ -50,7 +51,7 @@ class LiteratureCloze(Probe):
 """
         self.prompts = []
         self.triggers = []
-        with open(f"{_config.transient.basedir}/{self.source_file}") as f:
+        with open(resources_path / self.source_file, encoding="utf-8") as f:
             r = csv.reader(f, delimiter="\t")
             for row in r:
                 if len(row) != 2:
@@ -70,7 +71,7 @@ class LiteratureCloze(Probe):
 
 class LiteratureCloze80(LiteratureCloze, Probe):
     active = True
-    source_file = "resources/book_cloze_80.tsv"
+    source_file = "book_cloze_80.tsv"
     __doc__ = LiteratureCloze.__doc__ + " - limited to 80 examples"
 
 
@@ -81,7 +82,7 @@ class LiteratureComplete(LiteratureCloze, Probe):
     """
 
     active = False
-    source_file = "resources/book_cloze.tsv"
+    source_file = "book_cloze.tsv"
     recommended_detector = ["leakreplay.StartsWith"]
 
     def __init__(self):
@@ -89,9 +90,7 @@ class LiteratureComplete(LiteratureCloze, Probe):
 
         self.prompts = []
         self.triggers = []
-        with open(
-            f"{_config.transient.basedir}/{self.source_file}", encoding="utf-8"
-        ) as f:
+        with open(resources_path / self.source_file, encoding="utf-8") as f:
             r = csv.reader(f, delimiter="\t")
             for row in r:
                 if len(row) != 2:
@@ -111,12 +110,12 @@ class LiteratureComplete(LiteratureCloze, Probe):
 class LiteratureComplete80(LiteratureComplete, Probe):
     __doc__ = LiteratureComplete.__doc__ + " - limited to 80 examples"
     active = True
-    source_file = "resources/book_cloze_80.tsv"
+    source_file = "book_cloze_80.tsv"
 
 
 class NYTCloze(LiteratureCloze, Probe):
     active = True
-    source_file = "resources/nyt_cloze.tsv"
+    source_file = "nyt_cloze.tsv"
     __doc__ = (
         LiteratureCloze.__doc__
         + " - based on NYT articles used in the NYT/OpenAI lawsuit"
@@ -125,7 +124,7 @@ class NYTCloze(LiteratureCloze, Probe):
 
 class NYTComplete(LiteratureComplete, Probe):
     active = True
-    source_file = "resources/nyt_cloze.tsv"
+    source_file = "nyt_cloze.tsv"
     __doc__ = (
         LiteratureComplete.__doc__
         + " - based on NYT articles used in the NYT/OpenAI lawsuit"
@@ -134,11 +133,11 @@ class NYTComplete(LiteratureComplete, Probe):
 
 class GuardianCloze(LiteratureCloze, Probe):
     active = True
-    source_file = "resources/guardian_cloze.tsv"
+    source_file = "guardian_cloze.tsv"
     __doc__ = LiteratureCloze.__doc__ + " - based on articles from The Guardian"
 
 
 class GuardianComplete(LiteratureComplete, Probe):
     active = True
-    source_file = "resources/guardian_cloze.tsv"
+    source_file = "guardian_cloze.tsv"
     __doc__ = LiteratureComplete.__doc__ + " - based on articles from The Guardian"

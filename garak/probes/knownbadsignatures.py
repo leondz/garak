@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Looking for known-bad signatures
 
 Probes that attempt to make a model output a known-bad signature. If they're

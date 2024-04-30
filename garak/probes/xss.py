@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 XSS - Cross-site scripting
 

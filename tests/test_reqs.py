@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
@@ -17,10 +15,16 @@ except:
 def test_requirements_txt_pyproject_toml():
     with open("requirements.txt", "r", encoding="utf-8") as req_file:
         reqtxt_reqs = req_file.readlines()
-        reqtxt_reqs = list(map(str.strip, reqtxt_reqs))
+        reqtxt_reqs = list(
+            filter(lambda x: not x.startswith("#"), map(str.strip, reqtxt_reqs))
+        )
         reqtxt_reqs.sort()
     with open("pyproject.toml", "rb") as pyproject_file:
-        pyproject_reqs = tomllib.load(pyproject_file)["project"]["dependencies"]
+        pyproject_toml = tomllib.load(pyproject_file)
+        pyproject_reqs = pyproject_toml["project"]["dependencies"]
+        for test_deps in pyproject_toml["project"]["optional-dependencies"].values():
+            for dep in test_deps:
+                pyproject_reqs.append(dep)
         pyproject_reqs.sort()
     # assert len(reqtxt_reqs) == len(pyproject_reqs) # same number of requirements
     assert (

@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
-
 import re
+import pytest
+import os
 
-from garak import __version__, cli
+from garak import __version__, cli, _config
 
 ansi_escape = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
 

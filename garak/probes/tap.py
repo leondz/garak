@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
@@ -70,7 +68,11 @@ class TAPCached(Probe):
 
     def __init__(
         self,
-        prompts_location: str = f"{_config.transient.basedir}/resources/tap/data/tap_jailbreaks.txt",
+        prompts_location: str = _config.transient.basedir
+        / "resources"
+        / "tap"
+        / "data"
+        / "tap_jailbreaks.txt",
     ):
         self.prompts_location = prompts_location
 

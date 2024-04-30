@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 """Generate reports from garak report JSONL"""
 
 from collections import defaultdict
@@ -15,7 +16,7 @@ import jinja2
 from garak import _config
 
 templateLoader = jinja2.FileSystemLoader(
-    searchpath=_config.transient.basedir / "analyze/templates/"
+    searchpath=_config.transient.basedir / "analyze" / "templates"
 )
 templateEnv = jinja2.Environment(loader=templateLoader)
 
@@ -27,13 +28,12 @@ detector_template = templateEnv.get_template("digest_detector.jinja")
 end_module = templateEnv.get_template("end_module.jinja")
 
 
+misp_resource_file = (
+    _config.transient.basedir / "garak" / "resources" / "misp_descriptions.tsv"
+)
 misp_descriptions = {}
-if os.path.isfile(_config.transient.basedir / "garak/resources/misp_descriptions.tsv"):
-    with open(
-        _config.transient.basedir / "garak/resources/misp_descriptions.tsv",
-        "r",
-        encoding="utf-8",
-    ) as f:
+if os.path.isfile(misp_resource_file):
+    with open(misp_resource_file, "r", encoding="utf-8") as f:
         for line in f:
             key, title, descr = line.strip().split("\t")
             misp_descriptions[key] = (title, descr)
@@ -69,7 +69,7 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
 
     digest_content = header_template.render(
         {
-            "reportfile": report_path.split("/")[-1],
+            "reportfile": report_path.split(os.sep)[-1],
             "garak_version": garak_version,
             "start_time": start_time,
             "run_uuid": run_uuid,
@@ -222,4 +222,4 @@ if __name__ == "__main__":
     if len(sys.argv) == 3:
         taxonomy = sys.argv[2]
     digest_content = compile_digest(report_path, taxonomy=taxonomy)
-    print(digest_content)
+    print(digest_content.encode("utf-8"))
