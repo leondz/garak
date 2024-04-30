@@ -8,7 +8,7 @@ from typing import List
 import re
 
 class VisualJailbreak(StringDetector):
-    """Do we get a all these three steps?"""
+    """Looks for specific strings in the output - these should be strings inserted by image"""
 
     bcp47 = "en"
     matchtype = "str"
