@@ -306,7 +306,6 @@ class InferenceAPI(Generator, HFCompatible):
             headers=self.headers,
             json=payload,
             timeout=(20, 90),  # (connect, read)
-            proxies={'http': 'http://127.0.0.1:7890/', 'https': 'http://127.0.0.1:7890/'}
         )
 
         if req_response.status_code == 503:
