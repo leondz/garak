@@ -1,9 +1,9 @@
-"""OpenAI API generator
+"""OpenAI API Compatible generators
 
-Supports chat + chatcompletion models. Put your OpenAI API key in
-an environment variable called OPENAI_API_KEY. Put the name of the
+Supports chat + chatcompletion models. Put your API key in
+an environment variable documented in the selected generator. Put the name of the
 model you want in either the --model_name command line parameter, or
-pass it as an argument to the OpenAIGenerator constructor.
+pass it as an argument to the Generator constructor.
 
 sources:
 * https://platform.openai.com/docs/models/model-endpoint-compatibility
@@ -82,29 +82,40 @@ context_lengths = {
 }
 
 
-class OpenAIGenerator(Generator):
-    """Generator wrapper for OpenAI text2text models. Expects API key in the OPENAI_API_KEY environment variable"""
+class OpenAICompatible(Generator):
+    """Generator base class for OpenAI compatible text2text restful API. Implements shared initialization and execution methods."""
+
+    ENV_VAR = "OpenAICompatible_API_KEY".upper()  # Placeholder override when extending
 
     supports_multiple_generations = True
-    generator_family_name = "OpenAI"
+    generator_family_name = "OpenAICompatible"  # Placeholder override when extending
 
+    # template defaults optionally override when extending
     temperature = 0.7
     top_p = 1.0
     frequency_penalty = 0.0
     presence_penalty = 0.0
     stop = ["#", ";"]
 
+    def _load_client(self):
+        # Required stub implemented when extending `OpenAICompatible`
+        raise NotImplementedError
+
+    def _clear_client(self):
+        # Required stub implemented when extending `OpenAICompatible`
+        raise NotImplementedError
+
     def __init__(self, name, generations=10):
         self.name = name
-        self.fullname = f"OpenAI {self.name}"
+        self.fullname = f"{self.generator_family_name} {self.name}"
 
         super().__init__(name, generations=generations)
 
-        self.api_key = os.getenv("OPENAI_API_KEY", default=None)
+        self.api_key = os.getenv(self.ENV_VAR, default=None)
         if self.api_key is None:
             raise ValueError(
-                'Put the OpenAI API key in the OPENAI_API_KEY environment variable (this was empty)\n \
-                e.g.: export OPENAI_API_KEY="sk-123Xgenerators/openai.pyXXXXXXXXXXX"'
+                f'Put the {self.generator_family_name} API key in the {self.ENV_VAR} environment variable (this was empty)\n \
+                e.g.: export {self.ENV_VAR}="sk-123Xgenerators/openai.pyXXXXXXXXXXX"'
             )
 
         self._load_client()
@@ -115,7 +126,7 @@ class OpenAIGenerator(Generator):
         elif self.name == "":
             openai_model_list = sorted([m.id for m in self.client.models.list().data])
             raise ValueError(
-                "Model name is required for OpenAI, use --model_name\n"
+                f"Model name is required for {self.generator_family_name}, use --model_name\n"
                 + "  API returns following available models: ▶️   "
                 + "  ".join(openai_model_list)
                 + "\n"
@@ -123,26 +134,10 @@ class OpenAIGenerator(Generator):
             )
         else:
             raise ValueError(
-                f"No OpenAI API defined for '{self.name}' in generators/openai.py - please add one!"
+                f"No {self.generator_family_name} API defined for '{self.name}' in generators/openai.py - please add one!"
             )
         # clear client config to enable object to `pickle`
         self._clear_client()
-
-    def _load_client(self):
-        self.client = openai.OpenAI(api_key=self.api_key)
-
-        if self.name in completion_models:
-            self.generator = self.client.completions
-        elif self.name in chat_models:
-            self.generator = self.client.chat.completions
-        elif "-".join(self.name.split("-")[:-1]) in chat_models and re.match(
-            r"^.+-[01][0-9][0-3][0-9]$", self.name
-        ):  # handle model names -MMDDish suffix
-            self.generator = self.client.completions
-
-    def _clear_client(self):
-        self.generator = None
-        self.client = None
 
     # noinspection PyArgumentList
     @backoff.on_exception(
@@ -165,7 +160,7 @@ class OpenAIGenerator(Generator):
         if self.generator == self.client.completions:
             if not isinstance(prompt, str):
                 msg = (
-                    f"Expected a string for OpenAI completions model {self.name}, but got {type(prompt)}. "
+                    f"Expected a string for {self.generator_family_name} completions model {self.name}, but got {type(prompt)}. "
                     f"Returning nothing!"
                 )
                 logging.error(msg)
@@ -192,7 +187,7 @@ class OpenAIGenerator(Generator):
                 messages = prompt
             else:
                 msg = (
-                    f"Expected a list of dicts for OpenAI Chat model {self.name}, but got {type(prompt)} instead. "
+                    f"Expected a list of dicts for {self.generator_family_name} Chat model {self.name}, but got {type(prompt)} instead. "
                     f"Returning nothing!"
                 )
                 logging.error(msg)
@@ -215,6 +210,29 @@ class OpenAIGenerator(Generator):
             raise ValueError(
                 "Unsupported model at generation time in generators/openai.py - please add a clause!"
             )
+
+
+class OpenAIGenerator(OpenAICompatible):
+    """Generator wrapper for OpenAI text2text models. Expects API key in the OPENAI_API_KEY environment variable"""
+
+    ENV_VAR = "OPENAI_API_KEY"
+    generator_family_name = "OpenAI"
+
+    def _load_client(self):
+        self.client = openai.OpenAI(api_key=self.api_key)
+
+        if self.name in completion_models:
+            self.generator = self.client.completions
+        elif self.name in chat_models:
+            self.generator = self.client.chat.completions
+        elif "-".join(self.name.split("-")[:-1]) in chat_models and re.match(
+            r"^.+-[01][0-9][0-3][0-9]$", self.name
+        ):  # handle model names -MMDDish suffix
+            self.generator = self.client.completions
+
+    def _clear_client(self):
+        self.generator = None
+        self.client = None
 
 
 default_class = "OpenAIGenerator"
