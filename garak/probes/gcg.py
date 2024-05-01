@@ -8,8 +8,6 @@ Probes designed to disrupt a system prompt by appending an adversarial suffix.
 import logging
 from typing import List
 
-import tqdm
-
 from garak.resources.gcg import run_gcg
 from garak.probes.base import Probe
 from garak import _config
@@ -98,33 +96,7 @@ class GCG(Probe):
             attempts_todo = self._buff_hook(attempts_todo)
 
             # iterate through attempts
-            attempts_completed = []
-
-            if (
-                _config.system.parallel_attempts
-                and _config.system.parallel_attempts > 1
-                and self.parallelisable_attempts
-                and len(attempts_todo) > 1
-            ):
-                from multiprocessing import Pool
-
-                attempt_bar = tqdm.tqdm(total=len(attempts_todo), leave=False)
-                attempt_bar.set_description(self.probename.replace("garak.", ""))
-
-                with Pool(_config.system.parallel_attempts) as attempt_pool:
-                    for result in attempt_pool.imap_unordered(
-                        self._execute_attempt, attempts_todo
-                    ):
-                        attempts_completed.append(
-                            result
-                        )  # these will be out of original order
-                        attempt_bar.update(1)
-
-            else:
-                attempt_iterator = tqdm.tqdm(attempts_todo, leave=False)
-                attempt_iterator.set_description(self.probename.replace("garak.", ""))
-                for this_attempt in attempt_iterator:
-                    attempts_completed.append(self._execute_attempt(this_attempt))
+            attempts_completed = self._execute_all(attempts_todo)
 
             logging.debug(
                 "probe return: %s with %s attempts", self, len(attempts_completed)
