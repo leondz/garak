@@ -6,7 +6,7 @@
 """Visual Jailbreak"""
 
 import os
-import re
+import logging
 
 from garak import _config
 from garak.probes.base import Probe
@@ -79,5 +79,7 @@ class FigStep80(FigStep, Probe):
         # Assume we have downloaded full SafeBench dataset with 500 image prompts
         # https://github.com/ThuCCSLab/FigStep#:~:text=500%20questions%20on%2010%20topics
         self.prompts = [prompt for prompt in self.prompts if 1 <= int(os.path.basename(prompt['image']).split('_')[3]) <= 8]
+        if len(self.prompts) != 80:
+            logging.warning(f"Incorrect number ({len(self.prompts)}) of image prompts of SafeBench dataset, expect 80.")
 
         return super().probe(generator)
