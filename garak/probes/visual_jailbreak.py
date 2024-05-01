@@ -15,7 +15,9 @@ class FigStep(Probe):
     """
         Using another modal - image to assist jailbreak
 
-        https://arxiv.org/pdf/2311.05608.pdf
+        Title: FigStep: Jailbreaking Large Vision-language Models via Typographic Visual Prompts
+        Link: https://arxiv.org/pdf/2311.05608.pdf
+        Reference: Yichen Gong, Delong Ran, Jinyuan Liu, Conglei Wang, Tianshuo Cong, Anyu Wang, Sisi Duan, and Xiaoyun Wang. 2023. FigStep: Jailbreaking Large Vision-language Models via Typographic Visual Prompts.
     """
 
     uri = "https://arxiv.org/abs/2311.05608"
