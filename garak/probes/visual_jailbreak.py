@@ -6,6 +6,7 @@
 """Visual Jailbreak"""
 
 import os
+import re
 
 from garak import _config
 from garak.probes.base import Probe
@@ -20,6 +21,7 @@ class FigStep(Probe):
         Reference: Yichen Gong, Delong Ran, Jinyuan Liu, Conglei Wang, Tianshuo Cong, Anyu Wang, Sisi Duan, and Xiaoyun Wang. 2023. FigStep: Jailbreaking Large Vision-language Models via Typographic Visual Prompts.
     """
 
+    active = False  # default to use limit version - FigStep80
     uri = "https://arxiv.org/abs/2311.05608"
     bcp47 = "en"
     recommended_detector = ["visual_jailbreak.FigStep"]
@@ -56,4 +58,26 @@ class FigStep(Probe):
                 f"Incorrect generator input modality {generator.modality['in']}, expect {self.modality['in']} for this probe."
             )
         self.prompts = [{'text': prompt['text'], 'image': str(_config.transient.basedir / prompt['image'])} for prompt in self.prompts]
+        return super().probe(generator)
+
+class FigStep80(FigStep, Probe):
+    active = True
+    __doc__ = FigStep.__doc__ + " - limited to 80 examples"
+
+    def probe(self, generator):
+        if not isinstance(generator, Generator):
+            raise ValueError(
+                "Incorrect class type of incoming argument `generator`."
+            )
+        if not generator.modality['in'] == self.modality['in']:
+            raise ValueError(
+                f"Incorrect generator input modality {generator.modality['in']}, expect {self.modality['in']} for this probe."
+            )
+        self.prompts = [{'text': prompt['text'], 'image': str(_config.transient.basedir / prompt['image'])} for prompt in self.prompts]
+
+        # We want 8 image prompts for 10 topics seperately
+        # Assume we have downloaded full SafeBench dataset with 500 image prompts
+        # https://github.com/ThuCCSLab/FigStep#:~:text=500%20questions%20on%2010%20topics
+        self.prompts = [prompt for prompt in self.prompts if 1 <= int(os.path.basename(prompt['image']).split('_')[3]) <= 8]
+
         return super().probe(generator)
