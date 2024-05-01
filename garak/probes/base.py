@@ -139,7 +139,6 @@ class Probe:
         if self.post_buff_hook:
             this_attempt = self._postprocess_buff(this_attempt)
         this_attempt = self._postprocess_hook(this_attempt)
-        # access to this file should be single threaded, this may need to be adjusted as a logger
         self._generator_cleanup()
         return copy.deepcopy(this_attempt)
 

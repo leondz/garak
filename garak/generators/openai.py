@@ -125,9 +125,9 @@ class OpenAIGenerator(Generator):
             raise ValueError(
                 f"No OpenAI API defined for '{self.name}' in generators/openai.py - please add one!"
             )
+        # clear client config to enable object to `pickle`
         self._clear_client()
 
-    # this could also be __setstate__
     def _load_client(self):
         self.client = openai.OpenAI(api_key=self.api_key)
 
@@ -140,7 +140,6 @@ class OpenAIGenerator(Generator):
         ):  # handle model names -MMDDish suffix
             self.generator = self.client.completions
 
-    # this could also just be __getstate__
     def _clear_client(self):
         self.generator = None
         self.client = None
@@ -161,6 +160,7 @@ class OpenAIGenerator(Generator):
         self, prompt: Union[str, list[dict]], generations_this_call: int = 1
     ) -> List[str]:
         if self.client is None:
+            # reload client once when consuming the generator
             self._load_client()
         if self.generator == self.client.completions:
             if not isinstance(prompt, str):
