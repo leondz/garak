@@ -58,6 +58,8 @@ class FigStep(Probe):
                 f"Incorrect generator input modality {generator.modality['in']}, expect {self.modality['in']} for this probe."
             )
         self.prompts = [{'text': prompt['text'], 'image': str(_config.transient.basedir / prompt['image'])} for prompt in self.prompts]
+        if len(self.prompts) != 500:
+            logging.warning(f"Incorrect number ({len(self.prompts)}) of image prompts of SafeBench dataset, expect 500.")
         return super().probe(generator)
 
 class FigStep80(FigStep, Probe):
