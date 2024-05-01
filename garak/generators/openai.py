@@ -115,7 +115,7 @@ class OpenAICompatible(Generator):
         if self.api_key is None:
             raise ValueError(
                 f'Put the {self.generator_family_name} API key in the {self.ENV_VAR} environment variable (this was empty)\n \
-                e.g.: export {self.ENV_VAR}="sk-123Xgenerators/openai.pyXXXXXXXXXXX"'
+                e.g.: export {self.ENV_VAR}="sk-123XXXXXXXXXXXX"'
             )
 
         self._load_client()
