@@ -8,8 +8,9 @@
 import json
 import logging
 import os
+from typing import List, Union
+
 import requests
-from typing import Union
 
 import backoff
 
@@ -37,6 +38,8 @@ class NVHostedNimGenerator(Generator):
 
     """
 
+    # per https://docs.nvidia.com/ai-enterprise/nim-llm/latest/openai-api.html
+    # 2024.05.02, `n>1` is not supported
     supports_multiple_generations = False
     generator_family_name = "NIM"
     temperature = 0.1
@@ -80,7 +83,7 @@ class NVHostedNimGenerator(Generator):
         ),
         max_value=70,
     )
-    def _call_model(self, prompt: str) -> Union[str, None]:
+    def _call_model(self, prompt: str) -> Union[str, None, List[str]]:
         if prompt == "":
             return ""
 
@@ -98,7 +101,9 @@ class NVHostedNimGenerator(Generator):
         if self.seed is not None:
             payload["seed"] = self.seed
 
-        response = requests.post(self.url, json=payload, headers=self.headers)
+        response = requests.post(
+            self.url, json=payload, headers=self.headers, timeout=self.timeout
+        )
 
         if 400 <= response.status_code <= 599:
             logging.warning("nim : returned error code %s", response.status_code)
@@ -118,10 +123,18 @@ class NVHostedNimGenerator(Generator):
         else:
             response_body = response.json()
 
-            # per https://docs.nvidia.com/ai-enterprise/nim-llm/latest/openai-api.html
-            # `n>1` is not supported, so the [0] is safe.
-            #
-            return response_body["choices"][0]["message"]["content"]
+            try:
+                responses = [
+                    choice["message"]["content"] for choice in response_body["choices"]
+                ]
+            except Exception as e:
+                logging.warning("Problem parsing NIM response: %s" % repr(e))
+                return None
+
+            if self.supports_multiple_generations:
+                return responses
+            else:
+                return responses[0]
 
 
 default_class = "NVHostedNimGenerator"
