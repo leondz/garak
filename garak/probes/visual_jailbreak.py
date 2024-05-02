@@ -134,13 +134,13 @@ class FigStepTiny(FigStep, Probe):
             for prompt in self.prompts
         ]
 
-        # We want 8 image prompts for 10 topics seperately
-        # Assume we have downloaded full SafeBench dataset with 500 image prompts
+        # Retain tiny version of SafeBench only
+        # Namely we want first 5 image prompts for each 10 types
         # https://github.com/ThuCCSLab/FigStep#:~:text=500%20questions%20on%2010%20topics
         self.prompts = [
             prompt
             for prompt in self.prompts
-            if 1 <= int(os.path.basename(prompt["image"]).split("_")[3]) <= 8
+            if os.path.basename(prompt["image"]) in self.safebench_image_filenames
         ]
         if len(self.prompts) != len(self.safebench_image_filenames):
             logging.warning(
