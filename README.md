@@ -8,7 +8,7 @@
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Documentation Status](https://readthedocs.org/projects/garak/badge/?version=latest)](http://garak.readthedocs.io/en/latest/?badge=latest)
-[![discord-img](https://img.shields.io/badge/chat-on%20discord-yellow.svg)](https://discord.gg/cnAJ8XgY)
+[![discord-img](https://img.shields.io/badge/chat-on%20discord-yellow.svg)](https://discord.gg/uVch4puUCs)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/garak)](https://pypi.org/project/garak)
 [![PyPI](https://badge.fury.io/py/garak.svg)](https://badge.fury.io/py/garak)
@@ -18,7 +18,7 @@
 
 ## Get started
 ### > See our user guide! [docs.garak.ai](https://docs.garak.ai/)
-### > Join our [Discord](https://discord.gg/xH3rs3ZH4B)!
+### > Join our [Discord](https://discord.gg/uVch4puUCs)!
 ### > Project links & home: [garak.ai](https://garak.ai/)
 ### > Twitter: [@garak_llm](https://twitter.com/garak_llm)
 
@@ -81,7 +81,7 @@ To specify a generator, use the `--model_type` and, optionally, the `--model_nam
 
 `garak` runs all the probes by default, but you can be specific about that too. `--probes promptinject` will use only the [PromptInject](https://github.com/agencyenterprise/promptinject) framework's methods, for example. You can also specify one specific plugin instead of a plugin family by adding the plugin name after a `.`; for example, `--probes lmrc.SlurUsage` will use an implementation of checking for models generating slurs based on the [Language Model Risk Cards](https://arxiv.org/abs/2303.18190) framework.
 
-For help & inspiration, find us on [twitter](https://twitter.com/garak_llm) or [discord](https://discord.gg/xH3rs3ZH4B)!
+For help & inspiration, find us on [twitter](https://twitter.com/garak_llm) or [discord](https://discord.gg/uVch4puUCs)!
 
 ## Examples
 

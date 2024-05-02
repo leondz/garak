@@ -14,7 +14,7 @@ and you don't care about its internals, then you want the user guide. Take a loo
 On the other hand, if you'd like a to get into the the details or work out how 
 to contribute code, you're in the right place - welcome!
 
-You can also join our `Discord <https://discord.gg/xH3rs3ZH4B>`_
+You can also join our `Discord <https://discord.gg/uVch4puUCs>`_
 and follow us on `Twitter <https://twitter.com/garak_llm>`_!
 
 Check out the :doc:`usage` section for further information, including :ref:`installation`.
@@ -23,7 +23,7 @@ Check out the :doc:`usage` section for further information, including :ref:`inst
 
    This project is under active development. We love writing and fixing docs, so
    let us know if there's anything wrong, confusing, or missing here --
-   mail `docs@garak.ai <mailto:docs@garak.ai>`_ or drop us a note on `Discord <https://discord.gg/xH3rs3ZH4B>`_. 
+   mail `docs@garak.ai <mailto:docs@garak.ai>`_ or drop us a note on `Discord <https://discord.gg/uVch4puUCs>`_. 
    Thank you!
 
 Contents
