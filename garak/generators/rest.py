@@ -13,6 +13,7 @@ from typing import List
 import requests
 
 import backoff
+import jsonpath_ng
 
 from garak import _config
 from garak.generators.base import Generator
@@ -260,7 +261,28 @@ class RestGenerator(Generator):
 
         try:
             response_object = json.loads(resp.content)
-            return response_object[self.response_json_field]
+            # if response_json_field starts with a $, treat is as a JSONPath
+            if self.response_json_field[0] != "$":
+                response = response_object[self.response_json_field]
+            else:
+                # it looks like a json path. do we need to prepend a $ ?
+                field_path_expr = jsonpath_ng.parse(self.response_json_field)
+                responses = field_path_expr.find(response_object)
+                if len(responses) == 1:
+                    if isinstance(responses[0].value, str):
+                        response = [responses[0].value]
+                    elif isinstance(response[0].value, list):
+                        response = responses[0].value
+                elif len(responses) > 1:
+                    response = [r.value for r in responses]
+                else:
+                    logging.error(
+                        "RestGenerator JSONPath in response_json_field yielded nothing. Response content:"
+                        + repr(resp.content)
+                    )
+                    return None
+
+            return response
         except json.decoder.JSONDecodeError as e:
             logging.warning(
                 "REST endpoint didn't return good JSON %s: got |%s|",
