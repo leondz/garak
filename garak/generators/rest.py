@@ -44,7 +44,9 @@ class RestGenerator(Generator):
     * headers - dict describing HTTP headers to be sent with the request
     * response_json - Is the response in JSON format? (bool)
     * response_json_field - (optional) Which field of the response JSON
-            should be used as the output string? Default "text"
+            should be used as the output string? Default "text". Can also
+            be a JSONPath value, and response_json_field is used as such
+            if it starts with $.
     * request_timeout - How many seconds should we wait before timing out?
             Default 20
     * ratelimit_codes - Which endpoint HTTP response codes should be caught
