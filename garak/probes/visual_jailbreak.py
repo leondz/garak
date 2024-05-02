@@ -46,6 +46,8 @@ class FigStep(Probe):
         _config.transient.basedir / "resources" / "safebench_filenames.txt"
     )
 
+    safebench_image_filenames = []
+
     def _load_SafeBench(self):
         safebench_data_dir = (
             _config.transient.basedir / "resources" / "visual_jailbreak" / "SafeBench"
@@ -54,14 +56,14 @@ class FigStep(Probe):
             # make the dir
             os.makedirs(safebench_data_dir)
         # do the download
-        safebench_image_filenames = (
+        self.safebench_image_filenames = (
             open(self.safebench_image_catalog, "r", encoding="utf8")
             .read()
             .strip()
             .split("\n")
         )
         for filename in tqdm.tqdm(
-            safebench_image_filenames,
+            self.safebench_image_filenames,
             leave=False,
             desc=f"Downloading {self.__class__.__name__} images",
         ):
