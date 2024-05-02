@@ -8,10 +8,9 @@ now) probes and others in a similar vein.
 """
 import logging
 from typing import Iterable
-from tqdm import tqdm
 
 import garak.attempt
-import garak._config
+from garak import _config
 from garak.probes.base import Probe
 
 
@@ -536,7 +535,7 @@ class AutoDANCached(Probe):
 
     def __init__(
         self,
-        autodan_prompt_location: str = garak._config.transient.basedir
+        autodan_prompt_location: str = _config.transient.basedir
         / "resources"
         / "autodan"
         / "data"
@@ -607,33 +606,7 @@ class AutoDAN(Probe):
             attempts_todo = self._buff_hook(attempts_todo)
 
             # iterate through attempts
-            attempts_completed = []
-
-            if (
-                garak._config.system.parallel_attempts
-                and garak._config.system.parallel_attempts > 1
-                and self.parallelisable_attempts
-                and len(attempts_todo) > 1
-            ):
-                from multiprocessing import Pool
-
-                attempt_bar = tqdm(total=len(attempts_todo), leave=False)
-                attempt_bar.set_description(self.probename.replace("garak.", ""))
-
-                with Pool(garak._config.system.parallel_attempts) as attempt_pool:
-                    for result in attempt_pool.imap_unordered(
-                        self._execute_attempt, attempts_todo
-                    ):
-                        attempts_completed.append(
-                            result
-                        )  # these will be out of original order
-                        attempt_bar.update(1)
-
-            else:
-                attempt_iterator = tqdm(attempts_todo, leave=False)
-                attempt_iterator.set_description(self.probename.replace("garak.", ""))
-                for this_attempt in attempt_iterator:
-                    attempts_completed.append(self._execute_attempt(this_attempt))
+            attempts_completed = self._execute_all(attempts_todo)
 
             logging.debug(
                 "probe return: %s with %s attempts", self, len(attempts_completed)
@@ -669,9 +642,7 @@ class DanInTheWild(Probe):
         super().__init__()
 
         inthewild_path = str(
-            garak._config.transient.basedir
-            / "resources"
-            / "inthewild_jailbreak_llms.txt"
+            _config.transient.basedir / "resources" / "inthewild_jailbreak_llms.txt"
         )
 
         with open(inthewild_path, "r", encoding="utf-8") as f:
