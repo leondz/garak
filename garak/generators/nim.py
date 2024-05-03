@@ -18,7 +18,7 @@ from garak import _config
 from garak.generators.base import Generator
 
 
-class NVHostedNimGenerator(Generator):
+class NVHostedNimGenerator(OpenAICompatible):
     """Wrapper for NVIDIA-hosted NIMs. Expects NIM_API_KEY environment variable.
 
     Uses the [OpenAI-compatible API](https://docs.nvidia.com/ai-enterprise/nim-llm/latest/openai-api.html)
