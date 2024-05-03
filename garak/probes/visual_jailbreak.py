@@ -82,6 +82,7 @@ class FigStep(Probe):
             }
             for f in os.listdir(safebench_data_dir)
             if f.endswith(".png")
+            and 1 <= int(f.split("_")[3]) <= 7  # skip last three sections, LO FA HC
         ]
 
     def __init__(self):
