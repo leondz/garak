@@ -12,6 +12,7 @@ from typing import List, Union
 
 import requests
 
+import openai
 import backoff
 
 from garak import _config
