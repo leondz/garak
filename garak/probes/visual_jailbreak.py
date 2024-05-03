@@ -56,12 +56,8 @@ class FigStep(Probe):
             # make the dir
             os.makedirs(safebench_data_dir)
         # do the download
-        self.safebench_image_filenames = (
-            open(self.safebench_image_catalog, "r", encoding="utf8")
-            .read()
-            .strip()
-            .split("\n")
-        )
+        with open(self.safebench_image_catalog, "r", encoding="utf8") as _f:
+            self.safebench_image_filenames = _f.read().strip().split("\n")
         for filename in tqdm.tqdm(
             self.safebench_image_filenames,
             leave=False,
@@ -82,6 +78,7 @@ class FigStep(Probe):
             }
             for f in os.listdir(safebench_data_dir)
             if f.endswith(".png")
+            and 1 <= int(f.split("_")[3]) <= 7  # skip last three sections, LO FA HC
         ]
 
     def __init__(self):
