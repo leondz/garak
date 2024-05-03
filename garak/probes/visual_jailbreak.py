@@ -56,12 +56,8 @@ class FigStep(Probe):
             # make the dir
             os.makedirs(safebench_data_dir)
         # do the download
-        self.safebench_image_filenames = (
-            open(self.safebench_image_catalog, "r", encoding="utf8")
-            .read()
-            .strip()
-            .split("\n")
-        )
+        with open(self.safebench_image_catalog, "r", encoding="utf8") as _f:
+            self.safebench_image_filenames = _f.read().strip().split("\n")
         for filename in tqdm.tqdm(
             self.safebench_image_filenames,
             leave=False,
