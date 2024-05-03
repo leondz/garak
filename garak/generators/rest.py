@@ -180,6 +180,19 @@ class RestGenerator(Generator):
 
         self.rest_api_key = os.getenv(self.key_env_var, default=None)
 
+        # validate jsonpath
+        if self.response_json and self.response_json_field:
+            try:
+                self.json_expr = jsonpath_ng.parse(self.response_json_field)
+            except JsonPathParserError as e:
+                logging.CRITICAL(
+                    "Couldn't parse response_json_field %s", self.response_json_field
+                )
+                raise e
+
+        if _config.run.generations:
+            generations = _config.run.generations
+
         super().__init__(uri, generations=generations)
 
     def _json_escape(self, text: str) -> str:
@@ -259,39 +272,32 @@ class RestGenerator(Generator):
                 raise ConnectionError(error_msg)
 
         if not self.response_json:
-            return str(resp.content)
+            return str(resp.text)
 
-        try:
-            response_object = json.loads(resp.content)
-            # if response_json_field starts with a $, treat is as a JSONPath
-            if self.response_json_field[0] != "$":
-                response = response_object[self.response_json_field]
+        response_object = json.loads(resp.content)
+
+        # if response_json_field starts with a $, treat is as a JSONPath
+        if self.response_json_field[0] != "$":
+            response = response_object[self.response_json_field]
+        else:
+            field_path_expr = jsonpath_ng.parse(self.response_json_field)
+            responses = field_path_expr.find(response_object)
+            if len(responses) == 1:
+                response_value = responses[0].value
+                if isinstance(response_value, str):
+                    response = [response_value]
+                elif isinstance(response_value, list):
+                    response = response_value
+            elif len(responses) > 1:
+                response = [r.value for r in responses]
             else:
-                # it looks like a json path. do we need to prepend a $ ?
-                field_path_expr = jsonpath_ng.parse(self.response_json_field)
-                responses = field_path_expr.find(response_object)
-                if len(responses) == 1:
-                    if isinstance(responses[0].value, str):
-                        response = [responses[0].value]
-                    elif isinstance(response[0].value, list):
-                        response = responses[0].value
-                elif len(responses) > 1:
-                    response = [r.value for r in responses]
-                else:
-                    logging.error(
-                        "RestGenerator JSONPath in response_json_field yielded nothing. Response content:"
-                        + repr(resp.content)
-                    )
-                    return None
+                logging.error(
+                    "RestGenerator JSONPath in response_json_field yielded nothing. Response content: %s"
+                    % repr(resp.content)
+                )
+                return None
 
-            return response
-        except json.decoder.JSONDecodeError as e:
-            logging.warning(
-                "REST endpoint didn't return good JSON %s: got |%s|",
-                str(e),
-                resp.content,
-            )
-            return None
+        return response
 
 
 default_class = "RestGenerator"
