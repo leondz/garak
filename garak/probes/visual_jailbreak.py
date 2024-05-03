@@ -111,7 +111,7 @@ class FigStep(Probe):
 
 
 class FigStepTiny(FigStep, Probe):
-    active = True
+    active = False
 
     __doc__ = FigStep.__doc__ + " - Tiny version"
 
