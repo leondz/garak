@@ -40,6 +40,7 @@ class NVHostedNimGenerator(Generator):
 
     # per https://docs.nvidia.com/ai-enterprise/nim-llm/latest/openai-api.html
     # 2024.05.02, `n>1` is not supported
+    ENV_VAR="NIM_API_KEY"
     supports_multiple_generations = False
     generator_family_name = "NIM"
     temperature = 0.1
