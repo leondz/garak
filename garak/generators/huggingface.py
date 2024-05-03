@@ -23,6 +23,8 @@ import warnings
 
 import backoff
 import torch
+from PIL import Image
+from transformers import LlavaNextProcessor, LlavaNextForConditionalGeneration
 
 from garak import _config
 from garak.generators.base import Generator
@@ -509,5 +511,58 @@ class Model(Generator, HFCompatible):
         else:
             return [re.sub("^" + re.escape(prompt), "", i) for i in text_output]
 
+class LLaVA(Generator):
+    """Get LLaVA ([ text + image ] -> text) generations"""
+
+    # "exist_tokens + max_new_tokens < 4K is the golden rule."
+    # https://github.com/haotian-liu/LLaVA/issues/1095#:~:text=Conceptually%2C%20as%20long%20as%20the%20total%20tokens%20are%20within%204K%2C%20it%20would%20be%20fine%2C%20so%20exist_tokens%20%2B%20max_new_tokens%20%3C%204K%20is%20the%20golden%20rule.
+    max_tokens = 4000
+
+    # rewrite modality setting
+    modality = {
+        'in': {'text', 'image'}, 
+        'out': {'text'}
+    }
+
+    # Support Image-Text-to-Text models
+    # https://huggingface.co/llava-hf#:~:text=Llava-,Models,-9
+    supported_models = [
+        "llava-hf/llava-v1.6-34b-hf", 
+        "llava-hf/llava-v1.6-vicuna-13b-hf", 
+        "llava-hf/llava-v1.6-vicuna-7b-hf", 
+        "llava-hf/llava-v1.6-mistral-7b-hf"
+    ]
+    
+    def __init__(self, name="", generations=10):
+        if name not in self.supported_models:
+            raise ValueError(
+                f"Invalid modal name {name}, current support: {self.supported_models}."
+            )
+        self.processor = LlavaNextProcessor.from_pretrained(name)
+        self.model = LlavaNextForConditionalGeneration.from_pretrained(name, 
+                                                                       torch_dtype=torch.float16, 
+                                                                       low_cpu_mem_usage=True)
+        if torch.cuda.is_available():
+            self.model.to("cuda:0")  
+        else:
+            raise RuntimeError("CUDA is not supported on this device. Please make sure CUDA is installed and configured properly.") 
+        
+    def generate(self, prompt) -> List[str]:
+        text_prompt = prompt['text']
+        try:
+            image_prompt = Image.open(prompt['image'])
+        except FileNotFoundError:
+            raise FileNotFoundError(
+                f"Cannot open image {prompt['image']}."
+            )
+        except Exception as e:
+            raise Exception(e)
+        
+        inputs = self.processor(text_prompt, image_prompt, return_tensors="pt").to("cuda:0")
+        exist_token_number: int = inputs.data['input_ids'].shape[1]
+        output = self.model.generate(**inputs, max_new_tokens = self.max_tokens - exist_token_number)
+        output = self.processor.decode(output[0], skip_special_tokens=True)
+        
+        return [output]
 
 default_class = "Pipeline"
