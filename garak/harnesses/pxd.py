@@ -49,8 +49,6 @@ class PxD(Harness):
                 print(message)
                 logging.warning(message)
                 continue
-            if not probe.active:
-                continue
             detectors = []
             for detector_name in detector_names:
                 detector = _plugins.load_plugin(detector_name, break_on_fail=False)
