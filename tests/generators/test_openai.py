@@ -16,9 +16,9 @@ def test_openai_version():
 
 
 def test_openai_invalid_model_names():
-    with pytest.raises(Exception) as e_info:
+    with pytest.raises(ValueError) as e_info:
         generator = OpenAIGenerator(name="")
-    with pytest.raises(Exception) as e_info:
+    with pytest.raises(ValueError) as e_info:
         generator = OpenAIGenerator(name="this is not a real model name")
 
 
