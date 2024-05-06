@@ -52,91 +52,23 @@ class NVHostedNimGenerator(OpenAICompatible):
 
     timeout = 60
 
-    def __init__(self, name=None, generations=10):
-        self.name = name
-        self.fullname = f"NIM {self.name}"
-        self.seed = _config.run.seed
+    def _load_client(self):
+        self.client = openai.OpenAI(base_url=self.url, api_key=self.api_key)
 
-        if self.name is None:
-            raise ValueError("Please specify a NIM in model name (-n)")
-
-        super().__init__(name, generations=generations)
-
-        self.api_key = os.getenv("NIM_API_KEY", default=None)
-        if self.api_key is None:
-            raise ValueError(
-                'Put the NIM API key in the NIM_API_KEY environment variable (this was empty)\n \
-                e.g.: export NIM_API_KEY="nvapi-xXxXxXxXxXxXxXxXxXxX"'
-            )
-
-        self.headers = {
-            "Authorization": f"Bearer {self.api_key}",
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-        }
-
-    @backoff.on_exception(
-        backoff.fibo,
-        (
-            AttributeError,
-            TimeoutError,
-            requests.exceptions.HTTPError,
-            requests.exceptions.ConnectionError,
-        ),
-        max_value=70,
-    )
-    def _call_model(self, prompt: str) -> Union[str, None, List[str]]:
-        if prompt == "":
-            return ""
-
-        payload = {
-            "model": self.name,
-            "max_tokens": self.max_tokens,
-            "stream": False,
-            "temperature": self.temperature,
-            "top_p": self.top_p,
-            "frequency_penalty": 0,
-            "presence_penalty": 0,
-            "messages": [{"role": "user", "content": prompt}],
-        }
-
-        if self.seed is not None:
-            payload["seed"] = self.seed
-
-        response = requests.post(
-            self.url, json=payload, headers=self.headers, timeout=self.timeout
-        )
-
-        if 400 <= response.status_code <= 599:
-            logging.warning("nim : returned error code %s", response.status_code)
-            logging.warning("nim : returned error body %s", response.content)
-            if response.status_code >= 500:
-                if response.status_code == 500 and json.loads(response.content)[
-                    "detail"
-                ].startswith("Input value error"):
-                    logging.warning("nim : skipping this prompt")
-                    return None
-                else:
-                    response.raise_for_status()
-            else:
-                logging.warning("nim : skipping this prompt")
-                return None
-
+        if self.name in completion_models:
+            self.generator = self.client.completions
+        elif self.name in chat_models:
+            self.generator = self.client.chat.completions
+        elif "-".join(self.name.split("-")[:-1]) in chat_models and re.match(
+            r"^.+-[01][0-9][0-3][0-9]$", self.name
+        ):  # handle model names -MMDDish suffix
+            self.generator = self.client.completions
         else:
-            response_body = response.json()
+            self.generator = self.client.completions  # fallback as chat for `unknown`
 
-            try:
-                responses = [
-                    choice["message"]["content"] for choice in response_body["choices"]
-                ]
-            except Exception as e:
-                logging.warning("Problem parsing NIM response: %s" % repr(e))
-                return None
-
-            if self.supports_multiple_generations:
-                return responses
-            else:
-                return responses[0]
+    def _clear_client(self):
+        self.generator = None
+        self.client = None
 
 
 default_class = "NVHostedNimGenerator"
