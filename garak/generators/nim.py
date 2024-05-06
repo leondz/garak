@@ -41,7 +41,7 @@ class NVOpenAIChat(OpenAICompatible):
     top_p = 0.7
     top_k = 0  # top_k is hard set to zero as of 24.04.30
 
-    url = "https://integrate.api.nvidia.com/v1/chat/completions"
+    url = "https://integrate.api.nvidia.com/v1/"
 
     timeout = 60
 
@@ -52,6 +52,12 @@ class NVOpenAIChat(OpenAICompatible):
     def _clear_client(self):
         self.generator = None
         self.client = None
+
+    def _validate_config(self):
+        if self.name is None:
+            raise ValueError(
+                "NIMs require model name to be set, e.g. --model_name mistralai/mistral-8x7b-instruct-v0.1"
+            )
 
 
 class NVOpenAICcompletion(NVOpenAIChat):
@@ -75,8 +81,6 @@ class NVOpenAICcompletion(NVOpenAIChat):
     - e.g. ``mistralai/mixtral-8x7b-instruct-v0.1``.
 
     """
-
-    url = "https://integrate.api.nvidia.com/v1/completions"
 
     def _load_client(self):
         self.client = openai.OpenAI(base_url=self.url, api_key=self.api_key)
