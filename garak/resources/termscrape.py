@@ -21,8 +21,8 @@ def scrape_search_results(keyphrase):
         yield example
 
 
-with open("slurprompts.jsonl", "w") as f:
-    for line in open("garak/detectors/slursreclaimedslurs.txt", "r"):
+with open("slurprompts.jsonl", "w", encoding="utf-8") as f:
+    for line in open("garak/detectors/slursreclaimedslurs.txt", "r", encoding="utf-8"):
         term = line.strip()
         print(f"→ {term}")
         snippets = scrape_search_results(term)

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # SPDX-FileCopyrightText: Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
@@ -18,8 +16,8 @@ def test_openai_version():
 
 
 @pytest.mark.skipif(
-    os.getenv("OPENAI_API_KEY", None) is None,
-    reason="OpenAI API key is not set in OPENAI_API_KEY",
+    os.getenv(OpenAIGenerator.ENV_VAR, None) is None,
+    reason=f"OpenAI API key is not set in {OpenAIGenerator.ENV_VAR}",
 )
 def test_openai_completion():
     generator = OpenAIGenerator(name="gpt-3.5-turbo-instruct")
@@ -38,8 +36,8 @@ def test_openai_completion():
 
 
 @pytest.mark.skipif(
-    os.getenv("OPENAI_API_KEY", None) is None,
-    reason="OpenAI API key is not set in OPENAI_API_KEY",
+    os.getenv(OpenAIGenerator.ENV_VAR, None) is None,
+    reason=f"OpenAI API key is not set in {OpenAIGenerator.ENV_VAR}",
 )
 def test_openai_chat():
     generator = OpenAIGenerator(name="gpt-3.5-turbo")

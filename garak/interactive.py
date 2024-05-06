@@ -1,16 +1,19 @@
-#! /usr/bin/env python3
+#!/usr/bin/env python3
 
 # SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 import argparse
-from logging import getLogger
-import cmd2
-import sys
-from colorama import Fore, Style
 import importlib
+from logging import getLogger
+import random
+import sys
+
+import cmd2
+from colorama import Fore, Style
 
 import garak.harnesses.probewise
+from garak import _config
 from garak.evaluators import ThresholdEvaluator
 from garak._plugins import enumerate_plugins
 
@@ -235,10 +238,20 @@ class GarakTerminal(cmd2.Cmd):
         return ns
 
 
+def banner():
+    """Display a random banner"""
+    with open(
+        _config.transient.basedir / "resources/banners", "r", encoding="utf-8"
+    ) as bannerfile:
+        banners = bannerfile.read().lstrip().split("\n\n")
+        print(Fore.LIGHTRED_EX + f"\n{random.choice(banners)}\n" + Fore.RESET)
+
+
 def interactive_mode():
     """
     Launch garak in interactive mode. Allows users to explore and use garak without CLI flags.
     """
+    banner()
     terminal = GarakTerminal()
     sys.exit(terminal.cmdloop())
 
