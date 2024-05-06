@@ -28,10 +28,7 @@ class Generator:
     # support mainstream any-to-any large models
     # legal element for str list `modality['in']`: 'text', 'image', 'audio', 'video', '3d'
     # refer to Table 1 in https://arxiv.org/abs/2401.13601
-    modality: dict = {
-        'in': {'text'}, 
-        'out': {'text'} 
-    }
+    modality: dict = {"in": {"text"}, "out": {"text"}}
 
     supports_multiple_generations = (
         False  # can more than one generation be extracted per request?
@@ -127,7 +124,7 @@ class Generator:
                 )
                 generation_iterator.set_description(self.fullname[:55])
                 for i in generation_iterator:
-                    outputs.append(self._call_model(prompt, generations_this_call))
+                    outputs.append(self._call_model(prompt, generations_this_call=1))
 
             cleaned_outputs = [
                 o for o in outputs if o is not None
