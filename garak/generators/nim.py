@@ -16,7 +16,10 @@ import openai
 import backoff
 
 from garak import _config
-from garak.generators.base import Generator
+from garak.generators.openai import OpenAICompatible
+
+chat_models = ("meta/llama3-70b-instruct",)
+completion_models = ()
 
 
 class NVHostedNimGenerator(OpenAICompatible):
