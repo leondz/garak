@@ -66,7 +66,7 @@ class NVOpenAIChat(OpenAICompatible):
         return super()._call_model(prompt, generations_this_call)
 
 
-class NVOpenAICcompletion(NVOpenAIChat):
+class NVOpenAICompletion(NVOpenAIChat):
     """Wrapper for NVIDIA-hosted NIMs. Expects NIM_API_KEY environment variable.
 
     Uses the [OpenAI-compatible API](https://docs.nvidia.com/ai-enterprise/nim-llm/latest/openai-api.html)
