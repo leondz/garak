@@ -51,7 +51,7 @@ class NVHostedNimGenerator(OpenAICompatible):
     top_p = 0.7
     top_k = 0  # top_k is hard set to zero as of 24.04.30
 
-    url = "https://integrate.api.nvidia.com/v1/chat/completions"
+    url = "https://integrate.api.nvidia.com/v1"
 
     timeout = 60
 
