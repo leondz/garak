@@ -15,6 +15,13 @@ def test_openai_version():
     assert openai.__version__.split(".")[0] == "1"  # expect openai module v1.x
 
 
+def test_openai_invalid_model_names():
+    with pytest.raises(Exception) as e_info:
+        generator = OpenAIGenerator(name="")
+    with pytest.raises(Exception) as e_info:
+        generator = OpenAIGenerator(name="this is not a real model name")
+
+
 @pytest.mark.skipif(
     os.getenv(OpenAIGenerator.ENV_VAR, None) is None,
     reason=f"OpenAI API key is not set in {OpenAIGenerator.ENV_VAR}",
