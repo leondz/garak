@@ -45,17 +45,18 @@ class NVOpenAIChat(OpenAICompatible):
 
     def _load_client(self):
         self.client = openai.OpenAI(base_url=self.url, api_key=self.api_key)
+        if self.name in ("", None):
+            raise ValueError(
+                "NIMs require model name to be set, e.g. --model_name mistralai/mistral-8x7b-instruct-v0.1\nCurrent models:\n"
+                + "\n - ".join(
+                    sorted([entry.id for entry in self.client.models.list().data])
+                )
+            )
         self.generator = self.client.chat.completions
 
     def _clear_client(self):
         self.generator = None
         self.client = None
-
-    def _validate_config(self):
-        if self.name is None:
-            raise ValueError(
-                "NIMs require model name to be set, e.g. --model_name mistralai/mistral-8x7b-instruct-v0.1"
-            )
 
     def _call_model(
         self, prompt: str | List[dict], generations_this_call: int = 1
