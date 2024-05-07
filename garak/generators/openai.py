@@ -209,6 +209,16 @@ class OpenAIGenerator(OpenAICompatible):
     def _load_client(self):
         self.client = openai.OpenAI(api_key=self.api_key)
 
+        if self.name == "":
+            openai_model_list = sorted([m.id for m in self.client.models.list().data])
+            raise ValueError(
+                f"Model name is required for {self.generator_family_name}, use --model_name\n"
+                + "  API returns following available models: ▶️   "
+                + "  ".join(openai_model_list)
+                + "\n"
+                + "  ⚠️  Not all these are text generation models"
+            )
+
         if self.name in completion_models:
             self.generator = self.client.completions
         elif self.name in chat_models:
@@ -225,17 +235,6 @@ class OpenAIGenerator(OpenAICompatible):
     def _clear_client(self):
         self.generator = None
         self.client = None
-
-    def _validate_config(self):
-        if self.name == "":
-            openai_model_list = sorted([m.id for m in self.client.models.list().data])
-            raise ValueError(
-                f"Model name is required for {self.generator_family_name}, use --model_name\n"
-                + "  API returns following available models: ▶️   "
-                + "  ".join(openai_model_list)
-                + "\n"
-                + "  ⚠️  Not all these are text generation models"
-            )
 
     def __init__(self, name):
         if self.name in context_lengths:
