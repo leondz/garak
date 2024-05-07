@@ -124,7 +124,7 @@ class Generator:
                 )
                 generation_iterator.set_description(self.fullname[:55])
                 for i in generation_iterator:
-                    outputs.append(self._call_model(prompt, generations_this_call=1))
+                    outputs.append(self._call_model(prompt, 1)) # generate once as `generation_iterator` consumes `generations_this_call`
 
             cleaned_outputs = [
                 o for o in outputs if o is not None
