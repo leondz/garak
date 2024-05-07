@@ -40,7 +40,7 @@ class Single(Generator):
 
     def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[str]:
         if generations_this_call == 1:
-            return self.test_generation_string
+            return [self.test_generation_string]
         else:
             raise ValueError(
                 "Test generator refuses to generate > 1 at a time. Check generation logic"

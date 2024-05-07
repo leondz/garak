@@ -96,7 +96,7 @@ class Generator:
             return self._call_model(prompt, generations_this_call)
 
         elif generations_this_call <= 1:
-            return [self._call_model(prompt, generations_this_call)]
+            return self._call_model(prompt, generations_this_call)
 
         else:
             outputs = []
@@ -124,7 +124,19 @@ class Generator:
                 )
                 generation_iterator.set_description(self.fullname[:55])
                 for i in generation_iterator:
-                    outputs.append(self._call_model(prompt, 1)) # generate once as `generation_iterator` consumes `generations_this_call`
+                    output_one = self._call_model(
+                        prompt, 1
+                    )  # generate once as `generation_iterator` consumes `generations_this_call`
+                    assert isinstance(
+                        output_one, list
+                    ), "_call_model must return a list"
+                    assert (
+                        len(output_one) == 1
+                    ), "_call_model must return a list of one item when invoked as _call_model(prompt, 1)"
+                    assert (
+                        isinstance(output_one[0], str) or output_one[0] is None
+                    ), "_call_model's item must be a string or None"
+                    outputs.append(output_one[0])
 
             cleaned_outputs = [
                 o for o in outputs if o is not None
