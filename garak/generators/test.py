@@ -36,10 +36,11 @@ class Single(Generator):
     supports_multiple_generations = False
     generator_family_name = "Test"
     name = "Single"
+    test_generation_string = "ELIM"
 
     def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[str]:
         if generations_this_call == 1:
-            return "ELIM"
+            return self.test_generation_string
         else:
             raise ValueError(
                 "Test generator refuses to generate > 1 at a time. Check generation logic"
