@@ -39,7 +39,7 @@ def test_docs_detectors(classname):
     file_path = os.path.join(doc_source, f"garak.detectors.{classname}.rst")
     assert os.path.isfile(file_path)
     assert os.path.getsize(file_path) > 0
-    category_file = os.path.join(doc_source, f"detectors.rst")
+    category_file = os.path.join(doc_source, "detectors.rst")
     target_doc = f"garak.detectors.{classname}\n"
     assert (
         open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
@@ -51,7 +51,7 @@ def test_docs_harnesses(classname):
     file_path = os.path.join(doc_source, f"garak.harnesses.{classname}.rst")
     assert os.path.isfile(file_path)
     assert os.path.getsize(file_path) > 0
-    category_file = os.path.join(doc_source, f"harnesses.rst")
+    category_file = os.path.join(doc_source, "harnesses.rst")
     target_doc = f"garak.harnesses.{classname}\n"
     assert (
         open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
@@ -75,7 +75,7 @@ def test_docs_generators(classname):
     file_path = os.path.join(doc_source, f"garak.generators.{classname}.rst")
     assert os.path.isfile(file_path)
     assert os.path.getsize(file_path) > 0
-    category_file = os.path.join(doc_source, f"generators.rst")
+    category_file = os.path.join(doc_source, "generators.rst")
     target_doc = f"garak.generators.{classname}\n"
     assert (
         open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
@@ -87,7 +87,7 @@ def test_docs_generators(classname):
     file_path = os.path.join(doc_source, f"garak.buffs.{classname}.rst")
     assert os.path.isfile(file_path)
     assert os.path.getsize(file_path) > 0
-    category_file = os.path.join(doc_source, f"buffs.rst")
+    category_file = os.path.join(doc_source, "buffs.rst")
     target_doc = f"garak.buffs.{classname}\n"
     assert (
         open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1

@@ -25,6 +25,14 @@ class Generator:
     generator_family_name = None
     context_len = None
 
+    # support mainstream any-to-any large models
+    # legal element for str list `modality['in']`: 'text', 'image', 'audio', 'video', '3d'
+    # refer to Table 1 in https://arxiv.org/abs/2401.13601
+    modality: dict = {
+        'in': {'text'}, 
+        'out': {'text'} 
+    }
+
     supports_multiple_generations = (
         False  # can more than one generation be extracted per request?
     )
