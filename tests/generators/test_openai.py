@@ -18,8 +18,10 @@ def test_openai_version():
 def test_openai_invalid_model_names():
     with pytest.raises(ValueError) as e_info:
         generator = OpenAIGenerator(name="")
+    assert "please add one!" in str(e_info.value)
     with pytest.raises(ValueError) as e_info:
         generator = OpenAIGenerator(name="this is not a real model name")
+    assert "name is required for" in str(e_info.value)
 
 
 @pytest.mark.skipif(
