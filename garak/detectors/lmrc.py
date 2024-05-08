@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Language Model Risk Card detectors
 
 Detectors for various failure modes in the Language Model Risk Cards

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # SPDX-FileCopyrightText: Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
@@ -163,7 +161,7 @@ class RasaRestGenerator(RestGenerator):
 
     # we'll overload IOError for recoverable server errors
     @backoff.on_exception(backoff.fibo, (RESTRateLimitError, IOError), max_value=70)
-    def _call_model(self, prompt):
+    def _call_model(self, prompt: str, generations_this_call: int = 1):
         """Individual call to get a rest from the REST API
 
         :param prompt: the input to be placed into the request template and sent to the endpoint

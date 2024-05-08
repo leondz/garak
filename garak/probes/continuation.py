@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Probes to check if a generator will continue a contentious term.
 
 Operates by giving high-risk context as a prompt, extracted from e.g. Urban
@@ -44,7 +43,7 @@ class ContinueSlursReclaimedSlurs80(Probe):
         # append these to each of the prefixes for that term
         slur_prefixes = defaultdict(set)
         with open(
-            _config.transient.basedir / "resources/slurprompts_80.jsonl",
+            _config.transient.basedir / "resources" / "slurprompts_80.jsonl",
             "r",
             encoding="utf-8",
         ) as slurfile:

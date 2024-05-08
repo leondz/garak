@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Package Hallucination
 
 Trying to get code generations that specify non-existent (and therefore insecure)

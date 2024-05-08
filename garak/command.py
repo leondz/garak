@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
@@ -38,7 +36,7 @@ def start_run():
 
     logging.info("started at %s", _config.transient.starttime_iso)
     # print("ASSIGN UUID", args)
-    if _config.system.lite and "probes" not in _config.transient.cli_args and not _config.transient.cli_args.list_probes and not _config.transient.cli_args.list_detectors and not _config.transient.cli_args.list_generators and not _config.transient.cli_args.list_buffs and not _config.transient.cli_args.list_config and not _config.transient.cli_args.plugin_info:  # type: ignore
+    if _config.system.lite and "probes" not in _config.transient.cli_args and not _config.transient.cli_args.list_probes and not _config.transient.cli_args.list_detectors and not _config.transient.cli_args.list_generators and not _config.transient.cli_args.list_buffs and not _config.transient.cli_args.list_config and not _config.transient.cli_args.plugin_info and not _config.run.interactive:  # type: ignore
         print(
             "⚠️ The current/default config is optimised for speed rather than thoroughness. Try e.g. --config full for a stronger test, or specify some probes."
         )

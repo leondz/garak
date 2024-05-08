@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
@@ -44,6 +42,13 @@ class Probe:
     parallelisable_attempts: bool = True
     # Keeps state of whether a buff is loaded that requires a call to untransform model outputs
     post_buff_hook: bool = False
+    # support mainstream any-to-any large models
+    # legal element for str list `modality['in']`: 'text', 'image', 'audio', 'video', '3d'
+    # refer to Table 1 in https://arxiv.org/abs/2401.13601
+    # we focus on LLM input for probe
+    modality: dict = {
+        'in': {'text'}
+    }
 
     def __init__(self):
         """Sets up a probe. This constructor:
@@ -141,9 +146,43 @@ class Probe:
         if self.post_buff_hook:
             this_attempt = self._postprocess_buff(this_attempt)
         this_attempt = self._postprocess_hook(this_attempt)
-        _config.transient.reportfile.write(json.dumps(this_attempt.as_dict()) + "\n")
         self._generator_cleanup()
         return copy.deepcopy(this_attempt)
+
+    def _execute_all(self, attempts) -> Iterable[garak.attempt.Attempt]:
+        attempts_completed: Iterable[garak.attempt.Attempt] = []
+
+        if (
+            _config.system.parallel_attempts
+            and _config.system.parallel_attempts > 1
+            and self.parallelisable_attempts
+            and len(attempts) > 1
+        ):
+            from multiprocessing import Pool
+
+            attempt_bar = tqdm.tqdm(total=len(attempts), leave=False)
+            attempt_bar.set_description(self.probename.replace("garak.", ""))
+
+            with Pool(_config.system.parallel_attempts) as attempt_pool:
+                for result in attempt_pool.imap_unordered(
+                    self._execute_attempt, attempts
+                ):
+                    _config.transient.reportfile.write(
+                        json.dumps(result.as_dict()) + "\n"
+                    )
+                    attempts_completed.append(
+                        result
+                    )  # these will be out of original order
+                    attempt_bar.update(1)
+
+        else:
+            attempt_iterator = tqdm.tqdm(attempts, leave=False)
+            attempt_iterator.set_description(self.probename.replace("garak.", ""))
+            for this_attempt in attempt_iterator:
+                result = self._execute_attempt(this_attempt)
+                _config.transient.reportfile.write(json.dumps(result.as_dict()) + "\n")
+                attempts_completed.append(result)
+        return attempts_completed
 
     def probe(self, generator) -> Iterable[garak.attempt.Attempt]:
         """attempt to exploit the target generator, returning a list of results"""
@@ -162,33 +201,7 @@ class Probe:
             attempts_todo = self._buff_hook(attempts_todo)
 
         # iterate through attempts
-        attempts_completed: Iterable[garak.attempt.Attempt] = []
-
-        if (
-            _config.system.parallel_attempts
-            and _config.system.parallel_attempts > 1
-            and self.parallelisable_attempts
-            and len(attempts_todo) > 1
-        ):
-            from multiprocessing import Pool
-
-            attempt_bar = tqdm.tqdm(total=len(attempts_todo), leave=False)
-            attempt_bar.set_description(self.probename.replace("garak.", ""))
-
-            with Pool(_config.system.parallel_attempts) as attempt_pool:
-                for result in attempt_pool.imap_unordered(
-                    self._execute_attempt, attempts_todo
-                ):
-                    attempts_completed.append(
-                        result
-                    )  # these will be out of original order
-                    attempt_bar.update(1)
-
-        else:
-            attempt_iterator = tqdm.tqdm(attempts_todo, leave=False)
-            attempt_iterator.set_description(self.probename.replace("garak.", ""))
-            for this_attempt in attempt_iterator:
-                attempts_completed.append(self._execute_attempt(this_attempt))
+        attempts_completed = self._execute_all(attempts_todo)
 
         logging.debug(
             "probe return: %s with %s attempts", self, len(attempts_completed)

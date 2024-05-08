@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
@@ -7,7 +5,7 @@
 
 from contextlib import redirect_stderr
 import io
-from typing import List
+from typing import List, Union
 
 from garak.generators.base import Generator
 
@@ -37,7 +35,9 @@ class NeMoGuardrails(Generator):
 
         super().__init__(name, generations=generations)
 
-    def _call_model(self, prompt: str) -> List[str]:
+    def _call_model(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> Union[List[str], str, None]:
         with redirect_stderr(io.StringIO()) as f:  # quieten the tqdm
             result = self.rails.generate(prompt)
 
