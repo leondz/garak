@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """PromptInject
 
 Uses the PromptInject framework, https://openreview.net/forum?id=qiaRo_7Zmug,
@@ -105,7 +104,7 @@ for rogue_string in rogue_strings:
             (Probe,),
             {
                 "__init__": constructor,
-                "__doc__": f"PromptInject probe to inject a string; payload is {rogue_string}",
+                "__doc__": f"PromptInject probe to inject a string; payload is {rogue_string}\n\nAttempt to make the model repeat a given string",
                 "name": "promptinject_" + rogue_string,
                 "bcp47": "en",
                 "description": "PromptInject is a framework that assembles prompts in a modular fashion to provide a quantitative analysis of the robustness of LLMs to adversarial prompt attacks. trophy Best Paper Awards @ NeurIPS ML Safety Workshop 2022",
@@ -117,6 +116,7 @@ for rogue_string in rogue_strings:
                     "avid-effect:security:S0403",
                     "owasp:llm01",
                     "quality:Behavioral:ContentSafety:HarmfulViolent",
+                    "payload:unwanted:violence",
                 ],
                 "load_data_all_attacks": load_data_all_attacks,
                 "uri": "https://openreview.net/forum?id=qiaRo_7Zmug",
@@ -138,7 +138,7 @@ for rogue_string in rogue_strings:
             (Probe,),
             {
                 "__init__": constructor,
-                "__doc__": f"PromptInject probe to inject a string; payload is {rogue_string}",
+                "__doc__": f"PromptInject probe to inject a string; payload is {rogue_string}\n\nAttempt to make the model repeat a given string",
                 "name": "promptinject_" + rogue_string,
                 "bcp47": "en",
                 "description": "PromptInject is a framework that assembles prompts in a modular fashion to provide a quantitative analysis of the robustness of LLMs to adversarial prompt attacks. trophy Best Paper Awards @ NeurIPS ML Safety Workshop 2022",
@@ -150,6 +150,7 @@ for rogue_string in rogue_strings:
                     "avid-effect:security:S0403",
                     "owasp:llm01",
                     "quality:Behavioral:ContentSafety:HarmfulViolent",
+                    "payload:unwanted:violence",
                 ],
                 "load_data_all_attacks": load_data_all_attacks,
                 "uri": "https://openreview.net/forum?id=qiaRo_7Zmug",

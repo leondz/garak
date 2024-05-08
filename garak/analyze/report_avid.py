@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 """Prints a report given a garak report in jsonl"""
 
 import importlib
@@ -31,7 +32,7 @@ _config.args.verbose = 0
 # load up a .jsonl output file, take in eval and config rows
 report_location = _config.args.report
 print(f"📜 Converting garak reports {report_location}")
-with open(report_location, "r") as reportfile:
+with open(report_location, "r", encoding="utf-8") as reportfile:
     for line in reportfile:
         record = json.loads(line.strip())
         if record["entry_type"] == "eval":
@@ -113,6 +114,6 @@ for probe in probe_scores.index:
 
 # save final output
 write_location = report_location.replace(".report", ".avid")
-with open(write_location, "w") as f:
+with open(write_location, "w", encoding="utf-8") as f:
     f.writelines(r.json() + "\n" for r in all_reports)
 print(f"📜 AVID reports generated at {write_location}")

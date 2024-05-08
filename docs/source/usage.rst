@@ -39,7 +39,7 @@ You can also clone the source and run `garak` directly. This works fine and is r
 
 .. code-block:: console
 
-    conda create --name garak "python>=3.9,<3.12"
+    conda create --name garak "python>=3.10,<=3.12"
     conda activate garak
     gh repo clone leondz/garak
     cd garak
@@ -56,13 +56,13 @@ The general syntax is:
 
 .. code-block:: console
 
-    python3 -m garak <options>
+    garak <options>
 
 `garak` needs to know what model to scan, and by default, it'll try all the probes it knows on that model, using the vulnerability detectors recommended by each probe. You can see a list of probes using:
 
 .. code-block:: console
 
-    python3 -m garak --list_probes
+    garak --list_probes
 
 To specify a generator, use the ``--model_name`` and, optionally, the ``--model_type`` options. Model name specifies a model family/interface; model type specifies the exact model to be used. The "Intro to generators" section below describes some of the generators supported. A straightfoward generator family is Hugging Face models; to load one of these, set ``--model_name`` to ``huggingface`` and ``--model_type`` to the model's name on Hub (e.g. "RWKV/rwkv-4-169m-pile"). Some generators might need an API key to be set as an environment variable, and they'll let you know if they need that.
 
@@ -77,12 +77,12 @@ Probe ChatGPT for encoding-based prompt injection (OSX/\*nix) (replace example v
 .. code-block:: console
 
     export OPENAI_API_KEY="sk-123XXXXXXXXXXXX"
-    python3 -m garak --model_type openai --model_name gpt-3.5-turbo --probes encoding
+    garak --model_type openai --model_name gpt-3.5-turbo --probes encoding
 
 
 See if the Hugging Face version of GPT2 is vulnerable to DAN 11.0:
 
 .. code-block:: console
 
-    python3 -m garak --model_type huggingface --model_name gpt2 --probes dan.Dan_11_0
+    garak --model_type huggingface --model_name gpt2 --probes dan.Dan_11_0
 

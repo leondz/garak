@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
@@ -36,10 +34,11 @@ class Buff:
     def __init__(self) -> None:
         module = self.__class__.__module__.replace("garak.buffs.", "")
         self.fullname = f"{module}.{self.__class__.__name__}"
+        self.post_buff_hook = False
         print(
             f"🦾 loading {Style.BRIGHT}{Fore.LIGHTGREEN_EX}buff: {Style.RESET_ALL}{self.fullname}"
         )
-        logging.info(f"buff init: {self}")
+        logging.info("buff init: %s", self)
 
     def _derive_new_attempt(
         self, source_attempt: garak.attempt.Attempt, seq=-1
@@ -61,7 +60,7 @@ class Buff:
         new_attempt.notes["buff_creator"] = self.__class__.__name__
         new_attempt.notes["buff_source_attempt_uuid"] = str(
             source_attempt.uuid
-        )  ## UUIDs don't serialise nice
+        )  # UUIDs don't serialise nicely
         new_attempt.notes["buff_source_seq"] = source_attempt.seq
 
         return new_attempt
@@ -70,7 +69,11 @@ class Buff:
         self, attempt: garak.attempt.Attempt
     ) -> Iterable[garak.attempt.Attempt]:
         """attempt copying is handled elsewhere. isn't that nice"""
-        yield attempt
+        yield self._derive_new_attempt(attempt)
+
+    def untransform(self, attempt: garak.attempt.Attempt) -> garak.attempt.Attempt:
+        """Only necessary if buff requires a post buff hook"""
+        pass
 
     def buff(
         self, source_attempts: List[garak.attempt.Attempt], probename=""
@@ -81,6 +84,7 @@ class Buff:
             leave=False,
         ):
             # create one or more untransformed new attempts
+            # don't include the original attempt/prompt in the buffs: https://github.com/leondz/garak/issues/373
             new_attempts = []
             new_attempts.append(
                 self._derive_new_attempt(source_attempt, source_attempt.seq)

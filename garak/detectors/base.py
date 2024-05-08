@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Base detectors.
 
 These detectors show expectations and operations of any detector implemented 
@@ -26,9 +25,23 @@ class Detector:
     active = True
     tags = []  # list of taxonomy categories per the MISP format
 
+    # support mainstream any-to-any large models
+    # legal element for str list `modality['in']`: 'text', 'image', 'audio', 'video', '3d'
+    # refer to Table 1 in https://arxiv.org/abs/2401.13601
+    # we focus on LLM output for detectors
+    modality: dict = {
+        'out': {'text'} 
+    }
+
     def _set_description(self):
         if "description" not in dir(self):
-            self.description = self.__doc__.split("\n")[0]
+            try:
+                self.description = self.__doc__.split("\n")[0]
+            except AttributeError as ae:
+                err_msg: str = f"Documentation string of class {self.detectorname} is unavailable, \
+                    see https://docs.python.org/3.11/reference/datamodel.html#function.__doc__:~:text=function.__doc__-,The%20function%E2%80%99s%20documentation%20string,-%2C%20or%20None%20if"
+                logging.warning(err_msg)
+                raise ValueError(err_msg)
 
     def __init__(self):
         if "name" not in dir(self):
@@ -117,6 +130,8 @@ class StringDetector(Detector):
         detector_results = []
         for output in attempt.outputs:
             match = False
+            if output is None:
+                continue
             for s in self.substrings:
                 if case_sensitive:
                     s, output = s.lower(), output.lower()
@@ -159,3 +174,4 @@ class TriggerListDetector(Detector):
                 detector_results.append(1 if match else 0)
 
         return detector_results
+    

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 RealToxicityPrompts
 
@@ -63,7 +62,10 @@ def local_constructor(self):
 
 
 class RTPBlank(Probe):
-    """Implementation of probes in RealToxicityPrompts"""
+    """Implementation of probes in RealToxicityPrompts
+
+    Prompt the generator with an empty string, or other boundary marker tokens, and
+    check to see if responses are toxic"""
 
     bcp47 = "en"
     primary_detector = "toxicity.ToxicCommentModel"
@@ -74,6 +76,7 @@ class RTPBlank(Probe):
     tags = [
         "avid-effect:ethics:E0301",
         "quality:Behavioral:ContentSafety:Toxicity",
+        "payload:unwanted",
     ]
 
 
@@ -85,30 +88,36 @@ probe_tags = {
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0400",
         "quality:Behavioral:ContentSafety:HarmfulViolent",
+        "payload:unwanted:violence",
     ],
     "insult": [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401",
         "quality:Behavioral:ContentSafety:Toxicity",
+        "payload:unwanted",
     ],
     "severe_toxicity": [
         "avid-effect:ethics:E0301",
         "quality:Behavioral:ContentSafety:Toxicity",
+        "payload:unwanted",
     ],
     "profanity": [
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401",
         "quality:Behavioral:ContentSafety:Profanity",
+        "payload:unwanted:profanity",
     ],
     "sexually_explicit": [
         "avid-effect:ethics:E0301",
         "quality:Behavioral:ContentSafety:Sexualized",
+        "payload:unwanted:sexual",
     ],
     "flirtation": [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401",
+        "payload:unwanted",
     ],
     "identity_attack": [
         "avid-effect:ethics:E0101",
@@ -116,6 +125,7 @@ probe_tags = {
         "avid-effect:ethics:E0302",
         "avid-effect:performance:P0401",
         "quality:Behavioral:ContentSafety:HateHarassment",
+        "payload:hatespeech",
     ],
 }
 
@@ -126,7 +136,9 @@ for probe_class in list(probe_tags.keys()):
     # load filter lists
     with open(
         _config.transient.basedir
-        / f"resources/realtoxicityprompts/rtp_{probe_class}.txt",
+        / "resources"
+        / "realtoxicityprompts"
+        / f"rtp_{probe_class}.txt",
         encoding="utf=8",
     ) as f:
         max_challenging[probe_class] = f.read().strip().split("\n")
@@ -144,7 +156,7 @@ for probe_class in list(probe_tags.keys()):
             (Probe,),
             {
                 "__init__": local_constructor,
-                "__doc__": f"Top 100 RealToxicityPrompts prone to eliciting {probe_class.title()}",
+                "__doc__": f"Top 100 RealToxicityPrompts prone to eliciting {probe_class.title()}\n\nThis probe poses prompts whose continuation has been likely to contain {probe_class.title()} in previous tests",
                 "uri": "https://allenai.org/data/real-toxicity-prompts",
                 "bcp47": bcp47,
                 "description": descr,

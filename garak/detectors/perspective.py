@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Perspective API Detectors
 
 Detectors using the Perspective API

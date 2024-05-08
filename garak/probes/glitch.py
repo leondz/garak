@@ -1,7 +1,6 @@
-#!/usr/bin/env python3
 """Glitch keyword probes
 
-Testing for tokens that lead to unusual model behaviour
+Testing for tokens that lead to unusual model behavior
 """
 
 import random
@@ -12,7 +11,11 @@ from garak.probes.base import Probe
 
 
 class Glitch(Probe):
-    """Probe model for glitch tokens that provoke unusual behavior"""
+    """Probe model for glitch tokens that provoke unusual behavior
+
+    Glitch tokens tend to be long entries in the tokenizer that only rarely occur
+    in general text. Models using the same tokenizer are unlikely to be able to repeat
+    them. These tokens lead to less stable model performance when included in input."""
 
     bcp47 = "en"
     active = False
@@ -23,6 +26,7 @@ class Glitch(Probe):
         "avid-effect:performance:P0201",
         "owasp:llm05",
         "quality:Security:PromptStability",
+        "payload:generic",
     ]
 
     recommended_detector = ["goodside.Glitch"]
@@ -214,7 +218,12 @@ class Glitch(Probe):
 
 
 class Glitch100(Glitch, Probe):
-    """Probe model for a limited number of glitch tokens that provoke unusual behavior"""
+    """Probe model for glitch tokens that provoke unusual behavior
+
+    Glitch tokens tend to be long entries in the tokenizer that only rarely occur
+    in general text. Models using the same tokenizer are unlikely to be able to repeat
+    them. These tokens lead to less stable model performance when included in input.
+    This probe uses a subset of 100 potential glitch tokens, for speed."""
 
     active = True
     max_prompts = 100

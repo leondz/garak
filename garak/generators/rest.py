@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
@@ -46,8 +44,8 @@ class RestGenerator(Generator):
     * response_json - Is the response in JSON format? (bool)
     * response_json_field - (optional) Which field of the response JSON
             should be used as the output string? Default "text"
-    * response_timeout - How many seconds should we wait before timing out?
-            Default 10
+    * request_timeout - How many seconds should we wait before timing out?
+            Default 20
     * ratelimit_codes - Which endpoint HTTP response codes should be caught
             as indicative of rate limiting and retried? List[int], default [429]
 
@@ -106,7 +104,7 @@ class RestGenerator(Generator):
         self.supports_multiple_generations = False  # not implemented yet
         self.response_json = False
         self.response_json_field = "text"
-        self.request_timeout = 10  # seconds
+        self.request_timeout = 20  # seconds
         self.ratelimit_codes = [429]
         self.escape_function = self._json_escape
         self.retry_5xx = True
@@ -121,7 +119,7 @@ class RestGenerator(Generator):
                 "method",
                 "headers",
                 "response_json",  # response_json_field is processed later
-                "response_timeout",
+                "request_timeout",
                 "ratelimit_codes",
             ):
                 if field in _config.plugins.generators["rest.RestGenerator"]:
@@ -212,7 +210,7 @@ class RestGenerator(Generator):
 
     # we'll overload IOError as the rate limit exception
     @backoff.on_exception(backoff.fibo, RESTRateLimitError, max_value=70)
-    def _call_model(self, prompt):
+    def _call_model(self, prompt: str, generations_this_call: int = 1):
         """Individual call to get a rest from the REST API
 
         :param prompt: the input to be placed into the request template and sent to the endpoint
@@ -225,12 +223,16 @@ class RestGenerator(Generator):
         for k, v in self.headers.items():
             request_headers[k] = self._populate_template(v, prompt)
 
-        resp = self.http_function(
-            self.uri,
-            data=request_data,
-            headers=request_headers,
-            timeout=self.request_timeout,
-        )
+        # the prompt should not be sent via data when using a GET request. Prompt should be
+        # serialized as parameters, in general a method could be created to add
+        # the prompt data to a request via params or data based on the action verb
+        data_kw = "params" if self.http_function == requests.get else "data"
+        req_kArgs = {
+            data_kw: request_data,
+            "headers": request_headers,
+            "timeout": self.request_timeout,
+        }
+        resp = self.http_function(self.uri, **req_kArgs)
         if resp.status_code in self.ratelimit_codes:
             raise RESTRateLimitError(
                 f"Rate limited: {resp.status_code} - {resp.reason}"

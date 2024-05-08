@@ -1,11 +1,8 @@
-#!/usr/bin/env python3
-
 # SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 """ Definitions of commands and actions that can be run in the garak toolkit"""
 
-from ast import Pass
 import logging
 import json
 
@@ -39,6 +36,10 @@ def start_run():
 
     logging.info("started at %s", _config.transient.starttime_iso)
     # print("ASSIGN UUID", args)
+    if _config.system.lite and "probes" not in _config.transient.cli_args and not _config.transient.cli_args.list_probes and not _config.transient.cli_args.list_detectors and not _config.transient.cli_args.list_generators and not _config.transient.cli_args.list_buffs and not _config.transient.cli_args.list_config and not _config.transient.cli_args.plugin_info and not _config.run.interactive:  # type: ignore
+        print(
+            "⚠️ The current/default config is optimised for speed rather than thoroughness. Try e.g. --config full for a stronger test, or specify some probes."
+        )
     _config.transient.run_id = str(uuid.uuid4())  # uuid1 is safe but leaks host info
     if not _config.reporting.report_prefix:
         if not os.path.isdir(_config.reporting.report_dir):
@@ -46,8 +47,7 @@ def start_run():
                 os.mkdir(_config.reporting.report_dir)
             except PermissionError as e:
                 raise PermissionError(
-                    "Can't create logging directory %s, quitting",
-                    _config.reporting.report_dir,
+                    f"Can't create logging directory {_config.reporting.report_dir}, quitting"
                 ) from e
         _config.transient.report_filename = f"{_config.reporting.report_dir}/garak.{_config.transient.run_id}.report.jsonl"
     else:
@@ -237,7 +237,7 @@ def list_config():
     print("_config:")
     _enumerate_obj_values(_config)
 
-    for section in "system transient run plugins".split():
+    for section in "system transient run plugins reporting".split():
         print(f"{section}:")
         _enumerate_obj_values(getattr(_config, section))
 

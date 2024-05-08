@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Cohere AI model support
 
 Support for Cohere's text generation API. Uses the command model by default,
@@ -10,6 +9,7 @@ variable called COHERE_API_KEY to your Cohere API key, for this generator.
 
 import logging
 import os
+from typing import List, Union
 
 import backoff
 import cohere
@@ -82,10 +82,12 @@ class CohereGenerator(Generator):
             )
             return [g.text for g in response]
 
-    def _call_model(self, prompt):
+    def _call_model(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> Union[List[str], str, None]:
         """Cohere's _call_model does sub-batching before calling,
         and so manages chunking internally"""
-        quotient, remainder = divmod(self.generations, COHERE_GENERATION_LIMIT)
+        quotient, remainder = divmod(generations_this_call, COHERE_GENERATION_LIMIT)
         request_sizes = [COHERE_GENERATION_LIMIT] * quotient
         if remainder:
             request_sizes += [remainder]

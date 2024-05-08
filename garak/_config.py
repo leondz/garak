@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """garak global config"""
 
 # SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
@@ -19,7 +18,7 @@ import yaml
 version = -1  # eh why this is here? hm. who references it
 
 system_params = "verbose narrow_output parallel_requests parallel_attempts".split()
-run_params = "seed deprefix eval_threshold generations probe_tags".split()
+run_params = "seed deprefix eval_threshold generations probe_tags interactive".split()
 plugins_params = "model_type model_name extended_detectors".split()
 reporting_params = "taxonomy report_prefix".split()
 
@@ -30,6 +29,13 @@ loaded = False
 @dataclass
 class GarakSubConfig:
     pass
+
+
+@dataclass
+class BuffManager:
+    """class to store instantiated buffs"""
+
+    buffs = []
 
 
 @dataclass
@@ -57,9 +63,9 @@ plugins.generators = {}
 plugins.detectors = {}
 plugins.buffs = {}
 plugins.harnesses = {}
-reporting.report_dir = "runs"
 reporting.taxonomy = None  # set here to enable report_digest to be called directly
 
+buffmanager = BuffManager()
 
 config_files = []
 
@@ -90,9 +96,10 @@ def _load_yaml_config(settings_filenames) -> dict:
     config_files += settings_filenames
     config = {}
     for settings_filename in settings_filenames:
-        settings = yaml.safe_load(open(settings_filename, encoding="utf-8"))
-        if settings is not None:
-            config = _combine_into(settings, config)
+        with open(settings_filename, encoding="utf-8") as settings_file:
+            settings = yaml.safe_load(settings_file)
+            if settings is not None:
+                config = _combine_into(settings, config)
     return config
 
 
@@ -107,7 +114,7 @@ def _store_config(settings_files) -> None:
 
 def load_base_config() -> None:
     global loaded
-    settings_files = [str(transient.basedir / "resources/garak.core.yaml")]
+    settings_files = [str(transient.basedir / "resources" / "garak.core.yaml")]
     logging.debug("Loading configs from: %s", ",".join(settings_files))
     _store_config(settings_files=settings_files)
     loaded = True
@@ -120,7 +127,7 @@ def load_config(
     # and then not have cli be upset when these are not given as cli params
     global loaded
 
-    settings_files = [str(transient.basedir / "resources/garak.core.yaml")]
+    settings_files = [str(transient.basedir / "resources" / "garak.core.yaml")]
 
     fq_site_config_filename = str(transient.basedir / site_config_filename)
     if os.path.isfile(fq_site_config_filename):
@@ -133,6 +140,12 @@ def load_config(
         # take config file path as provided
         if os.path.isfile(run_config_filename):
             settings_files.append(run_config_filename)
+        elif os.path.isfile(
+            str(transient.basedir / "configs" / (run_config_filename + ".yaml"))
+        ):
+            settings_files.append(
+                str(transient.basedir / "configs" / (run_config_filename + ".yaml"))
+            )
         else:
             message = f"run config not found: {run_config_filename}"
             logging.error(message)

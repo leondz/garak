@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Always detectors
 
 These always return a certain result, used mostly in testing

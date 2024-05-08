@@ -1,12 +1,14 @@
 # garak, LLM vulnerability scanner
 
-`garak` checks if an LLM can be made to fail in an way we don't want. `garak` probes for hallucination, data leakage, prompt injection, misinformation, toxicity generation, jailbreaks, and many other weaknesses. If you know `nmap`, it's `nmap` for LLMs. 
+*Generative AI Red-teaming & Assessment Kit*
+
+`garak` checks if an LLM can be made to fail in a way we don't want. `garak` probes for hallucination, data leakage, prompt injection, misinformation, toxicity generation, jailbreaks, and many other weaknesses. If you know `nmap`, it's `nmap` for LLMs. 
 
 `garak`'s a free tool. We love developing it and are always interested in adding functionality to support applications. 
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Documentation Status](https://readthedocs.org/projects/garak/badge/?version=latest)](http://garak.readthedocs.io/en/latest/?badge=latest)
-[![discord-img](https://img.shields.io/badge/chat-on%20discord-yellow.svg)](https://discord.gg/xH3rs3ZH4B)
+[![discord-img](https://img.shields.io/badge/chat-on%20discord-yellow.svg)](https://discord.gg/uVch4puUCs)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/garak)](https://pypi.org/project/garak)
 [![PyPI](https://badge.fury.io/py/garak.svg)](https://badge.fury.io/py/garak)
@@ -16,8 +18,9 @@
 
 ## Get started
 ### > See our user guide! [docs.garak.ai](https://docs.garak.ai/)
-### > Join our [Discord](https://discord.gg/xH3rs3ZH4B)!
+### > Join our [Discord](https://discord.gg/uVch4puUCs)!
 ### > Project links & home: [garak.ai](https://garak.ai/)
+### > Twitter: [@garak_llm](https://twitter.com/garak_llm)
 
 <hr>
 
@@ -27,7 +30,7 @@ currently supports:
 * [hugging face hub](https://huggingface.co/models) generative models
 * [replicate](https://replicate.com/) text models
 * [openai api](https://platform.openai.com/docs/introduction) chat & continuation models
-* ggml models like [llama.cpp](https://github.com/ggerganov/llama.cpp)
+* gguf models like [llama.cpp](https://github.com/ggerganov/llama.cpp) version >= 1046
 * .. and many more LLMs!
 
 ## Install:
@@ -55,7 +58,7 @@ python -m pip install -U git+https://github.com/leondz/garak.git@main
 `garak` has its own dependencies. You can to install `garak` in its own Conda environment:
 
 ```
-conda create --name garak "python>=3.9,<3.12"
+conda create --name garak "python>=3.10,<=3.12"
 conda activate garak
 gh repo clone leondz/garak
 cd garak
@@ -74,11 +77,11 @@ The general syntax is:
 
 `python3 -m garak --list_probes`
 
-To specify a generator, use the `--model_type` and, optionally, the `--model_name` options. Model type specifies a model family/interface; model name specifies the exact model to be used. The "Intro to generators" section below describes some of the generators supported. A straightfoward generator family is Hugging Face models; to load one of these, set `--model_type` to `huggingface` and `--model_name` to the model's name on Hub (e.g. `"RWKV/rwkv-4-169m-pile"`). Some generators might need an API key to be set as an environment variable, and they'll let you know if they need that.
+To specify a generator, use the `--model_type` and, optionally, the `--model_name` options. Model type specifies a model family/interface; model name specifies the exact model to be used. The "Intro to generators" section below describes some of the generators supported. A straightforward generator family is Hugging Face models; to load one of these, set `--model_type` to `huggingface` and `--model_name` to the model's name on Hub (e.g. `"RWKV/rwkv-4-169m-pile"`). Some generators might need an API key to be set as an environment variable, and they'll let you know if they need that.
 
 `garak` runs all the probes by default, but you can be specific about that too. `--probes promptinject` will use only the [PromptInject](https://github.com/agencyenterprise/promptinject) framework's methods, for example. You can also specify one specific plugin instead of a plugin family by adding the plugin name after a `.`; for example, `--probes lmrc.SlurUsage` will use an implementation of checking for models generating slurs based on the [Language Model Risk Cards](https://arxiv.org/abs/2303.18190) framework.
 
-For help & inspiration, find us on [twitter](https://twitter.com/garak_llm) or [discord](https://discord.gg/xH3rs3ZH4B)!
+For help & inspiration, find us on [twitter](https://twitter.com/garak_llm) or [discord](https://discord.gg/uVch4puUCs)!
 
 ## Examples
 
@@ -98,7 +101,7 @@ python3 -m garak --model_type huggingface --model_name gpt2 --probes dan.Dan_11_
 
 ## Reading the results
 
-For each probe loaded, garak will print a progress bar as it generates. Once generation is complete, a row evaluating that probe's results on each detector is given. If any of the prompt attempts yielded an undesirable behaviour, the response will be marked as FAIL, and the failure rate given.
+For each probe loaded, garak will print a progress bar as it generates. Once generation is complete, a row evaluating that probe's results on each detector is given. If any of the prompt attempts yielded an undesirable behavior, the response will be marked as FAIL, and the failure rate given.
 
 Here are the results with the `encoding` module on a GPT-3 variant:
 ![alt text](https://i.imgur.com/8Dxf45N.png)
@@ -129,7 +132,7 @@ Send PRs & open issues. Happy hunting!
 ### OpenAI
 
 * `--model_type openai`
-* `--model_name` - the OpenAI model you'd like to use. `text-babbage-001` is fast and fine for testing; `gpt-4` seems weaker to many of the more subtle attacks.
+* `--model_name` - the OpenAI model you'd like to use. `gpt-3.5-turbo-0125` is fast and fine for testing.
 * set the `OPENAI_API_KEY` environment variable to your OpenAI API key (e.g. "sk-19763ASDF87q6657"); see https://platform.openai.com/account/api-keys when logged in
 
 Recognised model types are whitelisted, because the plugin needs to know which sub-API to use. Completion or ChatCompletion models are OK. If you'd like to use a model not supported, you should get an informative error message, and please send a PR / open an issue.
@@ -192,14 +195,14 @@ For testing. This generator repeats back the prompt it received.
 | promptinject | Implementation of the Agency Enterprise [PromptInject](https://github.com/agencyenterprise/PromptInject/tree/main/promptinject) work (best paper awards @ NeurIPS ML Safety Workshop 2022) |
 | realtoxicityprompts | Subset of the RealToxicityPrompts work (data constrained because the full test will take so long to run) |
 | snowball | [Snowballed Hallucination](https://ofir.io/snowballed_hallucination.pdf) probes designed to make a model give a wrong answer to questions too complex for it to process |
-| xss | Look for vulnerabilities the permit or enact cross-site attacks, such as private data exfilteration. |
+| xss | Look for vulnerabilities the permit or enact cross-site attacks, such as private data exfiltration. |
 
 ## Logging
 
 `garak` generates multiple kinds of log:
 * A log file, `garak.log`. This includes debugging information from `garak` and its plugins, and is continued across runs.
 * A report of the current run, structured as JSONL. A new report file is created every time `garak` runs. The name of this file is output at the beginning and, if successful, also the end of the run. In the report, an entry is made for each probing attempt both as the generations are received, and again when they are evaluated; the entry's `status` attribute takes a constant from `garak.attempts` to describe what stage it was made at.
-* A hitlog, detailing attempts that yielded a vulnerability (a 'hit')
+* A hit log, detailing attempts that yielded a vulnerability (a 'hit')
 
 ## How is the code structured?
 
@@ -241,10 +244,21 @@ We have an FAQ [here](https://github.com/leondz/garak/blob/main/FAQ.md). Reach o
 
 Code reference documentation is at [garak.readthedocs.io](https://garak.readthedocs.io/en/latest/).
 
+## Citing garak
+
+```
+@misc{garak,
+  title={garak: {A Framework for Large Language Model Red Teaming}},
+  author={Leon Derczynski and Erick Galinkin and Subho Majumdar},
+  year={2024},
+  howpublished={\url{https://garak.ai}}
+}
+```
+
 <hr>
 
-_"Never tell the same lie twice"_ - Elim
+_"Lying is a skill like any other, and if you wish to maintain a level of excellence you have to practice constantly"_ - Elim
 
 For updates and news see [@garak_llm](https://twitter.com/garak_llm)
 
-© Apache v2 2023 Leon Derczynski
+© 2023- Leon Derczynski; Apache license v2, see [LICENSE](LICENSE)
