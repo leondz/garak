@@ -15,6 +15,7 @@ garak.generators
    garak.generators.octo
    garak.generators.openai
    garak.generators.nemo
+   garak.generators.nim
    garak.generators.nvcf
    garak.generators.replicate
    garak.generators.rest

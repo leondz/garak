@@ -105,11 +105,12 @@ class OpenAICompatible(Generator):
         # Required stub implemented when extending `OpenAICompatible`
         raise NotImplementedError
 
+    def _validate_config(self):
+        pass
+
     def __init__(self, name, generations=10):
         self.name = name
         self.fullname = f"{self.generator_family_name} {self.name}"
-
-        super().__init__(name, generations=generations)
 
         self.api_key = os.getenv(self.ENV_VAR, default=None)
         if self.api_key is None:
@@ -120,22 +121,10 @@ class OpenAICompatible(Generator):
 
         self._load_client()
 
-        if self.name in context_lengths:
-            self.context_len = context_lengths[self.name]
+        self._validate_config()
 
-        elif self.name == "":
-            openai_model_list = sorted([m.id for m in self.client.models.list().data])
-            raise ValueError(
-                f"Model name is required for {self.generator_family_name}, use --model_name\n"
-                + "  API returns following available models: ▶️   "
-                + "  ".join(openai_model_list)
-                + "\n"
-                + "  ⚠️  Not all these are text generation models"
-            )
-        else:
-            raise ValueError(
-                f"No {self.generator_family_name} API defined for '{self.name}' in generators/openai.py - please add one!"
-            )
+        super().__init__(name, generations=generations)
+
         # clear client config to enable object to `pickle`
         self._clear_client()
 
@@ -145,7 +134,6 @@ class OpenAICompatible(Generator):
         (
             openai.RateLimitError,
             openai.InternalServerError,
-            openai.APIError,
             openai.APITimeoutError,
             openai.APIConnectionError,
         ),
@@ -221,6 +209,16 @@ class OpenAIGenerator(OpenAICompatible):
     def _load_client(self):
         self.client = openai.OpenAI(api_key=self.api_key)
 
+        if self.name == "":
+            openai_model_list = sorted([m.id for m in self.client.models.list().data])
+            raise ValueError(
+                f"Model name is required for {self.generator_family_name}, use --model_name\n"
+                + "  API returns following available models: ▶️   "
+                + "  ".join(openai_model_list)
+                + "\n"
+                + "  ⚠️  Not all these are text generation models"
+            )
+
         if self.name in completion_models:
             self.generator = self.client.completions
         elif self.name in chat_models:
@@ -229,10 +227,20 @@ class OpenAIGenerator(OpenAICompatible):
             r"^.+-[01][0-9][0-3][0-9]$", self.name
         ):  # handle model names -MMDDish suffix
             self.generator = self.client.completions
+        else:
+            raise ValueError(
+                f"No {self.generator_family_name} API defined for '{self.name}' in generators/openai.py - please add one!"
+            )
 
     def _clear_client(self):
         self.generator = None
         self.client = None
+
+    def __init__(self, name):
+        if self.name in context_lengths:
+            self.context_len = context_lengths[self.name]
+
+        super().__init__(name)
 
 
 default_class = "OpenAIGenerator"

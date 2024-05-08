@@ -19,6 +19,19 @@ def test_openai_version():
     os.getenv(OpenAIGenerator.ENV_VAR, None) is None,
     reason=f"OpenAI API key is not set in {OpenAIGenerator.ENV_VAR}",
 )
+def test_openai_invalid_model_names():
+    with pytest.raises(ValueError) as e_info:
+        generator = OpenAIGenerator(name="")
+    assert "name is required for" in str(e_info.value)
+    with pytest.raises(ValueError) as e_info:
+        generator = OpenAIGenerator(name="this is not a real model name")
+    assert "please add one!" in str(e_info.value)
+
+
+@pytest.mark.skipif(
+    os.getenv(OpenAIGenerator.ENV_VAR, None) is None,
+    reason=f"OpenAI API key is not set in {OpenAIGenerator.ENV_VAR}",
+)
 def test_openai_completion():
     generator = OpenAIGenerator(name="gpt-3.5-turbo-instruct")
     assert generator.name == "gpt-3.5-turbo-instruct"

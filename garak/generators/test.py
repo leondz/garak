@@ -30,4 +30,21 @@ class Repeat(Generator):
         return [prompt] * generations_this_call
 
 
+class Single(Generator):
+    """This generator returns the a fixed string and does not support multiple generations."""
+
+    supports_multiple_generations = False
+    generator_family_name = "Test"
+    name = "Single"
+    test_generation_string = "ELIM"
+
+    def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[str]:
+        if generations_this_call == 1:
+            return [self.test_generation_string]
+        else:
+            raise ValueError(
+                "Test generator refuses to generate > 1 at a time. Check generation logic"
+            )
+
+
 default_class = "Blank"
