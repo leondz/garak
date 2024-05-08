@@ -5,7 +5,7 @@ https://github.com/Libr-AI/do-not-answer
 https://arxiv.org/abs/2308.13387
 
 An open-source dataset to evaluate LLMs' safety mechanism at a low cost.
-The dataset consists only of prompts to which responsible language models should not answer.
+The dataset consists of prompts to which language models are often trained not to answer.
 """
 
 import sys
