@@ -15,61 +15,78 @@ from garak.probes.base import Probe
 
 this = sys.modules[__name__]
 
+
 def load_local_data(self):
-    pass
+    # prompts
+    with open(
+        _config.transient.basedir
+        / "resources"
+        / "donotanswer"
+        / f"{self.dna_category}.txt",
+        encoding="utf=8",
+    ) as f:
+        self.prompts = f.read().strip().split("\n")
+
 
 def local_constructor(self):
     super(self.__class__, self).__init__()
     self.load_data()
 
-class DoNotAnswer_Probe(Probe):
-    """Do Not Answer probe
 
-    A curated list of questions provided in the scientific research
-    which are to be supplied as prompts and LLMs should not respond back."""
+dna_probe_tags = {
+    "discrimination_exclusion_toxicity_hateful_offensive": [
+        "avid-effect:ethics:E0301",
+        "quality:Behavioral:ContentSafety:Toxicity",
+        "quality:Behavioral:ContentSafety:HateHarassment",
+        "quality:Behavioral:ContentSafety:HarmfulViolent",
+        "quality:Behavioral:ContentSafety:Profanity",
+    ],
+    "human_chatbox": [
+        "avid-effect:security:S0301",
+    ],
+    "information_hazard": [
+        "owasp:llm06",
+        "avid-effect:security:S0301",
+        "quality:Security:Confidentiality",
+    ],
+    "malicious_uses": [
+        "quality:Behavioral:ContentSafety:LegalGoodsServices",
+    ],
+    "misinformation_harms": [
+        "quality:Robustness:GenerativeMisinformation",
+        "avid-effect:ethics:E0402",
+        "owasp:llm09",
+    ],
+}
 
-    probe_tags = [
-        "discrimination_exclusion_toxicity_hateful_offensive",
-        "human_chatbox",
-        "information_hazard",
-        "malicious_uses",
-        "misinformation_harms",
-    ]
-    goal = "Check if the model answers to unwanted prompts"
-    
-    prompts = ["<|endoftext|>", ".", "<Links>", "<Wiki>", ""]
+for probe_class in list(dna_probe_tags.keys()):
 
-    max_challenging = {}
+    failure_name = probe_class.replace("_", " ")
+    classname = probe_class.title().replace("_", "")
+    goal = f"get model to respond as {failure_name}"
+    descr = f"Implementation of {probe_class} probes in DoNotAnswer_Prompts"
+    doc = f"Do Not Answer probe\n\nA curated list of questions to which LLMs should not respond back, specifically testing {failure_name}"
 
-    for tag in probe_tags:
-        # load filter lists
-        with open(
-            _config.transient.basedir
-            / "resources" / "donotanswer" / f"{tag}.txt",
-            encoding="utf=8",
-        ) as f:
-            max_challenging[tag] = f.read().strip().split("\n")
+    # define class
 
-        # define class
-        classname = "DoNotAnswer_" + tag.title()
-        descr = f"Implementation of {tag} probes in DoNotAnswer_Prompts"
-        bcp47 = "en"
-
-        setattr(
-            this,
+    setattr(
+        this,
+        classname,
+        type(
             classname,
-            type(
-                classname, 
-                (Probe,),
-                {
-                    "__init__": local_constructor,
-                    "uri": "https://arxiv.org/abs/2308.13387",
-                    "bcp47": bcp47,
-                    "description": descr,
-                    "primary_detector": "mitigation.MitigationBypass",
-                    "prompts": max_challenging[tag],
-                    "load_data": load_local_data,
-                    "goal": "generate " + tag.replace("_", " ") + " content",
-                },
-            ),
-        )
+            (Probe,),
+            {
+                "__init__": local_constructor,
+                "__doc__": doc,
+                "uri": "https://arxiv.org/abs/2308.13387",
+                "bcp47": "en",
+                "description": descr,
+                "primary_detector": "mitigation.MitigationBypass",
+                "prompts": [],
+                "load_data": load_local_data,
+                "goal": goal,
+                "dna_category": probe_class,
+                "tags": dna_probe_tags[probe_class],
+            },
+        ),
+    )
