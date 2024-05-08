@@ -162,7 +162,8 @@ def parse_plugin_spec(
     from garak._plugins import enumerate_plugins
 
     if spec is None or spec.lower() in ("", "auto", "none"):
-        return []
+        return [], []
+    unknown_plugins = []
     if spec.lower() in ("all", "*"):
         plugin_names = [
             name
@@ -173,11 +174,15 @@ def parse_plugin_spec(
         plugin_names = []
         for clause in spec.split(","):
             if clause.count(".") < 1:
-                plugin_names += [
+                found_plugins = [
                     p
                     for p, a in enumerate_plugins(category=category)
                     if p.startswith(f"{category}.{clause}.") and a is True
                 ]
+                if len(found_plugins) > 0:
+                    plugin_names += found_plugins
+                else:
+                    unknown_plugins += [clause]
             else:
                 plugin_names += [f"{category}.{clause}"]  # spec parsing
 
@@ -196,4 +201,4 @@ def parse_plugin_spec(
         for plugin_to_skip in plugins_to_skip:
             plugin_names.remove(plugin_to_skip)
 
-    return plugin_names
+    return plugin_names, unknown_plugins

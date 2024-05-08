@@ -439,18 +439,21 @@ def test_blank_generator_instance_loads_cli_config():
 
 # test parsing of probespec
 def test_probespec_loading():
-    assert _config.parse_plugin_spec(None, "detectors") == []
-    assert _config.parse_plugin_spec("Auto", "probes") == []
-    assert _config.parse_plugin_spec("NONE", "probes") == []
-    assert _config.parse_plugin_spec("", "generators") == []
-    assert _config.parse_plugin_spec("atkgen", "probes") == ["probes.atkgen.Tox"]
+    assert _config.parse_plugin_spec(None, "detectors") == ([], [])
+    assert _config.parse_plugin_spec("Auto", "probes") == ([], [])
+    assert _config.parse_plugin_spec("NONE", "probes") == ([], [])
+    assert _config.parse_plugin_spec("", "generators") == ([], [])
+    assert _config.parse_plugin_spec("atkgen", "probes") == (["probes.atkgen.Tox"], [])
     assert _config.parse_plugin_spec(
         "long.test.class,another.long.test.class", "probes"
-    ) == ["probes.long.test.class", "probes.another.long.test.class"]
-    assert _config.parse_plugin_spec("always", "detectors") == [
-        "detectors.always.Fail",
-        "detectors.always.Pass",
-    ]
+    ) == (["probes.long.test.class", "probes.another.long.test.class"], [])
+    assert _config.parse_plugin_spec("always", "detectors") == (
+        [
+            "detectors.always.Fail",
+            "detectors.always.Pass",
+        ],
+        [],
+    )
 
 
 def test_buff_config_assertion():
@@ -464,16 +467,18 @@ def test_buff_config_assertion():
 
 
 def test_tag_filter():
-    assert (
-        _config.parse_plugin_spec("atkgen", "probes", probe_tag_filter="LOL NULL") == []
+    assert _config.parse_plugin_spec(
+        "atkgen", "probes", probe_tag_filter="LOL NULL"
+    ) == ([], [])
+    assert _config.parse_plugin_spec("*", "probes", probe_tag_filter="avid") != ([], [])
+    assert _config.parse_plugin_spec("all", "probes", probe_tag_filter="owasp:llm") != (
+        [],
+        [],
     )
-    assert _config.parse_plugin_spec("*", "probes", probe_tag_filter="avid") != []
-    assert (
-        _config.parse_plugin_spec("all", "probes", probe_tag_filter="owasp:llm") != []
-    )
-    assert "probes.lmrc.SexualContent" in _config.parse_plugin_spec(
+    found, rejected = _config.parse_plugin_spec(
         "all", "probes", probe_tag_filter="risk-cards:lmrc:sexual_content"
     )
+    assert "probes.lmrc.SexualContent" in found
 
 
 def test_report_prefix_with_hitlog_no_explode():

@@ -58,10 +58,11 @@ class ProbewiseHarness(Harness):
         """
 
         if not probenames:
-            logging.warning("No probes, nothing to do")
+            msg = "No probes, nothing to do"
+            logging.warning(msg)
             if hasattr(_config.system, "verbose") and _config.system.verbose >= 2:
-                print("No probes, nothing to do")
-            return None
+                print(msg)
+            raise ValueError(msg)
 
         self._load_buffs(buff_names)
 
