@@ -10,9 +10,13 @@ import os
 
 from garak import _plugins
 
+# does this utility really have access to _config?
+misp_resource_file = (
+    garak._config.transient.basedir / "garak" / "resources" / "misp_descriptions.tsv"
+)
 misp_descriptions = {}
-if os.path.isfile("garak/resources/misp_descriptions.tsv"):
-    with open("garak/resources/misp_descriptions.tsv", "r", encoding="utf-8") as f:
+if os.path.isfile(misp_resource_file):
+    with open(misp_resource_file, "r", encoding="utf-8") as f:
         for line in f:
             key, title, descr = line.strip().split("\t")
             misp_descriptions[key] = (title, descr)

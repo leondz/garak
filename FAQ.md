@@ -43,6 +43,6 @@ Perhaps - please [open an issue](https://github.com/leondz/garak/issues/new), in
 
 Would love to! Please [open an issue](https://github.com/leondz/garak/issues/new), tagging it "new plugin" and "generators".
 
-## Why the name?
+<!-- ## Why the name?
 
-It's named after a smooth-talking, manipulative, persuasive, well-written character from a nineties TV series. Because we need tools like that to dissect LLM behavior.
+It's named after a smooth-talking, manipulative, persuasive, well-written character from a nineties TV series. Because we need tools like that to dissect LLM behavior. -->

@@ -135,7 +135,7 @@ class LiteLLMGenerator(Generator):
 
     @backoff.on_exception(backoff.fibo, Exception, max_value=70)
     def _call_model(
-        self, prompt: Union[str, List[dict]]
+        self, prompt: str, generations_this_call: int = 1
     ) -> Union[List[str], str, None]:
         if isinstance(prompt, str):
             prompt = [{"role": "user", "content": prompt}]
@@ -155,7 +155,7 @@ class LiteLLMGenerator(Generator):
             messages=prompt,
             temperature=self.temperature,
             top_p=self.top_p,
-            n=self.generations,
+            n=generations_this_call,
             stop=self.stop,
             max_tokens=self.max_tokens,
             frequency_penalty=self.frequency_penalty,
