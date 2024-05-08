@@ -45,7 +45,7 @@ class DoNotAnswer_Probe(Probe):
         # load filter lists
         with open(
             _config.transient.basedir
-            / f"resources/donotanswer/{tag}.txt",
+            / "resources" / "donotanswer" / f"{tag}.txt",
             encoding="utf=8",
         ) as f:
             max_challenging[tag] = f.read().strip().split("\n")
