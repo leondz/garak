@@ -460,6 +460,11 @@ def test_probespec_loading():
     assert _config.parse_plugin_spec(
         "atkgen.Tox,atkgen.ProbeDoesNotExist", "probes"
     ) == (["probes.atkgen.Tox"], ["atkgen.ProbeDoesNotExist"])
+    # accept known disabled class
+    assert _config.parse_plugin_spec("dan.DanInTheWild", "probes") == (
+        ["probes.dan.DanInTheWild"],
+        [],
+    )
     # gather all class entires for namespace
     assert _config.parse_plugin_spec("atkgen", "probes") == (["probes.atkgen.Tox"], [])
     assert _config.parse_plugin_spec("always", "detectors") == (

@@ -188,7 +188,7 @@ def parse_plugin_spec(
                 found_plugins = [
                     p
                     for p, a in enumerate_plugins(category=category)
-                    if p == f"{category}.{clause}" and a is True
+                    if p == f"{category}.{clause}"
                 ]
                 if len(found_plugins) > 0:
                     plugin_names += found_plugins

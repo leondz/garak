@@ -20,6 +20,7 @@ def main(arguments=[]) -> None:
     import garak.command as command
     import logging
     import re
+    from colorama import Fore, Style
 
     command.start_logging()
     _config.load_base_config()
@@ -431,7 +432,6 @@ def main(arguments=[]) -> None:
                 in ("openai", "replicate", "ggml", "huggingface", "litellm")
                 and not _config.plugins.model_name
             ):
-                # this testing can be refactored as a requirements check in each generator
                 message = f"⚠️  Model type '{_config.plugins.model_type}' also needs a model name\n You can set one with e.g. --model_name \"billwurtz/gpt-1.0\""
                 logging.error(message)
                 raise ValueError(message)
@@ -446,9 +446,14 @@ def main(arguments=[]) -> None:
                     config_spec, spec_namespace, config_tags
                 )
                 parsed_specs[spec_type] = names
-                if not args.skip_unknown:
-                    if rejected is not None and len(rejected) > 0:
+                if rejected is not None and len(rejected) > 0:
+                    if not args.skip_unknown:
                         raise ValueError(f"❌Unknown {spec_namespace}❌: {",".join(rejected)}")
+                    else:
+                        header = f"Unknown {spec_namespace}:"
+                        msg = f"{Fore.LIGHTYELLOW_EX}{header}\n" + "\n".join([ f"{Fore.LIGHTYELLOW_EX + "SKIP" + Style.RESET_ALL} {spec}" for spec in rejected ])
+                        logging.warning(f"{header} " + ",".join(rejected))
+                        print(msg)
 
             evaluator = garak.evaluators.ThresholdEvaluator(_config.run.eval_threshold)
 
@@ -511,4 +516,5 @@ def main(arguments=[]) -> None:
     except KeyboardInterrupt:
         print("User cancel received, terminating all runs")
     except ValueError as e:
+        logging.error(e)
         print(e)
