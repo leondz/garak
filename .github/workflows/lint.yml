@@ -1,0 +1,32 @@
+name: "garak linting"
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+ 
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ricardochaves/python-lint@v1.4.0
+        with:
+          python-root-list: "garak"
+          use-pylint: true
+          use-pycodestyle: false
+          use-flake8: false
+          use-black: false
+          use-mypy: false
+          use-isort: false
+          extra-pylint-options: ""
+          extra-pycodestyle-options: ""
+          extra-flake8-options: ""
+          extra-black-options: ""
+          extra-mypy-options: ""
+          extra-isort-options: ""
