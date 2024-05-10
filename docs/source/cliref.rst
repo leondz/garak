@@ -3,7 +3,7 @@ CLI reference for garak
 
 ::
 
-  garak LLM security probe v0.9.0.11.post2 ( https://github.com/leondz/garak ) at 2024-02-20T15:22:27.625300
+  garak LLM vulnerability scanner v0.9.0.13 ( https://github.com/leondz/garak ) at 2024-05-10T15:18:18.123569
   usage: python -m garak [-h] [--verbose] [--report_prefix REPORT_PREFIX]
                          [--narrow_output]
                          [--parallel_requests PARALLEL_REQUESTS]
