@@ -1,7 +1,6 @@
-name: "Garak linting"
+name: Garak linting
 
-on:
-  workflow_dispatch:
+on: [workflow_dispatch]
 
 jobs:
   lint:
