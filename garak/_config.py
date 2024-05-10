@@ -184,7 +184,16 @@ def parse_plugin_spec(
                 else:
                     unknown_plugins += [clause]
             else:
-                plugin_names += [f"{category}.{clause}"]  # spec parsing
+                # validate the class exists
+                found_plugins = [
+                    p
+                    for p, a in enumerate_plugins(category=category)
+                    if p == f"{category}.{clause}" and a is True
+                ]
+                if len(found_plugins) > 0:
+                    plugin_names += found_plugins
+                else:
+                    unknown_plugins += [clause]
 
     if probe_tag_filter is not None and len(probe_tag_filter) > 1:
         plugins_to_skip = []
