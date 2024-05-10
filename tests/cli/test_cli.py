@@ -2,7 +2,7 @@ import re
 import pytest
 import os
 
-from garak import __version__, cli, _config
+from garak import __app__, __description__, __version__, cli, _config
 
 ansi_escape = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
 
@@ -23,7 +23,7 @@ def test_probe_list(capsys):
     for line in output.strip().split("\n"):
         assert re.match(
             r"^probes: [a-z0-9_]+(\.[A-Za-z0-9_]+)?( 🌟)?( 💤)?$", line
-        ) or line.startswith("garak LLM security probe v")
+        ) or line.startswith(f"{__app__} {__description__}")
 
 
 def test_detector_list(capsys):
@@ -33,7 +33,7 @@ def test_detector_list(capsys):
     for line in output.strip().split("\n"):
         assert re.match(
             r"^detectors: [a-z0-9_]+(\.[A-Za-z0-9_]+)?( 🌟)?( 💤)?$", line
-        ) or line.startswith("garak LLM security probe v")
+        ) or line.startswith(f"{__app__} {__description__}")
 
 
 def test_generator_list(capsys):
@@ -43,7 +43,7 @@ def test_generator_list(capsys):
     for line in output.strip().split("\n"):
         assert re.match(
             r"^generators: [a-z0-9_]+(\.[A-Za-z0-9_]+)?( 🌟)?( 💤)?$", line
-        ) or line.startswith("garak LLM security probe v")
+        ) or line.startswith(f"{__app__} {__description__}")
 
 
 def test_buff_list(capsys):
@@ -53,7 +53,7 @@ def test_buff_list(capsys):
     for line in output.strip().split("\n"):
         assert re.match(
             r"^buffs: [a-z0-9_]+(\.[A-Za-z0-9_]+)?( 🌟)?( 💤)?$", line
-        ) or line.startswith("garak LLM security probe v")
+        ) or line.startswith(f"{__app__} {__description__}")
 
 
 def test_run_all_active_probes(capsys):
