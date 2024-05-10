@@ -77,6 +77,7 @@ def test_run_all_active_detectors(capsys):
             "-g",
             "1",
             "--narrow_output",
+            "--skip_unknown",
         ]
     )
     result = capsys.readouterr()

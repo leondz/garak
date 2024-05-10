@@ -158,7 +158,7 @@ def load_config(
 
 def parse_plugin_spec(
     spec: str, category: str, probe_tag_filter: str = ""
-) -> List[str]:
+) -> tuple[List[str], List[str]]:
     from garak._plugins import enumerate_plugins
 
     if spec is None or spec.lower() in ("", "auto", "none"):
