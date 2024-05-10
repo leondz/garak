@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Package hallucination detectors
 
 These look for instances of code that try to import packages that

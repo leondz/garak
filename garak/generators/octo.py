@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
@@ -50,7 +48,7 @@ class OctoGenerator(Generator):
         self.client = Client(token=octoai_token)
 
     @backoff.on_exception(backoff.fibo, octoai.errors.OctoAIServerError, max_value=70)
-    def _call_model(self, prompt):
+    def _call_model(self, prompt: str, generations_this_call: int = 1):
         outputs = self.client.chat.completions.create(
             messages=[
                 {
@@ -86,7 +84,7 @@ class InferenceEndpoint(OctoGenerator):
         )
 
     @backoff.on_exception(backoff.fibo, octoai.errors.OctoAIServerError, max_value=70)
-    def _call_model(self, prompt):
+    def _call_model(self, prompt: str, generations_this_call: int = 1):
         outputs = self.client.infer(
             endpoint_url=self.name,
             inputs={

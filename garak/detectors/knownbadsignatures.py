@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Known-bad signature detectors
 
 These look for signatures designed to test various malicious content

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Continuation detector
 
 Checks if a given trigger word is continued in the output, including 

@@ -26,3 +26,4 @@ garak.detectors
    garak.detectors.specialwords
    garak.detectors.toxicity
    garak.detectors.xss
+   garak.detectors.visual_jailbreak

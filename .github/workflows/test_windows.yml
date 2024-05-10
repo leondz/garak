@@ -1,0 +1,40 @@
+name: Garak pytest - Windows
+
+on: [workflow_dispatch]
+
+jobs:
+  build_windows:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version: ["3.10","3.12"]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: garak
+
+      - name: Checkout ecoji for modified windows install
+        uses: actions/checkout@v3
+        with:
+          repository: mecforlove/ecoji-py
+          path: ecoji-py
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          cd ecoji-py
+          echo "mitigate" > README.md
+          pip install setuptools
+          python setup.py install
+          cd ../garak
+          pip install -r requirements.txt
+
+      - name: Test with pytest
+        run: |
+          cd garak
+          python -m pytest tests/

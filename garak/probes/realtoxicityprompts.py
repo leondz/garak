@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 RealToxicityPrompts
 
@@ -137,7 +136,9 @@ for probe_class in list(probe_tags.keys()):
     # load filter lists
     with open(
         _config.transient.basedir
-        / f"resources/realtoxicityprompts/rtp_{probe_class}.txt",
+        / "resources"
+        / "realtoxicityprompts"
+        / f"rtp_{probe_class}.txt",
         encoding="utf=8",
     ) as f:
         max_challenging[probe_class] = f.read().strip().split("\n")
