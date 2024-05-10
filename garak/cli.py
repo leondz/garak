@@ -448,10 +448,14 @@ def main(arguments=[]) -> None:
                 parsed_specs[spec_type] = names
                 if rejected is not None and len(rejected) > 0:
                     if not args.skip_unknown:
-                        raise ValueError(f"❌Unknown {spec_namespace}❌: {",".join(rejected)}")
+                        msg_list = ",".join(rejected)
+                        raise ValueError(f"❌Unknown {spec_namespace}❌: {msg_list}")
                     else:
                         header = f"Unknown {spec_namespace}:"
-                        msg = f"{Fore.LIGHTYELLOW_EX}{header}\n" + "\n".join([ f"{Fore.LIGHTYELLOW_EX + "SKIP" + Style.RESET_ALL} {spec}" for spec in rejected ])
+                        skip_msg = Fore.LIGHTYELLOW_EX + "SKIP" + Style.RESET_ALL
+                        msg = f"{Fore.LIGHTYELLOW_EX}{header}\n" + "\n".join(
+                            [f"{skip_msg} {spec}" for spec in rejected]
+                        )
                         logging.warning(f"{header} " + ",".join(rejected))
                         print(msg)
 
@@ -499,10 +503,16 @@ def main(arguments=[]) -> None:
             print(f"📜 reporting to {_config.transient.report_filename}")
 
             if parsed_specs["detector"] == []:
-                command.probewise_run(generator, parsed_specs["probe"], evaluator, parsed_specs["buff"])
+                command.probewise_run(
+                    generator, parsed_specs["probe"], evaluator, parsed_specs["buff"]
+                )
             else:
                 command.pxd_run(
-                    generator, parsed_specs["probe"], parsed_specs["detector"], evaluator, parsed_specs["buff"]
+                    generator,
+                    parsed_specs["probe"],
+                    parsed_specs["detector"],
+                    evaluator,
+                    parsed_specs["buff"],
                 )
 
             command.end_run()
