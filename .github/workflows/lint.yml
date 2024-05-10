@@ -9,10 +9,10 @@ on:
 
 jobs:
   build:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ["3.10"]
- 
     steps:
       - uses: actions/checkout@v4
       - uses: ricardochaves/python-lint@v1.4.0
