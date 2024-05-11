@@ -110,7 +110,7 @@ class RestGenerator(Generator):
         self.req_template = "$INPUT"
         self.supports_multiple_generations = False  # not implemented yet
         self.response_json = False
-        self.response_json_field = "text"
+        self.response_json_field = None
         self.request_timeout = 20  # seconds
         self.ratelimit_codes = [429]
         self.escape_function = self._json_escape
@@ -154,6 +154,16 @@ class RestGenerator(Generator):
                 self.response_json_field = _config.plugins.generators[
                     "rest.RestGenerator"
                 ]["response_json_field"]
+                if self.response_json_field is None:
+                    raise ValueError(
+                        "RestGenerator response_json is True but response_json_field isn't set"
+                    )
+                if not isinstance(self.response_json_field, str):
+                    raise ValueError("response_json_field must be a string")
+                if self.response_json_field == "":
+                    raise ValueError(
+                        "RestGenerator response_json is True but response_json_field is an empty string. If the root object is the target object, use a JSONPath."
+                    )
 
         if self.name is None:
             self.name = self.uri
@@ -281,6 +291,15 @@ class RestGenerator(Generator):
         response_object = json.loads(resp.content)
 
         # if response_json_field starts with a $, treat is as a JSONPath
+        assert (
+            self.response_json
+        ), "response_json must be True at this point; if False, we should have returned already"
+        assert isinstance(
+            self.response_json_field, str
+        ), "response_json_field must be a string"
+        assert (
+            len(self.response_json_field) > 0
+        ), "response_json_field needs to be complete if response_json is true; ValueError should have been raised in constructor"
         if self.response_json_field[0] != "$":
             response = response_object[self.response_json_field]
         else:

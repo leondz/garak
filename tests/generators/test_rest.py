@@ -50,6 +50,7 @@ def test_json_rest_top_level(requests_mock):
         text=json.dumps({"text": DEFAULT_TEXT_RESPONSE}),
     )
     _config.plugins.generators["rest.RestGenerator"]["response_json"] = True
+    _config.plugins.generators["rest.RestGenerator"]["response_json_field"] = "text"
     generator = RestGenerator()
     print(generator.response_json)
     print(generator.response_json_field)
