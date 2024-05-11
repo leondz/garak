@@ -75,6 +75,7 @@ tests = [
 ]
 lint = [
   "black>=22.3",
+  "pylint>=3.1.0",
 ]
 
 [project.urls]
