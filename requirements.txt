@@ -27,6 +27,7 @@ ecoji>=0.1.0
 deepl==1.17.0
 fschat>=0.2.36
 litellm>=1.33.8
+jsonpath-ng>=1.6.1
 # tests
 pytest>=8.0
 requests-mock==1.12.1

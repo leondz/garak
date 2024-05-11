@@ -13,6 +13,7 @@ from typing import List
 import requests
 
 import backoff
+import jsonpath_ng
 
 from garak import _config
 from garak.generators.base import Generator
@@ -27,65 +28,71 @@ class RESTRateLimitError(Exception):
 class RestGenerator(Generator):
     """Generic API interface for REST models
 
-    Uses the following options from _config.run.generators["rest.RestGenerator"]:
-    * uri - (optional) the URI of the REST endpoint; this can also be passed
+    Uses the following options from ``_config.run.generators["rest.RestGenerator"]``:
+    * ``uri`` - (optional) the URI of the REST endpoint; this can also be passed
             in --model_name
-    * name - a short name for this service; defaults to the uri
-    * key_env_var - (optional) the name of the environment variable holding an
+    * ``name`` - a short name for this service; defaults to the uri
+    * ``key_env_var`` - (optional) the name of the environment variable holding an
             API key, by default REST_API_KEY
-    * req_template - a string where $KEY is replaced by env var REST_API_KEY
-            and $INPUT is replaced by the prompt. Default is to just send the
-            input text.
-    * req_template_json_object - (optional) the request template as a Python
+    * ``req_template`` - a string where the text ``$KEY`` is replaced by env
+            var REST_API_KEY and ``$INPUT`` is replaced by the prompt. Default is to
+            just send the input text.
+    * ``req_template_json_object`` - (optional) the request template as a Python
             object, to be serialised as a JSON string before replacements
-    * method - a string describing the HTTP method, to be passed to the
+    * ``method`` - a string describing the HTTP method, to be passed to the
             requests module; default "post".
-    * headers - dict describing HTTP headers to be sent with the request
-    * response_json - Is the response in JSON format? (bool)
-    * response_json_field - (optional) Which field of the response JSON
-            should be used as the output string? Default "text"
-    * request_timeout - How many seconds should we wait before timing out?
+    * ``headers`` - dict describing HTTP headers to be sent with the request
+    * ``response_json`` - Is the response in JSON format? (bool)
+    * ``response_json_field`` - (optional) Which field of the response JSON
+            should be used as the output string? Default ``text``. Can also
+            be a JSONPath value, and ``response_json_field`` is used as such
+            if it starts with ``$``.
+    * ``request_timeout`` - How many seconds should we wait before timing out?
             Default 20
-    * ratelimit_codes - Which endpoint HTTP response codes should be caught
-            as indicative of rate limiting and retried? List[int], default [429]
+    * ``ratelimit_codes`` - Which endpoint HTTP response codes should be caught
+            as indicative of rate limiting and retried? ``List[int]``, default ``[429]``
 
     Templates can be either a string or a JSON-serialisable Python object.
-    Instance of "$INPUT" here are replaced with the prompt; instances of "$KEY"
+    Instance of ``$INPUT`` here are replaced with the prompt; instances of ``$KEY``
     are replaced with the specified API key. If no key is needed, just don't
-    put $KEY in a template.
+    put ``$KEY`` in a template.
 
-    The $INPUT and $KEY placeholders can also be specified in header values.
+    The ``$INPUT`` and ``$KEY`` placeholders can also be specified in header values.
 
     If we want to call an endpoint where the API key is defined in the value
-    of an X-Authorization header, sending and receiving JSON where the prompt
-    and response value are both under the "text" key, we'd define the service
-    using something like:
+    of an ``X-Authorization`` header, sending and receiving JSON where the prompt
+    and response value are both under the ``text`` key, we'd define the service
+    using something like: ::
 
-    {"rest.RestGenerator":
-        {
-            "name": "example service",
-            "uri": "https://example.ai/llm",
-            "method": "post",
-            "headers":{
-                "X-Authorization": "$KEY",
-            },
-            "req_template_json_object":{
-                "text":"$INPUT"
-            },
-            "response_json": true,
-            "response_json_field": "text"
+        {"rest.RestGenerator":
+            {
+                "name": "example service",
+                "uri": "https://example.ai/llm",
+                "method": "post",
+                "headers":{
+                    "X-Authorization": "$KEY",
+                },
+                "req_template_json_object":{
+                    "text":"$INPUT"
+                },
+                "response_json": true,
+                "response_json_field": "text"
+            }
         }
-    }
+
+    NB. ``response_json_field`` can also be a JSONPath, for JSON responses where
+    the target text is not in a top level field. It is treated as a JSONPath
+    when ``response_json_field`` starts with ``$``.
 
     To use this specification with garak, you can either pass the JSON as a
     strong option on the command line via --generator_options, or save the
     JSON definition into a file and pass the filename to
-    --generator_option_file / -G. For example, if we save the above JSON into
-    `example_service.json", we can invoke garak as:
+    ``--generator_option_file`` / ``-G``. For example, if we save the above
+    JSON into ``example_service.json``, we can invoke garak as: ::
 
-    garak --model_type rest -G example_service.json
+      garak --model_type rest -G example_service.json
 
-    This will load up the default RestGenerator and use the details in the
+    This will load up the default ``RestGenerator`` and use the details in the
     JSON file to connect to the LLM endpoint.
 
     If you need something more flexible, add a new module or class and inherit
@@ -103,7 +110,7 @@ class RestGenerator(Generator):
         self.req_template = "$INPUT"
         self.supports_multiple_generations = False  # not implemented yet
         self.response_json = False
-        self.response_json_field = "text"
+        self.response_json_field = None
         self.request_timeout = 20  # seconds
         self.ratelimit_codes = [429]
         self.escape_function = self._json_escape
@@ -147,6 +154,16 @@ class RestGenerator(Generator):
                 self.response_json_field = _config.plugins.generators[
                     "rest.RestGenerator"
                 ]["response_json_field"]
+                if self.response_json_field is None:
+                    raise ValueError(
+                        "RestGenerator response_json is True but response_json_field isn't set"
+                    )
+                if not isinstance(self.response_json_field, str):
+                    raise ValueError("response_json_field must be a string")
+                if self.response_json_field == "":
+                    raise ValueError(
+                        "RestGenerator response_json is True but response_json_field is an empty string. If the root object is the target object, use a JSONPath."
+                    )
 
         if self.name is None:
             self.name = self.uri
@@ -176,6 +193,19 @@ class RestGenerator(Generator):
         self.http_function = getattr(requests, self.method)
 
         self.rest_api_key = os.getenv(self.key_env_var, default=None)
+
+        # validate jsonpath
+        if self.response_json and self.response_json_field:
+            try:
+                self.json_expr = jsonpath_ng.parse(self.response_json_field)
+            except JsonPathParserError as e:
+                logging.CRITICAL(
+                    "Couldn't parse response_json_field %s", self.response_json_field
+                )
+                raise e
+
+        if _config.run.generations:
+            generations = _config.run.generations
 
         super().__init__(uri, generations=generations)
 
@@ -256,18 +286,41 @@ class RestGenerator(Generator):
                 raise ConnectionError(error_msg)
 
         if not self.response_json:
-            return str(resp.content)
+            return str(resp.text)
 
-        try:
-            response_object = json.loads(resp.content)
-            return response_object[self.response_json_field]
-        except json.decoder.JSONDecodeError as e:
-            logging.warning(
-                "REST endpoint didn't return good JSON %s: got |%s|",
-                str(e),
-                resp.content,
-            )
-            return None
+        response_object = json.loads(resp.content)
+
+        # if response_json_field starts with a $, treat is as a JSONPath
+        assert (
+            self.response_json
+        ), "response_json must be True at this point; if False, we should have returned already"
+        assert isinstance(
+            self.response_json_field, str
+        ), "response_json_field must be a string"
+        assert (
+            len(self.response_json_field) > 0
+        ), "response_json_field needs to be complete if response_json is true; ValueError should have been raised in constructor"
+        if self.response_json_field[0] != "$":
+            response = response_object[self.response_json_field]
+        else:
+            field_path_expr = jsonpath_ng.parse(self.response_json_field)
+            responses = field_path_expr.find(response_object)
+            if len(responses) == 1:
+                response_value = responses[0].value
+                if isinstance(response_value, str):
+                    response = [response_value]
+                elif isinstance(response_value, list):
+                    response = response_value
+            elif len(responses) > 1:
+                response = [r.value for r in responses]
+            else:
+                logging.error(
+                    "RestGenerator JSONPath in response_json_field yielded nothing. Response content: %s"
+                    % repr(resp.content)
+                )
+                return None
+
+        return response
 
 
 default_class = "RestGenerator"
