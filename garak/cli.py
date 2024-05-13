@@ -3,7 +3,7 @@
 
 """Flow for invoking garak from the command line"""
 
-command_options = "list_detectors list_probes list_generators list_buffs list_config plugin_info interactive report version skip_unknown".split()
+command_options = "list_detectors list_probes list_generators list_buffs list_config plugin_info interactive report version".split()
 
 
 def main(arguments=[]) -> None:
@@ -67,6 +67,11 @@ def main(arguments=[]) -> None:
         type=int,
         default=_config.system.parallel_attempts,
         help="How many probe attempts to launch in parallel.",
+    )
+    parser.add_argument(
+        "--skip_unknown",
+        action="store_true",
+        help="allow skip of unknown probes, detectors, or buffs",
     )
 
     ## RUN
@@ -237,11 +242,6 @@ def main(arguments=[]) -> None:
         "--interactive.py",
         action="store_true",
         help="Launch garak in interactive.py mode",
-    )
-    parser.add_argument(
-        "--skip_unknown",
-        action="store_true",
-        help="allow skip of unknown probes or detectors",
     )
 
     logging.debug("args - raw argument string received: %s", arguments)
@@ -447,10 +447,7 @@ def main(arguments=[]) -> None:
                 )
                 parsed_specs[spec_type] = names
                 if rejected is not None and len(rejected) > 0:
-                    if not args.skip_unknown:
-                        msg_list = ",".join(rejected)
-                        raise ValueError(f"❌Unknown {spec_namespace}❌: {msg_list}")
-                    else:
+                    if hasattr(args, "skip_unknown"):  # attribute only set when True
                         header = f"Unknown {spec_namespace}:"
                         skip_msg = Fore.LIGHTYELLOW_EX + "SKIP" + Style.RESET_ALL
                         msg = f"{Fore.LIGHTYELLOW_EX}{header}\n" + "\n".join(
@@ -458,6 +455,9 @@ def main(arguments=[]) -> None:
                         )
                         logging.warning(f"{header} " + ",".join(rejected))
                         print(msg)
+                    else:
+                        msg_list = ",".join(rejected)
+                        raise ValueError(f"❌Unknown {spec_namespace}❌: {msg_list}")
 
             evaluator = garak.evaluators.ThresholdEvaluator(_config.run.eval_threshold)
 
@@ -524,7 +524,9 @@ def main(arguments=[]) -> None:
                 )
             logging.info("nothing to do 🤷")
     except KeyboardInterrupt:
-        print("User cancel received, terminating all runs")
+        msg = "User cancel received, terminating all runs"
+        logging.info(msg)
+        print(msg)
     except ValueError as e:
         logging.error(e)
         print(e)
