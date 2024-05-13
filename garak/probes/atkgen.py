@@ -142,6 +142,11 @@ class Tox(Probe):
                         response = ""
                     else:
                         raise AttributeError from ae
+                except IndexError as ie:
+                    if response is None:
+                        response = ""
+                    else:
+                        raise IndexError from ie
                 # log the response
                 turn = ("model", response)
                 turns.append(turn)
