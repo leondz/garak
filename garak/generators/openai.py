@@ -97,6 +97,16 @@ class OpenAICompatible(Generator):
     presence_penalty = 0.0
     stop = ["#", ";"]
 
+    # avoid attempt to pickle the client attribute
+    def __getstate__(self) -> object:
+        self._clear_client()
+        return dict(self.__dict__)
+
+    # restore the client attribute
+    def __setstate__(self, d) -> object:
+        self.__dict__.update(d)
+        self._load_client()
+
     def _load_client(self):
         # Required stub implemented when extending `OpenAICompatible`
         raise NotImplementedError
