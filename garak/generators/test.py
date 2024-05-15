@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Test generators
 
 These give simple system responses, intended for testing.
@@ -16,8 +15,8 @@ class Blank(Generator):
     generator_family_name = "Test"
     name = "Blank"
 
-    def _call_model(self, prompt: str) -> List[str]:
-        return [""] * self.generations
+    def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[str]:
+        return [""] * generations_this_call
 
 
 class Repeat(Generator):
@@ -27,8 +26,25 @@ class Repeat(Generator):
     generator_family_name = "Test"
     name = "Repeat"
 
-    def _call_model(self, prompt: str) -> List[str]:
-        return [prompt] * self.generations
+    def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[str]:
+        return [prompt] * generations_this_call
+
+
+class Single(Generator):
+    """This generator returns the a fixed string and does not support multiple generations."""
+
+    supports_multiple_generations = False
+    generator_family_name = "Test"
+    name = "Single"
+    test_generation_string = "ELIM"
+
+    def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[str]:
+        if generations_this_call == 1:
+            return [self.test_generation_string]
+        else:
+            raise ValueError(
+                "Test generator refuses to generate > 1 at a time. Check generation logic"
+            )
 
 
 default_class = "Blank"

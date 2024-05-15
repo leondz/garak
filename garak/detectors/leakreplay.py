@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Data leak: Replay attack
 
 Detectors for data replay based attacks

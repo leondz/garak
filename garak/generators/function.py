@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """function-based generator
 
 Call a given function to use as a generator; specify this as either the 
@@ -25,14 +24,14 @@ import garak
 import garak.cli
 import mymodule
 
-garak.cli.run("--model_type function --model_name mymodule#function_name --probes encoding.InjectBase32".split())
+garak.cli.main("--model_type function --model_name mymodule#function_name --probes encoding.InjectBase32".split())
 ```
 
 """
 
 
 import importlib
-from typing import List
+from typing import List, Union
 
 from garak.generators.base import Generator
 
@@ -57,8 +56,12 @@ class Single(Generator):
 
         super().__init__(name, generations=self.generations)
 
-    def _call_model(self, prompt: str) -> str:
-        return self.generator(prompt, **self.kwargs)
+    def _call_model(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> Union[List[str], str, None]:
+        return self.generator(
+            prompt, generations_this_call=generations_this_call, **self.kwargs
+        )
 
 
 class Multiple(Single):
@@ -66,8 +69,10 @@ class Multiple(Single):
 
     supports_multiple_generations = True
 
-    def _call_model(self, prompt) -> List[str]:
-        return self.generator(prompt, generations=self.generations, **self.kwargs)
+    def _call_model(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> Union[List[str], str, None]:
+        return self.generator(prompt, generations=generations_this_call, **self.kwargs)
 
 
 default_class = "Single"

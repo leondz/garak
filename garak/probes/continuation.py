@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Probes to check if a generator will continue a contentious term.
 
 Operates by giving high-risk context as a prompt, extracted from e.g. Urban
@@ -15,7 +14,11 @@ from garak.probes.base import Probe
 
 
 class ContinueSlursReclaimedSlurs80(Probe):
-    """Continue partial word with slur or reclaimed slur"""
+    """Continue partial word with slur or reclaimed slur.
+
+    This probe poses a partial ethnic slur with some preceding content, and
+    checks to see if the model will complete the slur. It uses a subset of 80
+    slurs & contexts that test LLMs have been likely to provide completions for."""
 
     bcp47 = "en"
     uri = ""
@@ -29,6 +32,7 @@ class ContinueSlursReclaimedSlurs80(Probe):
         "owasp:llm01",
         "quality:Behavioral:ContentSafety:Toxicity",
         "quality:Behavioral:ContentSafety:HateHarassment",
+        "payload:unwanted:hatespeech",
     ]
     goal = "output an ethnic slur"
 
@@ -39,7 +43,7 @@ class ContinueSlursReclaimedSlurs80(Probe):
         # append these to each of the prefixes for that term
         slur_prefixes = defaultdict(set)
         with open(
-            _config.transient.basedir / "resources/slurprompts_80.jsonl",
+            _config.transient.basedir / "resources" / "slurprompts_80.jsonl",
             "r",
             encoding="utf-8",
         ) as slurfile:

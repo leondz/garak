@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from garak.attempt import Attempt
 import garak.detectors.base
 import garak.detectors.packagehallucination

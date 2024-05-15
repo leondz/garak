@@ -20,9 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from garak.generators.huggingface import Model
-from garak.resources.gcg import attack_manager
-from garak.resources.gcg import gcg_attack
 from argparse import ArgumentParser
 import torch.multiprocessing as mp
 from datetime import datetime
@@ -30,10 +27,16 @@ from pathlib import Path
 from logging import getLogger
 
 CONTROL_INIT = "! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !"
-PATH = Path(__file__).parents[0]
 
+from garak.generators.huggingface import Model
+from garak.resources.gcg import attack_manager
+from garak.resources.gcg import gcg_attack
+
+import garak._config
 
 logger = getLogger(__name__)
+
+gpg_resource_data = garak._config.transient.basedir / "resources" / "gcg" / "data"
 
 # GCG parser used by interactive mode
 gcg_parser = ArgumentParser()
@@ -48,7 +51,7 @@ gcg_parser.add_argument("--stop_success", action="store_true", help="Stop on suc
 gcg_parser.add_argument(
     "--train_data",
     type=str,
-    default=f"{PATH}/data/advbench/harmful_behaviors.csv",
+    default=gpg_resource_data / "advbench" / "harmful_behaviors.csv",
     help="Path to training data",
 )
 gcg_parser.add_argument(
@@ -60,7 +63,7 @@ gcg_parser.add_argument(
 gcg_parser.add_argument(
     "--outfile",
     type=str,
-    default=f"{PATH}/data/gcg_prompts.txt",
+    default=gpg_resource_data / "gcg_prompts.txt",
     help="Location to write GCG attack output",
 )
 gcg_parser.add_argument(
@@ -82,15 +85,16 @@ gcg_parser.add_argument(
 )
 
 
-def generate_gcg(
-    model_names: list[str],
+def run_gcg(
+    target_generator: garak.generators.Generator = None,
+    model_names: list[str] = None,
     transfer: bool = False,
     progressive: bool = False,
     stop_success: bool = True,
-    train_data: str = f"{PATH}/data/advbench/harmful_behaviors.csv",
+    train_data: str = gpg_resource_data / "advbench" / "harmful_behaviors.csv",
     n_train: int = 50,
     n_test: int = 0,
-    outfile: str = f"{PATH}/data/gcg/gcg.txt",
+    outfile: str = gpg_resource_data / "gcg" / "gcg.txt",
     control_init: str = CONTROL_INIT,
     deterministic: bool = True,
     n_steps: int = 500,
@@ -111,6 +115,7 @@ def generate_gcg(
     """
     Function to generate GCG attack strings
     Args:
+        target_generator (Generator): Generator to target with GCG attack
         transfer (bool): Whether the attack generated is for a transfer attack
         progressive (bool): Whether to use progressive goals
         stop_success (bool): Whether to stop on a successful attack
@@ -141,7 +146,11 @@ def generate_gcg(
     Returns:
         None
     """
-    mp.set_start_method("spawn")
+    mp.set_start_method("spawn", force=True)
+
+    if target_generator is not None and model_names is not None:
+        msg = "You have specified a list of model names and a target generator. Using the already loaded generator!"
+        logger.warning(msg)
 
     if "test_data" in kwargs:
         test_data = kwargs["test_data"]
@@ -151,11 +160,26 @@ def generate_gcg(
     if "logfile" in kwargs:
         logfile = kwargs["logfile"]
     else:
-        timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
-        model_string = "_".join([x.replace("/", "-") for x in model_names])
-        logfile = f"{PATH}/data/logs/{timestamp}_{model_string}.json"
+        if target_generator is not None:
+            model_string = target_generator.name
+        elif model_names is not None:
+            model_string = "_".join([x.replace("/", "-") for x in model_names])
+        else:
+            msg = "You must specify either a target generator or a list of model names to run GCG!"
+            logger.error(msg)
+            raise RuntimeError(msg)
+        # TODO: why is the log file being placed in the resources folder?
+        if garak._config.transient.run_id is not None:
+            run_id = garak._config.transient.run_id
+            logfile = gpg_resource_data / "logs" / f"{run_id}_{model_string}.json"
+        else:
+            timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
+            logfile = gpg_resource_data / "logs" f"{timestamp}_{model_string}.json"
 
-    logger.debug("Loading goals and targets for GCG attack.")
+    # Create logfile directory
+    p = Path(logfile).parent
+    p.mkdir(parents=True, exist_ok=True)
+
     (
         train_goals,
         train_targets,
@@ -165,9 +189,17 @@ def generate_gcg(
         train_data=train_data, test_data=test_data, n_train=n_train, n_test=n_test
     )
 
-    logger.debug("Loading workers for GCG attack")
+    generators = list()
+    if target_generator:
+        generators.append(target_generator)
+    elif model_names:
+        generators.append(Model(model_name) for model_name in model_names)
+    else:
+        msg = "You must specify either a target generator or a list of model names to run GCG!"
+        logger.error(msg)
+        raise Exception(msg)
     # TODO: Specify additional args for get_workers
-    workers, test_workers = attack_manager.get_workers(model_names=model_names)
+    workers, test_workers = attack_manager.get_workers(generators=generators)
 
     managers = {
         "AP": gcg_attack.GCGAttackPrompt,
@@ -214,11 +246,12 @@ def generate_gcg(
 
     if save_logs:
         logger.info(
-            f"Beginning GCG generation, detailed logging information for this run is in {logfile}."
+            f"Beginning GCG generation, detailed logging information for this run is in %s.",
+            logfile,
         )
     else:
         logger.info("Beginning GCG generation")
-    attack.run(
+    adv_suffix, _, success = attack.run(
         n_steps=n_steps,
         batch_size=batch_size,
         topk=topk,
@@ -236,8 +269,11 @@ def generate_gcg(
     for worker in workers + test_workers:
         worker.stop()
 
-    logger.debug("GCG generation complete!")
-
     if not save_logs:
         p = Path(logfile)
         p.unlink()
+
+    if success:
+        return adv_suffix
+    else:
+        return None

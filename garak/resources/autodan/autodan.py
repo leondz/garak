@@ -1,7 +1,17 @@
-import gc
-import numpy as np
+import argparse
+from logging import getLogger
+import os
+from pathlib import Path
 import torch
 import torch.nn as nn
+from tqdm import tqdm
+import numpy as np
+
+import gc
+
+from garak.generators import Generator, load_generator
+from garak.generators.huggingface import Model
+import garak._config
 from garak.resources.autodan.genetic import (
     get_score_autodan,
     autodan_ga,
@@ -12,16 +22,13 @@ from garak.resources.autodan.model_utils import (
     load_conversation_template,
     check_for_attack_success,
 )
-import argparse
-import os
-from logging import getLogger
-from garak.generators import Generator
-from garak.generators.huggingface import Model
-from pathlib import Path
-from tqdm import tqdm
+
 
 logger = getLogger(__name__)
 
+autodan_resource_data = (
+    garak._config.transient.basedir / "resources" / "autodan" / "data"
+)
 autodan_parser = argparse.ArgumentParser(description="AutoDAN config")
 autodan_parser.add_argument(
     "--num_steps", type=int, default=100, help="Number of steps to run generation"
@@ -48,13 +55,13 @@ autodan_parser.add_argument(
 autodan_parser.add_argument(
     "--init_prompt_path",
     type=str,
-    default=f"{Path(__file__).parents[0]}/data/autodan_init.txt",
+    default=autodan_resource_data / "autodan_init.txt",
     help="Path to initial prompt",
 )
 autodan_parser.add_argument(
     "--reference",
     type=str,
-    default=f"{Path(__file__).parents[0]}/data/prompt_group.pth",
+    default=autodan_resource_data / "prompt_group.pth",
     help="Path to refernces",
 )
 autodan_parser.add_argument(
@@ -111,10 +118,12 @@ def autodan_generate(
     crossover_rate: float = 0.5,
     num_points: int = 5,
     mutation_rate: float = 0.1,
+    mutation_generator_name: str = "gpt-3.5-turbo",
+    mutation_generator_type: str = "openai",
     hierarchical: bool = False,
-    out_path: str = f"{Path(__file__).parents[0]}/data/autodan_prompts.txt",
-    init_prompt_path: str = f"{Path(__file__).parents[0]}/data/autodan_init.txt",
-    reference_path: str = f"{Path(__file__).parents[0]}/data/prompt_group.pth",
+    out_path: str = str(autodan_resource_data / "autodan_prompts.txt"),
+    init_prompt_path: str = str(autodan_resource_data / "autodan_init.txt"),
+    reference_path: str = str(autodan_resource_data / "prompt_group.pth"),
     low_memory: bool = False,
     random_seed: int = None,
 ):
@@ -130,6 +139,8 @@ def autodan_generate(
         crossover_rate (float): Probability of performing crossover
         num_points (int): How many points in an input to perform crossover on
         mutation_rate (float): Probability of mutating a parent string
+        mutation_generator_name (str): Name of model to use as the mutation generator
+        mutation_generator_type (str): Type of model to use as the mutation generator
         hierarchical (bool): Whether ot use hierarchical GA
         out_path (str): Path to write generated AutoDAN string
         init_prompt_path (str): Path to initial prompts
@@ -150,10 +161,16 @@ def autodan_generate(
         torch.manual_seed(random_seed)
         torch.cuda.manual_seed_all(random_seed)
 
-    adv_string_init = open(init_prompt_path, "r").readlines()[0]
+    adv_string_init = open(init_prompt_path, "r", encoding="utf-8").readlines()[0]
 
     conv_template = load_conversation_template(generator.name)
     crit = nn.CrossEntropyLoss(reduction="mean")
+
+    mutation_generator = load_generator(
+        model_name=mutation_generator_name,
+        model_type=mutation_generator_type,
+        generations=1,
+    )
 
     # Feel like this could just be text instead of storing it as tensors.
     if os.path.exists(reference_path):
@@ -193,12 +210,13 @@ def autodan_generate(
             best_new_adv_prefix = new_adv_prefixes[best_new_adv_prefix_id]
 
             adv_prefix = best_new_adv_prefix
-            success, gen_str = check_for_attack_success(adv_prefix, test_prefixes)
+            gen_str = generator.generate(prompt=adv_prefix)[0]
+            success = check_for_attack_success(gen_str, test_prefixes)
             if success:
                 logger.info(
                     f"Found a successful AutoDAN prompt!\n{adv_prefix}\nAppending to {out_path}."
                 )
-                with open(out_path, "a") as f:
+                with open(out_path, "a", encoding="utf-8") as f:
                     f.write(f"{adv_prefix}\n")
                 break
 
@@ -211,6 +229,7 @@ def autodan_generate(
                     batch_size=batch_size,
                     crossover_rate=crossover_rate,
                     mutation_rate=mutation_rate,
+                    mutation_generator=mutation_generator,
                 )
             else:
                 unfiltered_new_adv_prefixes = autodan_ga(
@@ -221,13 +240,18 @@ def autodan_generate(
                     crossover_rate=crossover_rate,
                     num_points=num_points,
                     mutation=mutation_rate,
+                    mutation_generator=mutation_generator,
                 )
 
             new_adv_prefixes = unfiltered_new_adv_prefixes
+            generator.clear_history()
             gc.collect()
             torch.cuda.empty_cache()
 
-    if not success:
+    if success:
+        return adv_prefix
+
+    else:
         logger.info(
             f"Ran through {num_steps} iterations and found no successful prompts"
         )

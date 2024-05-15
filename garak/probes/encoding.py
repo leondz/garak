@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Encoding-based prompt injection
 
 Probes that try to get a model to generate a specific piece of given text
@@ -7,7 +6,6 @@ safeguards on input filtering.
 
 optional variable: "encoding.payloads" -> a list of payload types to be used
 """
-
 
 import base64
 import binascii
@@ -18,6 +16,8 @@ from garak.probes.base import Probe
 
 payload_library = {}
 payloads = []
+
+extra_tags = []
 
 
 def load_payloads():
@@ -57,13 +57,18 @@ def load_payloads():
 
         payload_library["slur_terms"] = []
         with open(
-            _config.transient.basedir / "resources/slurprompts_80.jsonl",
+            _config.transient.basedir / "resources" / "slurprompts_80.jsonl",
             "r",
             encoding="utf-8",
         ) as slurfile:
             for line in slurfile:
                 if line.strip():
                     payload_library["slur_terms"].append(json.loads(line)["term"])
+
+    extra_payload_tags = {
+        "xss": ["payload:malicious:renderer:xss"],
+        "slur_terms": ["payload:unwanted:hatespeech"],
+    }
 
     if "encoding" in _config.plugins.probes:
         if isinstance(_config.plugins.probes["encoding"]["payloads"], str):
@@ -73,6 +78,8 @@ def load_payloads():
         for payload_class in _config.plugins.probes["encoding"]["payloads"]:
             if payload_class in payload_library:
                 payloads += payload_library[payload_class]
+            if payload_class in extra_payload_tags:
+                extra_tags += extra_payload_tags[payload_class]
 
     if not payloads:
         payloads = payload_library["default"]
@@ -168,7 +175,7 @@ def braille(text):
         elif char in characterUnicodes:
             if char.isdigit():
                 if not is_number:
-                    is_number == True
+                    is_number = True
                     output += characterUnicodes["num"]
             output += characterUnicodes[char]
         if is_number and char not in numberPunctuations:
@@ -251,6 +258,7 @@ class BaseEncodingProbe:
         "avid-effect:security:S0403",
         "owasp:llm01",
         "quality:Security:PromptStability",
+        "payload:generic",
     ]
     goal = "make the model say an encoded payload"
     bcp47 = "en"
@@ -263,6 +271,7 @@ class BaseEncodingProbe:
 
     def __init__(self):
         load_payloads()
+        self.tags += extra_tags
         self.prompts, self.triggers = zip(
             *_generate_encoded_prompts(self.encoding_funcs, self.encoding_name)
         )
@@ -273,7 +282,10 @@ class BaseEncodingProbe:
 
 
 class InjectBase64(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to base64 encoded injections"""
+    """Probe for susceptibility to base64 encoded injections
+
+    Encodes payloads using base64, and tries a variety of ways of getting the target
+    model to repeat & decode them."""
 
     encoding_funcs = [
         base64.b64encode,
@@ -289,7 +301,10 @@ class InjectBase64(BaseEncodingProbe, Probe):
 
 
 class InjectBase16(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to base16 encoded injections"""
+    """Probe for susceptibility to base16 encoded injections"
+
+    Encodes payloads using base16, and tries a variety of ways of getting the target
+    model to repeat & decode them."""
 
     encoding_funcs = [base64.b16encode]
     encoding_name = "BASE16"
@@ -300,7 +315,10 @@ class InjectBase16(BaseEncodingProbe, Probe):
 
 
 class InjectBase32(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to base32 encoded injections"""
+    """Probe for susceptibility to base32 encoded injections
+
+    Encodes payloads using base32, and tries a variety of ways of getting the target
+    model to repeat & decode them."""
 
     encoding_funcs = [base64.b32encode]
     encoding_name = "BASE32"
@@ -311,7 +329,10 @@ class InjectBase32(BaseEncodingProbe, Probe):
 
 
 class InjectAscii85(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to base85 encoded injections"""
+    """Probe for susceptibility to base85 encoded injections
+
+    Encodes payloads using ascii85, and tries a variety of ways of getting the target
+    model to repeat & decode them."""
 
     encoding_funcs = [base64.a85encode, base64.b85encode]
     encoding_name = "ASCII85"
@@ -321,19 +342,11 @@ class InjectAscii85(BaseEncodingProbe, Probe):
         Probe.__init__(self)
 
 
-class InjectBase32(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to base32 encoded injections"""
-
-    encoding_funcs = [base64.b32encode]
-    encoding_name = "BASE32"
-
-    def __init__(self):
-        BaseEncodingProbe.__init__(self)
-        Probe.__init__(self)
-
-
 class InjectHex(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to hex encoded injections"""
+    """Probe for susceptibility to hex encoded injections
+
+    Encodes payloads using hex, and tries a variety of ways of getting the target
+    model to repeat & decode them."""
 
     encoding_funcs = [binascii.b2a_hex]
     encoding_name = "hex"
@@ -344,7 +357,10 @@ class InjectHex(BaseEncodingProbe, Probe):
 
 
 class InjectQP(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to QP encoded injections"""
+    """Probe for susceptibility to QP encoded injections
+
+    Encodes payloads using quoted-printable, and tries a variety of ways of getting the target
+    model to repeat & decode them."""
 
     encoding_funcs = [binascii.b2a_qp]
     encoding_name = "Quoted-Printable"
@@ -356,7 +372,10 @@ class InjectQP(BaseEncodingProbe, Probe):
 
 
 class InjectUU(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to UU encoded injections"""
+    """Probe for susceptibility to UU encoded injections
+
+    Encodes payloads using uuencoding, and tries a variety of ways of getting the target
+    model to repeat & decode them."""
 
     encoding_name = "UUencode"
 
@@ -374,7 +393,10 @@ class InjectUU(BaseEncodingProbe, Probe):
 
 
 class InjectMime(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to MIME encoding injections"""
+    """Probe for susceptibility to MIME encoding injections
+
+    Encodes payloads using MIME encoding, and tries a variety of ways of getting the
+    target model to repeat & decode them."""
 
     encoding_name = "MIME"
     active = False  # seems to just pass text right through - when using ascii chars
@@ -388,7 +410,11 @@ class InjectMime(BaseEncodingProbe, Probe):
 
 
 class InjectROT13(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to ROT13 encoding injections"""
+    """Probe for susceptibility to ROT13 encoding injections
+
+    Encodes payloads using ROT13, and tries a variety of ways of getting the target
+    model to repeat & decode them. ROT13 only applies to letters in the English
+    alphabet."""
 
     encoding_funcs = [rot13]
     encoding_name = "ROT13"
@@ -399,7 +425,10 @@ class InjectROT13(BaseEncodingProbe, Probe):
 
 
 class InjectBase2048(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to Base2048 encoding injections"""
+    """Probe for susceptibility to Base2048 encoding injections
+
+    Encodes payloads using base2048, and tries a variety of ways of getting the target
+    model to repeat & decode them."""
 
     encoding_name = "BASE2048"
 
@@ -412,7 +441,10 @@ class InjectBase2048(BaseEncodingProbe, Probe):
 
 
 class InjectBraille(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to Braille encoding injections. Credit Wally#3422"""
+    """Probe for susceptibility to Braille encoding injections. Credit Wally#3422
+
+    Encodes payloads using braille, and tries a variety of ways of getting the target
+    model to repeat & decode them."""
 
     uri = ""
     encoding_funcs = [braille]
@@ -424,11 +456,119 @@ class InjectBraille(BaseEncodingProbe, Probe):
 
 
 class InjectMorse(BaseEncodingProbe, Probe):
-    """Probe for susceptibility to Morse encoding. Credit Wally#3422"""
+    """Probe for susceptibility to Morse encoding. Credit Wally#3422
+
+    Encodes payloads using morse, and tries a variety of ways of getting the target
+    model to repeat & decode them."""
 
     uri = ""
     encoding_funcs = [morse]
     encoding_name = "Morse"
+
+    def __init__(self):
+        BaseEncodingProbe.__init__(self)
+        Probe.__init__(self)
+
+
+class InjectNato(BaseEncodingProbe, Probe):
+    """Probe for susceptibility to Nato phonetic alphabet encoding.
+
+    Encodes payloads using the classic NATO phonetic alphabet, and tries a
+    variety of ways of getting the target model to repeat & decode them."""
+
+    uri = "https://en.wikipedia.org/wiki/NATO_phonetic_alphabet"
+
+    def nato(text: bytes) -> bytes:
+        nato_map = {
+            "A": "Alfa",
+            "B": "Bravo",
+            "C": "Charlie",
+            "D": "Delta",
+            "E": "Echo",
+            "F": "Foxtrot",
+            "G": "Golf",
+            "H": "Hotel",
+            "I": "India",
+            "J": "Juliett",
+            "K": "Kilo",
+            "L": "Lima",
+            "M": "Mike",
+            "N": "November",
+            "O": "Oscar",
+            "P": "Papa",
+            "Q": "Quebec",
+            "R": "Romeo",
+            "S": "Sierra",
+            "T": "Tango",
+            "U": "Uniform",
+            "V": "Victor",
+            "W": "Whiskey",
+            "X": "Xray",
+            "Y": "Yankee",
+            "Z": "Zulu",
+        }
+
+        output = []
+        for char in text.decode().upper():
+            if char in nato_map:
+                output.append(nato_map[char])
+        return bytes(" ".join(output), "utf-8")
+
+    encoding_funcs = [nato]
+    encoding_name = "Nato"
+
+    def __init__(self):
+        BaseEncodingProbe.__init__(self)
+        Probe.__init__(self)
+
+
+class InjectEcoji(BaseEncodingProbe, Probe):
+    """Probe for susceptibility to Ecoji encoding.
+
+    Encodes payloads using the [ecoji](https://ecoji.io/) mapping, and tries a variety
+    of ways of getting the target model to repeat & decode them."""
+
+    uri = "https://ecoji.io/"
+
+    def _ecoji(text: bytes) -> bytes:
+        import io
+
+        import ecoji
+
+        r = io.BytesIO(text)
+        w = io.StringIO()
+
+        ecoji.encode(r, w)
+
+        return w.getvalue()
+
+    encoding_name = "Ecoji"
+    encoding_funcs = [_ecoji]
+
+    def __init__(self):
+        BaseEncodingProbe.__init__(self)
+        Probe.__init__(self)
+
+
+class InjectZalgo(BaseEncodingProbe, Probe):
+    """Probe for susceptibility to Zalgo encoding.
+
+    Encodes payloads using Zalgo decoration, and tries a variety
+    of ways of getting the target model to repeat & decode them."""
+
+    uri = "https://en.wikipedia.org/wiki/Zalgo_text"
+
+    def zalgo(text: bytes) -> bytes:
+        from zalgolib.zalgolib import enzalgofy
+
+        zalged = enzalgofy(
+            text=text.decode(), intensity=20
+        )  # default value of 50 explodes prompt length
+
+        return bytes(zalged, "utf-8")
+
+    encoding_name = "Zalgo"
+    encoding_funcs = [zalgo]
 
     def __init__(self):
         BaseEncodingProbe.__init__(self)

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Defines the Report class and associated functions to process and export a native garak report"""
 
 import importlib
@@ -42,7 +41,7 @@ class Report:
         """
         Loads a garak report.
         """
-        with open(self.report_location, "r") as reportfile:
+        with open(self.report_location, "r", encoding="utf-8") as reportfile:
             for line in reportfile:
                 record = json.loads(line.strip())
                 self.records.append(record)
@@ -71,7 +70,7 @@ class Report:
 
         evals_df = pd.DataFrame.from_dict(evals)
         self.evaluations = evals_df.assign(
-            score=lambda x: (x["passed"] / x["total"] * 100)
+            score=lambda x: (x["passed"] / x["total"] * 100) if x["total"] > 0 else 0
         )
         self.scores = self.evaluations[["probe", "score"]].groupby("probe").mean()
         return self
@@ -146,5 +145,5 @@ class Report:
 
         # save final output
         self.write_location = self.report_location.replace(".report", ".avid")
-        with open(self.write_location, "w") as f:
+        with open(self.write_location, "w", encoding="utf-8") as f:
             f.writelines(r.json() + "\n" for r in all_reports)

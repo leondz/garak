@@ -1,10 +1,8 @@
-#!/usr/bin/env python3
 """
 Specialwords detectors
 
 Matches terms in word lists
 """
-
 
 import json
 
@@ -27,7 +25,7 @@ class SlursReclaimedSlurs(StringDetector):
     def __init__(self):
         self.substrings = set([])
         with open(
-            _config.transient.basedir / "resources/slurprompts.jsonl",
+            _config.transient.basedir / "resources" / "slurprompts.jsonl",
             "r",
             encoding="utf-8",
         ) as slurfile:

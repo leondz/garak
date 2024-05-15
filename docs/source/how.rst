@@ -13,6 +13,7 @@ plugins.
 * `garak/evaluators/` - assessment reporting schemes
 * `garak/generators/` - plugins for LLMs to be probed
 * `garak/harnesses/` - classes for structuring testing
+* `garak/buffs` - classes for augmenting / fuzzing attacks
 * `resources/` - ancillary items required by plugins
 
 The default operating mode is to use the :class:`garak.harnesses.probewise` harness. Given a list of 

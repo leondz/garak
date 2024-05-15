@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Hugging Face generator
 
 Supports pipelines, inference API, and models.
@@ -19,10 +18,13 @@ import logging
 from math import log
 import re
 import os
-from typing import List
+from typing import List, Union
 import warnings
 
 import backoff
+import torch
+from PIL import Image
+from transformers import LlavaNextProcessor, LlavaNextForConditionalGeneration
 
 from garak import _config
 from garak.generators.base import Generator
@@ -43,11 +45,23 @@ class HFInternalServerError(Exception):
     pass
 
 
-class Pipeline(Generator):
+class HFCompatible:
+    def _set_hf_context_len(self, config):
+        if hasattr(config, "n_ctx"):
+            if isinstance(config.n_ctx, int):
+                self.context_len = config.n_ctx
+
+
+class Pipeline(Generator, HFCompatible):
     """Get text generations from a locally-run Hugging Face pipeline"""
 
     generator_family_name = "Hugging Face 🤗 pipeline"
     supports_multiple_generations = True
+
+    def _set_hf_context_len(self, config):
+        if hasattr(config, "n_ctx"):
+            if isinstance(config.n_ctx, int):
+                self.context_len = config.n_ctx
 
     def __init__(self, name, do_sample=True, generations=10, device=0):
         self.fullname, self.name = name, name.split("/")[-1]
@@ -61,7 +75,7 @@ class Pipeline(Generator):
 
         import torch.cuda
 
-        if torch.cuda.is_available() == False:
+        if not torch.cuda.is_available():
             logging.debug("Using CPU, torch.cuda.is_available() returned False")
             device = -1
 
@@ -76,39 +90,41 @@ class Pipeline(Generator):
             if _config.run.deprefix is True:
                 self.deprefix_prompt = True
 
-    def _call_model(self, prompt: str) -> List[str]:
+                self._set_hf_context_len(self.generator.model.config)
+
+    def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[str]:
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=UserWarning)
             try:
-                # workaround for pipeline to truncate the input
-                encoded_prompt = self.generator.tokenizer(prompt, truncation=True)
-                truncated_prompt = self.generator.tokenizer.decode(
-                    encoded_prompt["input_ids"], skip_special_tokens=True
-                )
-                raw_output = self.generator(
-                    truncated_prompt,
-                    pad_token_id=self.generator.tokenizer.eos_token_id,
-                    max_new_tokens=self.max_tokens,
-                    num_return_sequences=self.generations,
-                    # max_length = 1024,
-                )
-            except Exception:
-                raw_output = []  # could handle better than this..
+                with torch.no_grad():
+                    # workaround for pipeline to truncate the input
+                    encoded_prompt = self.generator.tokenizer(prompt, truncation=True)
+                    truncated_prompt = self.generator.tokenizer.decode(
+                        encoded_prompt["input_ids"], skip_special_tokens=True
+                    )
+                    raw_output = self.generator(
+                        truncated_prompt,
+                        pad_token_id=self.generator.tokenizer.eos_token_id,
+                        max_new_tokens=self.max_tokens,
+                        num_return_sequences=generations_this_call,
+                    )
+            except Exception as e:
+                logging.error(e)
+                raw_output = []  # could handle better than this
 
+        outputs = []
         if raw_output is not None:
-            generations = [
+            outputs = [
                 i["generated_text"] for i in raw_output
             ]  # generator returns 10 outputs by default in __init__
-        else:
-            generations = []
 
         if not self.deprefix_prompt:
-            return generations
+            return outputs
         else:
-            return [re.sub("^" + re.escape(prompt), "", i) for i in generations]
+            return [re.sub("^" + re.escape(prompt), "", _o) for _o in outputs]
 
 
-class OptimumPipeline(Pipeline):
+class OptimumPipeline(Pipeline, HFCompatible):
     """Get text generations from a locally-run Hugging Face pipeline using NVIDIA Optimum"""
 
     generator_family_name = "NVIDIA Optimum Hugging Face 🤗 pipeline"
@@ -128,7 +144,7 @@ class OptimumPipeline(Pipeline):
 
         import torch.cuda
 
-        if torch.cuda.is_available() is False:
+        if not torch.cuda.is_available():
             message = "OptimumPipeline needs CUDA, but torch.cuda.is_available() returned False; quitting"
             logging.critical(message)
             raise ValueError(message)
@@ -150,8 +166,84 @@ class OptimumPipeline(Pipeline):
             if _config.run.deprefix is True:
                 self.deprefix_prompt = True
 
+        self._set_hf_context_len(self.generator.model.config)
 
-class InferenceAPI(Generator):
+
+class ConversationalPipeline(Generator, HFCompatible):
+    """Conversational text generation using HuggingFace pipelines"""
+
+    generator_family_name = "Hugging Face 🤗 pipeline for conversations"
+    supports_multiple_generations = True
+
+    def __init__(self, name, do_sample=True, generations=10, device=0):
+        self.fullname, self.name = name, name.split("/")[-1]
+
+        super().__init__(name, generations=generations)
+
+        from transformers import pipeline, set_seed, Conversation
+
+        if _config.run.seed is not None:
+            set_seed(_config.run.seed)
+
+        import torch.cuda
+
+        if not torch.cuda.is_available():
+            logging.debug("Using CPU, torch.cuda.is_available() returned False")
+            device = -1
+
+        # Note that with pipeline, in order to access the tokenizer, model, or device, you must get the attribute
+        # directly from self.generator instead of from the ConversationalPipeline object itself.
+        self.generator = pipeline(
+            "conversational",
+            model=name,
+            do_sample=do_sample,
+            device=device,
+        )
+        self.conversation = Conversation()
+        self.deprefix_prompt = name in models_to_deprefix
+        if _config.loaded:
+            if _config.run.deprefix is True:
+                self.deprefix_prompt = True
+
+        self._set_hf_context_len(self.generator.model.config)
+
+    def clear_history(self):
+        from transformers import Conversation
+
+        self.conversation = Conversation()
+
+    def _call_model(
+        self, prompt: Union[str, list[dict]], generations_this_call: int = 1
+    ) -> List[str]:
+        """Take a conversation as a list of dictionaries and feed it to the model"""
+
+        # If conversation is provided as a list of dicts, create the conversation.
+        # Otherwise, maintain state in Generator
+        if isinstance(prompt, str):
+            self.conversation.add_message({"role": "user", "content": prompt})
+            self.conversation = self.generator(self.conversation)
+            generations = [self.conversation[-1]["content"]]
+
+        elif isinstance(prompt, list):
+            from transformers import Conversation
+
+            conversation = Conversation()
+            for item in prompt:
+                conversation.add_message(item)
+            with torch.no_grad():
+                conversation = self.generator(conversation)
+
+            outputs = [conversation[-1]["content"]]
+        else:
+            raise TypeError(f"Expected list or str, got {type(prompt)}")
+
+        if not self.deprefix_prompt:
+            return outputs
+        else:
+            return [re.sub("^" + re.escape(prompt), "", _o) for _o in outputs]
+
+
+class InferenceAPI(Generator, HFCompatible):
     """Get text generations from Hugging Face Inference API"""
 
     generator_family_name = "Hugging Face 🤗 Inference API"
@@ -186,7 +278,7 @@ class InferenceAPI(Generator):
         ),
         max_value=125,
     )
-    def _call_model(self, prompt: str) -> List[str]:
+    def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[str]:
         import json
         import requests
 
@@ -194,7 +286,7 @@ class InferenceAPI(Generator):
             "inputs": prompt,
             "parameters": {
                 "return_full_text": not self.deprefix_prompt,
-                "num_return_sequences": self.generations,
+                "num_return_sequences": generations_this_call,
                 "max_time": self.max_time,
             },
             "options": {
@@ -204,7 +296,7 @@ class InferenceAPI(Generator):
         if self.max_tokens:
             payload["parameters"]["max_new_tokens"] = self.max_tokens
 
-        if self.generations > 1:
+        if generations_this_call > 1:
             payload["parameters"]["do_sample"] = True
 
         req_response = requests.request(
@@ -269,13 +361,15 @@ class InferenceAPI(Generator):
         self.wait_for_model = False
 
 
-class InferenceEndpoint(InferenceAPI):
+class InferenceEndpoint(InferenceAPI, HFCompatible):
     """Interface for Hugging Face private endpoints
     Pass the model URL as the name, e.g. https://xxx.aws.endpoints.huggingface.cloud
     """
 
     supports_multiple_generations = False
     import requests
+
+    timeout = 120
 
     def __init__(self, name="", generations=10):
         super().__init__(name, generations=generations)
@@ -291,7 +385,7 @@ class InferenceEndpoint(InferenceAPI):
         ),
         max_value=125,
     )
-    def _call_model(self, prompt: str) -> List[str]:
+    def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[str]:
         import requests
 
         payload = {
@@ -307,22 +401,22 @@ class InferenceEndpoint(InferenceAPI):
         if self.max_tokens:
             payload["parameters"]["max_new_tokens"] = self.max_tokens
 
-        if self.generations > 1:
+        if generations_this_call > 1:
             payload["parameters"]["do_sample"] = True
 
         response = requests.post(
-            self.api_url, headers=self.headers, json=payload
+            self.api_url, headers=self.headers, json=payload, timeout=self.timeout
         ).json()
         try:
             output = response[0]["generated_text"]
-        except:
+        except Exception as exc:
             raise IOError(
                 "Hugging Face 🤗 endpoint didn't generate a response. Make sure the endpoint is active."
-            )
+            ) from exc
         return output
 
 
-class Model(Generator):
+class Model(Generator, HFCompatible):
     """Get text generations from a locally-run Hugging Face model"""
 
     generator_family_name = "Hugging Face 🤗 model"
@@ -342,7 +436,7 @@ class Model(Generator):
         self.init_device = "cuda:" + str(self.device)
         import torch.cuda
 
-        if torch.cuda.is_available() == False:
+        if not torch.cuda.is_available():
             logging.debug("Using CPU, torch.cuda.is_available() returned False")
             self.device = -1
             self.init_device = "cpu"
@@ -356,10 +450,13 @@ class Model(Generator):
             self.init_device  # or "cuda:0" For fast initialization directly on GPU!
         )
 
+        self._set_hf_context_len(self.config)
+
         self.model = transformers.AutoModelForCausalLM.from_pretrained(
             self.fullname,
             config=self.config,
         ).to(self.init_device)
+
         self.deprefix_prompt = name in models_to_deprefix
 
         if self.config.tokenizer_class:
@@ -379,10 +476,10 @@ class Model(Generator):
         self.generation_config.eos_token_id = self.model.config.eos_token_id
         self.generation_config.pad_token_id = self.model.config.eos_token_id
 
-    def _call_model(self, prompt):
+    def _call_model(self, prompt: str, generations_this_call: int = 1):
         self.generation_config.max_new_tokens = self.max_tokens
         self.generation_config.do_sample = self.do_sample
-        self.generation_config.num_return_sequences = self.generations
+        self.generation_config.num_return_sequences = generations_this_call
         if self.temperature is not None:
             self.generation_config.temperature = self.temperature
         if self.top_k is not None:
@@ -391,27 +488,81 @@ class Model(Generator):
         text_output = []
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=UserWarning)
-            inputs = self.tokenizer(prompt, truncation=True, return_tensors="pt").to(
-                self.init_device
-            )
+            with torch.no_grad():
+                inputs = self.tokenizer(
+                    prompt, truncation=True, return_tensors="pt"
+                ).to(self.init_device)
 
-            try:
-                outputs = self.model.generate(
-                    **inputs, generation_config=self.generation_config
+                try:
+                    outputs = self.model.generate(
+                        **inputs, generation_config=self.generation_config
+                    )
+                except IndexError as e:
+                    if len(prompt) == 0:
+                        return [""] * generations_this_call
+                    else:
+                        raise e
+                text_output = self.tokenizer.batch_decode(
+                    outputs, skip_special_tokens=True, device=self.device
                 )
-            except IndexError as e:
-                if len(prompt) == 0:
-                    return [""] * self.generations
-                else:
-                    raise e
-            text_output = self.tokenizer.batch_decode(
-                outputs, skip_special_tokens=True, device=self.device
-            )
 
         if not self.deprefix_prompt:
             return text_output
         else:
             return [re.sub("^" + re.escape(prompt), "", i) for i in text_output]
 
+class LLaVA(Generator):
+    """Get LLaVA ([ text + image ] -> text) generations"""
+
+    # "exist_tokens + max_new_tokens < 4K is the golden rule."
+    # https://github.com/haotian-liu/LLaVA/issues/1095#:~:text=Conceptually%2C%20as%20long%20as%20the%20total%20tokens%20are%20within%204K%2C%20it%20would%20be%20fine%2C%20so%20exist_tokens%20%2B%20max_new_tokens%20%3C%204K%20is%20the%20golden%20rule.
+    max_tokens = 4000
+
+    # rewrite modality setting
+    modality = {
+        'in': {'text', 'image'}, 
+        'out': {'text'}
+    }
+
+    # Support Image-Text-to-Text models
+    # https://huggingface.co/llava-hf#:~:text=Llava-,Models,-9
+    supported_models = [
+        "llava-hf/llava-v1.6-34b-hf", 
+        "llava-hf/llava-v1.6-vicuna-13b-hf", 
+        "llava-hf/llava-v1.6-vicuna-7b-hf", 
+        "llava-hf/llava-v1.6-mistral-7b-hf"
+    ]
+    
+    def __init__(self, name="", generations=10):
+        if name not in self.supported_models:
+            raise ValueError(
+                f"Invalid modal name {name}, current support: {self.supported_models}."
+            )
+        self.processor = LlavaNextProcessor.from_pretrained(name)
+        self.model = LlavaNextForConditionalGeneration.from_pretrained(name, 
+                                                                       torch_dtype=torch.float16, 
+                                                                       low_cpu_mem_usage=True)
+        if torch.cuda.is_available():
+            self.model.to("cuda:0")  
+        else:
+            raise RuntimeError("CUDA is not supported on this device. Please make sure CUDA is installed and configured properly.") 
+        
+    def generate(self, prompt) -> List[str]:
+        text_prompt = prompt['text']
+        try:
+            image_prompt = Image.open(prompt['image'])
+        except FileNotFoundError:
+            raise FileNotFoundError(
+                f"Cannot open image {prompt['image']}."
+            )
+        except Exception as e:
+            raise Exception(e)
+        
+        inputs = self.processor(text_prompt, image_prompt, return_tensors="pt").to("cuda:0")
+        exist_token_number: int = inputs.data['input_ids'].shape[1]
+        output = self.model.generate(**inputs, max_new_tokens = self.max_tokens - exist_token_number)
+        output = self.processor.decode(output[0], skip_special_tokens=True)
+        
+        return [output]
 
 default_class = "Pipeline"

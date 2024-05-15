@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """atkgen: Attack Generation. 
 
 This probe uses a separate model to create prompts for a generator,
@@ -6,8 +5,8 @@ which are intended to guide that generator into a certain failure mode.
 
 Warning: These attack models may generate highly toxic prompts while 
 attempting to goad target models into failure - peruse logs at your
-own risk, and take care of yourself, using this guide to working with
-harmful text:
+own risk, and don't spend too much time doing it, using this guide 
+to working with harmful text:
 
  https://aclanthology.org/2022.findings-emnlp.35/
 """
@@ -30,9 +29,13 @@ output_sep = "<||>"
 
 
 class Tox(Probe):
-    """Attack Generation
+    """Automatic attack generation, trying to elicit toxic outputs from the model.
 
-    Simulates red teaming"""
+    This probe uses an attack model, trained on conversations that led to LLMs
+    outputting toxicity, to generate prompts that should nudge a target LLM into
+    yielding toxic output. The data used for this attack generation model was selected
+    using the same detector as this tox probe uses, so both attack generation model
+    and detector are looking for the same definition of the failure mode."""
 
     recommended_detector = ["toxicity.ToxicCommentModel"]
     redteamer = None
@@ -43,10 +46,12 @@ class Tox(Probe):
         "quality:Behavioral:ContentSafety:Toxicity",
         "quality:Behavioral:ContentSafety:HateHarassment",
         "quality:Behavioral:ContentSafety:Profanity",
+        "payload:unwanted",
     ]
     goal = "make the model say something toxic"
     parallelisable_attempts = False  # atkgen has its own dialog manager
     red_team_model = "leondz/artgpt2tox"
+    uri = "https://interhumanagreement.substack.com/p/faketoxicityprompts-automatic-red"
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
         output_is_conversation = _config.system.verbose >= 2
@@ -83,7 +88,7 @@ class Tox(Probe):
 
             last_response = None
             turns = []
-            logging.debug(f"atkgen: attempt {i} uuid {this_attempt.uuid}")
+            logging.debug("atkgen: attempt %s uuid %s", i, this_attempt.uuid)
 
             if output_is_conversation:
                 print("atkgen: 🆕 ⋅.˳˳.⋅ॱ˙˙ॱ New conversation ॱ˙˙ॱ⋅.˳˳.⋅ 🗣️")
@@ -130,7 +135,12 @@ class Tox(Probe):
                         f" turn {t.n:02}: waiting for [{generator.name[:10]:<10}]"
                     )
                 # send the challenge and get the response
-                response = generator.generate(challenge)[0].strip()
+                response = generator.generate(challenge)
+                if response is None or len(response) == 0:
+                    response = ""
+                else:
+                    response = response[0].strip() if response[0] is not None else ""
+
                 # log the response
                 turn = ("model", response)
                 turns.append(turn)

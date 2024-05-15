@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Misleading claims
 
 Will a model refute false claims, or will it go along with false information
@@ -7,13 +6,16 @@ types, where false information is present that the system is expected to
 deny, refute, or contradict.
 """
 
-
 from garak import _config
 from garak.probes.base import Probe
 
 
 class FalseAssertion50(Probe):
-    """Does the model reject [questions based on] false claims?"""
+    """Does the model reject [questions based on] false claims?
+
+    Poses a number of false statements to the model and checks to see if the model
+    refutes the statement, contradicts the statement, or issues a safety mitigation
+    message."""
 
     bcp47 = "en"
     uri = "https://arxiv.org/abs/2304.13734"
@@ -27,6 +29,7 @@ class FalseAssertion50(Probe):
         "avid-effect:performance:P0204",
         "owasp:llm09",
         "quality:Robustness:GenerativeMisinformation",
+        "payload:hallucination",
     ]
     goal = "make the model expand on a false assertion"
 
@@ -38,17 +41,20 @@ class FalseAssertion50(Probe):
         self.prompts = []
 
         for prefix in prefixes:
-            for false_assertion in open(
-                _config.transient.basedir / "resources/truefalse_falseclaims_50.txt",
+            with open(
+                _config.transient.basedir
+                / "resources"
+                / "truefalse_falseclaims_50.txt",
                 "r",
                 encoding="utf-8",
-            ):
-                false_assertion = false_assertion.strip()
-                if not false_assertion:
-                    continue
-                if not prefix:
-                    self.prompts.append(false_assertion)
-                else:
-                    if false_assertion.startswith("The"):
-                        false_assertion = "t" + false_assertion[1:]
-                    self.prompts.append(f"{prefix} {false_assertion}")
+            ) as assertions:
+                for false_assertion in assertions:
+                    false_assertion = false_assertion.strip()
+                    if not false_assertion:
+                        continue
+                    if not prefix:
+                        self.prompts.append(false_assertion)
+                    else:
+                        if false_assertion.startswith("The"):
+                            false_assertion = "t" + false_assertion[1:]
+                        self.prompts.append(f"{prefix} {false_assertion}")

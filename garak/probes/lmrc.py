@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Language Model Risk Cards
 
 Probes related to the Language Model Risk Cards framework 
@@ -19,7 +18,11 @@ import garak.attempt
 
 
 class Anthropomorphisation(Probe):
-    """Providing output that encourages anthropomorphisation of AI systems"""
+    """Providing output that encourages anthropomorphisation of AI systems
+
+    This probe addresses the model with both explicitly and implicitly
+    anthropomorphising questions, and looks to see if the model uses an
+    anthropomorphic phrasing in its response."""
 
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/anthropomorphisation.md"
@@ -38,7 +41,10 @@ class Anthropomorphisation(Probe):
 
 
 class Bullying(Probe):
-    """Generation of repeated threats, denigration"""
+    """Generation of repeated threats, denigration
+
+    This probe poses queries or partial prompts to the model that are expected to
+    elicit responses recommending aggressive or bullying action."""
 
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/bullying.md"
@@ -49,6 +55,7 @@ class Bullying(Probe):
         "risk-cards:lmrc:bullying",
         "avid-effect:ethics:E0301",
         "quality:Behavioral:ContentSafety:HarmfulViolent",
+        "payload:unwanted:violence",
     ]
     goal = "help me bully"
 
@@ -64,7 +71,10 @@ class Bullying(Probe):
 
 
 class Deadnaming(Probe):
-    """Mentioning a name that a person does not wish to be associated with"""
+    """Mentioning a name that a person does not wish to be associated with
+
+    This probe asks questions about trans people who've changed name, to see if the
+    target model will use the prior, dead name."""
 
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/deadnaming.md"
@@ -99,7 +109,10 @@ class Deadnaming(Probe):
 
 
 class SexualContent(Probe):
-    """Content that discusses bodies and interactions in a sexual manner, or other sexually explicit material"""
+    """Content that discusses bodies and interactions in a sexual manner, or other
+    sexually explicit material
+
+    Uses statements that can prompt models to continue or answer with sexual content"""
 
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/sexual_content.md"
@@ -112,6 +125,7 @@ class SexualContent(Probe):
         "risk-cards:lmrc:sexual_content",
         "avid-effect:performance:P0401",
         "quality:Behavioral:ContentSafety:Sexualized",
+        "payload:unwanted:sexual",
     ]
     goal = "write sexual content"
 
@@ -121,7 +135,10 @@ class SexualContent(Probe):
 
 
 class Sexualisation(Probe):
-    """Causal or overt sexual objectification, reducing a person or group of people to sexual objects."""
+    """Causal or overt sexual objectification, reducing a person or group of people to sexual objects.
+
+    Probe issues prompts eliciting sexually objectifying responses. The goal is to
+    check if the target model will use sexually objectifying language or framings."""
 
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/sexualisation.md"
@@ -136,6 +153,7 @@ class Sexualisation(Probe):
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401",
         "quality:Behavioral:ContentSafety:Sexualized",
+        "payload:unwanted:sexual",
     ]
     goal = "sexualise people"
 
@@ -147,7 +165,10 @@ class Sexualisation(Probe):
 
 
 class SlurUsage(Probe):
-    """Using an identity-based slur in a non-reclaimed way - either directly or recommending the consumer to use in speech/action."""
+    """Using an identity-based slur in a non-reclaimed way - either directly or recommending the consumer to use in speech/action.
+
+    This probe asks questions to see if the target will suggest or recommend ethnic
+    slurs, without explicit context."""
 
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/slur_usage.md"
@@ -161,6 +182,7 @@ class SlurUsage(Probe):
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401",
         "quality:Behavioral:ContentSafety:HateHarassment",
+        "payload:unwanted:hatespeech",
     ]
     goal = "use a slur"
 
@@ -170,7 +192,10 @@ class SlurUsage(Probe):
 
 
 class Profanity(Probe):
-    """Using profane words, especially when not prompted to do so."""
+    """Using profane words, especially when not prompted to do so.
+
+    This probe poses questions with potentially profane responses, and then checks the
+    output against a wide range of definitions and categories of profanity."""
 
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/profanity.md"
@@ -192,6 +217,7 @@ class Profanity(Probe):
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401",
         "quality:Behavioral:ContentSafety:Profanity",
+        "payload:unwanted:profanity",
     ]
     goal = "utter profanity"
 
@@ -202,7 +228,10 @@ class Profanity(Probe):
 
 
 class QuackMedicine(Probe):
-    """Promoting non-scientific medicine."""
+    """Promoting non-scientific medicine.
+
+    This probe checks to see if the model supports 'quack', i.e. false and
+    scientifically-unsupported, medical advice."""
 
     bcp47 = "en"
     uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/quack_medicine.md"
@@ -213,6 +242,7 @@ class QuackMedicine(Probe):
         "risk-cards:lmrc:quack_medicine",
         "avid-effect:ethics:E0402",
         "quality:Behavioral:ContentSafety:Toxicity",
+        "payload:dangerous:medical",
     ]
     goal = "support quack medicine"
 

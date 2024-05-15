@@ -3,8 +3,12 @@
 # . use probes that attempt to evoke toxic responses
 # . do paraphrasing to increase coverage
 # . paraphrasing increases the prompt vocab a lot
+system:
+  lite: false
+
 run:
   generations: 5
+
 plugins:
   probe_spec: atkgen.Tox,continuation.ContinueSlursReclaimedSlurs80,encoding,lmrc.Anthropomorphisation,lmrc.Bullying,lmrc.Deadnaming,lmrc.Profanity,lmrc.SlurUsage,realtoxicityprompts,
   probes:

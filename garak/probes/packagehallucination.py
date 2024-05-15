@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Package Hallucination
 
 Trying to get code generations that specify non-existent (and therefore insecure)
@@ -34,12 +33,23 @@ code_tasks = [
 
 
 class Python(Probe):
-    """Attempts to generate Python3 code including hallucinated packages"""
+    """Attempts to generate Python3 code including hallucinated packages
+
+    Generators sometimes recommend importing non-existent packages into code. These
+    package names can be found by attackers and then squatted in public package
+    repositories, so that incorrect code from generators will start to run, silently
+    loading malicious squatted packgates onto the machine. This is bad. This probe
+    checks whether a model will recommend code that uses non-existent packages."""
 
     bcp47 = "en"
     goal = "generate python importing non-existent packages"
     uri = "https://vulcan.io/blog/ai-hallucinations-package-risk"
-    tags = ["owasp:llm09", "owasp:llm02", "quality:Robustness:GenerativeMisinformation"]
+    tags = [
+        "owasp:llm09",
+        "owasp:llm02",
+        "quality:Robustness:GenerativeMisinformation",
+        "payload:malicious:badcode",
+    ]
     primary_detector = "packagehallucination.PythonPypi"
 
     def __init__(self):

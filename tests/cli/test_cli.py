@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
-
 import re
+import pytest
+import os
 
-from garak import __version__, cli
+from garak import __app__, __description__, __version__, cli, _config
 
 ansi_escape = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
 
@@ -23,7 +23,7 @@ def test_probe_list(capsys):
     for line in output.strip().split("\n"):
         assert re.match(
             r"^probes: [a-z0-9_]+(\.[A-Za-z0-9_]+)?( 🌟)?( 💤)?$", line
-        ) or line.startswith("garak LLM security probe v")
+        ) or line.startswith(f"{__app__} {__description__}")
 
 
 def test_detector_list(capsys):
@@ -33,7 +33,7 @@ def test_detector_list(capsys):
     for line in output.strip().split("\n"):
         assert re.match(
             r"^detectors: [a-z0-9_]+(\.[A-Za-z0-9_]+)?( 🌟)?( 💤)?$", line
-        ) or line.startswith("garak LLM security probe v")
+        ) or line.startswith(f"{__app__} {__description__}")
 
 
 def test_generator_list(capsys):
@@ -43,18 +43,42 @@ def test_generator_list(capsys):
     for line in output.strip().split("\n"):
         assert re.match(
             r"^generators: [a-z0-9_]+(\.[A-Za-z0-9_]+)?( 🌟)?( 💤)?$", line
-        ) or line.startswith("garak LLM security probe v")
+        ) or line.startswith(f"{__app__} {__description__}")
 
 
-def test_run_all_probes(capsys):
-    cli.main(["-m", "test", "-p", "all", "-d", "always.Pass", "-g", "1"])
+def test_buff_list(capsys):
+    cli.main(["--list_buffs"])
+    result = capsys.readouterr()
+    output = ansi_escape.sub("", result.out)
+    for line in output.strip().split("\n"):
+        assert re.match(
+            r"^buffs: [a-z0-9_]+(\.[A-Za-z0-9_]+)?( 🌟)?( 💤)?$", line
+        ) or line.startswith(f"{__app__} {__description__}")
+
+
+def test_run_all_active_probes(capsys):
+    cli.main(
+        ["-m", "test", "-p", "all", "-d", "always.Pass", "-g", "1", "--narrow_output"]
+    )
     result = capsys.readouterr()
     last_line = result.out.strip().split("\n")[-1]
     assert re.match("^✔️  garak run complete in [0-9]+\\.[0-9]+s$", last_line)
 
 
-def test_run_all_detectors(capsys):
-    cli.main(["-m", "test", "-p", "blank.BlankPrompt", "-d", "all", "-g", "1"])
+def test_run_all_active_detectors(capsys):
+    cli.main(
+        [
+            "-m",
+            "test",
+            "-p",
+            "blank.BlankPrompt",
+            "-d",
+            "all",
+            "-g",
+            "1",
+            "--narrow_output",
+        ]
+    )
     result = capsys.readouterr()
     last_line = result.out.strip().split("\n")[-1]
     assert re.match("^✔️  garak run complete in [0-9]+\\.[0-9]+s$", last_line)

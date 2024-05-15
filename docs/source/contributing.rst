@@ -36,6 +36,6 @@ Finding help and connecting with the garak community
 
 There are a number of ways you can reach out to us! We'd love to help and we're always interested to hear how you're using garak.
 
-* GitHub discussions: https://github.com/leondz/garak/discussions
-* Twitter: https://twitter.com/garak_llm
-* Discord: https://discord.gg/xH3rs3ZH4B
+* GitHub discussions: `<https://github.com/leondz/garak/discussions>`
+* Twitter: `<https://twitter.com/garak_llm>`
+* Discord: `<https://discord.gg/uVch4puUCs>`

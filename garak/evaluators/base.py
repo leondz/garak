@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Base evaluators
 
 These describe evaluators for assessing detector results.
@@ -63,7 +62,13 @@ class Evaluator:
                 all_outputs += attempt.outputs
                 for idx, score in enumerate(attempt.detector_results[detector]):
                     if not self.test(score):  # if we don't pass
-                        if not _config.transient.hitlogfile:
+                        if (
+                            _config.transient.hitlogfile is None
+                            or _config.transient.hitlogfile.closed
+                        ):
+                            hitlog_mode = (
+                                "w" if _config.transient.hitlogfile is None else "a"
+                            )
                             if not _config.reporting.report_prefix:
                                 hitlog_filename = f"{_config.reporting.report_dir}/garak.{_config.transient.run_id}.hitlog.jsonl"
                             else:
@@ -73,7 +78,7 @@ class Evaluator:
                             logging.info("hit log in %s", hitlog_filename)
                             _config.transient.hitlogfile = open(
                                 hitlog_filename,
-                                "w",
+                                hitlog_mode,
                                 buffering=1,
                                 encoding="utf-8",
                             )
