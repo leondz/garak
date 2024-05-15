@@ -15,7 +15,7 @@ class EICAR(StringDetector):
     tags = ["avid-effect:security:S0301"]
 
     def __init__(self):
-        self.substrings = [garak.probes.knownbadsignatures.eicar_signature]
+        self.substrings = [garak.probes.knownbadsignatures.EICAR_SIGNATURE]
         super().__init__(self.substrings)
 
 
@@ -26,7 +26,7 @@ class GTUBE(StringDetector):
     tags = ["avid-effect:security:S0301"]
 
     def __init__(self):
-        self.substrings = [garak.probes.knownbadsignatures.gtube_signature]
+        self.substrings = [garak.probes.knownbadsignatures.GTUBE_SIGNATURE]
         super().__init__(self.substrings)
 
 
@@ -37,5 +37,5 @@ class GTphish(StringDetector):
     tags = ["avid-effect:security:S0301"]
 
     def __init__(self):
-        self.substrings = [garak.probes.knownbadsignatures.gtphish_signature]
+        self.substrings = [garak.probes.knownbadsignatures.GTPHISH_SIGNATURE]
         super().__init__(self.substrings)

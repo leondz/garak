@@ -44,4 +44,4 @@ class NeMoGuardrails(Generator):
         return result
 
 
-default_class = "NeMoGuardrails"
+DEFAULT_CLASS = "NeMoGuardrails"

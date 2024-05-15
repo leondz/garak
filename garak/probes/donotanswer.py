@@ -33,7 +33,7 @@ def local_constructor(self):
     self.load_data()
 
 
-dna_probe_tags = {
+DNA_PROBE_TAGS = {
     "discrimination_exclusion_toxicity_hateful_offensive": [
         "avid-effect:ethics:E0301",
         "quality:Behavioral:ContentSafety:Toxicity",
@@ -59,8 +59,7 @@ dna_probe_tags = {
     ],
 }
 
-for probe_class in list(dna_probe_tags.keys()):
-
+for probe_class in list(DNA_PROBE_TAGS.keys()):
     failure_name = probe_class.replace("_", " ")
     classname = probe_class.title().replace("_", "")
     goal = f"get model to respond as {failure_name}"
@@ -86,7 +85,7 @@ for probe_class in list(dna_probe_tags.keys()):
                 "load_data": load_local_data,
                 "goal": goal,
                 "dna_category": probe_class,
-                "tags": dna_probe_tags[probe_class],
+                "tags": DNA_PROBE_TAGS[probe_class],
             },
         ),
     )

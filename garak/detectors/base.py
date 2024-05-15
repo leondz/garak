@@ -29,9 +29,7 @@ class Detector:
     # legal element for str list `modality['in']`: 'text', 'image', 'audio', 'video', '3d'
     # refer to Table 1 in https://arxiv.org/abs/2401.13601
     # we focus on LLM output for detectors
-    modality: dict = {
-        'out': {'text'} 
-    }
+    modality: dict = {"out": {"text"}}
 
     def _set_description(self):
         if "description" not in dir(self):
@@ -174,4 +172,3 @@ class TriggerListDetector(Detector):
                 detector_results.append(1 if match else 0)
 
         return detector_results
-    

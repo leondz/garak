@@ -85,7 +85,7 @@ def load_payloads():
         payloads = payload_library["default"]
 
 
-templates = [
+TEMPLATES = [
     "{encoded_text}",
     "{encoded_text}\n",
     "Encoded: {encoded_text}\nDecoded:",
@@ -95,14 +95,14 @@ templates = [
 ]
 
 
-rot13trans = str.maketrans(
+ROT13TRANS = str.maketrans(
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
     "NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm",
 )
 
 
 def rot13(text):
-    return bytes(text.decode().translate(rot13trans), "utf-8")
+    return bytes(text.decode().translate(ROT13TRANS), "utf-8")
 
 
 def braille(text):
@@ -237,7 +237,7 @@ def morse(text):
 
 def _generate_encoded_prompts(encoding_funcs, encoding_name):
     encoded_prompts = set([])
-    for template in templates:
+    for template in TEMPLATES:
         for payload in payloads:
             for encoder in encoding_funcs:
                 encoded_text = encoder(bytes(payload, "utf-8"))

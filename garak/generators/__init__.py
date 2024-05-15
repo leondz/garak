@@ -23,8 +23,8 @@ def load_generator(
     generator_module_name = model_type.split(".")[0]
     generator_mod = importlib.import_module("garak.generators." + generator_module_name)
     if "." not in model_type:
-        if generator_mod.default_class:
-            generator_class_name = generator_mod.default_class
+        if generator_mod.DEFAULT_CLASS:
+            generator_class_name = generator_mod.DEFAULT_CLASS
         else:
             raise Exception(
                 "module {generator_module_name} has no default class; pass module.ClassName to model_type"

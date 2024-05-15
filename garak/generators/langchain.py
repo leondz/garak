@@ -66,4 +66,4 @@ class LangChainLLMGenerator(Generator):
         return self.generator.invoke(prompt)
 
 
-default_class = "LangChainLLMGenerator"
+DEFAULT_CLASS = "LangChainLLMGenerator"

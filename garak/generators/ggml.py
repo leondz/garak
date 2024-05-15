@@ -123,4 +123,4 @@ class GgmlGenerator(Generator):
             return None
 
 
-default_class = "GgmlGenerator"
+DEFAULT_CLASS = "GgmlGenerator"

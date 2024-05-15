@@ -125,7 +125,7 @@ class GarakCommands(cmd2.CommandSet):
                     f"Loading default generator class for {generator_module_name}"
                 )
                 try:
-                    generator_class_name = generator_mod.default_class
+                    generator_class_name = generator_mod.DEFAULT_CLASS
                 except Exception as e:
                     logger.error(
                         f"Module {generator_module_name} has no default class. Specify a generator."
