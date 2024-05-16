@@ -140,7 +140,7 @@ Many things can go wrong when trying to get inference out of LLMs. Things that c
 Backoff
 =======
 
-We need to work out a strategy of what to do when these exceptions are raised. Fortunately, the Replicate API module is fairly well-coded, and handles a lot of the recoverable failure cases itself. However, transient exceptions shouldn't stop a garak run - runs can take days, and aborting a run with an uncaught exception after dozens of hours is probably loss desirable. So we should handle them
+We need to work out a strategy of what to do when these exceptions are raised. Fortunately, the Replicate API module is fairly well-coded, and handles a lot of the recoverable failure cases itself. However, transient exceptions shouldn't stop a garak run - runs can take days, and aborting a run with an uncaught exception after dozens of hours is probably less desirable. So we should handle them
 
 The ``backoff`` module offers a decorator that controls behaviour in response to specified exceptions being raised. We can use this to implement Fibonacci backoff on ``_call_model()`` if a Replicate exception is raised. The decorator looks like this, and goes right above our method:
 
