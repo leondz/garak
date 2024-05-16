@@ -20,6 +20,7 @@ def main(arguments=[]) -> None:
     import garak.command as command
     import logging
     import re
+    from colorama import Fore, Style
 
     command.start_logging()
     _config.load_base_config()
@@ -66,6 +67,11 @@ def main(arguments=[]) -> None:
         type=int,
         default=_config.system.parallel_attempts,
         help="How many probe attempts to launch in parallel.",
+    )
+    parser.add_argument(
+        "--skip_unknown",
+        action="store_true",
+        help="allow skip of unknown probes, detectors, or buffs",
     )
 
     ## RUN
@@ -327,9 +333,6 @@ def main(arguments=[]) -> None:
     import garak.evaluators
 
     try:
-        if not args.version and not args.report:
-            command.start_run()
-
         # do a special thing for CLIprobe options, generator options
         if "probe_options" in args or "probe_option_file" in args:
             if "probe_options" in args:
@@ -382,11 +385,14 @@ def main(arguments=[]) -> None:
             from garak.interactive import interactive_mode
 
             try:
+                command.start_run()  # start run to track actions
                 interactive_mode()
             except Exception as e:
                 logging.error(e)
                 print(e)
                 sys.exit(1)
+            finally:
+                command.end_run()
 
         if args.version:
             pass
@@ -429,7 +435,31 @@ def main(arguments=[]) -> None:
                 message = f"⚠️  Model type '{_config.plugins.model_type}' also needs a model name\n You can set one with e.g. --model_name \"billwurtz/gpt-1.0\""
                 logging.error(message)
                 raise ValueError(message)
-            print(f"📜 reporting to {_config.transient.report_filename}")
+
+            parsable_specs = ["probe", "detector", "buff"]
+            parsed_specs = {}
+            for spec_type in parsable_specs:
+                spec_namespace = f"{spec_type}s"
+                config_spec = getattr(_config.plugins, f"{spec_type}_spec", "")
+                config_tags = getattr(_config.run, f"{spec_type}_tags", "")
+                names, rejected = _config.parse_plugin_spec(
+                    config_spec, spec_namespace, config_tags
+                )
+                parsed_specs[spec_type] = names
+                if rejected is not None and len(rejected) > 0:
+                    if hasattr(args, "skip_unknown"):  # attribute only set when True
+                        header = f"Unknown {spec_namespace}:"
+                        skip_msg = Fore.LIGHTYELLOW_EX + "SKIP" + Style.RESET_ALL
+                        msg = f"{Fore.LIGHTYELLOW_EX}{header}\n" + "\n".join(
+                            [f"{skip_msg} {spec}" for spec in rejected]
+                        )
+                        logging.warning(f"{header} " + ",".join(rejected))
+                        print(msg)
+                    else:
+                        msg_list = ",".join(rejected)
+                        raise ValueError(f"❌Unknown {spec_namespace}❌: {msg_list}")
+
+            evaluator = garak.evaluators.ThresholdEvaluator(_config.run.eval_threshold)
 
             generator_module_name = _config.plugins.model_type.split(".")[0]
             generator_mod = importlib.import_module(
@@ -445,9 +475,6 @@ def main(arguments=[]) -> None:
             else:
                 generator_class_name = _config.plugins.model_type.split(".")[1]
 
-            #        if 'model_name' not in args:
-            #            generator = getattr(generator_mod, generator_class_name)()
-            #        else:
             generator = getattr(generator_mod, generator_class_name)(
                 _config.plugins.model_name
             )
@@ -472,22 +499,20 @@ def main(arguments=[]) -> None:
                     )
                 autodan_generate(generator=generator, prompt=prompt, target=target)
 
-            probe_names = _config.parse_plugin_spec(
-                _config.plugins.probe_spec, "probes", _config.run.probe_tags
-            )
-            detector_names = _config.parse_plugin_spec(
-                _config.plugins.detector_spec, "detectors"
-            )
-            buff_names = _config.parse_plugin_spec(_config.plugins.buff_spec, "buffs")
+            command.start_run()  # start the run now that all config validation is complete
+            print(f"📜 reporting to {_config.transient.report_filename}")
 
-            evaluator = garak.evaluators.ThresholdEvaluator(_config.run.eval_threshold)
-
-            if detector_names == []:
-                command.probewise_run(generator, probe_names, evaluator, buff_names)
-
+            if parsed_specs["detector"] == []:
+                command.probewise_run(
+                    generator, parsed_specs["probe"], evaluator, parsed_specs["buff"]
+                )
             else:
                 command.pxd_run(
-                    generator, probe_names, detector_names, evaluator, buff_names
+                    generator,
+                    parsed_specs["probe"],
+                    parsed_specs["detector"],
+                    evaluator,
+                    parsed_specs["buff"],
                 )
 
             command.end_run()
@@ -499,4 +524,9 @@ def main(arguments=[]) -> None:
                 )
             logging.info("nothing to do 🤷")
     except KeyboardInterrupt:
-        print("User cancel received, terminating all runs")
+        msg = "User cancel received, terminating all runs"
+        logging.info(msg)
+        print(msg)
+    except ValueError as e:
+        logging.error(e)
+        print(e)
