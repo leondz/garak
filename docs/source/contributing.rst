@@ -33,6 +33,16 @@ The recipe isn't outlandish:
 * Start a new module inheriting from one of the base classes, e.g. :class:`garak.probes.base.Probe`
 * Override as little as possible.
 
+
+Guides to writing plugins
+-------------------------
+
+So you'd like to build a new garak plugin? Great! Here are our tutorials.
+
+* :doc:`Building a garak generator <contributing.generator>` -- step-by-step guide to building an interface for a real API-based model service
+
+
+
 Testing
 -------
 
@@ -53,9 +63,4 @@ All the tests should pass for any code there's a pull request for, and all tests
 
 Please write running tests to validate any new components or functions that you add.
 They're pretty straightforward - you can look at the existing code to get an idea of how to write these.
-
-
-Guides to writing plugins
--------------------------
-* :ref:`Building a garak generator<contributing.generator>`
 
