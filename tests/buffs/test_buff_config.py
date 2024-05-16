@@ -19,7 +19,7 @@ import pytest
 import garak
 import garak.cli
 
-prefix = "test_buff_single" + str(uuid.uuid4())
+PREFIX = "test_buff_single" + str(uuid.uuid4())
 
 
 def test_include_original_prompt():
@@ -35,12 +35,12 @@ plugins:
         )
         tmp.close()
         garak.cli.main(
-            f"-m test -p test.Test -b lowercase.Lowercase --config {tmp.name} --report_prefix {prefix}".split()
+            f"-m test -p test.Test -b lowercase.Lowercase --config {tmp.name} --report_prefix {PREFIX}".split()
         )
         os.remove(tmp.name)
 
     prompts = []
-    with open(f"{prefix}.report.jsonl", "r", encoding="utf-8") as reportfile:
+    with open(f"{PREFIX}.report.jsonl", "r", encoding="utf-8") as reportfile:
         for line in reportfile:
             r = json.loads(line)
             if r["entry_type"] == "attempt" and r["status"] == 1:
@@ -69,12 +69,12 @@ plugins:
         )
         tmp.close()
         garak.cli.main(
-            f"-m test -p test.Test -b lowercase.Lowercase --config {tmp.name} --report_prefix {prefix}".split()
+            f"-m test -p test.Test -b lowercase.Lowercase --config {tmp.name} --report_prefix {PREFIX}".split()
         )
         os.remove(tmp.name)
 
     prompts = []
-    with open(f"{prefix}.report.jsonl", "r", encoding="utf-8") as reportfile:
+    with open(f"{PREFIX}.report.jsonl", "r", encoding="utf-8") as reportfile:
         for line in reportfile:
             r = json.loads(line)
             if r["entry_type"] == "attempt" and r["status"] == 1:
@@ -89,9 +89,9 @@ def cleanup(request):
 
     def remove_buff_reports():
         files = [
-            f"{prefix}.report.jsonl",
-            f"{prefix}.report.html",
-            f"{prefix}.hitlog.jsonl",
+            f"{PREFIX}.report.jsonl",
+            f"{PREFIX}.report.html",
+            f"{PREFIX}.hitlog.jsonl",
         ]
         for file in files:
             if os.path.exists(file):

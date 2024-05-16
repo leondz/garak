@@ -3,17 +3,17 @@ import pytest
 
 from garak import _plugins
 
-probes = [classname for (classname, active) in _plugins.enumerate_plugins("probes")]
-detectors = [
+PROBES = [classname for (classname, active) in _plugins.enumerate_plugins("probes")]
+DETECTORS = [
     classname
     for (classname, active) in _plugins.enumerate_plugins(
         "detectors", skip_base_classes=False
     )
 ]
-detector_bare_names = [".".join(d.split(".")[1:]) for d in detectors]
+DETECTOR_BARE_NAMES = [".".join(d.split(".")[1:]) for d in DETECTORS]
 
 
-@pytest.mark.parametrize("classname", probes)
+@pytest.mark.parametrize("classname", PROBES)
 def test_detector_specified(classname):  # every probe should give detector(s)
     plugin_name_parts = classname.split(".")
     module_name = "garak." + ".".join(plugin_name_parts[:-1])
@@ -26,7 +26,7 @@ def test_detector_specified(classname):  # every probe should give detector(s)
     )
 
 
-@pytest.mark.parametrize("classname", probes)
+@pytest.mark.parametrize("classname", PROBES)
 def test_probe_detector_exists(classname):
     plugin_name_parts = classname.split(".")
     module_name = "garak." + ".".join(plugin_name_parts[:-1])
@@ -36,4 +36,4 @@ def test_probe_detector_exists(classname):
     probe_detectors = probe_class.recommended_detector + probe_class.extended_detectors
     if probe_class.primary_detector is not None:
         probe_detectors += [probe_class.primary_detector]
-    assert set(probe_detectors).issubset(detector_bare_names)
+    assert set(probe_detectors).issubset(DETECTOR_BARE_NAMES)
