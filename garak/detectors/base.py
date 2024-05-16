@@ -3,7 +3,6 @@
 These detectors show expectations and operations of any detector implemented 
 in `garak`. `garak` detectors must inherit from a class in here."""
 
-
 import logging
 import re
 from typing import List
@@ -36,8 +35,10 @@ class Detector:
             try:
                 self.description = self.__doc__.split("\n")[0]
             except AttributeError as ae:
-                err_msg: str = f"Documentation string of class {self.detectorname} is unavailable, \
+                err_msg: str = (
+                    f"Documentation string of class {self.detectorname} is unavailable, \
                     see https://docs.python.org/3.11/reference/datamodel.html#function.__doc__:~:text=function.__doc__-,The%20function%E2%80%99s%20documentation%20string,-%2C%20or%20None%20if"
+                )
                 logging.warning(err_msg)
                 raise ValueError(err_msg)
 

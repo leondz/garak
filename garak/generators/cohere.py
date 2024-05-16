@@ -6,7 +6,6 @@ constructor param if you want to use that. You'll need to set an environment
 variable called COHERE_API_KEY to your Cohere API key, for this generator.
 """
 
-
 import logging
 import os
 from typing import List, Union

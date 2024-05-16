@@ -3,7 +3,6 @@
 Probes that help with testing, but aren't necessarily useful in
 deployment practice."""
 
-
 from garak.probes.base import Probe
 
 
