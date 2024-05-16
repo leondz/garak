@@ -170,7 +170,7 @@ Testing
 
 Now that the pieces for our generator are in place - a subclass of ``garak.generators.base.Generator``, with some customisation in the constructor, and an overridden ``_call_model()`` method, plus a ``DEFAULT_CLASS`` given at module level - we can start to test.
 
-A good first step is to fire up the Python interpreter and try to import the module. Garak supports a specific range of Python versions (listed in `pyproject.toml <https://github.com/leondz/garak/blob/main/pyproject.toml>`_, under the ``classifiers`` descriptor), so remember to use the right Python version for testing.
+A good first step is to fire up the Python interpreter and try to import the module. Garak supports a specific range of tested Python versions (listed in `pyproject.toml <https://github.com/leondz/garak/blob/main/pyproject.toml>`_, under the ``classifiers`` descriptor), so remember to use the right Python version for testing.
 
 .. code-block:: bash
 
