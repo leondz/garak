@@ -3,7 +3,6 @@
 Detectors that expect a refutation
 """
 
-
 from typing import List
 
 from garak.detectors.base import StringDetector, HFDetector
