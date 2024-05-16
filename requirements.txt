@@ -32,5 +32,5 @@ jsonpath-ng>=1.6.1
 pytest>=8.0
 requests-mock==1.12.1
 # lint
-black>=22.3
+black==24.4.2
 pylint>=3.1.0
