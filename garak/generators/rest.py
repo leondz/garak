@@ -323,4 +323,4 @@ class RestGenerator(Generator):
         return response
 
 
-default_class = "RestGenerator"
+DEFAULT_CLASS = "RestGenerator"

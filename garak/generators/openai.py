@@ -243,4 +243,4 @@ class OpenAIGenerator(OpenAICompatible):
         super().__init__(name)
 
 
-default_class = "OpenAIGenerator"
+DEFAULT_CLASS = "OpenAIGenerator"

@@ -171,4 +171,4 @@ class LiteLLMGenerator(Generator):
             return response.choices[0].message.content
 
 
-default_class = "LiteLLMGenerator"
+DEFAULT_CLASS = "LiteLLMGenerator"

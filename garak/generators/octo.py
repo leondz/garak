@@ -102,4 +102,4 @@ class InferenceEndpoint(OctoGenerator):
         return outputs.get("choices")[0].get("message").get("content")
 
 
-default_class = "OctoGenerator"
+DEFAULT_CLASS = "OctoGenerator"

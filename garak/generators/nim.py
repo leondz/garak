@@ -92,4 +92,4 @@ class NVOpenAICompletion(NVOpenAIChat):
         self.generator = self.client.completions
 
 
-default_class = "NVOpenAIChat"
+DEFAULT_CLASS = "NVOpenAIChat"

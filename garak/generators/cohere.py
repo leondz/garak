@@ -98,4 +98,4 @@ class CohereGenerator(Generator):
         return outputs
 
 
-default_class = "CohereGenerator"
+DEFAULT_CLASS = "CohereGenerator"

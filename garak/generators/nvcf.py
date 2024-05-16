@@ -116,4 +116,4 @@ class NvcfGenerator(Generator):
             return response_body["choices"][0]["message"]["content"]
 
 
-default_class = "NvcfGenerator"
+DEFAULT_CLASS = "NvcfGenerator"

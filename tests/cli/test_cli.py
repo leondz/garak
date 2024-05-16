@@ -4,13 +4,13 @@ import os
 
 from garak import __app__, __description__, __version__, cli, _config
 
-ansi_escape = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
+ANSI_ESCAPE = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
 
 
 def test_version_command(capsys):
     cli.main(["--version"])
     result = capsys.readouterr()
-    output = ansi_escape.sub("", result.out)
+    output = ANSI_ESCAPE.sub("", result.out)
     assert "garak" in output
     assert f"v{__version__}" in output
     assert len(output.strip().split("\n")) == 1
@@ -19,7 +19,7 @@ def test_version_command(capsys):
 def test_probe_list(capsys):
     cli.main(["--list_probes"])
     result = capsys.readouterr()
-    output = ansi_escape.sub("", result.out)
+    output = ANSI_ESCAPE.sub("", result.out)
     for line in output.strip().split("\n"):
         assert re.match(
             r"^probes: [a-z0-9_]+(\.[A-Za-z0-9_]+)?( 🌟)?( 💤)?$", line
@@ -29,7 +29,7 @@ def test_probe_list(capsys):
 def test_detector_list(capsys):
     cli.main(["--list_detectors"])
     result = capsys.readouterr()
-    output = ansi_escape.sub("", result.out)
+    output = ANSI_ESCAPE.sub("", result.out)
     for line in output.strip().split("\n"):
         assert re.match(
             r"^detectors: [a-z0-9_]+(\.[A-Za-z0-9_]+)?( 🌟)?( 💤)?$", line
@@ -39,7 +39,7 @@ def test_detector_list(capsys):
 def test_generator_list(capsys):
     cli.main(["--list_generators"])
     result = capsys.readouterr()
-    output = ansi_escape.sub("", result.out)
+    output = ANSI_ESCAPE.sub("", result.out)
     for line in output.strip().split("\n"):
         assert re.match(
             r"^generators: [a-z0-9_]+(\.[A-Za-z0-9_]+)?( 🌟)?( 💤)?$", line
@@ -49,7 +49,7 @@ def test_generator_list(capsys):
 def test_buff_list(capsys):
     cli.main(["--list_buffs"])
     result = capsys.readouterr()
-    output = ansi_escape.sub("", result.out)
+    output = ANSI_ESCAPE.sub("", result.out)
     for line in output.strip().split("\n"):
         assert re.match(
             r"^buffs: [a-z0-9_]+(\.[A-Za-z0-9_]+)?( 🌟)?( 💤)?$", line

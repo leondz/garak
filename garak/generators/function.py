@@ -74,4 +74,4 @@ class Multiple(Single):
         return self.generator(prompt, generations=generations_this_call, **self.kwargs)
 
 
-default_class = "Single"
+DEFAULT_CLASS = "Single"

@@ -91,4 +91,4 @@ class LangChainServeLLMGenerator(Generator):
             return None
 
 
-default_class = "LangChainServeLLMGenerator"
+DEFAULT_CLASS = "LangChainServeLLMGenerator"

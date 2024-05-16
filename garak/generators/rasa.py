@@ -220,4 +220,4 @@ class RasaRestGenerator(RestGenerator):
             return None
 
 
-default_class = "RasaRestGenerator"
+DEFAULT_CLASS = "RasaRestGenerator"

@@ -436,8 +436,8 @@ def main(arguments=[]) -> None:
                 "garak.generators." + generator_module_name
             )
             if "." not in _config.plugins.model_type:
-                if generator_mod.default_class:
-                    generator_class_name = generator_mod.default_class
+                if generator_mod.DEFAULT_CLASS:
+                    generator_class_name = generator_mod.DEFAULT_CLASS
                 else:
                     raise ValueError(
                         "module {generator_module_name} has no default class; pass module.ClassName to --model_type"

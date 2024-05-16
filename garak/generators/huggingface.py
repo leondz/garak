@@ -568,4 +568,4 @@ class LLaVA(Generator):
         return [output]
 
 
-default_class = "Pipeline"
+DEFAULT_CLASS = "Pipeline"

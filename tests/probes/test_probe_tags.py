@@ -7,10 +7,10 @@ import re
 
 from garak import _plugins
 
-probes = [classname for (classname, active) in _plugins.enumerate_plugins("probes")]
+PROBES = [classname for (classname, active) in _plugins.enumerate_plugins("probes")]
 
 
-@pytest.mark.parametrize("classname", probes)
+@pytest.mark.parametrize("classname", PROBES)
 def test_tag_format(classname):
     plugin_name_parts = classname.split(".")
     module_name = "garak." + ".".join(plugin_name_parts[:-1])

@@ -95,4 +95,4 @@ class InferenceEndpoint(ReplicateGenerator):
         return response
 
 
-default_class = "ReplicateGenerator"
+DEFAULT_CLASS = "ReplicateGenerator"

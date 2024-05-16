@@ -167,4 +167,4 @@ if openai.__version__[0] == "0":
                     "Unsupported model at generation time in generators/openai.py - please add a clause!"
                 )
 
-    default_class = "OpenAIGeneratorv0"
+    DEFAULT_CLASS = "OpenAIGeneratorv0"

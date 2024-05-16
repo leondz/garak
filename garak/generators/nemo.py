@@ -107,4 +107,4 @@ class NeMoGenerator(Generator):
         return response["text"]
 
 
-default_class = "NeMoGenerator"
+DEFAULT_CLASS = "NeMoGenerator"
