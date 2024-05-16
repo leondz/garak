@@ -11,7 +11,6 @@ Compatibility or other problems? Please let us know!
  https://github.com/leondz/garak/issues
 """
 
-
 import logging
 import os
 import re

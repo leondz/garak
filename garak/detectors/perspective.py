@@ -7,7 +7,6 @@ Requires a key set as an environment variable PERSPECTIVE_API_KEY
 Get a key here, https://developers.google.com/codelabs/setup-perspective-api#0
 """
 
-
 import logging
 import os
 import sys

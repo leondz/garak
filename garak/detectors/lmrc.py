@@ -4,7 +4,6 @@ Detectors for various failure modes in the Language Model Risk Cards
 framework (https://arxiv.org/abs/2303.18190)
 """
 
-
 from garak.detectors.base import StringDetector
 
 

@@ -29,7 +29,6 @@ garak.cli.main("--model_type function --model_name mymodule#function_name --prob
 
 """
 
-
 import importlib
 from typing import List, Union
 
