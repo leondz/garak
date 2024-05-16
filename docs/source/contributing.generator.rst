@@ -232,6 +232,7 @@ The next step is to try some integration tests - executing garak from the comman
 * Does the generator work with a test probe, via ``python -m garak -m replicate -n meta/llama-2-70b-chat -p test.Blank``?
 * Do the garak tests pass? ``python -m pytest tests/``
 
+Add some of your own tests if there are edge-case behaviours, general validation, or other things in ``__init__()``, ``_call_model()``, and other new methods that can be checked. Plugin-specific tests should go into a new file, ``tests/generators/test_[modulename].py``.
 
 If you want to see the full, live code for the Replicate garak generator, it's here: `garak/generators/replicate.py <https://github.com/leondz/garak/blob/main/garak/generators/replicate.py>`_ .
 

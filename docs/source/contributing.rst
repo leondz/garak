@@ -21,8 +21,7 @@ There are a number of ways you can reach out to us:
 * Twitter: `<https://twitter.com/garak_llm>`
 * Discord: `<https://discord.gg/uVch4puUCs>`
 
- We'd love to help, and we're always interested to hear how you're using garak
- .
+We'd love to help, and we're always interested to hear how you're using garak.
 
 Developing your own plugins
 ---------------------------
