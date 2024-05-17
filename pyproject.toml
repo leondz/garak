@@ -94,7 +94,7 @@ packages = ["garak"]
 
 [tool.black]
 line-length = 88
-target-version = ['py310', 'py311', 'py312']
+target-version = ['py310']
 include = '\.pyi?$'
 
 [tool.pytest.ini_options]
