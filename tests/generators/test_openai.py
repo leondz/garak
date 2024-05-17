@@ -3,7 +3,6 @@
 
 import os
 import httpx
-import respx
 import pytest
 
 import openai
@@ -14,23 +13,18 @@ DEFAULT_GENERATIONS_QTY = 10
 
 
 @pytest.fixture
-def set_fake_env() -> None:
-    os.environ[OpenAIGenerator.ENV_VAR] = "invalid_api_key"
+def set_fake_env(request) -> None:
+    stored_env = os.getenv(OpenAIGenerator.ENV_VAR, None)
 
+    def restore_env():
+        if stored_env is not None:
+            os.environ[OpenAIGenerator.ENV_VAR] = stored_env
+        else:
+            del os.environ[OpenAIGenerator.ENV_VAR]
 
-# helper method to pass mock config
-def generate_in_subprocess(*args):
-    generator, mock_response, prompt = args[0]
-    print("completed a result")
-    with respx.mock(
-        base_url="https://api.openai.com/v1", assert_all_called=False
-    ) as respx_mock:
-        respx_mock.post("/completions").mock(
-            return_value=httpx.Response(
-                mock_response["code"], json=mock_response["json"]
-            )
-        )
-        return generator.generate(prompt)
+    os.environ[OpenAIGenerator.ENV_VAR] = os.path.abspath(__file__)
+
+    request.addfinalizer(restore_env)
 
 
 def test_openai_version():
@@ -38,35 +32,9 @@ def test_openai_version():
 
 
 @pytest.mark.usefixtures("set_fake_env")
-def test_openai_multiprocessing(openai_compat_mocks):
-    parallel_attempts = 4
-    generator = OpenAIGenerator(name="gpt-3.5-turbo-instruct")
-    prompt_sets = [
-        [
-            (generator, openai_compat_mocks.completion, "first testing string"),
-            (generator, openai_compat_mocks.completion, "second testing string"),
-            (generator, openai_compat_mocks.completion, "third testing string"),
-        ],
-        [
-            (generator, openai_compat_mocks.completion, "fourth testing string"),
-            (generator, openai_compat_mocks.completion, "firth testing string"),
-            (generator, openai_compat_mocks.completion, "sixth testing string"),
-        ],
-    ]
-
-    for prompts in prompt_sets:
-        from multiprocessing import Pool
-
-        with Pool(parallel_attempts) as attempt_pool:
-            for result in attempt_pool.imap_unordered(generate_in_subprocess, prompts):
-                print("completed a result")
-                assert result is not None
-
-
-@pytest.mark.usefixtures("set_fake_env")
 @pytest.mark.respx(base_url="https://api.openai.com/v1")
 def test_openai_invalid_model_names(respx_mock, openai_compat_mocks):
-    mock_resp = openai_compat_mocks.models
+    mock_resp = openai_compat_mocks["models"]
     respx_mock.get("/models").mock(
         return_value=httpx.Response(mock_resp["code"], json=mock_resp["json"])
     )

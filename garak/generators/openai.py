@@ -86,6 +86,7 @@ class OpenAICompatible(Generator):
     """Generator base class for OpenAI compatible text2text restful API. Implements shared initialization and execution methods."""
 
     ENV_VAR = "OpenAICompatible_API_KEY".upper()  # Placeholder override when extending
+    active = False  # this interface class is not active
 
     supports_multiple_generations = True
     generator_family_name = "OpenAICompatible"  # Placeholder override when extending
@@ -215,6 +216,7 @@ class OpenAIGenerator(OpenAICompatible):
 
     ENV_VAR = "OPENAI_API_KEY"
     generator_family_name = "OpenAI"
+    active = True
 
     def _load_client(self):
         self.client = openai.OpenAI(api_key=self.api_key)
