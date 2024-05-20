@@ -15,6 +15,21 @@ import garak.cli
 
 
 SITE_YAML_FILENAME = "TESTONLY.site.yaml.bak"
+CONFIGURABLE_YAML = """
+plugins:
+  generators:
+    huggingface:
+      dtype: general
+    huggingface.Pipeline:
+      dtype: bfloat16
+  probes:
+    test:
+      generators:
+        huggingface:
+          dtype: for_probe  
+""".encode(
+    "utf-8"
+)
 
 ANSI_ESCAPE = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
 
@@ -50,6 +65,24 @@ for p in _config.plugins_params:
     param_locs[p] = "plugins"
 for p in _config.reporting_params:
     param_locs[p] = "reporting"
+
+
+@pytest.fixture
+def allow_site_config(request):
+    site_cfg_moved = False
+    try:
+        shutil.move("garak/garak.site.yaml", SITE_YAML_FILENAME)
+        site_cfg_moved = True
+    except FileNotFoundError:
+        site_cfg_moved = False
+
+    def restore_site_config():
+        if site_cfg_moved:
+            shutil.move(SITE_YAML_FILENAME, "garak/garak.site.yaml")
+        elif os.path.exists("garak/garak.site.yaml"):
+            os.remove("garak/garak.site.yaml")
+
+    request.addfinalizer(restore_site_config)
 
 
 # test CLI assertions of each var
@@ -127,39 +160,22 @@ def test_yaml_param_settings(param):
 
 
 # # test that site YAML overrides core YAML # needs file staging for site yaml
+@pytest.mark.usefixtures("allow_site_config")
 def test_site_yaml_overrides_core_yaml():
     importlib.reload(_config)
-
-    site_cfg_moved = False
-    try:
-        shutil.move("garak/garak.site.yaml", SITE_YAML_FILENAME)
-        site_cfg_moved = True
-    except FileNotFoundError:
-        site_cfg_moved = False
 
     with open("garak/garak.site.yaml", "w", encoding="utf-8") as f:
         f.write("---\nrun:\n  eval_threshold: 0.777\n")
         f.flush()
         garak.cli.main(["--list_config"])
 
-    if site_cfg_moved:
-        shutil.move(SITE_YAML_FILENAME, "garak/garak.site.yaml")
-    else:
-        os.remove("garak/garak.site.yaml")
-
     assert _config.run.eval_threshold == 0.777
 
 
 # # test that run YAML overrides site YAML # needs file staging for site yaml
+@pytest.mark.usefixtures("allow_site_config")
 def test_run_yaml_overrides_site_yaml():
     importlib.reload(_config)
-
-    site_cfg_moved = False
-    try:
-        shutil.move("garak/garak.site.yaml", SITE_YAML_FILENAME)
-        site_cfg_moved = True
-    except FileNotFoundError:
-        site_cfg_moved = False
 
     with open("garak/garak.site.yaml", "w", encoding="utf-8") as f:
         file_data = [
@@ -170,11 +186,6 @@ def test_run_yaml_overrides_site_yaml():
         f.write("\n".join(file_data))
         f.flush()
         garak.cli.main(["--list_config", "--eval_threshold", str(0.9001)])
-
-    if site_cfg_moved:
-        shutil.move(SITE_YAML_FILENAME, "garak/garak.site.yaml")
-    else:
-        os.remove("garak/garak.site.yaml")
 
     assert _config.run.eval_threshold == 0.9001
 
@@ -294,6 +305,7 @@ def test_run_from_yaml(capsys):
 
 
 # cli generator options file loads
+@pytest.mark.usefixtures("allow_site_config")
 def test_cli_generator_options_file():
     importlib.reload(_config)
 
