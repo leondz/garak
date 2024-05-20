@@ -11,6 +11,18 @@ from typing import List
 
 from garak import _config
 
+PLUGIN_TYPES = ("probes", "detectors", "generators", "harnesses", "buffs")
+PLUGIN_CLASSES = ("Probe", "Detector", "Generator", "Harness", "Buff")
+
+
+@staticmethod
+def _extract_modules_klasses(base_klass):
+    return [  # Extract only classes with same source package name
+        name
+        for name, klass in inspect.getmembers(base_klass, inspect.isclass)
+        if klass.__module__.startswith(base_klass.__package__)
+    ]
+
 
 def enumerate_plugins(
     category: str = "probes", skip_base_classes=True
@@ -31,26 +43,19 @@ def enumerate_plugins(
     :type category: str
     """
 
-    if category not in ("probes", "detectors", "generators", "harnesses", "buffs"):
+    if category not in PLUGIN_TYPES:
         raise ValueError("Not a recognised plugin type:", category)
 
     base_mod = importlib.import_module(f"garak.{category}.base")
 
+    # consider replacing this with PLUGIN_CLASSES above or other singular conversion
     if category == "harnesses":
         root_plugin_classname = "Harness"
     else:
         root_plugin_classname = category.title()[:-1]
 
     base_plugin_classnames = set(
-        [
-            # be careful with what's imported into base modules
-            n
-            for n in dir(base_mod) # everything in the module ..
-            if "__class__" in dir(getattr(base_mod, n)) # .. that's a class ..
-            and getattr(base_mod, n).__class__.__name__ # .. and not a base class
-            == "type"  
-        ]
-        + [root_plugin_classname]
+        _extract_modules_klasses(base_mod) + [root_plugin_classname]
     )
 
     plugin_class_names = []
@@ -63,16 +68,17 @@ def enumerate_plugins(
         if module_filename == "base.py" and skip_base_classes:
             continue
         module_name = module_filename.replace(".py", "")
-        mod = importlib.import_module(f"garak.{category}.{module_name}")
-        module_entries = set(
-            [entry for entry in dir(mod) if not entry.startswith("__")]
-        )
+        mod = importlib.import_module(
+            f"garak.{category}.{module_name}"
+        )  # import here will access all namespace level imports consider a cache to speed up processing
+        module_entries = set(_extract_modules_klasses(mod))
         if skip_base_classes:
             module_entries = module_entries.difference(base_plugin_classnames)
         module_plugin_names = set()
         for module_entry in module_entries:
             obj = getattr(mod, module_entry)
             if inspect.isclass(obj):
+                # this relies on the order of templates implemented on a class
                 if obj.__bases__[-1].__name__ in base_plugin_classnames:
                     module_plugin_names.add((module_entry, obj.active))
 
@@ -83,17 +89,18 @@ def enumerate_plugins(
     return plugin_class_names
 
 
-def configure_plugin(plugin_path: str, plugin: object) -> object:
+def configure_plugin(plugin_path: str, plugin: object, config_root: _config) -> object:
+    local_root = config_root.plugins if hasattr(config_root, "plugins") else config_root
     category, module_name, plugin_class_name = plugin_path.split(".")
     plugin_name = f"{module_name}.{plugin_class_name}"
-    plugin_type_config = getattr(_config.plugins, category)
+    plugin_type_config = getattr(local_root, category)
     if plugin_name in plugin_type_config:
         for k, v in plugin_type_config[plugin_name].items():
             setattr(plugin, k, v)
     return plugin
 
 
-def load_plugin(path, break_on_fail=True) -> object:
+def load_plugin(path, break_on_fail=True, config_root=_config) -> object:
     """load_plugin takes a path to a plugin class, and attempts to load that class.
     If successful, it returns an instance of that class.
 
@@ -144,6 +151,6 @@ def load_plugin(path, break_on_fail=True) -> object:
         else:
             return False
 
-    plugin_instance = configure_plugin(path, plugin_instance)
+    plugin_instance = configure_plugin(path, plugin_instance, config_root)
 
     return plugin_instance

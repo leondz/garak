@@ -9,11 +9,12 @@ from typing import List
 
 from colorama import Fore, Style
 
-import garak.attempt
 from garak import _config
+from garak.configurable import Configurable
+import garak.attempt
 
 
-class Detector:
+class Detector(Configurable):
     """Base class for objects that define a way of detecting a probe hit / LLM failure"""
 
     uri = ""  # reference
@@ -42,7 +43,9 @@ class Detector:
                 logging.warning(err_msg)
                 raise ValueError(err_msg)
 
-    def __init__(self):
+    def __init__(self, context=_config):
+        if not self.loaded:
+            self._load_config(context)
         if "name" not in dir(self):
             self.name = __class__  # short name
         self.detectorname = str(self.__class__).split("'")[1]

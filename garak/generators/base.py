@@ -10,9 +10,10 @@ from colorama import Fore, Style
 import tqdm
 
 from garak import _config
+from garak.configurable import Configurable
 
 
-class Generator:
+class Generator(Configurable):
     """Base class for objects that wrap an LLM or other text-to-text service"""
 
     name = "Generator"
@@ -34,7 +35,9 @@ class Generator:
         False  # can more than one generation be extracted per request?
     )
 
-    def __init__(self, name="", generations=10):
+    def __init__(self, name="", generations=10, context=_config):
+        if not self.loaded:
+            self._load_config(context)
         if "description" not in dir(self):
             self.description = self.__doc__.split("\n")[0]
         if name:
