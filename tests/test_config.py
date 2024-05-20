@@ -111,7 +111,12 @@ def test_yaml_param_settings(param):
 
     option, value = param
     with tempfile.NamedTemporaryFile(buffering=0, delete=False) as tmp:
-        tmp.write(f"---\n{param_locs[option]}:\n  {option}: {value}\n".encode("utf-8"))
+        file_data = [
+            f"---",
+            f"{param_locs[option]}:",
+            f"  {option}: {value}",
+        ]
+        tmp.write("\n".join(file_data).encode("utf-8"))
         tmp.close()
         garak.cli.main(
             ["--config", tmp.name, "--list_config"]
@@ -157,7 +162,12 @@ def test_run_yaml_overrides_site_yaml():
         site_cfg_moved = False
 
     with open("garak/garak.site.yaml", "w", encoding="utf-8") as f:
-        f.write("---\nrun:\n  eval_threshold: 0.777\n")
+        file_data = [
+            "---",
+            "run:",
+            "  eval_threshold: 0.777",
+        ]
+        f.write("\n".join(file_data))
         f.flush()
         garak.cli.main(["--list_config", "--eval_threshold", str(0.9001)])
 
@@ -176,7 +186,12 @@ def test_cli_overrides_run_yaml():
     orig_seed = 10101
     override_seed = 37176
     with tempfile.NamedTemporaryFile(buffering=0, delete=False) as tmp:
-        tmp.write(f"---\nrun:\n  seed: {orig_seed}\n".encode("utf-8"))
+        file_data = [
+            f"---",
+            f"run:",
+            f"  seed: {orig_seed}",
+        ]
+        tmp.write("\n".join(file_data).encode("utf-8"))
         tmp.close()
         garak.cli.main(
             ["--config", tmp.name, "-s", f"{override_seed}", "--list_config"]
@@ -191,16 +206,16 @@ def test_probe_options_yaml(capsys):
 
     with tempfile.NamedTemporaryFile(buffering=0, delete=False) as tmp:
         tmp.write(
-            """
----
-plugins:
-  probe_spec: test.Blank
-  probes:
-    test.Blank:    
-        gen_x: 37176
-""".encode(
-                "utf-8"
-            )
+            "\n".join(
+                [
+                    "---",
+                    "plugins:",
+                    "  probe_spec: test.Blank",
+                    "  probes:",
+                    "    test.Blank:",
+                    "        gen_x: 37176",
+                ]
+            ).encode("utf-8")
         )
         tmp.close()
         garak.cli.main(
@@ -216,9 +231,22 @@ def test_generator_options_yaml(capsys):
 
     with tempfile.NamedTemporaryFile(buffering=0, delete=False) as tmp:
         tmp.write(
-            "---\nplugins:\n  model_type: test.Blank\n  probe_spec: test.Blank\n  generators:\n    test.Blank:\n      gen_x: 37176\n".encode(
-                "utf-8"
-            )
+            "\n".join(
+                [
+                    "---",
+                    "plugins:",
+                    "  model_type: test.Blank",
+                    "  probe_spec: test.Blank",
+                    "  generators:",
+                    "    test:",
+                    "      test_val: test_value",
+                    "      Blank:",
+                    "        test_val: test_blank_value",
+                    "    test.Blank:",
+                    "      gen_x: 37176",
+                    "      test_val: blank_value",
+                ]
+            ).encode("utf-8")
         )
         tmp.close()
         garak.cli.main(
@@ -226,6 +254,7 @@ def test_generator_options_yaml(capsys):
         )  # add list_config as the action so we don't actually run
         os.remove(tmp.name)
         assert _config.plugins.generators["test.Blank"]["gen_x"] == 37176
+        assert _config.plugins.generators["test.Blank"]["test_val"] == "blank_value"
 
 
 # can a run be launched from a run YAML?
@@ -234,9 +263,17 @@ def test_run_from_yaml(capsys):
 
     with tempfile.NamedTemporaryFile(buffering=0, delete=False) as tmp:
         tmp.write(
-            "---\nrun:\n  generations: 10\n\nplugins:\n  model_type: test.Blank\n  probe_spec: test.Blank\n".encode(
-                "utf-8"
-            )
+            "\n".join(
+                [
+                    "---",
+                    "run:",
+                    "  generations: 10",
+                    "",
+                    "plugins:",
+                    "  model_type: test.Blank",
+                    "  probe_spec: test.Blank",
+                ]
+            ).encode("utf-8")
         )
         tmp.close()
         garak.cli.main(["--config", tmp.name])
@@ -302,15 +339,15 @@ def test_cli_probe_options_overrides_yaml_probe_options():
         probe_json_file.close()
         with tempfile.NamedTemporaryFile(buffering=0, delete=False) as probe_yaml_file:
             probe_yaml_file.write(
-                """
----
-plugins:
-    probes:
-        test.Blank:
-            goal: taken from CLI YAML
-""".encode(
-                    "utf-8"
-                )
+                "\n".join(
+                    [
+                        "---",
+                        "plugins:",
+                        "    probes:",
+                        "        test.Blank:",
+                        "            goal: taken from CLI YAML",
+                    ]
+                ).encode("utf-8")
             )
             probe_yaml_file.close()
             # invoke cli
@@ -336,13 +373,13 @@ def test_cli_generator_options_overrides_yaml_probe_options():
     cli_generations_count = 9001
     with tempfile.NamedTemporaryFile(buffering=0, delete=False) as generator_yaml_file:
         generator_yaml_file.write(
-            """
----
-run:
-    generations: 999
-""".encode(
-                "utf-8"
-            )
+            "\n".join(
+                [
+                    "---",
+                    "run:",
+                    "    generations: 999",
+                ]
+            ).encode("utf-8")
         )
         generator_yaml_file.close()
         args = [
@@ -367,9 +404,15 @@ def test_blank_probe_instance_loads_yaml_config():
     revised_goal = "TEST GOAL make the model forget what to output"
     with tempfile.NamedTemporaryFile(buffering=0, delete=False) as tmp:
         tmp.write(
-            f"---\nplugins:\n  probes:\n    {probe_name}:\n      goal: {revised_goal}\n".encode(
-                "utf-8"
-            )
+            "\n".join(
+                [
+                    f"---",
+                    f"plugins:",
+                    f"  probes:",
+                    f"    {probe_name}:",
+                    f"      goal: {revised_goal}",
+                ]
+            ).encode("utf-8")
         )
         tmp.close()
         garak.cli.main(["--config", tmp.name, "-p", probe_name])
@@ -400,12 +443,23 @@ def test_blank_generator_instance_loads_yaml_config():
     importlib.reload(_config)
 
     generator_name = "test.Blank"
+    generator_namespace, generator_klass = generator_name.split(".")
     revised_temp = 0.9001
     with tempfile.NamedTemporaryFile(buffering=0, delete=False) as tmp:
         tmp.write(
-            f"---\nplugins:\n  generators:\n    {generator_name}:\n      temperature: {revised_temp}\n".encode(
-                "utf-8"
-            )
+            "\n".join(
+                [
+                    f"---",
+                    f"plugins:",
+                    f"  generators:",
+                    f"    {generator_name}:",
+                    f"      temperature: {revised_temp}",
+                    f"      test_val: blank_value",
+                    f"      {generator_namespace}:",
+                    f"        {generator_klass}:",
+                    f"          test_val: test_blank_value",
+                ]
+            ).encode("utf-8")
         )
         tmp.close()
         garak.cli.main(
@@ -414,6 +468,7 @@ def test_blank_generator_instance_loads_yaml_config():
         os.remove(tmp.name)
     gen = garak._plugins.load_plugin(f"generators.{generator_name}")
     assert gen.temperature == revised_temp
+    assert gen.test_val == "blank_value"
 
 
 # check that generator picks up cli config items
