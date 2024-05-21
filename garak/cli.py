@@ -333,52 +333,38 @@ def main(arguments=[]) -> None:
     import garak.evaluators
 
     try:
-        # do a special thing for CLIprobe options, generator options
-        if "probe_options" in args or "probe_option_file" in args:
-            if "probe_options" in args:
-                try:
-                    probe_cli_config = json.loads(args.probe_options)
-                except json.JSONDecodeError as e:
-                    logging.warning("Failed to parse JSON probe_options: %s", e.args[0])
+        plugin_types = ["probe", "generator"]
+        # do a special thing for CLI probe options, generator options
+        for plugin_type in plugin_types:
+            opts_arg = f"{plugin_type}_options"
+            opts_file = f"{plugin_type}_option_file"
+            if opts_arg in args or opts_file in args:
+                if opts_arg in args:
+                    opts_argv = getattr(args, opts_arg)
+                    try:
+                        opts_cli_config = json.loads(opts_argv)
+                    except json.JSONDecodeError as e:
+                        logging.warning(
+                            "Failed to parse JSON %s: %s", opts_arg, e.args[0]
+                        )
 
-            elif "probe_option_file" in args:
-                with open(args.probe_option_file, encoding="utf-8") as f:
-                    probe_options_json = f.read().strip()
-                try:
-                    probe_cli_config = json.loads(probe_options_json)
-                except json.decoder.JSONDecodeError as e:
-                    logging.warning(
-                        "Failed to parse JSON probe_options: %s", {e.args[0]}
-                    )
-                    raise e
+                elif opts_file in args:
+                    file_arg = getattr(args, opts_file)
+                    with open(file_arg, encoding="utf-8") as f:
+                        options_json = f.read().strip()
+                    try:
+                        opts_cli_config = json.loads(options_json)
+                    except json.decoder.JSONDecodeError as e:
+                        logging.warning(
+                            "Failed to parse JSON %s: %s", opts_file, {e.args[0]}
+                        )
+                        raise e
 
-            _config.plugins.probes = _config._combine_into(
-                probe_cli_config, _config.plugins.probes
-            )
+                config_plugin_type = getattr(_config.plugins, f"{plugin_type}s")
 
-        if "generator_options" in args or "generator_option_file" in args:
-            if "generator_options" in args:
-                try:
-                    generator_cli_config = json.loads(args.generator_options)
-                except json.JSONDecodeError as e:
-                    logging.warning(
-                        "Failed to parse JSON generator_options: %s", e.args[0]
-                    )
-
-            elif "generator_option_file" in args:
-                with open(args.generator_option_file, encoding="utf-8") as f:
-                    generator_options_json = f.read().strip()
-                try:
-                    generator_cli_config = json.loads(generator_options_json)
-                except json.decoder.JSONDecodeError as e:
-                    logging.warning(
-                        "Failed to parse JSON generator_options: %s", {e.args[0]}
-                    )
-                    raise e
-
-            _config.plugins.generators = _config._combine_into(
-                generator_cli_config, _config.plugins.generators
-            )
+                config_plugin_type = _config._combine_into(
+                    opts_cli_config, config_plugin_type
+                )
 
         # process commands
         if args.interactive:
