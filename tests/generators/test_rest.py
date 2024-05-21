@@ -40,7 +40,7 @@ def test_plaintext_rest(requests_mock):
     )
     generator = RestGenerator()
     output = generator._call_model("sup REST")
-    assert output == DEFAULT_TEXT_RESPONSE
+    assert output == [DEFAULT_TEXT_RESPONSE]
 
 
 @pytest.mark.usefixtures("set_rest_config")
@@ -55,7 +55,7 @@ def test_json_rest_top_level(requests_mock):
     print(generator.response_json)
     print(generator.response_json_field)
     output = generator._call_model("Who is Enabran Tain's son?")
-    assert output == DEFAULT_TEXT_RESPONSE
+    assert output == [DEFAULT_TEXT_RESPONSE]
 
 
 @pytest.mark.usefixtures("set_rest_config")
