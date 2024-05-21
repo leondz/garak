@@ -497,9 +497,10 @@ class Model(Generator, HFCompatible):
                     outputs = self.model.generate(
                         **inputs, generation_config=self.generation_config
                     )
-                except IndexError as e:
+                except Exception as e:
                     if len(prompt) == 0:
-                        return [""] * generations_this_call
+                        logging.exception("Error calling generate for empty prompt")
+                        return [None] * generations_this_call
                     else:
                         raise e
                 text_output = self.tokenizer.batch_decode(
