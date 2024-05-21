@@ -20,13 +20,23 @@ plugins:
   generators:
     huggingface:
       dtype: general
-    huggingface.Pipeline:
-      dtype: bfloat16
+      gpu: 0
+      Pipeline:
+        dtype: bfloat16
   probes:
     test:
       generators:
         huggingface:
-          dtype: for_probe  
+            Pipeline:
+              dtype: for_probe
+  detector:
+      test:
+        Blank:
+          generators:
+            huggingface:
+                gpu: 1
+                Pipeline:
+                  dtype: for_detector
 """.encode(
     "utf-8"
 )
@@ -212,6 +222,7 @@ def test_cli_overrides_run_yaml():
 
 
 # test probe_options YAML
+# more refactor for namespace keys
 def test_probe_options_yaml(capsys):
     importlib.reload(_config)
 
@@ -223,7 +234,8 @@ def test_probe_options_yaml(capsys):
                     "plugins:",
                     "  probe_spec: test.Blank",
                     "  probes:",
-                    "    test.Blank:",
+                    "    test:",
+                    "      Blank:",
                     "        gen_x: 37176",
                 ]
             ).encode("utf-8")
@@ -233,10 +245,12 @@ def test_probe_options_yaml(capsys):
             ["--config", tmp.name, "--list_config"]
         )  # add list_config as the action so we don't actually run
         os.remove(tmp.name)
-        assert _config.plugins.probes["test.Blank"]["gen_x"] == 37176
+        # is this right? in cli probes get expanded into the namespace.class format
+        assert _config.plugins.probes["test"]["Blank"]["gen_x"] == 37176
 
 
 # test generator_options YAML
+# more refactor for namespace keys
 def test_generator_options_yaml(capsys):
     importlib.reload(_config)
 
@@ -253,9 +267,7 @@ def test_generator_options_yaml(capsys):
                     "      test_val: test_value",
                     "      Blank:",
                     "        test_val: test_blank_value",
-                    "    test.Blank:",
-                    "      gen_x: 37176",
-                    "      test_val: blank_value",
+                    "        gen_x: 37176",
                 ]
             ).encode("utf-8")
         )
@@ -264,8 +276,11 @@ def test_generator_options_yaml(capsys):
             ["--config", tmp.name, "--list_config"]
         )  # add list_config as the action so we don't actually run
         os.remove(tmp.name)
-        assert _config.plugins.generators["test.Blank"]["gen_x"] == 37176
-        assert _config.plugins.generators["test.Blank"]["test_val"] == "blank_value"
+        assert _config.plugins.generators["test"]["Blank"]["gen_x"] == 37176
+        assert (
+            _config.plugins.generators["test"]["Blank"]["test_val"]
+            == "test_blank_value"
+        )
 
 
 # can a run be launched from a run YAML?
@@ -305,13 +320,14 @@ def test_run_from_yaml(capsys):
 
 
 # cli generator options file loads
+# more refactor for namespace keys
 @pytest.mark.usefixtures("allow_site_config")
 def test_cli_generator_options_file():
     importlib.reload(_config)
 
     # write an options file
     with tempfile.NamedTemporaryFile(mode="w+", delete=False) as tmp:
-        json.dump({"test.Blank": {"this_is_a": "generator"}}, tmp)
+        json.dump({"test": {"Blank": {"this_is_a": "generator"}}}, tmp)
         tmp.close()
         # invoke cli
         garak.cli.main(
@@ -320,16 +336,17 @@ def test_cli_generator_options_file():
         os.remove(tmp.name)
 
         # check it was loaded
-        assert _config.plugins.generators["test.Blank"] == {"this_is_a": "generator"}
+        assert _config.plugins.generators["test"]["Blank"] == {"this_is_a": "generator"}
 
 
 # cli generator options file loads
+# more refactor for namespace keys
 def test_cli_probe_options_file():
     importlib.reload(_config)
 
     # write an options file
     with tempfile.NamedTemporaryFile(mode="w+", delete=False) as tmp:
-        json.dump({"test.Blank": {"probes_in_this_config": 1}}, tmp)
+        json.dump({"test": {"Blank": {"probes_in_this_config": 1}}}, tmp)
         tmp.close()
         # invoke cli
         garak.cli.main(
@@ -338,16 +355,17 @@ def test_cli_probe_options_file():
         os.remove(tmp.name)
 
         # check it was loaded
-        assert _config.plugins.probes["test.Blank"] == {"probes_in_this_config": 1}
+        assert _config.plugins.probes["test"]["Blank"] == {"probes_in_this_config": 1}
 
 
 # cli probe config file overrides yaml probe config (using combine into)
+# more refactor for namespace keys
 def test_cli_probe_options_overrides_yaml_probe_options():
     importlib.reload(_config)
 
     # write an options file
     with tempfile.NamedTemporaryFile(mode="w+", delete=False) as probe_json_file:
-        json.dump({"test.Blank": {"goal": "taken from CLI JSON"}}, probe_json_file)
+        json.dump({"test": {"Blank": {"goal": "taken from CLI JSON"}}}, probe_json_file)
         probe_json_file.close()
         with tempfile.NamedTemporaryFile(buffering=0, delete=False) as probe_yaml_file:
             probe_yaml_file.write(
@@ -356,8 +374,9 @@ def test_cli_probe_options_overrides_yaml_probe_options():
                         "---",
                         "plugins:",
                         "    probes:",
-                        "        test.Blank:",
-                        "            goal: taken from CLI YAML",
+                        "        test:",
+                        "            Blank:",
+                        "                goal: taken from CLI YAML",
                     ]
                 ).encode("utf-8")
             )
@@ -375,7 +394,7 @@ def test_cli_probe_options_overrides_yaml_probe_options():
             os.remove(probe_json_file.name)
             os.remove(probe_yaml_file.name)
         # check it was loaded
-        assert _config.plugins.probes["test.Blank"]["goal"] == "taken from CLI JSON"
+        assert _config.plugins.probes["test"]["Blank"]["goal"] == "taken from CLI JSON"
 
 
 # cli should override yaml options
@@ -409,10 +428,13 @@ def test_cli_generator_options_overrides_yaml_probe_options():
 
 
 # check that probe picks up yaml config items
+# more refactor for namespace keys
 def test_blank_probe_instance_loads_yaml_config():
     importlib.reload(_config)
+    import garak._plugins
 
     probe_name = "test.Blank"
+    probe_namespace, probe_klass = probe_name.split(".")
     revised_goal = "TEST GOAL make the model forget what to output"
     with tempfile.NamedTemporaryFile(buffering=0, delete=False) as tmp:
         tmp.write(
@@ -421,29 +443,33 @@ def test_blank_probe_instance_loads_yaml_config():
                     f"---",
                     f"plugins:",
                     f"  probes:",
-                    f"    {probe_name}:",
-                    f"      goal: {revised_goal}",
+                    f"    {probe_namespace}:",
+                    f"      {probe_klass}:",
+                    f"        goal: {revised_goal}",
                 ]
             ).encode("utf-8")
         )
         tmp.close()
-        garak.cli.main(["--config", tmp.name, "-p", probe_name])
+        output = garak.cli.main(["--config", tmp.name, "-p", probe_name])
         os.remove(tmp.name)
     probe = garak._plugins.load_plugin(f"probes.{probe_name}")
     assert probe.goal == revised_goal
 
 
 # check that probe picks up cli config items
+# more refactor for namespace keys
 def test_blank_probe_instance_loads_cli_config():
     importlib.reload(_config)
+    import garak._plugins
 
     probe_name = "test.Blank"
+    probe_namespace, probe_klass = probe_name.split(".")
     revised_goal = "TEST GOAL make the model forget what to output"
     args = [
         "-p",
         probe_name,
         "--probe_options",
-        json.dumps({probe_name: {"goal": revised_goal}}),
+        json.dumps({probe_namespace: {probe_klass: {"goal": revised_goal}}}),
     ]
     garak.cli.main(args)
     probe = garak._plugins.load_plugin(f"probes.{probe_name}")
@@ -451,8 +477,10 @@ def test_blank_probe_instance_loads_cli_config():
 
 
 # check that generator picks up yaml config items
+# more refactor for namespace keys
 def test_blank_generator_instance_loads_yaml_config():
     importlib.reload(_config)
+    import garak._plugins
 
     generator_name = "test.Blank"
     generator_namespace, generator_klass = generator_name.split(".")
@@ -464,10 +492,8 @@ def test_blank_generator_instance_loads_yaml_config():
                     f"---",
                     f"plugins:",
                     f"  generators:",
-                    f"    {generator_name}:",
-                    f"      temperature: {revised_temp}",
-                    f"      test_val: blank_value",
                     f"      {generator_namespace}:",
+                    f"        temperature: {revised_temp}",
                     f"        {generator_klass}:",
                     f"          test_val: test_blank_value",
                 ]
@@ -480,14 +506,17 @@ def test_blank_generator_instance_loads_yaml_config():
         os.remove(tmp.name)
     gen = garak._plugins.load_plugin(f"generators.{generator_name}")
     assert gen.temperature == revised_temp
-    assert gen.test_val == "blank_value"
+    assert gen.test_val == "test_blank_value"
 
 
 # check that generator picks up cli config items
+# more refactor for namespace keys
 def test_blank_generator_instance_loads_cli_config():
     importlib.reload(_config)
+    import garak._plugins
 
     generator_name = "test.Repeat"
+    generator_namespace, generator_klass = generator_name.split(".")
     revised_temp = 0.9001
     args = [
         "--model_type",
@@ -495,7 +524,9 @@ def test_blank_generator_instance_loads_cli_config():
         "--probes",
         "none",
         "--generator_options",
-        json.dumps({generator_name: {"temperature": revised_temp}})
+        json.dumps(
+            {generator_namespace: {generator_klass: {"temperature": revised_temp}}}
+        )
         .replace(" ", "")
         .strip(),
     ]

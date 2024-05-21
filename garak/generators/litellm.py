@@ -12,10 +12,12 @@ This also enables support for any custom provider that follows the OAI format.
 e.g Supply a JSON like this for Ollama's OAI api:
 ```json
 {
-    "litellm.LiteLLMGenerator" : {
-        "api_base" : "http://localhost:11434/v1",
-        "provider" : "openai",
-        "api_key" : "test"
+    "litellm": {
+        "LiteLLMGenerator" : {
+            "api_base" : "http://localhost:11434/v1",
+            "provider" : "openai",
+            "api_key" : "test"
+        }
     }
 }
 ```
@@ -39,7 +41,6 @@ import backoff
 import litellm
 
 from garak import _config
-from garak.exception import APIKeyMissingError
 from garak.generators.base import Generator
 
 # Fix issue with Ollama which does not support `presence_penalty`
@@ -83,6 +84,16 @@ class LiteLLMGenerator(Generator):
     supports_multiple_generations = True
     generator_family_name = "LiteLLM"
 
+    _supported_params = (
+        "api_key",
+        "provider",
+        "api_base",
+        "temperature",
+        "top_p",
+        "frequency_penalty",
+        "presence_penalty",
+    )
+
     temperature = 0.7
     top_p = 1.0
     frequency_penalty = 0.0
@@ -103,36 +114,18 @@ class LiteLLMGenerator(Generator):
 
         super().__init__(name, generations=generations)
 
-        if "litellm.LiteLLMGenerator" in _config.plugins.generators:
-            for field in (
-                "api_key",
-                "provider",
-                "api_base",
-                "temperature",
-                "top_p",
-                "frequency_penalty",
-                "presence_penalty",
-            ):
-                if field in _config.plugins.generators["litellm.LiteLLMGenerator"]:
-                    setattr(
-                        self,
-                        field,
-                        _config.plugins.generators["litellm.LiteLLMGenerator"][field],
+        if self.provider is None:
+            raise ValueError(
+                "litellm generator needs to have a provider value configured - see docs"
+            )
+        elif self.api_key is None:
+            if self.provider == "openai":
+                self.api_key = getenv("OPENAI_API_KEY", None)
+                if self.api_key is None:
+                    raise APIKeyMissingError(
+                        "Please supply an OpenAI API key in the OPENAI_API_KEY environment variable"
+                        " or in the configuration file"
                     )
-
-                    if field == "provider" and self.api_key is None:
-                        if self.provider == "openai":
-                            self.api_key = getenv("OPENAI_API_KEY", None)
-                            if self.api_key is None:
-                                raise APIKeyMissingError(
-                                    "Please supply an OpenAI API key in the OPENAI_API_KEY environment variable"
-                                    " or in the configuration file"
-                                )
-                else:
-                    if field in ("provider"):  # required fields here
-                        raise ValueError(
-                            "litellm generator needs to have a provider value configured - see docs"
-                        )
 
     @backoff.on_exception(backoff.fibo, Exception, max_value=70)
     def _call_model(

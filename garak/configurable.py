@@ -1,3 +1,4 @@
+import logging
 from dataclasses import dataclass
 from garak import _config
 from garak import _plugins
@@ -21,41 +22,44 @@ class Configurable:
         local_root = (
             config_root.plugins if hasattr(config_root, "plugins") else config_root
         )
-        classname = self.__class__.__name__
         namespace_parts = self.__module__.split(".")
-        spec_type = namespace_parts[-2]
-        namespace = namespace_parts[-1]
-        apply_for = [namespace, f"{namespace}.{classname}"]
         # last part is the namespace, second to last is the plugin type
-        # think about how to make this abstract enough to support something like
-        # plugins['detectors'][x]['generators']['rest.RestGenerator']
+        # this will support something like:
+        # plugins['detectors'][x]['generators']['rest']['RestGenerator']
         # plugins['detectors'][x]['generators']['rest']
-        # plugins['probes'][y]['generators']['rest.RestGenerator']
+        # plugins['probes'][y]['generators']['rest']['RestGenerator']
         if len(namespace_parts) > 2:
             # example class expected garak.generators.huggingface.Pipeline
             # spec_type = generators
             # namespace = huggingface
             # classname = Pipeline
-
+            spec_type = namespace_parts[-2]
+            namespace = namespace_parts[-1]
+            classname = self.__class__.__name__
             if hasattr(local_root, spec_type):
-                # make this adaptive default is `plugins`
                 plugins_config = getattr(
                     local_root, spec_type
                 )  # expected values `probes/detectors/buffs/generators/harnesses` possibly get this list at runtime
-                for apply in apply_for:
-                    if apply in plugins_config:
-                        # expected values:
-                        # generators: `nim/openai/huggingface`
-                        # probes: `dan/gcg/xss/tap/promptinject`
-                        # possibly get this list at runtime
-                        for k, v in plugins_config[apply].items():
-                            # this should probably execute recursively for, think more...
-                            # should we support qualified hierarchy or only parent & concrete?
-                            if (
-                                k in _plugins.PLUGIN_TYPES
-                            ):  # skip items for more qualified items, also skip reference to any plugin type
-                                continue
-                            setattr(
-                                self, k, v
-                            )  # consider expanding this to deep set values such as [config][device_map]
+                if namespace in plugins_config:
+                    # example values:
+                    # generators: `nim/openai/huggingface`
+                    # probes: `dan/gcg/xss/tap/promptinject`
+                    attributes = plugins_config[namespace]
+                    namespaced_klass = f"{namespace}.{classname}"
+                    self._apply_config(attributes)
+                    if classname in attributes:
+                        self._apply_config(attributes[classname])
+                    elif namespaced_klass in plugins_config:
+                        logging.warning(
+                            f"Deprecated configuration key found: {namespaced_klass}"
+                        )
+                        self._apply_config(plugins_config[namespaced_klass])
         self.loaded = True
+
+    def _apply_config(self, config):
+        for k, v in config.items():
+            if k in _plugins.PLUGIN_TYPES or k == self.__class__.__name__:
+                # skip entries for more qualified items or any plugin type
+                # should this be coupled to `_plugins`?
+                continue
+            setattr(self, k, v)  # This will set attribute to the full dictionary value
