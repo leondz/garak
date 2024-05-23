@@ -9,7 +9,7 @@ Generic Module for REST API connections
 import json
 import logging
 import os
-from typing import List
+from typing import List, Union
 import requests
 
 import backoff
@@ -240,7 +240,9 @@ class RestGenerator(Generator):
 
     # we'll overload IOError as the rate limit exception
     @backoff.on_exception(backoff.fibo, RESTRateLimitError, max_value=70)
-    def _call_model(self, prompt: str, generations_this_call: int = 1):
+    def _call_model(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> List[Union[str, None]]:
         """Individual call to get a rest from the REST API
 
         :param prompt: the input to be placed into the request template and sent to the endpoint

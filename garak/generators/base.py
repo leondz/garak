@@ -54,7 +54,7 @@ class Generator:
 
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
-    ) -> Union[List[str], str, None]:
+    ) -> List[Union[str, None]]:
         """Takes a prompt and returns an API output
 
         _call_api() is fully responsible for the request, and should either
@@ -70,7 +70,9 @@ class Generator:
     def clear_history(self):
         pass
 
-    def generate(self, prompt: str, generations_this_call: int = -1) -> List[str]:
+    def generate(
+        self, prompt: str, generations_this_call: int = -1
+    ) -> List[Union[str, None]]:
         """Manages the process of getting generations out from a prompt
 
         This will involve iterating through prompts, getting the generations

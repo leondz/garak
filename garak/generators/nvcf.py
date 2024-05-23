@@ -7,6 +7,7 @@ import json
 import logging
 import os
 import time
+from typing import List, Union
 
 import backoff
 import requests
@@ -64,9 +65,11 @@ class NvcfGenerator(Generator):
         ),
         max_value=70,
     )
-    def _call_model(self, prompt: str, generations_this_call: int = 1) -> str:
+    def _call_model(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> List[Union[str, None]]:
         if prompt == "":
-            return ""
+            return [None]
 
         session = requests.Session()
 
@@ -103,17 +106,17 @@ class NvcfGenerator(Generator):
                     "detail"
                 ].startswith("Input value error"):
                     logging.warning("nvcf : skipping this prompt")
-                    return None
+                    return [None]
                 else:
                     response.raise_for_status()
             else:
                 logging.warning("nvcf : skipping this prompt")
-                return None
+                return [None]
 
         else:
             response_body = response.json()
 
-            return response_body["choices"][0]["message"]["content"]
+            return [response_body["choices"][0]["message"]["content"]]
 
 
 DEFAULT_CLASS = "NvcfGenerator"

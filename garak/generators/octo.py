@@ -5,6 +5,7 @@
 
 
 import os
+from typing import List, Union
 
 import backoff
 import octoai.errors
@@ -48,7 +49,9 @@ class OctoGenerator(Generator):
         self.client = Client(token=octoai_token)
 
     @backoff.on_exception(backoff.fibo, octoai.errors.OctoAIServerError, max_value=70)
-    def _call_model(self, prompt: str, generations_this_call: int = 1):
+    def _call_model(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> List[Union[str, None]]:
         outputs = self.client.chat.completions.create(
             messages=[
                 {
@@ -64,7 +67,7 @@ class OctoGenerator(Generator):
             top_p=self.top_p,
         )
 
-        return outputs.choices[0].message.content
+        return [outputs.choices[0].message.content]
 
 
 class InferenceEndpoint(OctoGenerator):
@@ -84,7 +87,9 @@ class InferenceEndpoint(OctoGenerator):
         )
 
     @backoff.on_exception(backoff.fibo, octoai.errors.OctoAIServerError, max_value=70)
-    def _call_model(self, prompt: str, generations_this_call: int = 1):
+    def _call_model(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> List[Union[str, None]]:
         outputs = self.client.infer(
             endpoint_url=self.name,
             inputs={
@@ -99,7 +104,7 @@ class InferenceEndpoint(OctoGenerator):
                 "stream": False,
             },
         )
-        return outputs.get("choices")[0].get("message").get("content")
+        return [outputs.get("choices")[0].get("message").get("content")]
 
 
 DEFAULT_CLASS = "OctoGenerator"

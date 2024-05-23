@@ -133,7 +133,9 @@ if openai.__version__[0] == "0":
             ),
             max_value=70,
         )
-        def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[str]:
+        def _call_model(
+            self, prompt: str, generations_this_call: int = 1
+        ) -> List[Union[str, None]]:
             if self.generator == openai.Completion:
                 response = self.generator.create(
                     model=self.name,

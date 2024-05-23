@@ -8,6 +8,7 @@ import logging
 import os
 import random
 import requests
+from typing import List, Union
 
 import backoff
 import nemollm
@@ -70,11 +71,13 @@ class NeMoGenerator(Generator):
         ),
         max_value=70,
     )
-    def _call_model(self, prompt: str, generations_this_call: int = 1):
+    def _call_model(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> List[Union[str, None]]:
         # avoid:
         #    doesn't match schema #/components/schemas/CompletionRequestBody: Error at "/prompt": minimum string length is 1
         if prompt == "":
-            return ""
+            return [None]
 
         reset_none_seed = False
         if self.seed is None:  # nemo gives the same result every time
@@ -104,7 +107,7 @@ class NeMoGenerator(Generator):
         if reset_none_seed:
             self.seed = None
 
-        return response["text"]
+        return [response["text"]]
 
 
 DEFAULT_CLASS = "NeMoGenerator"

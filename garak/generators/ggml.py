@@ -79,7 +79,7 @@ class GgmlGenerator(Generator):
 
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
-    ) -> Union[List[str], str, None]:
+    ) -> List[Union[str, None]]:
         if generations_this_call != 1:
             logging.warning(
                 "GgmlGenerator._call_model invokes with generations_this_call=%s but only 1 supported",
@@ -108,7 +108,7 @@ class GgmlGenerator(Generator):
             output = result.stdout.decode("utf-8")
             output = re.sub("^" + re.escape(prompt.lstrip()), "", output.lstrip())
             self.first_call = False
-            return output
+            return [output]
         except subprocess.CalledProcessError as err:
             # if this is the first call attempt, raise the exception to indicate
             # the generator is mis-configured
@@ -116,10 +116,10 @@ class GgmlGenerator(Generator):
             logging.error(err.stderr.decode("utf-8"))
             if self.first_call:
                 raise err
-            return None
+            return [None]
         except Exception as err:
             logging.error(err)
-            return None
+            return [None]
 
 
 DEFAULT_CLASS = "GgmlGenerator"
