@@ -21,28 +21,30 @@ from garak.generators.rest import RestGenerator, RESTRateLimitError
 
 
 class RasaRestGenerator(RestGenerator):
-    """Generic API interface for REST models
+    """API interface for RASA models
 
-    Uses the following options from _config.run.generators["rest.RasaRestGenerator"]:
-    * uri - (optional) the URI of the REST endpoint; this can also be passed
+    Uses the following options from _config.run.generators["rasa.RasaRestGenerator"]:
+    * ``uri`` - (optional) the URI of the REST endpoint; this can also be passed
             in --model_name
-    * name - a short name for this service; defaults to the uri
-    * key_env_var - (optional) the name of the environment variable holding an
+    * ``name`` - a short name for this service; defaults to the uri
+    * ``key_env_var`` - (optional) the name of the environment variable holding an
             API key, by default RASA_API_KEY
-    * req_template - a string where $KEY is replaced by env var RASA_API_KEY
+    * ``req_template`` - a string where $KEY is replaced by env var RASA_API_KEY
             and $INPUT is replaced by the prompt. Default is to just send the
             input text.
-    * req_template_json_object - (optional) the request template as a Python
+    * ``req_template_json_object`` - (optional) the request template as a Python
             object, to be serialised as a JSON string before replacements
-    * method - a string describing the HTTP method, to be passed to the
+    * ``method`` - a string describing the HTTP method, to be passed to the
             requests module; default "post".
-    * headers - dict describing HTTP headers to be sent with the request
-    * response_json - Is the response in JSON format? (bool)
-    * response_json_field - (optional) Which field of the response JSON
-            should be used as the output string? Default "text"
-    * request_timeout - How many seconds should we wait before timing out?
+    * ``headers`` - dict describing HTTP headers to be sent with the request
+    * ``response_json`` - Is the response in JSON format? (bool)
+    * ``response_json_field`` - (optional) Which field of the response JSON
+            should be used as the output string? Default ``text``. Can also
+            be a JSONPath value, and ``response_json_field`` is used as such
+            if it starts with ``$``.
+    * ``request_timeout`` - How many seconds should we wait before timing out?
             Default 20
-    * ratelimit_codes - Which endpoint HTTP response codes should be caught
+    * ``ratelimit_codes`` - Which endpoint HTTP response codes should be caught
             as indicative of rate limiting and retried? List[int], default [429]
 
     Templates can be either a string or a JSON-serialisable Python object.
@@ -53,12 +55,12 @@ class RasaRestGenerator(RestGenerator):
     The $INPUT and $KEY placeholders can also be specified in header values.
 
     If we want to call an endpoint where the API key is defined in the value
-    of an X-Authorization header, sending and receiving JSON where the prompt
+    of an ``X-Authorization header``, sending and receiving JSON where the prompt
     and response value are both under the "text" key, we'd define the service
     using something like:
 
     {
-        "rest": {
+        "rasa": {
             "RasaRestGenerator": {
                 "name": "example rasa service",
                 "uri": "https://test.com/webhooks/rest/webhook"
@@ -81,130 +83,12 @@ class RasaRestGenerator(RestGenerator):
     from RasaRestGenerator :)
     """
 
+    DEFAULT_REQ_TEMPLATE = json.dumps({"sender": "garak", "message": "$INPUT"})
+    DEFAULT_REQ_HEADERS = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $KEY",
+    }
+    DEFAULT_JSON_RESPONSE = True
     ENV_VAR = "RASA_API_KEY"
 
-    # does this need to `merge` with `RestGenerator`?
-    _supported_params = (
-        "name",
-        "uri",
-        "key_env_var",
-        "req_template",  # req_template_json is processed later
-        "method",
-        "headers",
-        "response_json",  # response_json_field is processed later
-        "request_timeout",
-        "ratelimit_codes",
-    )
-
-    req_template = json.dumps({"sender": "garak", "message": "$INPUT"})
-
-    generator_family_name = "Rasa"
-
-    def __init__(self, uri=None, generations=10, context=_config):
-        super().__init__(uri, generations=generations, context=context)
-
-        self.headers = {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer $KEY",
-        }
-
-        if self.req_template_json_object is not None:
-            self.req_template = json.dumps(self.req_template_json_object)
-
-        if self.name is None:
-            self.name = self.uri
-
-        if self.uri is None:
-            raise ValueError(
-                "No REST endpoint URI definition found in either constructor param, JSON, or --model_name. Please specify one."
-            )
-
-        self.fullname = f"REST {self.name}"
-
-        self.method = self.method.lower()
-        if self.method not in (
-            "get",
-            "post",
-            "put",
-            "patch",
-            "options",
-            "delete",
-            "head",
-        ):
-            logging.info(
-                "RasaRestGenerator HTTP method %s not supported, defaulting to 'post'",
-                self.method,
-            )
-            self.method = "post"
-        self.http_function = getattr(requests, self.method)
-
-        self.api_key = os.getenv(self.key_env_var, default=None)
-
-        super().__init__(
-            uri, generations=generations, context=context
-        )  # why is init called twice?
-
-    # we'll overload IOError for recoverable server errors
-    @backoff.on_exception(backoff.fibo, (RESTRateLimitError, IOError), max_value=70)
-    def _call_model(
-        self, prompt: str, generations_this_call: int = 1
-    ) -> List[Union[str, None]]:
-        """Individual call to get a rest from the REST API
-
-        :param prompt: the input to be placed into the request template and sent to the endpoint
-        :type prompt: str
-        """
-
-        request_data = self._populate_template(self.req_template, prompt)
-
-        request_headers = dict(self.headers)
-        for k, v in self.headers.items():
-            request_headers[k] = self._populate_template(v, prompt)
-
-        resp = self.http_function(
-            self.uri,
-            data=request_data,
-            headers=request_headers,
-            timeout=self.request_timeout,
-        )
-        if resp.status_code in self.ratelimit_codes:
-            raise RESTRateLimitError(
-                f"Rate limited: {resp.status_code} - {resp.reason}"
-            )
-
-        elif str(resp.status_code)[0] == "3":
-            raise NotImplementedError(
-                f"REST URI redirection: {resp.status_code} - {resp.reason}"
-            )
-
-        elif str(resp.status_code)[0] == "4":
-            raise ConnectionError(
-                f"REST URI client error: {resp.status_code} - {resp.reason}"
-            )
-
-        elif str(resp.status_code)[0] == "5":
-            error_msg = f"REST URI server error: {resp.status_code} - {resp.reason}"
-            if self.retry_5xx:
-                raise IOError(error_msg)
-            else:
-                raise ConnectionError(error_msg)
-
-        if not self.response_json:
-            return [str(resp.content)]
-
-        try:
-            response_object = json.loads(resp.content)
-            response_text = ""
-            for response in response_object:
-                response_text += response["text"] + " "
-            return response_text
-        except json.decoder.JSONDecodeError as e:
-            logging.warning(
-                "REST endpoint didn't return good JSON %s: got |%s|",
-                str(e),
-                resp.content,
-            )
-            return [None]
-
-
-DEFAULT_CLASS = "RasaRestGenerator"
+    generator_family_name = "RASA"

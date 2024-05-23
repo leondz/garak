@@ -100,6 +100,11 @@ class RestGenerator(Generator):
     from RestGenerator :)
     """
 
+    DEFAULT_REQ_TEMPLATE = "$INPUT"
+    DEFAULT_REQ_HEADERS = {}
+    DEFAULT_REQ_METHOD = "post"
+    DEFAULT_JSON_RESPONSE = False
+
     ENV_VAR = "REST_API_KEY"
     generator_family_name = "REST"
 
@@ -107,10 +112,12 @@ class RestGenerator(Generator):
         "name",
         "uri",
         "key_env_var",
-        "req_template",  # req_template_json is processed later
+        "req_template",
+        "req_template_json",
         "method",
         "headers",
-        "response_json",  # response_json_field is processed later
+        "response_json",
+        "response_json_field",
         "request_timeout",
         "ratelimit_codes",
     )
@@ -119,11 +126,11 @@ class RestGenerator(Generator):
         self.uri = uri
         self.name = uri
         self.seed = _config.run.seed
-        self.headers = {}
-        self.method = "post"
-        self.req_template = "$INPUT"
+        self.headers = self.DEFAULT_REQ_HEADERS
+        self.method = self.DEFAULT_REQ_METHOD
+        self.req_template = self.DEFAULT_REQ_TEMPLATE
         self.supports_multiple_generations = False  # not implemented yet
-        self.response_json = False
+        self.response_json = self.DEFAULT_JSON_RESPONSE
         self.response_json_field = None
         self.request_timeout = 20  # seconds
         self.ratelimit_codes = [429]
@@ -161,7 +168,7 @@ class RestGenerator(Generator):
                 "No REST endpoint URI definition found in either constructor param, JSON, or --model_name. Please specify one."
             )
 
-        self.fullname = f"REST {self.name}"
+        self.fullname = f"{self.generator_family_name} {self.name}"
 
         self.method = self.method.lower()
         if self.method not in (
