@@ -556,7 +556,7 @@ class LLaVA(Generator):
                 "CUDA is not supported on this device. Please make sure CUDA is installed and configured properly."
             )
 
-    def generate(self, prompt) -> List[Union[str, None]]:
+    def generate(self, prompt: str, generations_this_call: int = 1) -> List[Union[str, None]]:
         text_prompt = prompt["text"]
         try:
             image_prompt = Image.open(prompt["image"])
