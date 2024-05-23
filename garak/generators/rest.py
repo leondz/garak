@@ -286,7 +286,7 @@ class RestGenerator(Generator):
                 raise ConnectionError(error_msg)
 
         if not self.response_json:
-            return str(resp.text)
+            return [str(resp.text)]
 
         response_object = json.loads(resp.content)
 
@@ -301,7 +301,7 @@ class RestGenerator(Generator):
             len(self.response_json_field) > 0
         ), "response_json_field needs to be complete if response_json is true; ValueError should have been raised in constructor"
         if self.response_json_field[0] != "$":
-            response = response_object[self.response_json_field]
+            response = [response_object[self.response_json_field]]
         else:
             field_path_expr = jsonpath_ng.parse(self.response_json_field)
             responses = field_path_expr.find(response_object)
@@ -318,7 +318,7 @@ class RestGenerator(Generator):
                     "RestGenerator JSONPath in response_json_field yielded nothing. Response content: %s"
                     % repr(resp.content)
                 )
-                return None
+                return [None]
 
         return response
 
