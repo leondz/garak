@@ -57,9 +57,14 @@ class Configurable:
         self.loaded = True
 
     def _apply_config(self, config):
+        classname = self.__class__.__name__
         for k, v in config.items():
-            if k in _plugins.PLUGIN_TYPES or k == self.__class__.__name__:
+            if k in _plugins.PLUGIN_TYPES or k == classname:
                 # skip entries for more qualified items or any plugin type
                 # should this be coupled to `_plugins`?
+                continue
+            if hasattr(self, "_supported_params") and k not in self._supported_params:
+                # if the class has a set of supported params skip unknown params
+                logging.warning(f"Unknown configuration key for {classname}: {k}")
                 continue
             setattr(self, k, v)  # This will set attribute to the full dictionary value
