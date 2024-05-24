@@ -17,7 +17,7 @@ from garak.generators.base import Generator
 
 
 class NvcfChat(Generator):
-    """Wrapper for NVIDIA Cloud Functions Chat models via NGC. Expects NGC_API_KEY and ORG_ID environment variables."""
+    """Wrapper for NVIDIA Cloud Functions Chat models via NGC. Expects NVCF_API_KEY environment variable."""
 
     supports_multiple_generations = False
     generator_family_name = "NVCF"
@@ -138,7 +138,7 @@ class NvcfChat(Generator):
 
 
 class NvcfCompletion(NvcfChat):
-    """Wrapper for NVIDIA Cloud Functions Completion models via NGC. Expects NGC_API_KEY and ORG_ID environment variables."""
+    """Wrapper for NVIDIA Cloud Functions Completion models via NGC. Expects NVCF_API_KEY environment variables."""
 
     def _build_payload(self, prompt) -> dict:
 
