@@ -136,7 +136,7 @@ class LiteLLMGenerator(Generator):
     @backoff.on_exception(backoff.fibo, Exception, max_value=70)
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
-    ) -> Union[List[str], str, None]:
+    ) -> List[Union[str, None]]:
         if isinstance(prompt, str):
             prompt = [{"role": "user", "content": prompt}]
         elif isinstance(prompt, list):
@@ -148,7 +148,7 @@ class LiteLLMGenerator(Generator):
             )
             logging.error(msg)
             print(msg)
-            return list()
+            return []
 
         response = litellm.completion(
             model=self.name,
@@ -168,7 +168,7 @@ class LiteLLMGenerator(Generator):
         if self.supports_multiple_generations:
             return [c.message.content for c in response.choices]
         else:
-            return response.choices[0].message.content
+            return [response.choices[0].message.content]
 
 
 DEFAULT_CLASS = "LiteLLMGenerator"

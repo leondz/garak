@@ -151,8 +151,8 @@ class OpenAICompatible(Generator):
         max_value=70,
     )
     def _call_model(
-        self, prompt: Union[str, list[dict]], generations_this_call: int = 1
-    ) -> List[str]:
+        self, prompt: Union[str, List[dict]], generations_this_call: int = 1
+    ) -> List[Union[str, None]]:
         if self.client is None:
             # reload client once when consuming the generator
             self._load_client()

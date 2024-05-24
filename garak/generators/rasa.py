@@ -12,6 +12,7 @@ import json
 import logging
 import os
 import requests
+from typing import List, Union
 
 import backoff
 
@@ -161,7 +162,9 @@ class RasaRestGenerator(RestGenerator):
 
     # we'll overload IOError for recoverable server errors
     @backoff.on_exception(backoff.fibo, (RESTRateLimitError, IOError), max_value=70)
-    def _call_model(self, prompt: str, generations_this_call: int = 1):
+    def _call_model(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> List[Union[str, None]]:
         """Individual call to get a rest from the REST API
 
         :param prompt: the input to be placed into the request template and sent to the endpoint
@@ -203,7 +206,7 @@ class RasaRestGenerator(RestGenerator):
                 raise ConnectionError(error_msg)
 
         if not self.response_json:
-            return str(resp.content)
+            return [str(resp.content)]
 
         try:
             response_object = json.loads(resp.content)
@@ -217,7 +220,7 @@ class RasaRestGenerator(RestGenerator):
                 str(e),
                 resp.content,
             )
-            return None
+            return [None]
 
 
 DEFAULT_CLASS = "RasaRestGenerator"

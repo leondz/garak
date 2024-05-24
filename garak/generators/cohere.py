@@ -83,7 +83,7 @@ class CohereGenerator(Generator):
 
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
-    ) -> Union[List[str], str, None]:
+    ) -> List[Union[str, None]]:
         """Cohere's _call_model does sub-batching before calling,
         and so manages chunking internally"""
         quotient, remainder = divmod(generations_this_call, COHERE_GENERATION_LIMIT)

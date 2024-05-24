@@ -37,11 +37,11 @@ class NeMoGuardrails(Generator):
 
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
-    ) -> Union[List[str], str, None]:
+    ) -> List[Union[str, None]]:
         with redirect_stderr(io.StringIO()) as f:  # quieten the tqdm
             result = self.rails.generate(prompt)
 
-        return result
+        return [result]
 
 
 DEFAULT_CLASS = "NeMoGuardrails"

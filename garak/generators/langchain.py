@@ -6,7 +6,8 @@
 
 
 import logging
-import tqdm
+from typing import List, Union
+
 
 import langchain.llms
 
@@ -56,7 +57,9 @@ class LangChainLLMGenerator(Generator):
 
         self.generator = llm
 
-    def _call_model(self, prompt: str, generations_this_call: int = 1) -> str:
+    def _call_model(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> List[Union[str, None]]:
         """
         Continuation generation method for LangChain LLM integrations.
 

@@ -7,6 +7,7 @@ import json
 import logging
 import os
 import time
+from typing import List, Union
 
 import backoff
 import requests
@@ -64,9 +65,9 @@ class NvcfGenerator(Generator):
         ),
         max_value=70,
     )
-    def _call_model(self, prompt: str, generations_this_call: int = 1) -> str:
-        if prompt == "":
-            return ""
+    def _call_model(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> List[Union[str, None]]:
 
         session = requests.Session()
 
@@ -98,22 +99,25 @@ class NvcfGenerator(Generator):
         if 400 <= response.status_code < 600:
             logging.warning("nvcf : returned error code %s", response.status_code)
             logging.warning("nvcf : returned error body %s", response.content)
+            if response.status_code == 400 and prompt == "":
+                # error messages for refusing a blank prompt are fragile and include multi-level wrapped JSON, so this catch is a little broad
+                return [None]
             if response.status_code >= 500:
                 if response.status_code == 500 and json.loads(response.content)[
                     "detail"
                 ].startswith("Input value error"):
                     logging.warning("nvcf : skipping this prompt")
-                    return None
+                    return [None]
                 else:
                     response.raise_for_status()
             else:
                 logging.warning("nvcf : skipping this prompt")
-                return None
+                return [None]
 
         else:
             response_body = response.json()
 
-            return response_body["choices"][0]["message"]["content"]
+            return [response_body["choices"][0]["message"]["content"]]
 
 
 DEFAULT_CLASS = "NvcfGenerator"
