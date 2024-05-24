@@ -81,6 +81,8 @@ class LiteLLMGenerator(Generator):
     providers using the OpenAI API format.
     """
 
+    ENV_VAR = "OPENAI_API_KEY"
+
     supports_multiple_generations = True
     generator_family_name = "LiteLLM"
 
@@ -105,6 +107,7 @@ class LiteLLMGenerator(Generator):
         self.fullname = f"LiteLLM {self.name}"
         self.generations = generations
         self.api_base = None
+        self.key_env_var = self.ENV_VAR
         self.api_key = None
         self.provider = None
         self.supports_multiple_generations = not any(
@@ -120,10 +123,10 @@ class LiteLLMGenerator(Generator):
             )
         elif self.api_key is None:
             if self.provider == "openai":
-                self.api_key = getenv("OPENAI_API_KEY", None)
+                self.api_key = getenv(self.key_env_var, None)
                 if self.api_key is None:
                     raise APIKeyMissingError(
-                        "Please supply an OpenAI API key in the OPENAI_API_KEY environment variable"
+                        f"Please supply an OpenAI API key in the {self.key_env_var} environment variable"
                         " or in the configuration file"
                     )
 

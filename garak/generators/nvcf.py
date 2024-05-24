@@ -20,6 +20,7 @@ from garak.generators.base import Generator
 class NvcfChat(Generator):
     """Wrapper for NVIDIA Cloud Functions Chat models via NGC. Expects NVCF_API_KEY environment variable."""
 
+    ENV_VAR = "NGC_API_KEY"
     supports_multiple_generations = False
     generator_family_name = "NVCF"
     temperature = 0.2
@@ -48,11 +49,11 @@ class NvcfChat(Generator):
 
         super().__init__(name, generations=generations)
 
-        self.api_key = os.getenv("NVCF_API_KEY", default=None)
+        self.api_key = os.getenv(self.ENV_VAR, default=None)
         if self.api_key is None:
             raise APIKeyMissingError(
-                'Put the NVCF API key in the NVCF_API_KEY environment variable (this was empty)\n \
-                e.g.: export NVCF_API_KEY="nvapi-xXxXxXxXxXxXxXxXxXxX"'
+                f'Put the NVCF API key in the {self.ENV_VAR} environment variable (this was empty)\n \
+                e.g.: export {self.ENV_VAR}="nvapi-xXxXxXxXxXxXxXxXxXxX"'
             )
 
         self.headers = {

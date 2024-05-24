@@ -26,6 +26,7 @@ class LRLBuff(Buff):
 
     Uses the DeepL API to translate prompts into low-resource languages"""
 
+    ENV_VAR = "DEEPL_API_KEY"
     uri = "https://arxiv.org/abs/2310.02446"
 
     api_key_error_sent = False
@@ -37,10 +38,10 @@ class LRLBuff(Buff):
     def transform(
         self, attempt: garak.attempt.Attempt
     ) -> Iterable[garak.attempt.Attempt]:
-        api_key = getenv("DEEPL_API_KEY", None)
+        api_key = getenv(self.ENV_VAR, None)
         if api_key is None:
             if not self.api_key_error_sent:
-                msg = "DEEPL_API_KEY not set in env, cannot use LRLBuff."
+                msg = f"{self.ENV_VAR} not set in env, cannot use LRLBuff."
                 user_msg = (
                     msg
                     + " If you do not have a DeepL API key, sign up at https://www.deepl.com/pro#developer"
@@ -62,7 +63,7 @@ class LRLBuff(Buff):
                 yield self._derive_new_attempt(attempt)
 
     def untransform(self, attempt: garak.attempt.Attempt) -> garak.attempt.Attempt:
-        api_key = getenv("DEEPL_API_KEY", None)
+        api_key = getenv(self.ENV_VAR, None)
         translator = Translator(api_key)
         outputs = attempt.outputs
         attempt.notes["original_responses"] = outputs

@@ -17,6 +17,7 @@ import tqdm
 from garak.exception import APIKeyMissingError
 from garak.generators.base import Generator
 
+ENV_VAR = "COHERE_API_KEY"
 
 COHERE_GENERATION_LIMIT = (
     5  # c.f. https://docs.cohere.com/reference/generate 18 may 2023
@@ -46,16 +47,16 @@ class CohereGenerator(Generator):
 
         super().__init__(name, generations=generations)
 
-        api_key = os.getenv("COHERE_API_KEY", default=None)
+        self.api_key = os.getenv(self.ENV_VAR, default=None)
         if api_key is None:
             raise APIKeyMissingError(
-                'Put the Cohere API key in the COHERE_API_KEY environment variable (this was empty)\n \
-                e.g.: export COHERE_API_KEY="XXXXXXX"'
+                f'Put the Cohere API key in the {self.ENV_VAR} environment variable (this was empty)\n \
+                e.g.: export {self.ENV_VAR}="XXXXXXX"'
             )
         logging.debug(
             "Cohere generation request limit capped at %s", COHERE_GENERATION_LIMIT
         )
-        self.generator = cohere.Client(api_key)
+        self.generator = cohere.Client(self.api_key)
 
     @backoff.on_exception(backoff.fibo, cohere.error.CohereAPIError, max_value=70)
     def _call_cohere_api(self, prompt, request_size=COHERE_GENERATION_LIMIT):

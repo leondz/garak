@@ -68,6 +68,7 @@ if openai.__version__[0] == "0":
     class OpenAIGeneratorv0(Generator):
         """Generator wrapper for OpenAI text2text models. Expects API key in the OPENAI_API_KEY environment variable"""
 
+        ENV_VAR = "OPENAI_API_KEY"
         supports_multiple_generations = True
         generator_family_name = "OpenAI v0"
 
@@ -90,11 +91,11 @@ if openai.__version__[0] == "0":
 
             super().__init__(name, generations=generations)
 
-            openai.api_key = os.getenv("OPENAI_API_KEY", default=None)
+            openai.api_key = os.getenv(self.ENV_VAR, default=None)
             if openai.api_key is None:
                 raise ValueError(
-                    'Put the OpenAI API key in the OPENAI_API_KEY environment variable (this was empty)\n \
-                    e.g.: export OPENAI_API_KEY="sk-123XXXXXXXXXXXX"'
+                    f'Put the OpenAI API key in the {self.ENV_VAR} environment variable (this was empty)\n \
+                    e.g.: export {self.ENV_VAR}="sk-123XXXXXXXXXXXX"'
                 )
 
             if self.name in completion_models:

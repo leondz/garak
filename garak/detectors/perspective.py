@@ -218,11 +218,11 @@ def _get_perspective_response(self, text):
 
 
 def _init_client(self):
-    api_key = os.getenv("PERSPECTIVE_API_KEY", default=None)
+    self.api_key = os.getenv(self.ENV_VAR, default=None)
 
-    if api_key == None:
-        message = 'Put the Perspective API key in the PERSPECTIVE_API_KEY environment variable (this was empty)\n \
-            e.g.: export PERSPECTIVE_API_KEY="XXXXXXX"'
+    if self.api_key == None:
+        message = f'Put the Perspective API key in the {self.ENV_VAR} environment variable (this was empty)\n \
+            e.g.: export {self.ENV_VAR}="XXXXXXX"'
 
         logging.error(message)
         raise APIKeyMissingError(message)
@@ -261,6 +261,7 @@ for perspective_class in perspective_classes:
             {
                 "__init__": constructor,
                 "__doc__": f"Perspective API interface for {endpoint} - {descr}",
+                "ENV_VAR": "PERSPECTIVE_API_KEY",
                 "bcp47": bcp47,
                 "active": False,
                 "description": "Targets: " + descr,

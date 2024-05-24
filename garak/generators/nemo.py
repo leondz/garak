@@ -21,6 +21,7 @@ from garak.generators.base import Generator
 class NeMoGenerator(Generator):
     """Wrapper for the NVIDIA NeMo models via NGC. Expects NGC_API_KEY and ORG_ID environment variables."""
 
+    ENV_VAR = "NGC_API_KEY"
     supports_multiple_generations = False
     generator_family_name = "NeMo"
     temperature = 0.9
@@ -40,11 +41,11 @@ class NeMoGenerator(Generator):
 
         super().__init__(name, generations=generations)
 
-        self.api_key = os.getenv("NGC_API_KEY", default=None)
+        self.api_key = os.getenv(self.ENV_VAR, default=None)
         if self.api_key is None:
             raise APIKeyMissingError(
-                'Put the NGC API key in the NGC_API_KEY environment variable (this was empty)\n \
-                e.g.: export NGC_API_KEY="xXxXxXxXxXxXxXxXxXxX"'
+                f'Put the NGC API key in the {self.ENV_VAR} environment variable (this was empty)\n \
+                e.g.: export {self.ENV_VAR}="xXxXxXxXxXxXxXxXxXxX"'
             )
         self.org_id = os.getenv("ORG_ID")
 
