@@ -33,7 +33,7 @@ class NvcfChat(Generator):
 
     def __init__(self, name=None, generations=10):
         self.name = name
-        self.fullname = f"NVCF {self.name}"
+        self.fullname = f"{self.generator_family_name} {self.__class__.__name__}"
         self.seed = _config.run.seed
 
         if self.name is None:
