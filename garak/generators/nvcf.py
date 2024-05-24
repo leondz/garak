@@ -16,8 +16,8 @@ from garak import _config
 from garak.generators.base import Generator
 
 
-class NvcfGenerator(Generator):
-    """Wrapper for NVIDIA Cloud Functions via NGC. Expects NGC_API_KEY and ORG_ID environment variables."""
+class NvcfChat(Generator):
+    """Wrapper for NVIDIA Cloud Functions Chat models via NGC. Expects NGC_API_KEY and ORG_ID environment variables."""
 
     supports_multiple_generations = False
     generator_family_name = "NVCF"
@@ -55,6 +55,21 @@ class NvcfGenerator(Generator):
             "Accept": "application/json",
         }
 
+    def _build_payload(self, prompt) -> dict:
+
+        payload = {
+            "messages": [{"content": prompt, "role": "user"}],
+            "temperature": self.temperature,
+            "top_p": self.top_p,
+            "max_tokens": self.max_tokens,
+            "stream": False,
+        }
+
+        return payload
+
+    def _extract_text_output(self, response) -> str:
+        return response["choices"][0]["message"]["content"]
+
     @backoff.on_exception(
         backoff.fibo,
         (
@@ -71,13 +86,14 @@ class NvcfGenerator(Generator):
 
         session = requests.Session()
 
-        payload = {
-            "messages": [{"content": prompt, "role": "user"}],
-            "temperature": self.temperature,
-            "top_p": self.top_p,
-            "max_tokens": self.max_tokens,
-            "stream": False,
-        }
+        payload = self._build_payload(prompt)
+
+        ## NB config indexing scheme to be deprecated
+        config_class = f"nvcf.{self.__class__.__name__}"
+        if config_class in _config.plugins.generators:
+            if "payload" in _config.plugins.generators[config_class]:
+                for k, v in _config.plugins.generators[config_class]["payload"].items():
+                    payload[k] = v
 
         if self.seed is not None:
             payload["seed"] = self.seed
@@ -117,7 +133,26 @@ class NvcfGenerator(Generator):
         else:
             response_body = response.json()
 
-            return [response_body["choices"][0]["message"]["content"]]
+            return [self._extract_text_output(response_body)]
 
 
-DEFAULT_CLASS = "NvcfGenerator"
+class NvcfCompletion(NvcfChat):
+    """Wrapper for NVIDIA Cloud Functions Completion models via NGC. Expects NGC_API_KEY and ORG_ID environment variables."""
+
+    def _build_payload(self, prompt) -> dict:
+
+        payload = {
+            "prompt": prompt,
+            "temperature": self.temperature,
+            "top_p": self.top_p,
+            "max_tokens": self.max_tokens,
+            "stream": False,
+        }
+
+        return payload
+
+    def _extract_text_output(self, response) -> str:
+        return response["choices"][0]["text"]
+
+
+DEFAULT_CLASS = "NvcfChat"
