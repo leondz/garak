@@ -33,7 +33,9 @@ class NvcfChat(Generator):
 
     def __init__(self, name=None, generations=10):
         self.name = name
-        self.fullname = f"{self.generator_family_name} {self.__class__.__name__} {self.name}"
+        self.fullname = (
+            f"{self.generator_family_name} {self.__class__.__name__} {self.name}"
+        )
         self.seed = _config.run.seed
 
         if self.name is None:
@@ -68,7 +70,7 @@ class NvcfChat(Generator):
         return payload
 
     def _extract_text_output(self, response) -> str:
-        return response["choices"][0]["message"]["content"]
+        return [c["message"]["content"] for c in response["choices"]]
 
     @backoff.on_exception(
         backoff.fibo,
@@ -134,7 +136,7 @@ class NvcfChat(Generator):
         else:
             response_body = response.json()
 
-            return [self._extract_text_output(response_body)]
+            return self._extract_text_output(response_body)
 
 
 class NvcfCompletion(NvcfChat):
@@ -153,7 +155,7 @@ class NvcfCompletion(NvcfChat):
         return payload
 
     def _extract_text_output(self, response) -> str:
-        return response["choices"][0]["text"]
+        return [c["text"] for c in response["choices"]]
 
 
 DEFAULT_CLASS = "NvcfChat"
