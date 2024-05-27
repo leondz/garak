@@ -508,8 +508,10 @@ class Model(Generator, HFCompatible):
                     )
                 except Exception as e:
                     if len(prompt) == 0:
+                        returnval = [None] * generations_this_call
                         logging.exception("Error calling generate for empty prompt")
-                        return [None] * generations_this_call
+                        print(returnval)
+                        return returnval
                     else:
                         raise e
                 text_output = self.tokenizer.batch_decode(
