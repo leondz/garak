@@ -43,9 +43,9 @@ class Detector(Configurable):
                 logging.warning(err_msg)
                 raise ValueError(err_msg)
 
-    def __init__(self, context=_config):
+    def __init__(self, config_root=_config):
         if not self.loaded:
-            self._load_config(context)
+            self._load_config(config_root)
         if "name" not in dir(self):
             self.name = __class__  # short name
         self.detectorname = str(self.__class__).split("'")[1]
@@ -66,7 +66,7 @@ class Detector(Configurable):
 class HFDetector(Detector):
     """Detector using a Hugging Face model"""
 
-    def __init__(self, model_path, target_class):
+    def __init__(self, model_path, target_class, config_root=_config):
         from transformers import (
             AutoModelForSequenceClassification,
             AutoTokenizer,
@@ -78,7 +78,7 @@ class HFDetector(Detector):
             set_seed(_config.run.seed)
 
         self.name = f"HF: {model_path}"
-        super().__init__()
+        super().__init__(config_root=config_root)
 
         self.detector_model_path = model_path
         self.detector_target_class = target_class
@@ -122,8 +122,8 @@ class HFDetector(Detector):
 class StringDetector(Detector):
     """Subclass of Detector using list of substrings as detection triggers"""
 
-    def __init__(self, substrings):
-        super().__init__()
+    def __init__(self, substrings, config_root=_config):
+        super().__init__(config_root=config_root)
         self.substrings = substrings
         self.matchtype = "str"  # str or word
 

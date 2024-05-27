@@ -15,7 +15,6 @@ be quite strong. Find your Hugging Face Inference API Key here:
 """
 
 import logging
-from math import log
 import re
 import os
 from typing import List, Union
@@ -64,10 +63,17 @@ class Pipeline(Generator, HFCompatible):
             if isinstance(config.n_ctx, int):
                 self.context_len = config.n_ctx
 
-    def __init__(self, name, do_sample=True, generations=10, device=0):
+    def __init__(
+        self, name="", do_sample=True, generations=10, device=0, config_root=_config
+    ):
+        if not self.loaded:
+            self._load_config(config_root)
         self.fullname, self.name = name, name.split("/")[-1]
+        # this is another "special case" for configuration requirements
 
-        super().__init__(name, generations=generations)
+        super().__init__(
+            self.name, generations=self.generations, config_root=config_root
+        )
 
         from transformers import pipeline, set_seed
 
@@ -134,10 +140,12 @@ class OptimumPipeline(Pipeline, HFCompatible):
     supports_multiple_generations = True
     uri = "https://huggingface.co/blog/optimum-nvidia"
 
-    def __init__(self, name, do_sample=True, generations=10, device=0):
+    def __init__(
+        self, name, do_sample=True, generations=10, device=0, config_root=_config
+    ):
         self.fullname, self.name = name, name.split("/")[-1]
 
-        super().__init__(name, generations=generations)
+        super().__init__(name, generations=generations, config_root=config_root)
 
         from optimum.nvidia.pipelines import pipeline
         from transformers import set_seed
@@ -178,10 +186,12 @@ class ConversationalPipeline(Generator, HFCompatible):
     generator_family_name = "Hugging Face 🤗 pipeline for conversations"
     supports_multiple_generations = True
 
-    def __init__(self, name, do_sample=True, generations=10, device=0):
+    def __init__(
+        self, name, do_sample=True, generations=10, device=0, config_root=_config
+    ):
         self.fullname, self.name = name, name.split("/")[-1]
 
-        super().__init__(name, generations=generations)
+        super().__init__(name, generations=generations, config_root=config_root)
 
         from transformers import pipeline, set_seed, Conversation
 
@@ -253,11 +263,11 @@ class InferenceAPI(Generator, HFCompatible):
     supports_multiple_generations = True
     import requests
 
-    def __init__(self, name="", generations=10):
+    def __init__(self, name="", generations=10, config_root=_config):
         self.api_url = "https://api-inference.huggingface.co/models/" + name
         self.api_token = os.getenv("HF_INFERENCE_TOKEN", default=None)
         self.fullname, self.name = name, name
-        super().__init__(name, generations=generations)
+        super().__init__(name, generations=generations, config_root=config_root)
 
         if self.api_token:
             self.headers = {"Authorization": f"Bearer {self.api_token}"}
@@ -376,8 +386,8 @@ class InferenceEndpoint(InferenceAPI, HFCompatible):
 
     timeout = 120
 
-    def __init__(self, name="", generations=10):
-        super().__init__(name, generations=generations)
+    def __init__(self, name="", generations=10, config_root=_config):
+        super().__init__(name, generations=generations, config_root=config_root)
         self.api_url = name
 
     @backoff.on_exception(
@@ -429,11 +439,13 @@ class Model(Generator, HFCompatible):
     generator_family_name = "Hugging Face 🤗 model"
     supports_multiple_generations = True
 
-    def __init__(self, name, do_sample=True, generations=10, device=0):
+    def __init__(
+        self, name, do_sample=True, generations=10, device=0, config_root=_config
+    ):
         self.fullname, self.name = name, name.split("/")[-1]
         self.device = device
 
-        super().__init__(name, generations=generations)
+        super().__init__(name, generations=generations, config_root=config_root)
 
         import transformers
 
@@ -543,14 +555,17 @@ class LLaVA(Generator):
         "llava-hf/llava-v1.6-mistral-7b-hf",
     ]
 
-    def __init__(self, name="", generations=10):
+    def __init__(self, name="", generations=10, config_root=_config):
+        super().__init__(name, generations=generations, config_root=config_root)
         if name not in self.supported_models:
             raise ModelNameMissingError(
                 f"Invalid modal name {name}, current support: {self.supported_models}."
             )
         self.processor = LlavaNextProcessor.from_pretrained(name)
         self.model = LlavaNextForConditionalGeneration.from_pretrained(
-            name, torch_dtype=torch.float16, low_cpu_mem_usage=True
+            name,
+            torch_dtype=torch.float16,  # should this have defaults and pass from self?
+            low_cpu_mem_usage=True,  # should this have defaults and pass from self?
         )
         if torch.cuda.is_available():
             self.model.to("cuda:0")

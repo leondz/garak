@@ -33,8 +33,10 @@ class NvcfChat(Generator):
 
     timeout = 60
 
-    def __init__(self, name=None, generations=10):
+    def __init__(self, name=None, generations=10, config_root=_config):
         self.name = name
+        if not self.loaded:
+            self._load_config(config_root)
         self.fullname = (
             f"{self.generator_family_name} {self.__class__.__name__} {self.name}"
         )
@@ -45,16 +47,19 @@ class NvcfChat(Generator):
                 "Please specify a function identifier in model name (-n)"
             )
 
-        self.invoke_url = self.invoke_url_base + name
+        self.invoke_url = self.invoke_url_base + self.name
 
-        super().__init__(name, generations=generations)
+        super().__init__(
+            self.name, generations=self.generations, config_root=config_root
+        )
 
-        self.api_key = os.getenv(self.ENV_VAR, default=None)
         if self.api_key is None:
-            raise APIKeyMissingError(
-                f'Put the NVCF API key in the {self.ENV_VAR} environment variable (this was empty)\n \
-                e.g.: export {self.ENV_VAR}="nvapi-xXxXxXxXxXxXxXxXxXxX"'
-            )
+            self.api_key = os.getenv(self.ENV_VAR, default=None)
+            if self.api_key is None:
+                raise APIKeyMissingError(
+                    f'Put the NVCF API key in the {self.ENV_VAR} environment variable (this was empty)\n \
+                    e.g.: export {self.ENV_VAR}="nvapi-xXxXxXxXxXxXxXxXxXxX"'
+                )
 
         self.headers = {
             "Authorization": f"Bearer {self.api_key}",

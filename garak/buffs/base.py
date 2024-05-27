@@ -18,6 +18,7 @@ import tqdm
 import garak.attempt
 
 
+# should this implement `Configurable`?
 class Buff:
     """Base class for a buff.
 

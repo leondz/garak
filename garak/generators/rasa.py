@@ -89,6 +89,10 @@ class RasaRestGenerator(RestGenerator):
         "Authorization": "Bearer $KEY",
     }
     DEFAULT_JSON_RESPONSE = True
+    DEFAULT_JSON_RESPONSE_FIELD = "text"
     ENV_VAR = "RASA_API_KEY"
 
     generator_family_name = "RASA"
+
+
+DEFAULT_CLASS = "RasaRestGenerator"

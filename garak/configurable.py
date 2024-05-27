@@ -4,19 +4,9 @@ from garak import _config
 from garak import _plugins
 
 
-@dataclass
-class ConfigurationParameter:
-    required = False
-    name = None
-    default = None
-
-
 class Configurable:
     # instance variable to allow early load or load from `base.py`
     loaded = False
-
-    def _supported_configs() -> list[ConfigurationParameter]:
-        return []
 
     def _load_config(self, config_root=_config):
         local_root = (

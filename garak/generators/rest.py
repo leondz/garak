@@ -14,6 +14,7 @@ import requests
 
 import backoff
 import jsonpath_ng
+from jsonpath_ng.exceptions import JsonPathParserError
 
 from garak import _config
 from garak.exception import APIKeyMissingError
@@ -65,19 +66,21 @@ class RestGenerator(Generator):
     and response value are both under the ``text`` key, we'd define the service
     using something like: ::
 
-        {"rest.RestGenerator":
-            {
-                "name": "example service",
-                "uri": "https://example.ai/llm",
-                "method": "post",
-                "headers":{
-                    "X-Authorization": "$KEY",
-                },
-                "req_template_json_object":{
-                    "text":"$INPUT"
-                },
-                "response_json": true,
-                "response_json_field": "text"
+        {"rest"
+            "RestGenerator": {
+                {
+                    "name": "example service",
+                    "uri": "https://example.ai/llm",
+                    "method": "post",
+                    "headers":{
+                        "X-Authorization": "$KEY",
+                    },
+                    "req_template_json_object":{
+                        "text":"$INPUT"
+                    },
+                    "response_json": true,
+                    "response_json_field": "text"
+                }
             }
         }
 
@@ -104,11 +107,13 @@ class RestGenerator(Generator):
     DEFAULT_REQ_HEADERS = {}
     DEFAULT_REQ_METHOD = "post"
     DEFAULT_JSON_RESPONSE = False
+    DEFAULT_JSON_RESPONSE_FIELD = None
 
-    ENV_VAR = "REST_API_KEY"
+    # ENV_VAR = "REST_API_KEY"
     generator_family_name = "REST"
 
     _supported_params = (
+        "api_key",
         "name",
         "uri",
         "key_env_var",
@@ -122,7 +127,7 @@ class RestGenerator(Generator):
         "ratelimit_codes",
     )
 
-    def __init__(self, uri=None, generations=10, context=_config):
+    def __init__(self, uri=None, generations=10, config_root=_config):
         self.uri = uri
         self.name = uri
         self.seed = _config.run.seed
@@ -131,16 +136,15 @@ class RestGenerator(Generator):
         self.req_template = self.DEFAULT_REQ_TEMPLATE
         self.supports_multiple_generations = False  # not implemented yet
         self.response_json = self.DEFAULT_JSON_RESPONSE
-        self.response_json_field = None
+        self.response_json_field = self.DEFAULT_JSON_RESPONSE_FIELD
         self.request_timeout = 20  # seconds
         self.ratelimit_codes = [429]
         self.escape_function = self._json_escape
         self.retry_5xx = True
-        self.key_env_var = self.ENV_VAR
+        self.key_env_var = self.ENV_VAR if hasattr(self, "ENV_VAR") else None
 
         # load configuration since super.__init__ has not been called
-        self._load_config(context)
-        self.loaded = True
+        self._load_config(config_root)
 
         if (
             hasattr(self, "req_template_json_object")
@@ -187,8 +191,6 @@ class RestGenerator(Generator):
             self.method = "post"
         self.http_function = getattr(requests, self.method)
 
-        self.api_key = os.getenv(self.key_env_var, default=None)
-
         # validate jsonpath
         if self.response_json and self.response_json_field:
             try:
@@ -199,10 +201,11 @@ class RestGenerator(Generator):
                 )
                 raise e
 
-        if _config.run.generations:
+        if hasattr(_config.run, "generations") and _config.run.generations:
+            # why does this look for a `run` configuration if `generations` is passed in signature?
             generations = _config.run.generations
 
-        super().__init__(uri, generations=generations, context=context)
+        super().__init__(uri, generations=generations, config_root=config_root)
 
     def _json_escape(self, text: str) -> str:
         """JSON escape a string"""

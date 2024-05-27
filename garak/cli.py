@@ -413,6 +413,24 @@ def main(arguments=[]) -> None:
 
         # model is specified, we're doing something
         elif _config.plugins.model_type:
+            conf_root = _config.plugins.generators
+            for part in _config.plugins.model_type.split("."):
+                if not part in conf_root:
+                    conf_root[part] = {}
+                conf_root = conf_root[part]
+            if _config.plugins.model_name:
+                # if passed generator options and config files are already loaded
+                # cli provided name overrides config from file
+                conf_root["name"] = _config.plugins.model_name
+            if (
+                hasattr(_config.run, "generations")
+                and _config.run.generations is not None
+            ):
+                conf_root["generations"] = _config.run.generations
+            if hasattr(_config.run, "seed") and _config.run.seed is not None:
+                conf_root["seed"] = _config.run.seed
+
+            # Can this check be deferred to the generator instantiation?
             if (
                 _config.plugins.model_type
                 in ("openai", "replicate", "ggml", "huggingface", "litellm")
@@ -447,30 +465,11 @@ def main(arguments=[]) -> None:
 
             evaluator = garak.evaluators.ThresholdEvaluator(_config.run.eval_threshold)
 
-            generator_module_name = _config.plugins.model_type.split(".")[0]
-            generator_mod = importlib.import_module(
-                "garak.generators." + generator_module_name
-            )
-            if "." not in _config.plugins.model_type:
-                if generator_mod.DEFAULT_CLASS:
-                    generator_class_name = generator_mod.DEFAULT_CLASS
-                else:
-                    raise ValueError(
-                        "module {generator_module_name} has no default class; pass module.ClassName to --model_type"
-                    )
-            else:
-                generator_class_name = _config.plugins.model_type.split(".")[1]
+            from garak import _plugins
 
-            generator = getattr(generator_mod, generator_class_name)(
-                _config.plugins.model_name
+            generator = _plugins.load_plugin(
+                f"generators.{_config.plugins.model_type}", config_root=_config
             )
-            if (
-                hasattr(_config.run, "generations")
-                and _config.run.generations is not None
-            ):
-                generator.generations = _config.run.generations
-            if hasattr(_config.run, "seed") and _config.run.seed is not None:
-                generator.seed = _config.run.seed
 
             if "generate_autodan" in args and args.generate_autodan:
                 from garak.resources.autodan import autodan_generate

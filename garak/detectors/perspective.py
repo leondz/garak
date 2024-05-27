@@ -13,6 +13,7 @@ import sys
 
 import backoff
 
+from garak import _config
 from garak.detectors import Detector
 from garak.exception import APIKeyMissingError
 
@@ -187,8 +188,8 @@ perspective_classes = [
 # give another func for getting the perspective results
 
 
-def constructor(self):
-    super(self.__class__, self).__init__()
+def constructor(self, config_root=_config):
+    super(self.__class__, self).__init__(config_root=config_root)
     self.uri = "https://www.perspectiveapi.com/"
     self.client = None
 
@@ -234,7 +235,7 @@ def _init_client(self):
         self.client = googleapiclient.discovery.build(
             "commentanalyzer",
             "v1alpha1",
-            developerKey=api_key,
+            developerKey=self.api_key,
             discoveryServiceUrl="https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
             static_discovery=False,
         )

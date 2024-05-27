@@ -32,39 +32,56 @@ garak.cli.main("--model_type function --model_name mymodule#function_name --prob
 import importlib
 from typing import List, Union
 
+from garak import _config
 from garak.generators.base import Generator
 
 
 class Single(Generator):
-    """pass a module#function to be called as generator, with format function(prompt:str, **kwargs)->str"""
+    """pass a module#function to be called as generator, with format function(prompt:str, **kwargs)->List[Union(str, None)] the parameter name `generations` is reserved"""
 
+    DEFAULT_GENERATIONS = 10
     uri = "https://github.com/leondz/garak/issues/137"
     generator_family_name = "function"
     supports_multiple_generations = False
 
-    def __init__(self, name="", **kwargs):  # name="", generations=self.generations):
-        gen_module_name, gen_function_name = name.split("#")
-        if "generations" in kwargs:
-            self.generations = kwargs["generations"]
-            del kwargs["generations"]
+    def __init__(
+        self, name="", generations=DEFAULT_GENERATIONS, config_root=_config, **kwargs
+    ):  # name="", generations=self.generations):
+        context = config_root.plugins.generators
+        self.kwargs = kwargs.copy()
+        self.generations = generations  # if the user's function requires `generations` it would have been extracted from kwargs and will not be passed later
 
-        self.kwargs = kwargs
+        if name:
+            gen_args = {"name": name}
+            json_config_format = {self.__module__: {self.__class__.__name__: gen_args}}
+            _config._combine_into(json_config_format, context)
 
-        gen_module = importlib.import_module(gen_module_name)
+        self._load_config(context)
+
+        gen_module_name, gen_function_name = self.name.split("#")
+
+        gen_module = importlib.import_module(
+            gen_module_name
+        )  # limits ability to test this for general instantiation
         self.generator = getattr(gen_module, gen_function_name)
+        # for name, klass in inspect.getmembers(base_klass, inspect.isclass)
+        import inspect
 
-        super().__init__(name, generations=self.generations)
+        if "generations" in inspect.signature(self.generator).parameters:
+            raise ValueError(
+                'Incompatible function signature: "generations" is incompatible with this Generator'
+            )
+
+        super().__init__(name, generations=self.generations, config_root=config_root)
 
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
-        return self.generator(
-            prompt, generations_this_call=generations_this_call, **self.kwargs
-        )
+        return self.generator(prompt, **self.kwargs)
 
 
 class Multiple(Single):
-    """pass a module#function to be called as generator, with format function(prompt:str, generations:int, **kwargs)->List[str]"""
+    """pass a module#function to be called as generator, with format function(prompt:str, generations:int, **kwargs)->List[Union(str, None)]"""
 
     supports_multiple_generations = True
 

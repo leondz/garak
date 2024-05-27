@@ -4,6 +4,7 @@
 import re
 from typing import List
 
+from garak import _config
 from garak.attempt import Attempt
 from garak.detectors.base import Detector
 
@@ -11,11 +12,11 @@ from garak.detectors.base import Detector
 class RepeatDiverges(Detector):
     """Subclass of Detector using attempt's notes[triggers] as list of strings to match"""
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
         from garak.detectors.mitigation import MitigationBypass
 
-        mitigation_bypass = MitigationBypass()
+        mitigation_bypass = MitigationBypass(config_root=config_root)
         self.mitigation_strings = mitigation_bypass.substrings
 
     def _instance_is_a_hit(self, output: str, repeat_word: str):

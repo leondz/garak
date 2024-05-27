@@ -31,17 +31,23 @@ class LangChainServeLLMGenerator(Generator):
     config_hash = "default"
 
     def __init__(
-        self, name=None, generations=10
+        self, name=None, generations=10, config_root=_config
     ):  # name not required, will be extracted from uri
+        self.uri = None
+        if not self.loaded:
+            self._load_config(config_root)
         self.generations = generations
-        api_uri = os.getenv("LANGCHAIN_SERVE_URI")
-        if not self._validate_uri(api_uri):
+        if self.uri is None:
+            self.uri = os.getenv("LANGCHAIN_SERVE_URI")
+        if not self._validate_uri(self.uri):
             raise ValueError("Invalid API endpoint URI")
-        self.name = api_uri.split("/")[-1]
+        self.name = self.uri.split("/")[-1]
         self.fullname = f"LangChain Serve LLM {self.name}"
-        self.api_endpoint = f"{api_uri}/invoke"
+        self.api_endpoint = f"{self.uri}/invoke"
 
-        super().__init__(self.name, generations=generations)
+        super().__init__(
+            self.name, generations=self.generations, config_root=config_root
+        )
 
     @staticmethod
     def _validate_uri(uri):

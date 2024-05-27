@@ -49,13 +49,13 @@ class Probe(Configurable):
     # we focus on LLM input for probe
     modality: dict = {"in": {"text"}}
 
-    def __init__(self, context=_config):
+    def __init__(self, config_root=_config):
         """Sets up a probe. This constructor:
         1. populates self.probename based on the class name,
         2. logs and optionally prints the probe's loading,
         3. populates self.description based on the class docstring if not yet set"""
         if not self.loaded:
-            self._load_config(context)
+            self._load_config(config_root)
         self.probename = str(self.__class__).split("'")[1]
         if hasattr(_config.system, "verbose") and _config.system.verbose > 0:
             print(

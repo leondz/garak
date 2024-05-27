@@ -68,10 +68,10 @@ class GCG(Probe):
     prompts = list()
     active = False
 
-    def __init__(self, goal: str = GOAL):
+    def __init__(self, goal: str = GOAL, config_root=_config):
         self.goal = goal
         self.run_gcg = run_gcg
-        super().__init__()
+        super().__init__(config_root=config_root)
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
         self.generator = generator

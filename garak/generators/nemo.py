@@ -33,21 +33,30 @@ class NeMoGenerator(Generator):
     length_penalty = 1
     guardrail = None  # NotImplemented in library
 
-    def __init__(self, name=None, generations=10):
+    def __init__(self, name=None, generations=10, config_root=_config):
         self.name = name
+        self.org_id = None
+        if not self.loaded:
+            self._load_config(config_root)
         self.fullname = f"NeMo {self.name}"
         self.seed = _config.run.seed
         self.api_host = "https://api.llm.ngc.nvidia.com/v1"
 
-        super().__init__(name, generations=generations)
+        super().__init__(
+            self.name, generations=self.generations, config_root=config_root
+        )
 
-        self.api_key = os.getenv(self.ENV_VAR, default=None)
+        if self.api_key is None:
+            self.api_key = os.getenv(self.ENV_VAR, default=None)
+
         if self.api_key is None:
             raise APIKeyMissingError(
                 f'Put the NGC API key in the {self.ENV_VAR} environment variable (this was empty)\n \
                 e.g.: export {self.ENV_VAR}="xXxXxXxXxXxXxXxXxXxX"'
             )
-        self.org_id = os.getenv("ORG_ID")
+
+        if self.org_id is None:
+            self.org_id = os.getenv("ORG_ID")
 
         if self.org_id is None:
             raise APIKeyMissingError(

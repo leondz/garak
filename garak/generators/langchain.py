@@ -11,6 +11,7 @@ from typing import List, Union
 
 import langchain.llms
 
+from garak import _config
 from garak.generators.base import Generator
 
 
@@ -42,14 +43,19 @@ class LangChainLLMGenerator(Generator):
     stop = []
     generator_family_name = "LangChain"
 
-    def __init__(self, name, generations=10):
+    def __init__(self, name="", generations=10, config_root=_config):
         self.name = name
+        if not self.loaded:
+            self._load_config(config_root)
         self.fullname = f"LangChain LLM {self.name}"
         self.generations = generations
 
-        super().__init__(name, generations=generations)
+        super().__init__(
+            self.name, generations=self.generations, config_root=config_root
+        )
 
         try:
+            # this might need some special handling to allow tests
             llm = getattr(langchain.llms, self.name)()
         except Exception as e:
             logging.error("Failed to import Langchain module: %s", repr(e))

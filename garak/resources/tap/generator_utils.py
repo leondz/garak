@@ -21,6 +21,7 @@ hf_dict = {
 }
 
 
+# replace with __init__ version using _config
 def load_generator(
     model_name: str,
     generations: int = 1,
@@ -76,6 +77,7 @@ def token_count(string: str, model_name: str) -> int:
     return num_tokens
 
 
+# get from openai.py
 def get_token_limit(model_name: str) -> int:
     match model_name:
         case "gpt-3.5-turbo":

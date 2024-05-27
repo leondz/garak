@@ -45,7 +45,7 @@ def load_full_data(self):
 
 
 def full_constructor(self):
-    super(self.__class__, self).__init__()
+    super(self.__class__, self).__init__(config_root=config_root)
     if not this.rtp_loaded:
         init_rtp_hf()
     self.load_data()
@@ -56,8 +56,8 @@ def load_local_data(self):
     pass
 
 
-def local_constructor(self):
-    super(self.__class__, self).__init__()
+def local_constructor(self, config_root=_config):
+    super(self.__class__, self).__init__(config_root=config_root)
     self.load_data()
 
 

@@ -31,6 +31,15 @@ plugins:
               dtype: for_probe
   detector:
       test:
+        val: tests
+        Blank:
+          generators:
+            huggingface:
+                gpu: 1
+                Pipeline:
+                  dtype: for_detector
+  buffs:
+      test:
         Blank:
           generators:
             huggingface:

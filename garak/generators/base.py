@@ -4,6 +4,7 @@ All `garak` generators must inherit from this.
 """
 
 import logging
+import os
 from typing import List, Union
 
 from colorama import Fore, Style
@@ -16,8 +17,9 @@ from garak.configurable import Configurable
 class Generator(Configurable):
     """Base class for objects that wrap an LLM or other text-to-text service"""
 
-    name = "Generator"
-    description = ""
+    # avoid class variables for values set per instance
+    # name = "Generator"
+    # description = ""
     generations = 10
     max_tokens = 150
     temperature = None
@@ -35,9 +37,9 @@ class Generator(Configurable):
         False  # can more than one generation be extracted per request?
     )
 
-    def __init__(self, name="", generations=10, context=_config):
+    def __init__(self, name="", generations=10, config_root=_config):
         if not self.loaded:
-            self._load_config(context)
+            self._load_config(config_root)
         if "description" not in dir(self):
             self.description = self.__doc__.split("\n")[0]
         if name:
@@ -50,6 +52,16 @@ class Generator(Configurable):
                 self.fullname = self.name
         if not self.generator_family_name:
             self.generator_family_name = "<empty>"
+        if hasattr(self, "ENV_VAR"):
+            # see about where this might not be need, consider `rest` generators do not always require this value
+            if not hasattr(self, "api_key") or self.api_key is None:
+                self.api_key = os.getenv(self.ENV_VAR, default=None)
+                if self.api_key is None:
+                    raise ValueError(
+                        f'Put the Cohere API key in the {self.ENV_VAR} environment variable (this was empty)\n \
+                        e.g.: export {self.ENV_VAR}="XXXXXXX"'
+                    )
+
         print(
             f"🦜 loading {Style.BRIGHT}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: {self.generator_family_name}: {self.name}"
         )

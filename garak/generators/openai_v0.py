@@ -24,6 +24,7 @@ from typing import List
 import openai
 import backoff
 
+from garak import _config
 from garak.generators.base import Generator
 
 if openai.__version__[0] == "0":
@@ -78,7 +79,7 @@ if openai.__version__[0] == "0":
         presence_penalty = 0.0
         stop = ["#", ";"]
 
-        def __init__(self, name, generations=10):
+        def __init__(self, name, generations=10, config_root=_config):
             if openai.__version__[0] != "0":
                 print('try pip install -U "openai<1.0"')
                 raise ImportError(
@@ -89,7 +90,7 @@ if openai.__version__[0] == "0":
             self.name = name
             self.fullname = f"OpenAI {self.name}"
 
-            super().__init__(name, generations=generations)
+            super().__init__(name, generations=generations, config_root=config_root)
 
             openai.api_key = os.getenv(self.ENV_VAR, default=None)
             if openai.api_key is None:

@@ -5,6 +5,7 @@ output them without warning, that's an indication that the app isn't checking
 output for malicious or dangerous content.
 """
 
+from garak import _config
 from garak.probes.base import Probe
 
 EICAR_SIGNATURE = (
@@ -51,8 +52,8 @@ class EICAR(Probe):
     ]
     goal = "output virus code"
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
         signature = EICAR_SIGNATURE
         self.prompts = [p.replace("{signature}", signature) for p in REPEAT_PROMPTS]
 
@@ -77,8 +78,8 @@ class GTUBE(Probe):
     ]
     goal = "output email spam"
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
         signature = GTUBE_SIGNATURE
         self.prompts = [p.replace("{signature}", signature) for p in REPEAT_PROMPTS]
 
@@ -104,8 +105,8 @@ class GTphish(Probe):
     ]
     goal = "output email phishing"
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
         signature = GTPHISH_SIGNATURE
         self.prompts = [p.replace("{signature}", signature) for p in REPEAT_PROMPTS]
 

@@ -54,8 +54,13 @@ class GgmlGenerator(Generator):
             "-s": self.seed,
         }
 
-    def __init__(self, name, generations=10):
-        self.path_to_ggml_main = os.getenv(ENV_VAR)
+    def __init__(self, name="", generations=10, config_root=_config):
+        self.name = name
+        if not self.loaded:
+            self._load_config(config_root)
+
+        if not hasattr(self, "path_to_ggml_main") or self.path_to_ggml_main is None:
+            self.path_to_ggml_main = os.getenv(ENV_VAR)
         if self.path_to_ggml_main is None:
             raise RuntimeError(f"Executable not provided by environment {ENV_VAR}")
         if not os.path.isfile(self.path_to_ggml_main):
@@ -67,15 +72,19 @@ class GgmlGenerator(Generator):
         self.seed = _config.run.seed if _config.run.seed is not None else 0
 
         # model is a file, validate exists and sanity check file header for supported format
-        if not os.path.isfile(name):
-            raise FileNotFoundError(f"File not found, unable to load model: {name}")
+        if not os.path.isfile(self.name):
+            raise FileNotFoundError(
+                f"File not found, unable to load model: {self.name}"
+            )
         else:
-            with open(name, "rb") as model_file:
+            with open(self.name, "rb") as model_file:
                 magic_num = model_file.read(len(GGUF_MAGIC))
                 if magic_num != GGUF_MAGIC:
-                    raise RuntimeError(f"{name} is not in GGUF format")
+                    raise RuntimeError(f"{self.name} is not in GGUF format")
 
-        super().__init__(name, generations=generations)
+        super().__init__(
+            self.name, generations=self.generations, config_root=config_root
+        )
 
     def _call_model(
         self, prompt: str, generations_this_call: int = 1

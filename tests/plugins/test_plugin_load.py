@@ -1,7 +1,9 @@
 import pytest
+import os
 
 import garak
 from garak import _plugins
+import garak.generators
 
 PROBES = [classname for (classname, active) in _plugins.enumerate_plugins("probes")]
 
@@ -14,6 +16,10 @@ HARNESSES = [
 ]
 
 BUFFS = [classname for (classname, active) in _plugins.enumerate_plugins("buffs")]
+
+GENERATORS = [
+    classname for (classname, active) in _plugins.enumerate_plugins("generators")
+]
 
 
 @pytest.mark.parametrize("classname", PROBES)
@@ -35,6 +41,30 @@ def test_instantiate_harnesses(classname):
 
 
 @pytest.mark.parametrize("classname", BUFFS)
-def test_instantiate_harnesses(classname):
+def test_instantiate_buffs(classname):
     g = _plugins.load_plugin(classname)
     assert isinstance(g, garak.buffs.base.Buff)
+
+
+@pytest.mark.parametrize("classname", GENERATORS)
+def test_instantiate_generators(classname):
+    category, namespace, klass = classname.split(".")
+    from garak._config import GarakSubConfig
+
+    gen_config = {
+        namespace: {
+            klass: {
+                "name": "gpt-3.5-turbo-instruct",  # valid for OpenAI
+                "api_key": "fake",
+                "org_id": "fake",  # required for NeMo
+                "uri": "https://example.com",  # required for rest
+                "provider": "fake",  # required for LiteLLM
+                "path_to_ggml_main": os.path.abspath(__file__),
+            }
+        }
+    }
+    config_root = GarakSubConfig()
+    setattr(config_root, category, gen_config)
+
+    g = _plugins.load_plugin(classname, config_root=config_root)
+    assert isinstance(g, garak.generators.base.Generator)

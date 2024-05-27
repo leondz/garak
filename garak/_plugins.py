@@ -20,7 +20,7 @@ def _extract_modules_klasses(base_klass):
     return [  # Extract only classes with same source package name
         name
         for name, klass in inspect.getmembers(base_klass, inspect.isclass)
-        if klass.__module__.startswith(base_klass.__package__)
+        if klass.__module__.startswith(base_klass.__name__)
     ]
 
 
@@ -48,15 +48,7 @@ def enumerate_plugins(
 
     base_mod = importlib.import_module(f"garak.{category}.base")
 
-    # consider replacing this with PLUGIN_CLASSES above or other singular conversion
-    if category == "harnesses":
-        root_plugin_classname = "Harness"
-    else:
-        root_plugin_classname = category.title()[:-1]
-
-    base_plugin_classnames = set(
-        _extract_modules_klasses(base_mod) + [root_plugin_classname]
-    )
+    base_plugin_classnames = set(_extract_modules_klasses(base_mod))
 
     plugin_class_names = []
 
@@ -77,9 +69,9 @@ def enumerate_plugins(
         module_plugin_names = set()
         for module_entry in module_entries:
             obj = getattr(mod, module_entry)
-            if inspect.isclass(obj):
-                # this relies on the order of templates implemented on a class
-                if obj.__bases__[-1].__name__ in base_plugin_classnames:
+            for interface in base_plugin_classnames:
+                klass = getattr(base_mod, interface)
+                if issubclass(obj, klass):
                     module_plugin_names.add((module_entry, obj.active))
 
         for module_plugin_name, active in sorted(module_plugin_names):
@@ -111,7 +103,20 @@ def load_plugin(path, break_on_fail=True, config_root=_config) -> object:
     :type break_on_fail: bool
     """
     try:
-        category, module_name, plugin_class_name = path.split(".")
+        parts = path.split(".")
+        category = parts[0]
+        module_name = parts[1]
+        if len(parts) != 3:
+            generator_mod = importlib.import_module(f"garak.{category}.{module_name}")
+            if generator_mod.DEFAULT_CLASS:
+                plugin_class_name = generator_mod.DEFAULT_CLASS
+                path = f"{path}.{plugin_class_name}"
+            else:
+                raise Exception(
+                    "module {module_name} has no default class; pass module.ClassName to model_type"
+                )
+        else:
+            plugin_class_name = parts[2]
     except ValueError as ve:
         if break_on_fail:
             raise ValueError(
@@ -130,7 +135,12 @@ def load_plugin(path, break_on_fail=True, config_root=_config) -> object:
             return False
 
     try:
-        plugin_instance = getattr(mod, plugin_class_name)()
+        from garak.configurable import Configurable
+
+        if issubclass(getattr(mod, plugin_class_name), Configurable):
+            plugin_instance = getattr(mod, plugin_class_name)(config_root=config_root)
+        else:
+            plugin_instance = getattr(mod, plugin_class_name)()
     except AttributeError as ae:
         logging.warning(
             "Exception failed instantiation of %s.%s", module_path, plugin_class_name

@@ -30,8 +30,8 @@ class GraphConnectivity(Probe):
     goal = "trick the model into saying an impossible flight routing is possible"
     active = False
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
         with open(
             _config.transient.basedir / "resources" / "graph_connectivity.json",
             "r",
@@ -44,8 +44,8 @@ class GraphConnectivityMini(GraphConnectivity, Probe):
     __doc__ = GraphConnectivity.__doc__ + " - limited number of examples"
     active = True
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
         self.prompts = self.prompts[-100:]
 
 
@@ -67,8 +67,8 @@ class Primes(Probe):
     goal = "trick the model into saying a prime number isn't prime"
     active = False
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
         with open(
             _config.transient.basedir / "resources" / "primality_testing.json",
             "r",
@@ -82,8 +82,8 @@ class PrimesMini(Primes, Probe):
     __doc__ = Primes.__doc__ + " - limited number of examples"
     active = True
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
         self.prompts = self.prompts[-100:]
 
 
@@ -106,8 +106,8 @@ class Senators(Probe):
     goal = "trick the model into saying a fictitious senator exists"
     active = False
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
         with open(
             _config.transient.basedir / "resources" / "senator_search.json",
             "r",
@@ -120,6 +120,6 @@ class SenatorsMini(Senators, Probe):
     __doc__ = Senators.__doc__ + " - limited number of examples"
     active = True
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
         self.prompts = self.prompts[-100:]

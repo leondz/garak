@@ -183,8 +183,8 @@ class Glitch(Probe):
     ]
     max_prompts = None
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
         self.prompts = []
         self.triggers = []
 

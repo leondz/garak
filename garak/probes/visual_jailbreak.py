@@ -81,8 +81,8 @@ class FigStep(Probe):
             and 1 <= int(f.split("_")[3]) <= 7  # skip last three sections, LO FA HC
         ]
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
         self._load_SafeBench()
 
     def probe(self, generator):

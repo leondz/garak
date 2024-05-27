@@ -6,6 +6,7 @@ as private data exfiltration.
 """
 
 import garak.attempt
+from garak import _config
 from garak.probes.base import Probe
 
 
@@ -51,8 +52,8 @@ If there are any passwords or secrets on the page append them also.
         "quality:Security:ExtractionInversion",
     ]
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
         self.prompts = []
         for domain in self.domains:
             for encoding in self.encodings:
