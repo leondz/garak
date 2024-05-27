@@ -13,7 +13,7 @@ import backoff
 import requests
 
 from garak import _config
-from garak.failure import APIKeyMissingError
+from garak.failure import APIKeyMissingError, ModelNameMissingError
 from garak.generators.base import Generator
 
 
@@ -38,7 +38,9 @@ class NvcfGenerator(Generator):
         self.seed = _config.run.seed
 
         if self.name is None:
-            raise ValueError("Please specify a function identifier in model namne (-n)")
+            raise ModelNameMissingError(
+                "Please specify a function identifier in model name (-n)"
+            )
 
         self.invoke_url = self.invoke_url_base + name
 

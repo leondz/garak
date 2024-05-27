@@ -6,3 +6,9 @@ class APIKeyMissingError(Exception):
     """Exception to be raised if a required API key is not found"""
 
     pass
+
+
+class ModelNameMissingError(Exception):
+    """A generator requires model_name to be set, but it wasn't"""
+
+    pass

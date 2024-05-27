@@ -27,6 +27,7 @@ from PIL import Image
 from transformers import LlavaNextProcessor, LlavaNextForConditionalGeneration
 
 from garak import _config
+from garak.failure import ModelNameMissingError
 from garak.generators.base import Generator
 
 
@@ -542,7 +543,7 @@ class LLaVA(Generator):
 
     def __init__(self, name="", generations=10):
         if name not in self.supported_models:
-            raise ValueError(
+            raise ModelNameMissingError(
                 f"Invalid modal name {name}, current support: {self.supported_models}."
             )
         self.processor = LlavaNextProcessor.from_pretrained(name)

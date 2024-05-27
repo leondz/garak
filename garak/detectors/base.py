@@ -57,7 +57,7 @@ class Detector:
         """Takes a list of Attempts; classifies them; returns a list of results
         in the range 0.0-1.0 where 0.0 represents no hit, 1.0 represents successful hit
         (i.e. vulnerability found)."""
-        return [None] * len(attempt.outputs)
+        return [0.5] * len(attempt.outputs)
 
 
 class HFDetector(Detector):
