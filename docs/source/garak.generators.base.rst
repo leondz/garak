@@ -33,7 +33,7 @@ The general flow in ``generate()`` is as follows:
   #. Otherwise, we need to assemble the outputs over multiple calls. There are two options here.
     #. Is garak running with ``parallel_attempts > 1`` configured? In that case, start a multiprocessing pool with as many workers as the value of ``parallel_attempts``, and have each one of these work on building the required number of generations, in any order.
     #. Otherwise, call ``_call_model()`` repeatedly to collect the requested number of generations.
-  #. Strip ``None`` responses from the outputs, and return the resulting list of prompt responses.
+  #. Return the resulting list of prompt responses.
 
 #. **_call_model()**: This method handles direct interaction with the model. It takes a prompt and an optional number of generations this call, and returns a list of prompt responses (e.g. strings) and ``None``s. Models may return ``None`` in the case the underlying system failed unrecoverably. This is the method to write model interaction code in. If the class' supports_multiple_generations is false, _call_model does not need to accept values of ``generations_this_call`` other than ``1``.
 
