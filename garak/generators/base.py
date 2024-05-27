@@ -94,11 +94,11 @@ class Generator:
             logging.debug("generate() called with generations_this_call = 0")
             return []
 
-        if self.supports_multiple_generations:
-            return self._call_model(prompt, generations_this_call)
+        if generations_this_call == 1:
+            outputs = self._call_model(prompt, 1)
 
-        elif generations_this_call <= 1:
-            return self._call_model(prompt, generations_this_call)
+        if self.supports_multiple_generations:
+            outputs = self._call_model(prompt, generations_this_call)
 
         else:
             outputs = []
@@ -140,9 +140,9 @@ class Generator:
                     ), "_call_model's item must be a string or None"
                     outputs.append(output_one[0])
 
-            cleaned_outputs = [
-                o for o in outputs if o is not None
-            ]  # "None" means no good response
-            outputs = cleaned_outputs
+        cleaned_outputs = [
+            o for o in outputs if o is not None
+        ]  # "None" means no good response
+        outputs = cleaned_outputs
 
-            return outputs
+        return outputs
