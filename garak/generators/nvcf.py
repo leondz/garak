@@ -13,6 +13,7 @@ import backoff
 import requests
 
 from garak import _config
+from garak.failure import APIKeyMissingError
 from garak.generators.base import Generator
 
 
@@ -45,7 +46,7 @@ class NvcfGenerator(Generator):
 
         self.api_key = os.getenv("NVCF_API_KEY", default=None)
         if self.api_key is None:
-            raise ValueError(
+            raise APIKeyMissingError(
                 'Put the NVCF API key in the NVCF_API_KEY environment variable (this was empty)\n \
                 e.g.: export NVCF_API_KEY="nvapi-xXxXxXxXxXxXxXxXxXxX"'
             )
