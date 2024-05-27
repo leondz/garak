@@ -50,7 +50,9 @@ def test_model():
     assert g.max_tokens == 99
     g.temperature = 0.1
     assert g.temperature == 0.1
+    # this is expected to lead to [None]*DEFAULT_GENERATIONS_QTY, which generate() filters to []
     output = g.generate("")
-    assert len(output) == DEFAULT_GENERATIONS_QTY
-    for item in output:
-        assert item is None  # gpt2 is known raise exception returning `None`
+    assert len(output) == 0 
+    #assert len(output) == DEFAULT_GENERATIONS_QTY
+    #for item in output:
+    #    assert item is None  # gpt2 is known to raise exception returning `None`
