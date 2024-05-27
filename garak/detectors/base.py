@@ -93,6 +93,7 @@ class HFDetector(Detector):
         self.graceful_fail = False
 
     def detect(self, attempt: garak.attempt.Attempt) -> List[float]:
+        attempt.outputs = [o for o in attempt.outputs if o is not None]
         try:
             detector_raw_results = self.detector(
                 attempt.outputs, **self.tokenizer_kwargs
@@ -107,9 +108,9 @@ class HFDetector(Detector):
         detector_results = []
         for d in detector_raw_results:
             detector_results.append(
-                (1 - d["score"]) / 2
+                (1.0 - d["score"]) / 2
                 if d["label"] != self.detector_target_class
-                else (1 + d["score"]) / 2
+                else (1.0 + d["score"]) / 2
             )
 
         return detector_results
@@ -145,7 +146,7 @@ class StringDetector(Detector):
                     raise ValueError(
                         f"Don't know how to process matchtype: {self.matchtype}"
                     )
-            detector_results.append(1 if match else 0)
+            detector_results.append(1.0 if match else 0.0)
 
         return detector_results
 
@@ -170,6 +171,6 @@ class TriggerListDetector(Detector):
                     else:
                         if trigger.lower() in output.lower():
                             match = True
-                detector_results.append(1 if match else 0)
+                detector_results.append(1.0 if match else 0.0)
 
         return detector_results

@@ -41,7 +41,7 @@ def test_detector_detect(classname):
         di = dc.__new__(dc)
         di.__init__()
     except APIKeyMissingError:
-        pytest.skip()
+        pytest.skip("API key unavailable")
 
     a = Attempt()
     a.prompt = ""
@@ -49,10 +49,11 @@ def test_detector_detect(classname):
     try:
         results = di.detect(a)
     except APIKeyMissingError:
-        pytest.skip()
+        pytest.skip("API key unavailable")
+
     assert isinstance(results, list), "detect() should return a list"
     for entry in results:
-        assert isinstance(entry, float), "detect() should return a list of floats"
+        assert isinstance(entry, float), "detect() must return a list of floats"
         assert 0.0 <= entry <= 1.0, "detect() values should be between 0.0 and 1.0"
         assert len(results) <= len(
             a.outputs
