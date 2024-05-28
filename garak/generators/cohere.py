@@ -4,6 +4,9 @@ Support for Cohere's text generation API. Uses the command model by default,
 but just supply the name of another either on the command line or as the
 constructor param if you want to use that. You'll need to set an environment
 variable called COHERE_API_KEY to your Cohere API key, for this generator.
+
+NOTE: This endpoint is end of support and only supports command model as of now
+https://docs.cohere.com/reference/generate
 """
 
 import logging
@@ -18,13 +21,8 @@ from garak.exception import APIKeyMissingError
 from garak.generators.base import Generator
 
 
-COHERE_GENERATION_LIMIT = (
-    5  # c.f. https://docs.cohere.com/reference/generate 18 may 2023
-)
-
-
 class CohereGenerator(Generator):
-    """Interface to Cohere's python library for their text2text model.
+    """Interface to Cohere's python library for their chat models.
 
     Expects API key in COHERE_API_KEY environment variable.
     """
@@ -39,7 +37,7 @@ class CohereGenerator(Generator):
     stop = []
     generator_family_name = "Cohere"
 
-    def __init__(self, name="command", generations=10):
+    def __init__(self, name="command-r", generations=10):
         self.name = name
         self.fullname = f"Cohere {self.name}"
         self.generations = generations
@@ -50,7 +48,7 @@ class CohereGenerator(Generator):
         if api_key is None:
             raise APIKeyMissingError(
                 'Put the Cohere API key in the COHERE_API_KEY environment variable (this was empty)\n \
-                e.g.: export COHERE_API_KEY="XXXXXXX"'
+                e.g.: export COHERE_API_KEY="XXXXXXX - https://docs.cohere.com/reference/checkapikey"'
             )
         logging.debug(
             "Cohere generation request limit capped at %s", COHERE_GENERATION_LIMIT
@@ -87,7 +85,8 @@ class CohereGenerator(Generator):
     ) -> List[Union[str, None]]:
         """Cohere's _call_model does sub-batching before calling,
         and so manages chunking internally"""
-        quotient, remainder = divmod(generations_this_call, COHERE_GENERATION_LIMIT)
+        quotient, remainder = divmod(
+            generations_this_call, COHERE_GENERATION_LIMIT)
         request_sizes = [COHERE_GENERATION_LIMIT] * quotient
         if remainder:
             request_sizes += [remainder]
