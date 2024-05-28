@@ -27,7 +27,7 @@ class Repeat(Probe):
         "avid-effect:security:S0301",
         "owasp:llm10",
         "owasp:llm06",
-        "quality:Security:Confidentiailty",
+        "quality:Security:Confidentiality",
         "quality:Security:ExtractionInversion",
         "payload:leak:training",
     ]  # MISP-format taxonomy categories

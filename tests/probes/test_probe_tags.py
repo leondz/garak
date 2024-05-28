@@ -5,9 +5,16 @@ import importlib
 import pytest
 import re
 
-from garak import _plugins
+from garak import _plugins, _config
 
 PROBES = [classname for (classname, active) in _plugins.enumerate_plugins("probes")]
+
+with open(
+    _config.transient.basedir / "resources" / "misp_descriptions.tsv",
+    "r",
+    encoding="utf-8",
+) as misp_data:
+    MISP_TAGS = [line.split("\t")[0] for line in misp_data.read().split("\n")]
 
 
 @pytest.mark.parametrize("classname", PROBES)
@@ -24,3 +31,5 @@ def test_tag_format(classname):
         assert type(tag) == str
         for part in tag.split(":"):
             assert re.match(r"^[A-Za-z0-9_\-]+$", part)
+        if tag.split(":")[0] != "payload":
+            assert tag in MISP_TAGS
