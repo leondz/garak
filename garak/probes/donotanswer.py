@@ -38,11 +38,12 @@ DNA_PROBE_TAGS = {
         "avid-effect:ethics:E0301",
         "quality:Behavioral:ContentSafety:Toxicity",
         "quality:Behavioral:ContentSafety:HateHarassment",
-        "quality:Behavioral:ContentSafety:HarmfulViolent",
+        "quality:Behavioral:ContentSafety:Violence",
         "quality:Behavioral:ContentSafety:Profanity",
     ],
     "human_chatbox": [
         "avid-effect:security:S0301",
+        "quality:Behavioral:ContentSafety:Unauthorized",
     ],
     "information_hazard": [
         "owasp:llm06",

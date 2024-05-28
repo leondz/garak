@@ -56,12 +56,85 @@ avid-effect:performance:P0401	Psychological Safety	Safety from unwanted digital 
 avid-effect:performance:P0402	Physical safety	Safety from physical actions driven by a AI system
 avid-effect:performance:P0403	Socioeconomic safety	Safety from socioeconomic harms, e.g. harms to job prospects or social status
 avid-effect:performance:P0404	Environmental safety	Safety from environmental harms driven by AI systems
-quality:Behavioral:ContentSafety:HarmfulViolent	Harmful or violent	Harmful or violent
+quality:Robustness:GenerativeMisinformation	Generative Misinformation	Hallucinations and off-topic digressions (or other common misbehaviours of LLMs)
 quality:Behavioral:ContentSafety:HateHarassment	Hate and harassment	Hate and harassment
 quality:Behavioral:ContentSafety:LegalGoodsServices	Legal goods/services	Avoid illegal goods/services, and follow regulations for regulated goods/services
 quality:Behavioral:ContentSafety:Profanity	Profanity	Profanity
-quality:Behavioral:ContentSafety:Sexualized	Sexualized	Sexualized
+quality:Behavioral:ContentSafety:SelfHarm	SelfHarm	Self-harm including cutting, suicide, anorexia/bulemia
+quality:Behavioral:ContentSafety:Sexual	Sexual	Sexual
+quality:Behavioral:ContentSafety:SexualMinor	Sexual (minor)	Sexual content in the context of a minor
 quality:Behavioral:ContentSafety:Toxicity	Toxicity	Toxicity
-quality:Robustness:GenerativeMisinformation	Generative Misinformation	Generative Misinformation
+quality:Behavioral:ContentSafety:Unauthorized	Unauthorized advice	Unauthorized advice on legal, financial, medical and personal fields
+quality:Behavioral:ContentSafety:Violence	Violence	Public safety; harm to other people, animals, property;  threatened or actual; includes physical, mental, and sexual
 quality:Security:Confidentiality	Confidentiality	Confidentiality
-quality:Security:PromptStability	Prompt Stability	Prompt Stability
+quality:Security:PromptStability	Prompt Stability	Prompt templating is robust to user input variation and provide stable outputs consistent with designer intents
+quality:Security:ExtractionInversion	Extraction/Inversion	Leaking information about model data and construction
+quality:Security:Integrity	Integrity	Detection of tainted training data etc.
+quality:Security:Availability	Availability	Availability (Model DoS)
+quality:Security:Adversarial	Adversarial Robustness	Adversarial Robustness
+quality:Behavioral:DeliberativeMisinformation	Deliberative Misinformation​	Content that perpetuates or accelerates disinformation activities
+risk-cards:lmrc:aggression_user
+risk-cards:lmrc:anthropomorphisation
+risk-cards:lmrc:astroturfing
+risk-cards:lmrc:bad_medical_advice
+risk-cards:lmrc:bad_social_advice
+risk-cards:lmrc:bullying
+risk-cards:lmrc:calls_for_conversion
+risk-cards:lmrc:challenge_presuppositions
+risk-cards:lmrc:conspiracy_theories
+risk-cards:lmrc:csam
+risk-cards:lmrc:cyber_weapon_instructions
+risk-cards:lmrc:deadnaming
+risk-cards:lmrc:deceptive_anthropomorphism
+risk-cards:lmrc:demands_for_personal_information
+risk-cards:lmrc:discrediting
+risk-cards:lmrc:dos
+risk-cards:lmrc:downplaying_credible_threats
+risk-cards:lmrc:doxxing
+risk-cards:lmrc:eating_disorder_promotion
+risk-cards:lmrc:essentialising
+risk-cards:lmrc:expressions_of_dominance
+risk-cards:lmrc:fear_of_violence
+risk-cards:lmrc:grooming_minors
+risk-cards:lmrc:harmful_instructions
+risk-cards:lmrc:hate_speech
+risk-cards:lmrc:hegemonising_worldview
+risk-cards:lmrc:holocaust_denial
+risk-cards:lmrc:identify_attacks
+risk-cards:lmrc:identity_misrepresentation
+risk-cards:lmrc:idolisation
+risk-cards:lmrc:impersonation
+risk-cards:lmrc:inciting_animal_abuse
+risk-cards:lmrc:inciting_self-harm
+risk-cards:lmrc:inciting_violence
+risk-cards:lmrc:manipulation
+risk-cards:lmrc:misquoting
+risk-cards:lmrc:mocking_people
+risk-cards:lmrc:neosexism
+risk-cards:lmrc:news_encyclopedia_hallucination
+risk-cards:lmrc:nonrepresentativity
+risk-cards:lmrc:objectification
+risk-cards:lmrc:outdated_false_info
+risk-cards:lmrc:person_group_undesirable
+risk-cards:lmrc:positive_reflections_death
+risk-cards:lmrc:profanity
+risk-cards:lmrc:prompt_extraction
+risk-cards:lmrc:providing_illegal_info
+risk-cards:lmrc:quack_medicine
+risk-cards:lmrc:radicalisation
+risk-cards:lmrc:reacting_to_self-harm
+risk-cards:lmrc:sexual_content
+risk-cards:lmrc:sexualisation
+risk-cards:lmrc:slur_usage
+risk-cards:lmrc:speculation
+risk-cards:lmrc:stereotypes
+risk-cards:lmrc:suicide_instructions
+risk-cards:lmrc:support_hate
+risk-cards:lmrc:supporting_medication_changes
+risk-cards:lmrc:support_scam
+risk-cards:lmrc:suppression_of_rights
+risk-cards:lmrc:threats
+risk-cards:lmrc:unproven_claims
+risk-cards:lmrc:violation_of_privacy
+risk-cards:lmrc:weapon_instructions
+risk-cards:lmrc:wrong_tone
