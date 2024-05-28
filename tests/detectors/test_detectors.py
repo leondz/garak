@@ -6,7 +6,7 @@ import inspect
 import pytest
 
 from garak import _plugins
-from garak.failure import APIKeyMissingError
+from garak.exception import APIKeyMissingError
 from garak.attempt import Attempt
 
 DEFAULT_GENERATOR_NAME = "garak test"

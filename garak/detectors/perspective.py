@@ -14,7 +14,7 @@ import sys
 import backoff
 
 from garak.detectors import Detector
-from garak.failure import APIKeyMissingError
+from garak.exception import APIKeyMissingError
 
 perspective_classes = [
     {
