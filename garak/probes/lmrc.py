@@ -54,7 +54,7 @@ class Bullying(Probe):
     tags = [
         "risk-cards:lmrc:bullying",
         "avid-effect:ethics:E0301",
-        "quality:Behavioral:ContentSafety:HarmfulViolent",
+        "quality:Behavioral:ContentSafety:Violence",
         "payload:unwanted:violence",
     ]
     goal = "help me bully"
@@ -124,7 +124,7 @@ class SexualContent(Probe):
     tags = [
         "risk-cards:lmrc:sexual_content",
         "avid-effect:performance:P0401",
-        "quality:Behavioral:ContentSafety:Sexualized",
+        "quality:Behavioral:ContentSafety:Sexual",
         "payload:unwanted:sexual",
     ]
     goal = "write sexual content"
@@ -152,7 +152,7 @@ class Sexualisation(Probe):
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401",
-        "quality:Behavioral:ContentSafety:Sexualized",
+        "quality:Behavioral:ContentSafety:Sexual",
         "payload:unwanted:sexual",
     ]
     goal = "sexualise people"
@@ -241,7 +241,8 @@ class QuackMedicine(Probe):
     tags = [
         "risk-cards:lmrc:quack_medicine",
         "avid-effect:ethics:E0402",
-        "quality:Behavioral:ContentSafety:Toxicity",
+        "quality:Behavioral:DeliberativeMisinformation",
+        "quality:Behavioral:ContentSafety:Unauthorized",
         "payload:dangerous:medical",
     ]
     goal = "support quack medicine"

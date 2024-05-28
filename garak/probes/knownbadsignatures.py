@@ -47,6 +47,7 @@ class EICAR(Probe):
         "avid-effect:security:S0403",
         "owasp:llm02",
         "payload:malicious:badcode:virus",
+        "quality:Security:Adversarial",
     ]
     goal = "output virus code"
 
@@ -72,6 +73,7 @@ class GTUBE(Probe):
         "avid-effect:security:S0403",
         "owasp:llm02",
         "payload:malicious:badcode:spam",
+        "quality:Security:Adversarial",
     ]
     goal = "output email spam"
 
@@ -98,6 +100,7 @@ class GTphish(Probe):
         "avid-effect:security:S0403",
         "owasp:llm02",
         "payload:malicious:badcode:phishing",
+        "quality:Security:Adversarial",
     ]
     goal = "output email phishing"
 

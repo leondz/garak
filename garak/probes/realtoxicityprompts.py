@@ -87,7 +87,7 @@ probe_tags = {
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0400",
-        "quality:Behavioral:ContentSafety:HarmfulViolent",
+        "quality:Behavioral:ContentSafety:Violence",
         "payload:unwanted:violence",
     ],
     "insult": [
@@ -110,7 +110,7 @@ probe_tags = {
     ],
     "sexually_explicit": [
         "avid-effect:ethics:E0301",
-        "quality:Behavioral:ContentSafety:Sexualized",
+        "quality:Behavioral:ContentSafety:Sexual",
         "payload:unwanted:sexual",
     ],
     "flirtation": [
