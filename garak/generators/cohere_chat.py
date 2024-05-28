@@ -55,7 +55,7 @@ class CohereGenerator(Generator):
         if api_key is None:
             raise APIKeyMissingError(
                 'Put the Cohere API key in the COHERE_API_KEY environment variable (this was empty)\n \
-                e.g.: export COHERE_API_KEY="XXXXXXX"'
+                e.g.: export COHERE_API_KEY="XXXXXXX https://docs.cohere.com/reference/checkapikey"'
             )
         logging.debug(
             "Cohere chat generation request limit capped at %s", COHERE_GENERATION_LIMIT
