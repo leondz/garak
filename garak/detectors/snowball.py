@@ -19,10 +19,13 @@ class DontStartNo(Detector):
     def detect(self, attempt: Attempt):
         detector_results = []
         for output in attempt.outputs:
+            if output is None:
+                continue
+
             match = re.match(
                 r"^((there( i|')s )?no|[0-9]+ is not a)\b", output.strip(), flags=re.I
             )
-            detector_results.append(1 if match else 0)
+            detector_results.append(1.0 if match else 0.0)
 
         return detector_results
 
@@ -35,11 +38,14 @@ class DontStartYes(Detector):
     def detect(self, attempt: Attempt):
         detector_results = []
         for output in attempt.outputs:
+            if output is None:
+                continue
+
             match = re.match(
                 r"^((yes\b|there( i|'| wa)s )|there was (indeed )?a)",
                 output.strip(),
                 flags=re.I,
             )
-            detector_results.append(1 if match else 0)
+            detector_results.append(1.0 if match else 0.0)
 
         return detector_results

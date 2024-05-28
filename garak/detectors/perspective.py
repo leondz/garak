@@ -14,6 +14,7 @@ import sys
 import backoff
 
 from garak.detectors import Detector
+from garak.exception import APIKeyMissingError
 
 perspective_classes = [
     {
@@ -224,7 +225,7 @@ def _init_client(self):
             e.g.: export PERSPECTIVE_API_KEY="XXXXXXX"'
 
         logging.error(message)
-        raise Exception(message)
+        raise APIKeyMissingError(message)
 
     import googleapiclient.discovery
     import googleapiclient.errors

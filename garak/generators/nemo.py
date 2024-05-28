@@ -14,6 +14,7 @@ import backoff
 import nemollm
 
 from garak import _config
+from garak.exception import APIKeyMissingError
 from garak.generators.base import Generator
 
 
@@ -41,14 +42,14 @@ class NeMoGenerator(Generator):
 
         self.api_key = os.getenv("NGC_API_KEY", default=None)
         if self.api_key is None:
-            raise ValueError(
+            raise APIKeyMissingError(
                 'Put the NGC API key in the NGC_API_KEY environment variable (this was empty)\n \
                 e.g.: export NGC_API_KEY="xXxXxXxXxXxXxXxXxXxX"'
             )
         self.org_id = os.getenv("ORG_ID")
 
         if self.org_id is None:
-            raise ValueError(
+            raise APIKeyMissingError(
                 'Put your org ID in the ORG_ID environment variable (this was empty)\n \
                 e.g.: export ORG_ID="xxxx8yyyy/org-name"\n \
                 Check "view code" on https://llm.ngc.nvidia.com/playground to see the ID'

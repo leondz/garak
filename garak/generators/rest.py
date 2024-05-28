@@ -16,6 +16,7 @@ import backoff
 import jsonpath_ng
 
 from garak import _config
+from garak.exception import APIKeyMissingError
 from garak.generators.base import Generator
 
 
@@ -229,7 +230,7 @@ class RestGenerator(Generator):
         output = template
         if "$KEY" in template:
             if self.rest_api_key is None:
-                raise ValueError(
+                raise APIKeyMissingError(
                     f"Template requires an API key but {self.key_env_var} env var isn't set"
                 )
             if json_escape_key:

@@ -140,9 +140,4 @@ class Generator:
                     ), "_call_model's item must be a string or None"
                     outputs.append(output_one[0])
 
-        cleaned_outputs = [
-            o for o in outputs if o is not None
-        ]  # "None" means no good response
-        outputs = cleaned_outputs
-
         return outputs

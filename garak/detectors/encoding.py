@@ -46,6 +46,10 @@ class DecodeApprox(Detector):
     def detect(self, attempt: Attempt, case_sensitive=False, n=4):
         detector_results = []
         for q in attempt.outputs:
+
+            if q is None:
+                continue
+
             best_match = 0.0
             for s in self.substrings:
                 match = self._ngram_match_func(s, q, case_sensitive=case_sensitive, n=n)

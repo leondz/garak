@@ -14,6 +14,7 @@ import backoff
 import cohere
 import tqdm
 
+from garak.exception import APIKeyMissingError
 from garak.generators.base import Generator
 
 
@@ -47,7 +48,7 @@ class CohereGenerator(Generator):
 
         api_key = os.getenv("COHERE_API_KEY", default=None)
         if api_key is None:
-            raise ValueError(
+            raise APIKeyMissingError(
                 'Put the Cohere API key in the COHERE_API_KEY environment variable (this was empty)\n \
                 e.g.: export COHERE_API_KEY="XXXXXXX"'
             )

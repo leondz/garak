@@ -18,6 +18,7 @@ from typing import List, Union
 import openai
 import backoff
 
+from garak.exception import APIKeyMissingError
 from garak.generators.base import Generator
 
 # lists derived from https://platform.openai.com/docs/models
@@ -125,7 +126,7 @@ class OpenAICompatible(Generator):
 
         self.api_key = os.getenv(self.ENV_VAR, default=None)
         if self.api_key is None:
-            raise ValueError(
+            raise APIKeyMissingError(
                 f'Put the {self.generator_family_name} API key in the {self.ENV_VAR} environment variable (this was empty)\n \
                 e.g.: export {self.ENV_VAR}="sk-123XXXXXXXXXXXX"'
             )
