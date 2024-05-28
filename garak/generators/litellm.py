@@ -39,7 +39,7 @@ import backoff
 import litellm
 
 from garak import _config
-from garak.failure import APIKeyMissingError
+from garak.exception import APIKeyMissingError
 from garak.generators.base import Generator
 
 # Fix issue with Ollama which does not support `presence_penalty`

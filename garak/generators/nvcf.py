@@ -13,7 +13,7 @@ import backoff
 import requests
 
 from garak import _config
-from garak.failure import APIKeyMissingError, ModelNameMissingError
+from garak.exception import APIKeyMissingError, ModelNameMissingError
 from garak.generators.base import Generator
 
 

@@ -2,13 +2,19 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-class APIKeyMissingError(Exception):
+class GarakException(Exception):
+    """Base class for all  garak exceptions"""
+
+    pass
+
+
+class APIKeyMissingError(GarakException):
     """Exception to be raised if a required API key is not found"""
 
     pass
 
 
-class ModelNameMissingError(Exception):
+class ModelNameMissingError(GarakException):
     """A generator requires model_name to be set, but it wasn't"""
 
     pass

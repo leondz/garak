@@ -18,7 +18,7 @@ from typing import List, Union
 import openai
 import backoff
 
-from garak.failure import APIKeyMissingError
+from garak.exception import APIKeyMissingError
 from garak.generators.base import Generator
 
 # lists derived from https://platform.openai.com/docs/models

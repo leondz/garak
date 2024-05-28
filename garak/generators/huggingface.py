@@ -27,7 +27,7 @@ from PIL import Image
 from transformers import LlavaNextProcessor, LlavaNextForConditionalGeneration
 
 from garak import _config
-from garak.failure import ModelNameMissingError
+from garak.exception import ModelNameMissingError
 from garak.generators.base import Generator
 
 
