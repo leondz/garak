@@ -4,6 +4,9 @@ Support for Cohere's text generation API. Uses the command model by default,
 but just supply the name of another either on the command line or as the
 constructor param if you want to use that. You'll need to set an environment
 variable called COHERE_API_KEY to your Cohere API key, for this generator.
+
+NOTE: This endpoint is end of support and only supports command model as of now
+https://docs.cohere.com/reference/generate
 """
 
 import logging
