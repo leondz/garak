@@ -19,8 +19,9 @@ def set_rest_config():
     _config.plugins.generators["rest"]["RestGenerator"] = {
         "name": DEFAULT_NAME,
         "uri": DEFAULT_URI,
+        "api_key": "testing",
+        "generations": DEFAULT_GENERATIONS_QTY,
     }
-    _config.run.generations = DEFAULT_GENERATIONS_QTY
     # excluded: req_template_json_object, response_json_field
 
 
