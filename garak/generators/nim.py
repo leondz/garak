@@ -3,7 +3,7 @@
 
 """NVIDIA Inference Microservice LLM interface"""
 
-from typing import List
+from typing import List, Union
 
 import openai
 
@@ -33,6 +33,7 @@ class NVOpenAIChat(OpenAICompatible):
     # per https://docs.nvidia.com/ai-enterprise/nim-llm/latest/openai-api.html
     # 2024.05.02, `n>1` is not supported
     ENV_VAR = "NIM_API_KEY"
+    active = True
     supports_multiple_generations = False
     generator_family_name = "NIM"
     temperature = 0.1
@@ -60,7 +61,7 @@ class NVOpenAIChat(OpenAICompatible):
 
     def _call_model(
         self, prompt: str | List[dict], generations_this_call: int = 1
-    ) -> List[str]:
+    ) -> List[Union[str, None]]:
         assert generations_this_call == 1, "n>1 is not supported"
         return super()._call_model(prompt, generations_this_call)
 
@@ -92,4 +93,4 @@ class NVOpenAICompletion(NVOpenAIChat):
         self.generator = self.client.completions
 
 
-default_class = "NVOpenAIChat"
+DEFAULT_CLASS = "NVOpenAIChat"

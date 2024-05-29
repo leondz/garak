@@ -358,6 +358,7 @@ class AntiDAN(Probe):
         "dan.AntiDAN",
     ]
     tags = [
+        "quality:Security:PromptStability",
         "avid-effect:security:S0403",
         "avid-effect:performance:P0204",
         "owasp:llm01",
@@ -428,6 +429,7 @@ class ChatGPT_Developer_Mode_RANTI(Probe):
     ]
     tags = [
         "avid-effect:security:S0403",
+        "quality:Security:PromptStability",
         "avid-effect:performance:P0204",
         "owasp:llm01",
     ]

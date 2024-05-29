@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import os
+import httpx
 import pytest
 
 import openai
@@ -11,15 +12,32 @@ from garak.generators.openai import OpenAIGenerator
 DEFAULT_GENERATIONS_QTY = 10
 
 
+@pytest.fixture
+def set_fake_env(request) -> None:
+    stored_env = os.getenv(OpenAIGenerator.ENV_VAR, None)
+
+    def restore_env():
+        if stored_env is not None:
+            os.environ[OpenAIGenerator.ENV_VAR] = stored_env
+        else:
+            del os.environ[OpenAIGenerator.ENV_VAR]
+
+    os.environ[OpenAIGenerator.ENV_VAR] = os.path.abspath(__file__)
+
+    request.addfinalizer(restore_env)
+
+
 def test_openai_version():
     assert openai.__version__.split(".")[0] == "1"  # expect openai module v1.x
 
 
-@pytest.mark.skipif(
-    os.getenv(OpenAIGenerator.ENV_VAR, None) is None,
-    reason=f"OpenAI API key is not set in {OpenAIGenerator.ENV_VAR}",
-)
-def test_openai_invalid_model_names():
+@pytest.mark.usefixtures("set_fake_env")
+@pytest.mark.respx(base_url="https://api.openai.com/v1")
+def test_openai_invalid_model_names(respx_mock, openai_compat_mocks):
+    mock_resp = openai_compat_mocks["models"]
+    respx_mock.get("/models").mock(
+        return_value=httpx.Response(mock_resp["code"], json=mock_resp["json"])
+    )
     with pytest.raises(ValueError) as e_info:
         generator = OpenAIGenerator(name="")
     assert "name is required for" in str(e_info.value)

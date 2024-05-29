@@ -1,12 +1,20 @@
 # SPDX-FileCopyrightText: Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+import importlib
+import inspect
 import pytest
 
+from garak import _plugins
 from garak.generators.test import Blank, Repeat, Single
 
 DEFAULT_GENERATOR_NAME = "garak test"
 DEFAULT_PROMPT_TEXT = "especially the lies"
+
+
+GENERATORS = [
+    classname for (classname, active) in _plugins.enumerate_plugins("generators")
+]
 
 
 def test_generators_test_blank():
@@ -114,3 +122,32 @@ def test_generators_test_blank_many():
     assert (
         output[1] == ""
     ), "Blank generator .generate() output list should contain strings (second position)"
+
+
+@pytest.mark.parametrize("classname", GENERATORS)
+def test_generator_structure(classname):
+
+    m = importlib.import_module("garak." + ".".join(classname.split(".")[:-1]))
+    g = getattr(m, classname.split(".")[-1])
+
+    # has method _call_model
+    assert "_call_model" in dir(
+        g
+    ), f"generator {classname} must have a method _call_model"
+    # _call_model has a generations_this_call param
+    assert (
+        "generations_this_call" in inspect.signature(g._call_model).parameters
+    ), f"{classname}._call_model() must accept parameter generations_this_call"
+    assert (
+        "prompt" in inspect.signature(g._call_model).parameters
+    ), f"{classname}._call_model() must accept parameter prompt"
+    # has method generate
+    assert "generate" in dir(g), f"generator {classname} must have a method generate"
+    # generate has a generations_this_call param
+    assert (
+        "generations_this_call" in inspect.signature(g.generate).parameters
+    ), f"{classname}.generate() must accept parameter generations_this_call"
+    assert (
+        "prompt" in inspect.signature(g.generate).parameters
+    ), f"{classname}.generate() must accept parameter prompt"
+    # generate("") w/ empty string doesn't fail, does return list

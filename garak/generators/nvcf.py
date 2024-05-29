@@ -7,16 +7,18 @@ import json
 import logging
 import os
 import time
+from typing import List, Union
 
 import backoff
 import requests
 
 from garak import _config
+from garak.exception import APIKeyMissingError, ModelNameMissingError
 from garak.generators.base import Generator
 
 
-class NvcfGenerator(Generator):
-    """Wrapper for NVIDIA Cloud Functions via NGC. Expects NGC_API_KEY and ORG_ID environment variables."""
+class NvcfChat(Generator):
+    """Wrapper for NVIDIA Cloud Functions Chat models via NGC. Expects NVCF_API_KEY environment variable."""
 
     supports_multiple_generations = False
     generator_family_name = "NVCF"
@@ -32,11 +34,15 @@ class NvcfGenerator(Generator):
 
     def __init__(self, name=None, generations=10):
         self.name = name
-        self.fullname = f"NVCF {self.name}"
+        self.fullname = (
+            f"{self.generator_family_name} {self.__class__.__name__} {self.name}"
+        )
         self.seed = _config.run.seed
 
         if self.name is None:
-            raise ValueError("Please specify a function identifier in model namne (-n)")
+            raise ModelNameMissingError(
+                "Please specify a function identifier in model name (-n)"
+            )
 
         self.invoke_url = self.invoke_url_base + name
 
@@ -44,7 +50,7 @@ class NvcfGenerator(Generator):
 
         self.api_key = os.getenv("NVCF_API_KEY", default=None)
         if self.api_key is None:
-            raise ValueError(
+            raise APIKeyMissingError(
                 'Put the NVCF API key in the NVCF_API_KEY environment variable (this was empty)\n \
                 e.g.: export NVCF_API_KEY="nvapi-xXxXxXxXxXxXxXxXxXxX"'
             )
@@ -53,6 +59,21 @@ class NvcfGenerator(Generator):
             "Authorization": f"Bearer {self.api_key}",
             "Accept": "application/json",
         }
+
+    def _build_payload(self, prompt) -> dict:
+
+        payload = {
+            "messages": [{"content": prompt, "role": "user"}],
+            "temperature": self.temperature,
+            "top_p": self.top_p,
+            "max_tokens": self.max_tokens,
+            "stream": False,
+        }
+
+        return payload
+
+    def _extract_text_output(self, response) -> str:
+        return [c["message"]["content"] for c in response["choices"]]
 
     @backoff.on_exception(
         backoff.fibo,
@@ -64,19 +85,20 @@ class NvcfGenerator(Generator):
         ),
         max_value=70,
     )
-    def _call_model(self, prompt: str, generations_this_call: int = 1) -> str:
-        if prompt == "":
-            return ""
+    def _call_model(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> List[Union[str, None]]:
 
         session = requests.Session()
 
-        payload = {
-            "messages": [{"content": prompt, "role": "user"}],
-            "temperature": self.temperature,
-            "top_p": self.top_p,
-            "max_tokens": self.max_tokens,
-            "stream": False,
-        }
+        payload = self._build_payload(prompt)
+
+        ## NB config indexing scheme to be deprecated
+        config_class = f"nvcf.{self.__class__.__name__}"
+        if config_class in _config.plugins.generators:
+            if "payload" in _config.plugins.generators[config_class]:
+                for k, v in _config.plugins.generators[config_class]["payload"].items():
+                    payload[k] = v
 
         if self.seed is not None:
             payload["seed"] = self.seed
@@ -97,23 +119,46 @@ class NvcfGenerator(Generator):
 
         if 400 <= response.status_code < 600:
             logging.warning("nvcf : returned error code %s", response.status_code)
+            logging.warning("nvcf : payload %s", repr(payload))
             logging.warning("nvcf : returned error body %s", response.content)
+            if response.status_code == 400 and prompt == "":
+                # error messages for refusing a blank prompt are fragile and include multi-level wrapped JSON, so this catch is a little broad
+                return [None]
             if response.status_code >= 500:
                 if response.status_code == 500 and json.loads(response.content)[
                     "detail"
                 ].startswith("Input value error"):
                     logging.warning("nvcf : skipping this prompt")
-                    return None
+                    return [None]
                 else:
                     response.raise_for_status()
             else:
                 logging.warning("nvcf : skipping this prompt")
-                return None
+                return [None]
 
         else:
             response_body = response.json()
 
-            return response_body["choices"][0]["message"]["content"]
+            return self._extract_text_output(response_body)
 
 
-default_class = "NvcfGenerator"
+class NvcfCompletion(NvcfChat):
+    """Wrapper for NVIDIA Cloud Functions Completion models via NGC. Expects NVCF_API_KEY environment variables."""
+
+    def _build_payload(self, prompt) -> dict:
+
+        payload = {
+            "prompt": prompt,
+            "temperature": self.temperature,
+            "top_p": self.top_p,
+            "max_tokens": self.max_tokens,
+            "stream": False,
+        }
+
+        return payload
+
+    def _extract_text_output(self, response) -> str:
+        return [c["text"] for c in response["choices"]]
+
+
+DEFAULT_CLASS = "NvcfChat"

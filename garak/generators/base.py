@@ -54,7 +54,7 @@ class Generator:
 
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
-    ) -> Union[List[str], str, None]:
+    ) -> List[Union[str, None]]:
         """Takes a prompt and returns an API output
 
         _call_api() is fully responsible for the request, and should either
@@ -70,7 +70,9 @@ class Generator:
     def clear_history(self):
         pass
 
-    def generate(self, prompt: str, generations_this_call: int = -1) -> List[str]:
+    def generate(
+        self, prompt: str, generations_this_call: int = -1
+    ) -> List[Union[str, None]]:
         """Manages the process of getting generations out from a prompt
 
         This will involve iterating through prompts, getting the generations
@@ -92,11 +94,11 @@ class Generator:
             logging.debug("generate() called with generations_this_call = 0")
             return []
 
-        if self.supports_multiple_generations:
-            return self._call_model(prompt, generations_this_call)
+        if generations_this_call == 1:
+            outputs = self._call_model(prompt, 1)
 
-        elif generations_this_call <= 1:
-            return self._call_model(prompt, generations_this_call)
+        if self.supports_multiple_generations:
+            outputs = self._call_model(prompt, generations_this_call)
 
         else:
             outputs = []
@@ -138,9 +140,4 @@ class Generator:
                     ), "_call_model's item must be a string or None"
                     outputs.append(output_one[0])
 
-            cleaned_outputs = [
-                o for o in outputs if o is not None
-            ]  # "None" means no good response
-            outputs = cleaned_outputs
-
-            return outputs
+        return outputs

@@ -29,7 +29,6 @@ garak.cli.main("--model_type function --model_name mymodule#function_name --prob
 
 """
 
-
 import importlib
 from typing import List, Union
 
@@ -58,7 +57,7 @@ class Single(Generator):
 
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
-    ) -> Union[List[str], str, None]:
+    ) -> List[Union[str, None]]:
         return self.generator(
             prompt, generations_this_call=generations_this_call, **self.kwargs
         )
@@ -71,8 +70,8 @@ class Multiple(Single):
 
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
-    ) -> Union[List[str], str, None]:
+    ) -> List[Union[str, None]]:
         return self.generator(prompt, generations=generations_this_call, **self.kwargs)
 
 
-default_class = "Single"
+DEFAULT_CLASS = "Single"

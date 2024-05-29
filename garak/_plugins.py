@@ -43,11 +43,12 @@ def enumerate_plugins(
 
     base_plugin_classnames = set(
         [
+            # be careful with what's imported into base modules
             n
-            for n in dir(base_mod)
-            if "__class__" in dir(getattr(base_mod, n))
-            and getattr(base_mod, n).__class__.__name__
-            == "type"  # be careful with what's imported into base modules
+            for n in dir(base_mod) # everything in the module ..
+            if "__class__" in dir(getattr(base_mod, n)) # .. that's a class ..
+            and getattr(base_mod, n).__class__.__name__ # .. and not a base class
+            == "type"  
         ]
         + [root_plugin_classname]
     )

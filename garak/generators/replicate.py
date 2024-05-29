@@ -11,6 +11,7 @@ Text-output models are supported.
 
 import importlib
 import os
+from typing import List, Union
 
 import backoff
 import replicate.exceptions
@@ -32,8 +33,6 @@ class ReplicateGenerator(Generator):
     supports_multiple_generations = False
 
     def __init__(self, name, generations=10):
-        self.name = name
-        self.fullname = f"{self.generator_family_name} {self.name}"
         self.seed = 9
         if hasattr(_config.run, "seed") and _config.run.seed is not None:
             self.seed = _config.run.seed
@@ -50,7 +49,9 @@ class ReplicateGenerator(Generator):
     @backoff.on_exception(
         backoff.fibo, replicate.exceptions.ReplicateError, max_value=70
     )
-    def _call_model(self, prompt: str, generations_this_call: int = 1):
+    def _call_model(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> List[Union[str, None]]:
         response_iterator = self.replicate.run(
             self.name,
             input={
@@ -62,7 +63,7 @@ class ReplicateGenerator(Generator):
                 "seed": self.seed,
             },
         )
-        return "".join(response_iterator)
+        return ["".join(response_iterator)]
 
 
 class InferenceEndpoint(ReplicateGenerator):
@@ -74,7 +75,9 @@ class InferenceEndpoint(ReplicateGenerator):
     @backoff.on_exception(
         backoff.fibo, replicate.exceptions.ReplicateError, max_value=70
     )
-    def _call_model(self, prompt):
+    def _call_model(
+        self, prompt, generations_this_call: int = 1
+    ) -> List[Union[str, None]]:
         deployment = self.replicate.deployments.get(self.name)
         prediction = deployment.predictions.create(
             input={
@@ -88,11 +91,11 @@ class InferenceEndpoint(ReplicateGenerator):
         prediction.wait()
         try:
             response = "".join(prediction.output)
-        except TypeError:
+        except TypeError as exc:
             raise IOError(
                 "Replicate endpoint didn't generate a response. Make sure the endpoint is active."
-            )
-        return response
+            ) from exc
+        return [response]
 
 
-default_class = "ReplicateGenerator"
+DEFAULT_CLASS = "ReplicateGenerator"

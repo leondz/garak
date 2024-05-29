@@ -39,6 +39,7 @@ import backoff
 import litellm
 
 from garak import _config
+from garak.exception import APIKeyMissingError
 from garak.generators.base import Generator
 
 # Fix issue with Ollama which does not support `presence_penalty`
@@ -123,7 +124,7 @@ class LiteLLMGenerator(Generator):
                         if self.provider == "openai":
                             self.api_key = getenv("OPENAI_API_KEY", None)
                             if self.api_key is None:
-                                raise ValueError(
+                                raise APIKeyMissingError(
                                     "Please supply an OpenAI API key in the OPENAI_API_KEY environment variable"
                                     " or in the configuration file"
                                 )
@@ -136,7 +137,7 @@ class LiteLLMGenerator(Generator):
     @backoff.on_exception(backoff.fibo, Exception, max_value=70)
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
-    ) -> Union[List[str], str, None]:
+    ) -> List[Union[str, None]]:
         if isinstance(prompt, str):
             prompt = [{"role": "user", "content": prompt}]
         elif isinstance(prompt, list):
@@ -148,7 +149,7 @@ class LiteLLMGenerator(Generator):
             )
             logging.error(msg)
             print(msg)
-            return list()
+            return []
 
         response = litellm.completion(
             model=self.name,
@@ -168,7 +169,7 @@ class LiteLLMGenerator(Generator):
         if self.supports_multiple_generations:
             return [c.message.content for c in response.choices]
         else:
-            return response.choices[0].message.content
+            return [response.choices[0].message.content]
 
 
-default_class = "LiteLLMGenerator"
+DEFAULT_CLASS = "LiteLLMGenerator"

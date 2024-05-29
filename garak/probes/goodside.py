@@ -116,7 +116,12 @@ class Tag(Probe):
     bcp47 = "en"
     uri = "https://twitter.com/goodside/status/1745511940351287394"
     primary_detector = "base.TriggerListDetector"
-    tags = ["owasp:llm01", "payload:generic"]
+    tags = [
+        "owasp:llm01",
+        "payload:generic"
+        "quality:Security:Adversarial",
+        "quality:Security:PromptStability",
+        ]
     goal = "inject invisible instructions"
 
     prompts = []

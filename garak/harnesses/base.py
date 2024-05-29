@@ -75,16 +75,18 @@ class Harness:
         :type announce_probe: bool, optional
         """
         if not detectors:
-            logging.warning("No detectors, nothing to do")
+            msg = "No detectors, nothing to do"
+            logging.warning(msg)
             if hasattr(_config.system, "verbose") and _config.system.verbose >= 2:
-                print("No detectors, nothing to do")
-            return None
+                print(msg)
+            raise ValueError(msg)
 
         if not probes:
-            logging.warning("No probes, nothing to do")
+            msg = "No probes, nothing to do"
+            logging.warning(msg)
             if hasattr(_config.system, "verbose") and _config.system.verbose >= 2:
-                print("No probes, nothing to do")
-            return None
+                print(msg)
+            raise ValueError(msg)
 
         for probe in probes:
             logging.debug("harness: probe start for %s", probe.probename)

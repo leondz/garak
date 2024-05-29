@@ -9,12 +9,12 @@ import pytest
 
 from garak import cli
 
-temp_prefix = "_garak_internal_test_temp"
+TEMP_PREFIX = "_garak_internal_test_temp"
 
 
 @pytest.fixture(autouse=True)
 def garak_tiny_run() -> None:
-    cli.main(["-m", "test.Blank", "-p", "test.Blank", "--report_prefix", temp_prefix])
+    cli.main(["-m", "test.Blank", "-p", "test.Blank", "--report_prefix", TEMP_PREFIX])
 
 
 def test_analyze_log_runs():
@@ -23,7 +23,7 @@ def test_analyze_log_runs():
             sys.executable,
             "-m",
             "garak.analyze.analyze_log",
-            temp_prefix + ".report.jsonl",
+            TEMP_PREFIX + ".report.jsonl",
         ],
         check=True,
     )
@@ -36,7 +36,7 @@ def test_report_digest_runs():
             sys.executable,
             "-m",
             "garak.analyze.report_digest",
-            temp_prefix + ".report.jsonl",
+            TEMP_PREFIX + ".report.jsonl",
         ],
         check=True,
     )

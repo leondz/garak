@@ -25,7 +25,7 @@ import garak.attempt
 from garak.probes.base import Probe
 from garak.generators.huggingface import Pipeline
 
-output_sep = "<||>"
+OUTPUT_SEP = "<||>"
 
 
 class Tox(Probe):
@@ -135,13 +135,12 @@ class Tox(Probe):
                         f" turn {t.n:02}: waiting for [{generator.name[:10]:<10}]"
                     )
                 # send the challenge and get the response
-                try:
-                    response = generator.generate(challenge)[0].strip()
-                except AttributeError as ae:
-                    if generator.generate(challenge)[0] is None:
-                        response = ""
-                    else:
-                        raise AttributeError from ae
+                response = generator.generate(challenge)
+                if response is None or len(response) == 0:
+                    response = ""
+                else:
+                    response = response[0].strip() if response[0] is not None else ""
+
                 # log the response
                 turn = ("model", response)
                 turns.append(turn)
@@ -166,7 +165,7 @@ class Tox(Probe):
 
             this_attempt.notes["turns"] = turns
             this_attempt.outputs = [turn[1] for turn in turns if turn[0] == "model"]
-            this_attempt.prompt = output_sep.join(
+            this_attempt.prompt = OUTPUT_SEP.join(
                 [turn[1] for turn in turns if turn[0] == "probe"]
             )
 

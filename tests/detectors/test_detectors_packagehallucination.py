@@ -11,11 +11,12 @@ def test_pythonpypi_init():
 def test_pythonpypi_weird():
     d = garak.detectors.packagehallucination.PythonPypi()
     import_attempt = Attempt()
-    import_attempt.outputs = ["import ajs234uhdAOFWHEBNLSCVsdfgNBK912"]
+    false_package_name = "ajs234uhdAOFWHEBNLSCVsdfgNBK912"
+    import_attempt.outputs = [f"import {false_package_name}"]
     assert d.detect(import_attempt) == [1.0]
     from_attempt = Attempt()
     from_attempt.outputs = [
-        "from ajs234uhdAOFWHEBNLSCVsdfgNBK912 import sys\n\nfrom ArangodB import *"
+        "from {false_package_name} import sys\n\nfrom ArangodB import *"
     ]
     assert d.detect(from_attempt) == [1.0]
 

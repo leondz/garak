@@ -27,6 +27,7 @@ from PIL import Image
 from transformers import LlavaNextProcessor, LlavaNextForConditionalGeneration
 
 from garak import _config
+from garak.exception import ModelNameMissingError
 from garak.generators.base import Generator
 
 
@@ -92,7 +93,9 @@ class Pipeline(Generator, HFCompatible):
 
                 self._set_hf_context_len(self.generator.model.config)
 
-    def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[str]:
+    def _call_model(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> List[Union[str, None]]:
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=UserWarning)
             try:
@@ -213,8 +216,8 @@ class ConversationalPipeline(Generator, HFCompatible):
         self.conversation = Conversation()
 
     def _call_model(
-        self, prompt: Union[str, list[dict]], generations_this_call: int = 1
-    ) -> List[str]:
+        self, prompt: Union[str, List[dict]], generations_this_call: int = 1
+    ) -> List[Union[str, None]]:
         """Take a conversation as a list of dictionaries and feed it to the model"""
 
         # If conversation is provided as a list of dicts, create the conversation.
@@ -278,7 +281,9 @@ class InferenceAPI(Generator, HFCompatible):
         ),
         max_value=125,
     )
-    def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[str]:
+    def _call_model(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> List[Union[str, None]]:
         import json
         import requests
 
@@ -385,7 +390,9 @@ class InferenceEndpoint(InferenceAPI, HFCompatible):
         ),
         max_value=125,
     )
-    def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[str]:
+    def _call_model(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> List[Union[str, None]]:
         import requests
 
         payload = {
@@ -413,7 +420,7 @@ class InferenceEndpoint(InferenceAPI, HFCompatible):
             raise IOError(
                 "Hugging Face 🤗 endpoint didn't generate a response. Make sure the endpoint is active."
             ) from exc
-        return output
+        return [output]
 
 
 class Model(Generator, HFCompatible):
@@ -476,7 +483,9 @@ class Model(Generator, HFCompatible):
         self.generation_config.eos_token_id = self.model.config.eos_token_id
         self.generation_config.pad_token_id = self.model.config.eos_token_id
 
-    def _call_model(self, prompt: str, generations_this_call: int = 1):
+    def _call_model(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> List[Union[str, None]]:
         self.generation_config.max_new_tokens = self.max_tokens
         self.generation_config.do_sample = self.do_sample
         self.generation_config.num_return_sequences = generations_this_call
@@ -497,9 +506,12 @@ class Model(Generator, HFCompatible):
                     outputs = self.model.generate(
                         **inputs, generation_config=self.generation_config
                     )
-                except IndexError as e:
+                except Exception as e:
                     if len(prompt) == 0:
-                        return [""] * generations_this_call
+                        returnval = [None] * generations_this_call
+                        logging.exception("Error calling generate for empty prompt")
+                        print(returnval)
+                        return returnval
                     else:
                         raise e
                 text_output = self.tokenizer.batch_decode(
@@ -507,9 +519,10 @@ class Model(Generator, HFCompatible):
                 )
 
         if not self.deprefix_prompt:
-            return text_output
+            return [text_output]
         else:
             return [re.sub("^" + re.escape(prompt), "", i) for i in text_output]
+
 
 class LLaVA(Generator):
     """Get LLaVA ([ text + image ] -> text) generations"""
@@ -519,50 +532,54 @@ class LLaVA(Generator):
     max_tokens = 4000
 
     # rewrite modality setting
-    modality = {
-        'in': {'text', 'image'}, 
-        'out': {'text'}
-    }
+    modality = {"in": {"text", "image"}, "out": {"text"}}
 
     # Support Image-Text-to-Text models
     # https://huggingface.co/llava-hf#:~:text=Llava-,Models,-9
     supported_models = [
-        "llava-hf/llava-v1.6-34b-hf", 
-        "llava-hf/llava-v1.6-vicuna-13b-hf", 
-        "llava-hf/llava-v1.6-vicuna-7b-hf", 
-        "llava-hf/llava-v1.6-mistral-7b-hf"
+        "llava-hf/llava-v1.6-34b-hf",
+        "llava-hf/llava-v1.6-vicuna-13b-hf",
+        "llava-hf/llava-v1.6-vicuna-7b-hf",
+        "llava-hf/llava-v1.6-mistral-7b-hf",
     ]
-    
+
     def __init__(self, name="", generations=10):
         if name not in self.supported_models:
-            raise ValueError(
+            raise ModelNameMissingError(
                 f"Invalid modal name {name}, current support: {self.supported_models}."
             )
         self.processor = LlavaNextProcessor.from_pretrained(name)
-        self.model = LlavaNextForConditionalGeneration.from_pretrained(name, 
-                                                                       torch_dtype=torch.float16, 
-                                                                       low_cpu_mem_usage=True)
+        self.model = LlavaNextForConditionalGeneration.from_pretrained(
+            name, torch_dtype=torch.float16, low_cpu_mem_usage=True
+        )
         if torch.cuda.is_available():
-            self.model.to("cuda:0")  
+            self.model.to("cuda:0")
         else:
-            raise RuntimeError("CUDA is not supported on this device. Please make sure CUDA is installed and configured properly.") 
-        
-    def generate(self, prompt) -> List[str]:
-        text_prompt = prompt['text']
-        try:
-            image_prompt = Image.open(prompt['image'])
-        except FileNotFoundError:
-            raise FileNotFoundError(
-                f"Cannot open image {prompt['image']}."
+            raise RuntimeError(
+                "CUDA is not supported on this device. Please make sure CUDA is installed and configured properly."
             )
+
+    def generate(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> List[Union[str, None]]:
+        text_prompt = prompt["text"]
+        try:
+            image_prompt = Image.open(prompt["image"])
+        except FileNotFoundError:
+            raise FileNotFoundError(f"Cannot open image {prompt['image']}.")
         except Exception as e:
             raise Exception(e)
-        
-        inputs = self.processor(text_prompt, image_prompt, return_tensors="pt").to("cuda:0")
-        exist_token_number: int = inputs.data['input_ids'].shape[1]
-        output = self.model.generate(**inputs, max_new_tokens = self.max_tokens - exist_token_number)
+
+        inputs = self.processor(text_prompt, image_prompt, return_tensors="pt").to(
+            "cuda:0"
+        )
+        exist_token_number: int = inputs.data["input_ids"].shape[1]
+        output = self.model.generate(
+            **inputs, max_new_tokens=self.max_tokens - exist_token_number
+        )
         output = self.processor.decode(output[0], skip_special_tokens=True)
-        
+
         return [output]
 
-default_class = "Pipeline"
+
+DEFAULT_CLASS = "Pipeline"

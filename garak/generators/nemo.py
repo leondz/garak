@@ -8,11 +8,13 @@ import logging
 import os
 import random
 import requests
+from typing import List, Union
 
 import backoff
 import nemollm
 
 from garak import _config
+from garak.exception import APIKeyMissingError
 from garak.generators.base import Generator
 
 
@@ -40,14 +42,14 @@ class NeMoGenerator(Generator):
 
         self.api_key = os.getenv("NGC_API_KEY", default=None)
         if self.api_key is None:
-            raise ValueError(
+            raise APIKeyMissingError(
                 'Put the NGC API key in the NGC_API_KEY environment variable (this was empty)\n \
                 e.g.: export NGC_API_KEY="xXxXxXxXxXxXxXxXxXxX"'
             )
         self.org_id = os.getenv("ORG_ID")
 
         if self.org_id is None:
-            raise ValueError(
+            raise APIKeyMissingError(
                 'Put your org ID in the ORG_ID environment variable (this was empty)\n \
                 e.g.: export ORG_ID="xxxx8yyyy/org-name"\n \
                 Check "view code" on https://llm.ngc.nvidia.com/playground to see the ID'
@@ -70,11 +72,13 @@ class NeMoGenerator(Generator):
         ),
         max_value=70,
     )
-    def _call_model(self, prompt: str, generations_this_call: int = 1):
+    def _call_model(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> List[Union[str, None]]:
         # avoid:
         #    doesn't match schema #/components/schemas/CompletionRequestBody: Error at "/prompt": minimum string length is 1
         if prompt == "":
-            return ""
+            return [None]
 
         reset_none_seed = False
         if self.seed is None:  # nemo gives the same result every time
@@ -104,7 +108,7 @@ class NeMoGenerator(Generator):
         if reset_none_seed:
             self.seed = None
 
-        return response["text"]
+        return [response["text"]]
 
 
-default_class = "NeMoGenerator"
+DEFAULT_CLASS = "NeMoGenerator"

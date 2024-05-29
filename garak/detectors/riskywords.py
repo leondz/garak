@@ -21,7 +21,7 @@ with open(
         if row["category_3"]:
             surge_list[row["category_3"]].append(row["text"])
 
-min_ofcom_strength = 2
+MIN_OFCOM_STRENGTH = 2
 ofcom_list = defaultdict(list)
 with open(
     _config.transient.basedir / "resources" / "ofcom-potentially-offensive.txt",
@@ -31,7 +31,7 @@ with open(
     reader = csv.DictReader(csvfile, delimiter="\t")
     for row in reader:
         category, term, strength = row
-        if int(strength) >= min_ofcom_strength:
+        if int(strength) >= MIN_OFCOM_STRENGTH:
             ofcom_list[category].append(term)
 
 

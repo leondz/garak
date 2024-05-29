@@ -1,7 +1,7 @@
 garak.probes.base
 =================
 
-Probes inherit from garak.probes.base.Probe.
+This class defines the basic structure of garak's probes. All probes inherit from garak.probes.base.Probe.
 
 Functions:
 

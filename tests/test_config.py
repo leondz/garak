@@ -14,17 +14,17 @@ from garak import _config
 import garak.cli
 
 
-site_yaml_filename = "TESTONLY.site.yaml.bak"
+SITE_YAML_FILENAME = "TESTONLY.site.yaml.bak"
 
-ansi_escape = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
+ANSI_ESCAPE = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
 
-options_solo = [
+OPTIONS_SOLO = [
     #    "verbose", # not sure hot to test argparse action="count"
     #    "deprefix", # this param is weird
     "narrow_output",
     "extended_detectors",
 ]
-options_param = [
+OPTIONS_PARAM = [
     ("report_prefix", "laurelhurst"),
     ("parallel_requests", 9),
     ("parallel_attempts", 9),
@@ -35,7 +35,7 @@ options_param = [
     ("model_type", "test"),
     ("model_name", "bruce"),
 ]
-options_spec = [
+OPTIONS_SPEC = [
     ("probes", "3,elim,gul.dukat", "probe_spec"),
     ("detectors", "all", "detector_spec"),
     ("buff", "polymorph", "buff_spec"),
@@ -53,7 +53,7 @@ for p in _config.reporting_params:
 
 
 # test CLI assertions of each var
-@pytest.mark.parametrize("option", options_solo)
+@pytest.mark.parametrize("option", OPTIONS_SOLO)
 def test_cli_solo_settings(option):
     importlib.reload(_config)
 
@@ -64,7 +64,7 @@ def test_cli_solo_settings(option):
     assert getattr(subconfig, option) == True
 
 
-@pytest.mark.parametrize("param", options_param)
+@pytest.mark.parametrize("param", OPTIONS_PARAM)
 def test_cli_param_settings(param):
     importlib.reload(_config)
 
@@ -76,7 +76,7 @@ def test_cli_param_settings(param):
     assert getattr(subconfig, option) == value
 
 
-@pytest.mark.parametrize("param", options_spec)
+@pytest.mark.parametrize("param", OPTIONS_SPEC)
 def test_cli_spec_settings(param):
     importlib.reload(_config)
 
@@ -105,7 +105,7 @@ def test_cli_shortform():
 
 
 # test that run YAML overrides core YAML
-@pytest.mark.parametrize("param", options_param)
+@pytest.mark.parametrize("param", OPTIONS_PARAM)
 def test_yaml_param_settings(param):
     importlib.reload(_config)
 
@@ -127,7 +127,7 @@ def test_site_yaml_overrides_core_yaml():
 
     site_cfg_moved = False
     try:
-        shutil.move("garak/garak.site.yaml", site_yaml_filename)
+        shutil.move("garak/garak.site.yaml", SITE_YAML_FILENAME)
         site_cfg_moved = True
     except FileNotFoundError:
         site_cfg_moved = False
@@ -138,7 +138,7 @@ def test_site_yaml_overrides_core_yaml():
         garak.cli.main(["--list_config"])
 
     if site_cfg_moved:
-        shutil.move(site_yaml_filename, "garak/garak.site.yaml")
+        shutil.move(SITE_YAML_FILENAME, "garak/garak.site.yaml")
     else:
         os.remove("garak/garak.site.yaml")
 
@@ -151,7 +151,7 @@ def test_run_yaml_overrides_site_yaml():
 
     site_cfg_moved = False
     try:
-        shutil.move("garak/garak.site.yaml", site_yaml_filename)
+        shutil.move("garak/garak.site.yaml", SITE_YAML_FILENAME)
         site_cfg_moved = True
     except FileNotFoundError:
         site_cfg_moved = False
@@ -162,7 +162,7 @@ def test_run_yaml_overrides_site_yaml():
         garak.cli.main(["--list_config", "--eval_threshold", str(0.9001)])
 
     if site_cfg_moved:
-        shutil.move(site_yaml_filename, "garak/garak.site.yaml")
+        shutil.move(SITE_YAML_FILENAME, "garak/garak.site.yaml")
     else:
         os.remove("garak/garak.site.yaml")
 
@@ -245,7 +245,7 @@ def test_run_from_yaml(capsys):
     output = result.out
     all_output = ""
     for line in output.strip().split("\n"):
-        line = ansi_escape.sub("", line)
+        line = ANSI_ESCAPE.sub("", line)
         all_output += line
 
     assert "loading generator: Test: Blank" in all_output
@@ -439,18 +439,42 @@ def test_blank_generator_instance_loads_cli_config():
 
 # test parsing of probespec
 def test_probespec_loading():
-    assert _config.parse_plugin_spec(None, "detectors") == []
-    assert _config.parse_plugin_spec("Auto", "probes") == []
-    assert _config.parse_plugin_spec("NONE", "probes") == []
-    assert _config.parse_plugin_spec("", "generators") == []
-    assert _config.parse_plugin_spec("atkgen", "probes") == ["probes.atkgen.Tox"]
+    assert _config.parse_plugin_spec(None, "detectors") == ([], [])
+    assert _config.parse_plugin_spec("", "generators") == ([], [])
+    assert _config.parse_plugin_spec("Auto", "probes") == ([], [])
+    assert _config.parse_plugin_spec("NONE", "probes") == ([], [])
+    # reject unmatched spec entires
+    assert _config.parse_plugin_spec("probedoesnotexist", "probes") == (
+        [],
+        ["probedoesnotexist"],
+    )
+    assert _config.parse_plugin_spec("atkgen,probedoesnotexist", "probes") == (
+        ["probes.atkgen.Tox"],
+        ["probedoesnotexist"],
+    )
+    assert _config.parse_plugin_spec("atkgen.Tox,probedoesnotexist", "probes") == (
+        ["probes.atkgen.Tox"],
+        ["probedoesnotexist"],
+    )
+    # reject unmatched spec entires for unknown class
+    assert _config.parse_plugin_spec(
+        "atkgen.Tox,atkgen.ProbeDoesNotExist", "probes"
+    ) == (["probes.atkgen.Tox"], ["atkgen.ProbeDoesNotExist"])
+    # accept known disabled class
+    assert _config.parse_plugin_spec("dan.DanInTheWild", "probes") == (
+        ["probes.dan.DanInTheWild"],
+        [],
+    )
+    # gather all class entires for namespace
+    assert _config.parse_plugin_spec("atkgen", "probes") == (["probes.atkgen.Tox"], [])
+    assert _config.parse_plugin_spec("always", "detectors") == (
+        ["detectors.always.Fail", "detectors.always.Pass"],
+        [],
+    )
+    # reject all unknown class entires for namespace
     assert _config.parse_plugin_spec(
         "long.test.class,another.long.test.class", "probes"
-    ) == ["probes.long.test.class", "probes.another.long.test.class"]
-    assert _config.parse_plugin_spec("always", "detectors") == [
-        "detectors.always.Fail",
-        "detectors.always.Pass",
-    ]
+    ) == ([], ["long.test.class", "another.long.test.class"])
 
 
 def test_buff_config_assertion():
@@ -464,16 +488,18 @@ def test_buff_config_assertion():
 
 
 def test_tag_filter():
-    assert (
-        _config.parse_plugin_spec("atkgen", "probes", probe_tag_filter="LOL NULL") == []
+    assert _config.parse_plugin_spec(
+        "atkgen", "probes", probe_tag_filter="LOL NULL"
+    ) == ([], [])
+    assert _config.parse_plugin_spec("*", "probes", probe_tag_filter="avid") != ([], [])
+    assert _config.parse_plugin_spec("all", "probes", probe_tag_filter="owasp:llm") != (
+        [],
+        [],
     )
-    assert _config.parse_plugin_spec("*", "probes", probe_tag_filter="avid") != []
-    assert (
-        _config.parse_plugin_spec("all", "probes", probe_tag_filter="owasp:llm") != []
-    )
-    assert "probes.lmrc.SexualContent" in _config.parse_plugin_spec(
+    found, rejected = _config.parse_plugin_spec(
         "all", "probes", probe_tag_filter="risk-cards:lmrc:sexual_content"
     )
+    assert "probes.lmrc.SexualContent" in found
 
 
 def test_report_prefix_with_hitlog_no_explode():

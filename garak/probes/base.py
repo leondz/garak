@@ -46,9 +46,7 @@ class Probe:
     # legal element for str list `modality['in']`: 'text', 'image', 'audio', 'video', '3d'
     # refer to Table 1 in https://arxiv.org/abs/2401.13601
     # we focus on LLM input for probe
-    modality: dict = {
-        'in': {'text'}
-    }
+    modality: dict = {"in": {"text"}}
 
     def __init__(self):
         """Sets up a probe. This constructor:
@@ -60,7 +58,7 @@ class Probe:
             print(
                 f"loading {Style.BRIGHT}{Fore.LIGHTYELLOW_EX}probe: {Style.RESET_ALL}{self.probename}"
             )
-        logging.info("probe init: {self}")
+        logging.info(f"probe init: {self}")
         if "description" not in dir(self):
             if self.__doc__:
                 self.description = self.__doc__.split("\n", maxsplit=1)[0]

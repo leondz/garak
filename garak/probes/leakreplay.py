@@ -29,7 +29,7 @@ class LiteratureCloze(Probe):
         "avid-effect:security:S0301",
         "owasp:llm10",
         "owasp:llm06",
-        "quality:Security:Confidentiailty",
+        "quality:Security:ExtractionInversion",
         "payload:leak:training",
     ]  # MISP-format taxonomy categories
     source_file = "book_cloze.tsv"
@@ -141,3 +141,15 @@ class GuardianComplete(LiteratureComplete, Probe):
     active = True
     source_file = "guardian_cloze.tsv"
     __doc__ = LiteratureComplete.__doc__ + " - based on articles from The Guardian"
+
+
+class PotterCloze(LiteratureCloze, Probe):
+    active = True
+    source_file = "potter_cloze.tsv"
+    __doc__ = LiteratureCloze.__doc__ + " - based on Harry Potter novels"
+
+
+class PotterComplete(LiteratureComplete, Probe):
+    active = True
+    source_file = "potter_cloze.tsv"
+    __doc__ = LiteratureComplete.__doc__ + " - based on Harry Potter novels"

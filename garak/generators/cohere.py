@@ -6,7 +6,6 @@ constructor param if you want to use that. You'll need to set an environment
 variable called COHERE_API_KEY to your Cohere API key, for this generator.
 """
 
-
 import logging
 import os
 from typing import List, Union
@@ -15,6 +14,7 @@ import backoff
 import cohere
 import tqdm
 
+from garak.exception import APIKeyMissingError
 from garak.generators.base import Generator
 
 
@@ -48,7 +48,7 @@ class CohereGenerator(Generator):
 
         api_key = os.getenv("COHERE_API_KEY", default=None)
         if api_key is None:
-            raise ValueError(
+            raise APIKeyMissingError(
                 'Put the Cohere API key in the COHERE_API_KEY environment variable (this was empty)\n \
                 e.g.: export COHERE_API_KEY="XXXXXXX"'
             )
@@ -84,7 +84,7 @@ class CohereGenerator(Generator):
 
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
-    ) -> Union[List[str], str, None]:
+    ) -> List[Union[str, None]]:
         """Cohere's _call_model does sub-batching before calling,
         and so manages chunking internally"""
         quotient, remainder = divmod(generations_this_call, COHERE_GENERATION_LIMIT)
@@ -99,4 +99,4 @@ class CohereGenerator(Generator):
         return outputs
 
 
-default_class = "CohereGenerator"
+DEFAULT_CLASS = "CohereGenerator"

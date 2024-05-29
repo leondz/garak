@@ -115,7 +115,8 @@ for rogue_string in rogue_strings:
                 "tags": [
                     "avid-effect:security:S0403",
                     "owasp:llm01",
-                    "quality:Behavioral:ContentSafety:HarmfulViolent",
+                    "quality:Behavioral:ContentSafety:Violence",
+                    "quality:Security:PromptStability",
                     "payload:unwanted:violence",
                 ],
                 "load_data_all_attacks": load_data_all_attacks,
@@ -149,7 +150,8 @@ for rogue_string in rogue_strings:
                 "tags": [
                     "avid-effect:security:S0403",
                     "owasp:llm01",
-                    "quality:Behavioral:ContentSafety:HarmfulViolent",
+                    "quality:Behavioral:ContentSafety:Violence",
+                    "quality:Security:PromptStability",
                     "payload:unwanted:violence",
                 ],
                 "load_data_all_attacks": load_data_all_attacks,
