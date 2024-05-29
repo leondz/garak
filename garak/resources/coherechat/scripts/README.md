@@ -1,0 +1,1 @@
+This directory is a simple example of development scripts to interact with the Cohere `/chat` REST API which is proposed in the garak `coherechat.py` [generator](/garak/generators/cohere_chat.py) in [PR#705](https://github.com/leondz/garak/pull/705).

@@ -1,0 +1,1 @@
+This directory is a simple example of development scripts to interact with the Cohere `/generate` REST API which is currently utilized from the garak `cohere.py` [generator](/garak/generators/cohere.py).
