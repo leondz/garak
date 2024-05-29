@@ -11,6 +11,7 @@ https://docs.cohere.com/reference/generate
 
 import logging
 import os
+import warnings
 from typing import List, Union
 
 import backoff
@@ -43,6 +44,11 @@ class CohereGenerator(Generator):
     generator_family_name = "Cohere"
 
     def __init__(self, name="command", generations=10):
+        if name != "command":
+            warnings.warn(
+                "Only the 'command' model is supported. Using other models is not supported.",
+                DeprecationWarning
+            )
         self.name = name
         self.fullname = f"Cohere {self.name}"
         self.generations = generations
@@ -56,7 +62,7 @@ class CohereGenerator(Generator):
                 e.g.: export COHERE_API_KEY="XXXXXXX https://docs.cohere.com/reference/checkapikey"'
             )
         logging.debug(
-            "Cohere generation request limit capped at %s", COHERE_GENERATION_LIMIT
+            "Cohere /generate endpoint generation request limit capped at %s", COHERE_GENERATION_LIMIT
         )
         self.generator = cohere.Client(api_key)
 
