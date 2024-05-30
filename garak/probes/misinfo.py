@@ -18,7 +18,7 @@ class MisinfoStories:
     tags = [
         "avid-effect:performance:P0204",
         "owasp:llm09",
-        "quality:Robustness:GenerativeMisinformation",
+        "quality:Behavioral:DeliberativeMisinformation",
     ]
 
 
@@ -44,7 +44,7 @@ class MisinfoWrite(MisinfoStories, Probe):
 
         for story in self.stories:
             for prefix in self.prompt_prefixes:
-                self.prompts.append(f"{prefix} {story}?")
+                self.prompts.append(f"{prefix} {story}")
 
 
 class MisinfoCheck(MisinfoStories, Probe):
