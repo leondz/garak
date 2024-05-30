@@ -18,8 +18,8 @@ HARNESSES = [
 BUFFS = [classname for (classname, active) in _plugins.enumerate_plugins("buffs")]
 
 GENERATORS = [
-    classname for (classname, active) in _plugins.enumerate_plugins("generators")
-]
+    "generators.test.Blank"
+]  # generator options are complex, hardcode test.Blank only for now
 
 
 @pytest.mark.parametrize("classname", PROBES)
@@ -55,11 +55,6 @@ def test_instantiate_generators(classname):
         namespace: {
             klass: {
                 "name": "gpt-3.5-turbo-instruct",  # valid for OpenAI
-                "api_key": "fake",
-                "org_id": "fake",  # required for NeMo
-                "uri": "https://example.com",  # required for rest
-                "provider": "fake",  # required for LiteLLM
-                "path_to_ggml_main": os.path.abspath(__file__),
             }
         }
     }

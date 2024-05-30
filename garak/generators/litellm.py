@@ -82,11 +82,20 @@ class LiteLLMGenerator(Generator):
     """
 
     ENV_VAR = "OPENAI_API_KEY"
+    DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
+        "temperature": 0.7,
+        "top_p": 1.0,
+        "frequency_penalty": 0.0,
+        "presence_penalty": 0.0,
+        "stop": ["#", ";"],
+    }
 
     supports_multiple_generations = True
     generator_family_name = "LiteLLM"
 
     _supported_params = (
+        "name",
+        "generations",
         "api_key",
         "provider",
         "api_base",
@@ -96,22 +105,15 @@ class LiteLLMGenerator(Generator):
         "presence_penalty",
     )
 
-    temperature = 0.7
-    top_p = 1.0
-    frequency_penalty = 0.0
-    presence_penalty = 0.0
-    stop = ["#", ";"]
-
     def __init__(self, name: str = "", generations: int = 10, config_root=_config):
         self.name = name
         self.api_base = None
         self.api_key = None
         self.provider = None
         self.key_env_var = self.ENV_VAR
-        if not self.loaded:
-            self._load_config(config_root)
-        self.fullname = f"LiteLLM {self.name}"
         self.generations = generations
+        self._load_config(config_root)
+        self.fullname = f"LiteLLM {self.name}"
         self.supports_multiple_generations = not any(
             self.name.startswith(provider)
             for provider in unsupported_multiple_gen_providers

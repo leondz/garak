@@ -21,20 +21,22 @@ class OctoGenerator(Generator):
     For more details, see https://octoai.cloud/tools/text.
     """
 
+    ENV_VAR = "OCTO_API_TOKEN"
+    DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
+        "max_tokens": 128,
+        "presence_penalty": 0,
+        "temperature": 0.1,
+        "top_p": 1,
+    }
+
     generator_family_name = "OctoAI"
     supports_multiple_generations = False
-
-    max_tokens = 128
-    presence_penalty = 0
-    temperature = 0.1
-    top_p = 1
 
     def __init__(self, name="", generations=10, config_root=_config):
         from octoai.client import Client
 
         self.name = name
-        if not self.loaded:
-            self._load_config(config_root)
+        self._load_config(config_root)
         self.fullname = f"{self.generator_family_name} {self.name}"
         self.seed = 9
         if hasattr(_config.run, "seed"):
@@ -44,13 +46,6 @@ class OctoGenerator(Generator):
             self.name, generations=self.generations, config_root=config_root
         )
 
-        if self.api_key is None:
-            self.api_key = os.getenv("OCTO_API_TOKEN", default=None)
-            if self.api_key is None:
-                raise ValueError(
-                    '🛑 Put the OctoAI API token in the OCTO_API_TOKEN environment variable (this was empty)\n \
-                    e.g.: export OCTO_API_TOKEN="kjhasdfuhasi8djgh"'
-                )
         self.client = Client(token=self.api_key)
 
     @backoff.on_exception(backoff.fibo, octoai.errors.OctoAIServerError, max_value=70)

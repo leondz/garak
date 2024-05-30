@@ -23,7 +23,7 @@ from garak.generators.rest import RestGenerator, RESTRateLimitError
 class RasaRestGenerator(RestGenerator):
     """API interface for RASA models
 
-    Uses the following options from _config.run.generators["rasa.RasaRestGenerator"]:
+    Uses the following options from _config.plugins.generators["rasa.RasaRestGenerator"]:
     * ``uri`` - (optional) the URI of the REST endpoint; this can also be passed
             in --model_name
     * ``name`` - a short name for this service; defaults to the uri
@@ -83,13 +83,19 @@ class RasaRestGenerator(RestGenerator):
     from RasaRestGenerator :)
     """
 
-    DEFAULT_REQ_TEMPLATE = json.dumps({"sender": "garak", "message": "$INPUT"})
-    DEFAULT_REQ_HEADERS = {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $KEY",
+    DEFAULT_PARAMS = RestGenerator.DEFAULT_PARAMS | {
+        "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $KEY",
+        },
+        "method": "post",
+        "ratelimit_codes": [429],
+        "req_template": json.dumps({"sender": "garak", "message": "$INPUT"}),
+        "request_timeout": 20,
+        "json_response": True,
+        "json_response_field": "text",
     }
-    DEFAULT_JSON_RESPONSE = True
-    DEFAULT_JSON_RESPONSE_FIELD = "text"
+
     ENV_VAR = "RASA_API_KEY"
 
     generator_family_name = "RASA"

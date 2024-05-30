@@ -70,14 +70,16 @@ if openai.__version__[0] == "0":
         """Generator wrapper for OpenAI text2text models. Expects API key in the OPENAI_API_KEY environment variable"""
 
         ENV_VAR = "OPENAI_API_KEY"
+        DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
+            "temperature": 0.7,
+            "top_p": 1.0,
+            "frequency_penalty": 0.0,
+            "presence_penalty": 0.0,
+            "stop": ["#", ";"],
+        }
+
         supports_multiple_generations = True
         generator_family_name = "OpenAI v0"
-
-        temperature = 0.7
-        top_p = 1.0
-        frequency_penalty = 0.0
-        presence_penalty = 0.0
-        stop = ["#", ";"]
 
         def __init__(self, name, generations=10, config_root=_config):
             if openai.__version__[0] != "0":

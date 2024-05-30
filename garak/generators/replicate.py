@@ -27,10 +27,13 @@ class ReplicateGenerator(Generator):
     """
 
     ENV_VAR = "REPLICATE_API_TOKEN"
+    DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
+        "temperature": 1,
+        "top_p": 1.0,
+        "repetition_penalty": 1,
+    }
+
     generator_family_name = "Replicate"
-    temperature = 1
-    top_p = 1.0
-    repetition_penalty = 1
     supports_multiple_generations = False
 
     def __init__(self, name="", generations=10, config_root=_config):
@@ -40,13 +43,9 @@ class ReplicateGenerator(Generator):
 
         super().__init__(name, generations=generations, config_root=config_root)
 
-        # this class relies on an os env variable to be set defined by the lib
-        if self.api_key is None and os.getenv(self.ENV_VAR, default=None) is None:
-            raise ValueError(
-                '🛑 Put the Replicate API token in the REPLICATE_API_TOKEN environment variable (this was empty)\n \
-                e.g.: export REPLICATE_API_TOKEN="r8-123XXXXXXXXXXXX"'
-            )
-        # should this set the env var or is there another way to pass in the value?
+        if self.api_key is not None:
+            # ensure the token is in the expected runtime env var
+            os.environ[self.ENV_VAR] = self.api_key
         self.replicate = importlib.import_module("replicate")
 
     @backoff.on_exception(

@@ -44,8 +44,7 @@ class Detector(Configurable):
                 raise ValueError(err_msg)
 
     def __init__(self, config_root=_config):
-        if not self.loaded:
-            self._load_config(config_root)
+        self._load_config(config_root)
         if "name" not in dir(self):
             self.name = __class__  # short name
         self.detectorname = str(self.__class__).split("'")[1]

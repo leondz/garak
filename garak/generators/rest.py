@@ -30,7 +30,7 @@ class RESTRateLimitError(Exception):
 class RestGenerator(Generator):
     """Generic API interface for REST models
 
-    Uses the following options from ``_config.run.generators["rest.RestGenerator"]``:
+    Uses the following options from ``_config.plugins.generators["rest.RestGenerator"]``:
     * ``uri`` - (optional) the URI of the REST endpoint; this can also be passed
             in --model_name
     * ``name`` - a short name for this service; defaults to the uri
@@ -103,19 +103,24 @@ class RestGenerator(Generator):
     from RestGenerator :)
     """
 
-    DEFAULT_REQ_TEMPLATE = "$INPUT"
-    DEFAULT_REQ_HEADERS = {}
-    DEFAULT_REQ_METHOD = "post"
-    DEFAULT_JSON_RESPONSE = False
-    DEFAULT_JSON_RESPONSE_FIELD = None
+    DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
+        "headers": {},
+        "method": "post",
+        "ratelimit_codes": [429],
+        "response_json": False,
+        "response_json_field": None,
+        "req_template": "$INPUT",
+        "request_timeout": 20,
+    }
 
-    # ENV_VAR = "REST_API_KEY"
+    ENV_VAR = "REST_API_KEY"
     generator_family_name = "REST"
 
     _supported_params = (
         "api_key",
         "name",
         "uri",
+        "generations",
         "key_env_var",
         "req_template",
         "req_template_json",
@@ -131,14 +136,8 @@ class RestGenerator(Generator):
         self.uri = uri
         self.name = uri
         self.seed = _config.run.seed
-        self.headers = self.DEFAULT_REQ_HEADERS
-        self.method = self.DEFAULT_REQ_METHOD
-        self.req_template = self.DEFAULT_REQ_TEMPLATE
+        self.generations = generations
         self.supports_multiple_generations = False  # not implemented yet
-        self.response_json = self.DEFAULT_JSON_RESPONSE
-        self.response_json_field = self.DEFAULT_JSON_RESPONSE_FIELD
-        self.request_timeout = 20  # seconds
-        self.ratelimit_codes = [429]
         self.escape_function = self._json_escape
         self.retry_5xx = True
         self.key_env_var = self.ENV_VAR if hasattr(self, "ENV_VAR") else None
@@ -201,11 +200,18 @@ class RestGenerator(Generator):
                 )
                 raise e
 
-        if hasattr(_config.run, "generations") and _config.run.generations:
-            # why does this look for a `run` configuration if `generations` is passed in signature?
-            generations = _config.run.generations
+        super().__init__(
+            self.name, generations=self.generations, config_root=config_root
+        )
 
-        super().__init__(uri, generations=generations, config_root=config_root)
+    def _validate_evn_var(self):
+        key_match = "$KEY"
+        header_requires_key = False
+        for _k, v in self.headers.items():
+            if key_match in v:
+                header_requires_key = True
+        if "$KEY" in self.req_template or header_requires_key:
+            return super()._validate_evn_var()
 
     def _json_escape(self, text: str) -> str:
         """JSON escape a string"""

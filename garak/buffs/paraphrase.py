@@ -6,6 +6,7 @@
 from collections.abc import Iterable
 
 import garak.attempt
+from garak import _config
 from garak.buffs.base import Buff
 
 
@@ -15,8 +16,7 @@ class PegasusT5(Buff):
     bcp47 = "en"
     uri = "https://huggingface.co/tuner007/pegasus_paraphrase"
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, config_root=_config) -> None:
         self.para_model_name = "tuner007/pegasus_paraphrase"  # https://huggingface.co/tuner007/pegasus_paraphrase
         self.max_length = 60
         self.temperature = 1.5
@@ -25,6 +25,7 @@ class PegasusT5(Buff):
         self.torch_device = None
         self.tokenizer = None
         self.para_model = None
+        super().__init__(config_root=config_root)
 
     def _load_model(self):
         import torch
@@ -74,8 +75,7 @@ class Fast(Buff):
     bcp47 = "en"
     uri = "https://huggingface.co/humarin/chatgpt_paraphraser_on_T5_base"
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, config_root=_config) -> None:
         self.para_model_name = "humarin/chatgpt_paraphraser_on_T5_base"
         self.num_beams = 5
         self.num_beam_groups = 5
@@ -88,6 +88,7 @@ class Fast(Buff):
         self.torch_device = None
         self.tokenizer = None
         self.para_model = None
+        super().__init__(config_root=config_root)
 
     def _load_model(self):
         import torch

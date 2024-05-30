@@ -28,14 +28,15 @@ class LangChainServeLLMGenerator(Generator):
     """
 
     generator_family_name = "LangChainServe"
+    DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {"config_hash": "default"}
+
     config_hash = "default"
 
     def __init__(
         self, name=None, generations=10, config_root=_config
     ):  # name not required, will be extracted from uri
         self.uri = None
-        if not self.loaded:
-            self._load_config(config_root)
+        self._load_config(config_root)
         self.generations = generations
         if self.uri is None:
             self.uri = os.getenv("LANGCHAIN_SERVE_URI")

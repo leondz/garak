@@ -31,15 +31,17 @@ class CohereGenerator(Generator):
     """
 
     ENV_VAR = "COHERE_API_KEY"
+    DEFAULT_PARAMS = {
+        "temperature": 0.750,
+        "k": 0,
+        "p": 0.75,
+        "preset": None,
+        "frequency_penalty": 0.0,
+        "presence_penalty": 0.0,
+        "stop": [],
+    }
 
     supports_multiple_generations = True
-    temperature = 0.750
-    k = 0
-    p = 0.75
-    preset = None
-    frequency_penalty = 0.0
-    presence_penalty = 0.0
-    stop = []
     generator_family_name = "Cohere"
 
     def __init__(self, name="command", generations=10, config_root=_config):

@@ -18,15 +18,16 @@ class Generator(Configurable):
     """Base class for objects that wrap an LLM or other text-to-text service"""
 
     # avoid class variables for values set per instance
-    # name = "Generator"
-    # description = ""
-    generations = 10
-    max_tokens = 150
-    temperature = None
-    top_k = None
+    DEFAULT_PARAMS = {
+        "generations": 10,
+        "max_tokens": 150,
+        "temperature": None,
+        "top_k": None,
+        "context_len": None,
+    }
+
     active = True
     generator_family_name = None
-    context_len = None
 
     # support mainstream any-to-any large models
     # legal element for str list `modality['in']`: 'text', 'image', 'audio', 'video', '3d'
@@ -38,8 +39,7 @@ class Generator(Configurable):
     )
 
     def __init__(self, name="", generations=10, config_root=_config):
-        if not self.loaded:
-            self._load_config(config_root)
+        self._load_config(config_root)
         if "description" not in dir(self):
             self.description = self.__doc__.split("\n")[0]
         if name:
@@ -53,19 +53,24 @@ class Generator(Configurable):
         if not self.generator_family_name:
             self.generator_family_name = "<empty>"
         if hasattr(self, "ENV_VAR"):
-            # see about where this might not be need, consider `rest` generators do not always require this value
-            if not hasattr(self, "api_key") or self.api_key is None:
-                self.api_key = os.getenv(self.ENV_VAR, default=None)
-                if self.api_key is None:
-                    raise ValueError(
-                        f'Put the Cohere API key in the {self.ENV_VAR} environment variable (this was empty)\n \
-                        e.g.: export {self.ENV_VAR}="XXXXXXX"'
-                    )
+            if not hasattr(self, "key_env_var"):
+                self.key_env_var = self.ENV_VAR
+        self._validate_evn_var()
 
         print(
             f"🦜 loading {Style.BRIGHT}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: {self.generator_family_name}: {self.name}"
         )
         logging.info("generator init: %s", self)
+
+    def _validate_evn_var(self):
+        if hasattr(self, "key_env_var"):
+            if not hasattr(self, "api_key") or self.api_key is None:
+                self.api_key = os.getenv(self.key_env_var, default=None)
+                if self.api_key is None:
+                    raise ValueError(
+                        f'Put the {self.generator_family_name} API key in the {self.key_env_var} environment variable (this was empty)\n \
+                        e.g.: export {self.key_env_var}="XXXXXXX"'
+                    )
 
     def _call_model(
         self, prompt: str, generations_this_call: int = 1

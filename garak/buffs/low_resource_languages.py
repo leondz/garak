@@ -9,6 +9,7 @@ from deepl import Translator
 from os import getenv
 
 import garak.attempt
+from garak import _config
 from garak.buffs.base import Buff
 
 # Low resource languages supported by DeepL
@@ -31,8 +32,8 @@ class LRLBuff(Buff):
 
     api_key_error_sent = False
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
         self.post_buff_hook = True
 
     def transform(

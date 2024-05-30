@@ -36,27 +36,39 @@ from garak import _config
 from garak.generators.base import Generator
 
 
+# should this class simply not allow yaml based config or would be valid to support kwargs as a key?
+# ---
+#   generators:
+#     function:
+#       Single:
+#         name: my.private.module.class#custom_generator
+#         kwargs:
+#           special_param: param_value
+#           special_other_param: other_value
+#
+# converting to call all like:
+#
+#  self.kwargs = { "special_param": param_value, "special_other_param": other_value }
+#  custom_generator(prompt, **kwargs)
 class Single(Generator):
     """pass a module#function to be called as generator, with format function(prompt:str, **kwargs)->List[Union(str, None)] the parameter name `generations` is reserved"""
 
-    DEFAULT_GENERATIONS = 10
+    DEFAULT_PARAMS = {"generations": 10}
     uri = "https://github.com/leondz/garak/issues/137"
     generator_family_name = "function"
     supports_multiple_generations = False
 
     def __init__(
-        self, name="", generations=DEFAULT_GENERATIONS, config_root=_config, **kwargs
+        self,
+        name="",
+        generations=DEFAULT_PARAMS["generations"],
+        config_root=_config,
+        **kwargs,
     ):  # name="", generations=self.generations):
-        context = config_root.plugins.generators
-        self.kwargs = kwargs.copy()
+        if len(kwargs) > 0:
+            self.kwargs = kwargs.copy()
         self.generations = generations  # if the user's function requires `generations` it would have been extracted from kwargs and will not be passed later
-
-        if name:
-            gen_args = {"name": name}
-            json_config_format = {self.__module__: {self.__class__.__name__: gen_args}}
-            _config._combine_into(json_config_format, context)
-
-        self._load_config(context)
+        self._load_config(config_root)
 
         gen_module_name, gen_function_name = self.name.split("#")
 

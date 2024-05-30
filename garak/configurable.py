@@ -1,14 +1,13 @@
 import logging
-from dataclasses import dataclass
+import inspect
 from garak import _config
 from garak import _plugins
 
 
 class Configurable:
-    # instance variable to allow early load or load from `base.py`
-    loaded = False
-
     def _load_config(self, config_root=_config):
+        if hasattr(self, "loaded"):
+            return  # only load once, this will ensure the config is not rerun for extending classes
         local_root = (
             config_root.plugins if hasattr(config_root, "plugins") else config_root
         )
@@ -23,31 +22,36 @@ class Configurable:
             # spec_type = generators
             # namespace = huggingface
             # classname = Pipeline
+            # current expected spec_type values are `_plugins.PLUGIN_TYPES`
             spec_type = namespace_parts[-2]
             namespace = namespace_parts[-1]
             classname = self.__class__.__name__
-            if hasattr(local_root, spec_type):
-                plugins_config = getattr(
-                    local_root, spec_type
-                )  # expected values `probes/detectors/buffs/generators/harnesses` possibly get this list at runtime
-                if namespace in plugins_config:
-                    # example values:
-                    # generators: `nim/openai/huggingface`
-                    # probes: `dan/gcg/xss/tap/promptinject`
-                    attributes = plugins_config[namespace]
-                    namespaced_klass = f"{namespace}.{classname}"
-                    self._apply_config(attributes)
-                    if classname in attributes:
-                        self._apply_config(attributes[classname])
-                    elif namespaced_klass in plugins_config:
-                        logging.warning(
-                            f"Deprecated configuration key found: {namespaced_klass}"
-                        )
-                        self._apply_config(plugins_config[namespaced_klass])
+            plugins_config = {}
+            if isinstance(local_root, dict) and spec_type in local_root:
+                plugins_config = local_root[spec_type]
+            elif hasattr(local_root, spec_type):
+                plugins_config = getattr(local_root, spec_type)
+            if namespace in plugins_config:
+                # example values:
+                # generators: `nim/openai/huggingface`
+                # probes: `dan/gcg/xss/tap/promptinject`
+                attributes = plugins_config[namespace]
+                namespaced_klass = f"{namespace}.{classname}"
+                self._apply_config(attributes)
+                if classname in attributes:
+                    self._apply_config(attributes[classname])
+                elif namespaced_klass in plugins_config:
+                    # for compatibility remove after
+                    logging.warning(
+                        f"Deprecated configuration key found: {namespaced_klass}"
+                    )
+                    self._apply_config(plugins_config[namespaced_klass])
+        self._apply_missing_instance_defaults()
         self.loaded = True
 
     def _apply_config(self, config):
         classname = self.__class__.__name__
+        init_params = inspect.signature(self.__init__).parameters
         for k, v in config.items():
             if k in _plugins.PLUGIN_TYPES or k == classname:
                 # skip entries for more qualified items or any plugin type
@@ -55,6 +59,24 @@ class Configurable:
                 continue
             if hasattr(self, "_supported_params") and k not in self._supported_params:
                 # if the class has a set of supported params skip unknown params
+                # should this pass signature arguments as supported?
                 logging.warning(f"Unknown configuration key for {classname}: {k}")
                 continue
+            if hasattr(self, k):
+                # do not override values provide by caller that are not defaults
+                if k in init_params and (
+                    init_params[k].default is inspect.Parameter.empty
+                    or (
+                        init_params[k].default is not inspect.Parameter.empty
+                        and getattr(self, k) != init_params[k].default
+                    )
+                ):
+                    continue
             setattr(self, k, v)  # This will set attribute to the full dictionary value
+
+    def _apply_missing_instance_defaults(self):
+        # class.DEFAULT_PARAMS['generations'] -> instance.generations
+        if hasattr(self, "DEFAULT_PARAMS"):
+            for k, v in self.DEFAULT_PARAMS.items():
+                if not hasattr(self, k):
+                    setattr(self, k, v)

@@ -94,6 +94,14 @@ class OpenAICompatible(Generator):
     generator_family_name = "OpenAICompatible"  # Placeholder override when extending
 
     # template defaults optionally override when extending
+    DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
+        "temperature": 0.7,
+        "top_p": 1.0,
+        "frequency_penalty": 0.0,
+        "presence_penalty": 0.0,
+        "stop": ["#", ";"],
+    }
+
     temperature = 0.7
     top_p = 1.0
     frequency_penalty = 0.0
@@ -123,18 +131,12 @@ class OpenAICompatible(Generator):
 
     def __init__(self, name="", generations=10, config_root=_config):
         self.name = name
-        if not self.loaded:
-            self._load_config(config_root)
+        self.generations = generations
+        self._load_config(config_root)
         self.fullname = f"{self.generator_family_name} {self.name}"
+        self.key_env_var = self.ENV_VAR
 
-        if self.api_key is None:
-            self.api_key = os.getenv(self.ENV_VAR, default=None)
-            if self.api_key is None:
-                raise APIKeyMissingError(
-                    f'Put the {self.generator_family_name} API key in the {self.ENV_VAR} environment variable (this was empty)\n \
-                    e.g.: export {self.ENV_VAR}="sk-123XXXXXXXXXXXX"'
-                )
-
+        self._validate_evn_var()
         self._load_client()
 
         self._validate_config()
@@ -224,7 +226,6 @@ class OpenAIGenerator(OpenAICompatible):
     ENV_VAR = "OPENAI_API_KEY"
     active = True
     generator_family_name = "OpenAI"
-    active = True
 
     def _load_client(self):
         self.client = openai.OpenAI(api_key=self.api_key)
@@ -257,6 +258,7 @@ class OpenAIGenerator(OpenAICompatible):
         self.client = None
 
     def __init__(self, name="", config_root=_config):
+        self.name = name
         self._load_config(config_root)
         if self.name in context_lengths:
             self.context_len = context_lengths[self.name]

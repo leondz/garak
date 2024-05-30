@@ -27,11 +27,10 @@ class NeMoGuardrails(Generator):
                 "You must first install NeMo Guardrails using `pip install nemoguardrails`."
             ) from e
 
-        if not self.loaded:
-            self._load_config(config_root)
         self.name = name
-        self.fullname = f"Guardrails {self.name}"
         self.generations = generations
+        self._load_config(config_root)
+        self.fullname = f"Guardrails {self.name}"
 
         # Currently, we use the model_name as the path to the config
         with redirect_stderr(io.StringIO()) as f:  # quieten the tqdm
