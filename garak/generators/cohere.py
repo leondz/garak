@@ -4,14 +4,10 @@ Support for Cohere's text generation API. Uses the command model by default,
 but just supply the name of another either on the command line or as the
 constructor param if you want to use that. You'll need to set an environment
 variable called COHERE_API_KEY to your Cohere API key, for this generator.
-
-NOTE: This endpoint is end of support and only supports command model as of now
-https://docs.cohere.com/reference/generate
 """
 
 import logging
 import os
-import warnings
 from typing import List, Union
 
 import backoff
@@ -44,11 +40,6 @@ class CohereGenerator(Generator):
     generator_family_name = "Cohere"
 
     def __init__(self, name="command", generations=10):
-        if name != "command":
-            warnings.warn(
-                "Only the 'command' model is supported. Using other models is not supported.",
-                DeprecationWarning
-            )
         self.name = name
         self.fullname = f"Cohere {self.name}"
         self.generations = generations
@@ -62,7 +53,7 @@ class CohereGenerator(Generator):
                 e.g.: export COHERE_API_KEY="XXXXXXX https://docs.cohere.com/reference/checkapikey"'
             )
         logging.debug(
-            "Cohere /generate endpoint generation request limit capped at %s", COHERE_GENERATION_LIMIT
+            "Cohere endpoint generation request limit capped at %s", COHERE_GENERATION_LIMIT
         )
         self.generator = cohere.Client(api_key)
 
@@ -96,8 +87,7 @@ class CohereGenerator(Generator):
     ) -> List[Union[str, None]]:
         """Cohere's _call_model does sub-batching before calling,
         and so manages chunking internally"""
-        quotient, remainder = divmod(
-            generations_this_call, COHERE_GENERATION_LIMIT)
+        quotient, remainder = divmod(generations_this_call, COHERE_GENERATION_LIMIT)
         request_sizes = [COHERE_GENERATION_LIMIT] * quotient
         if remainder:
             request_sizes += [remainder]
