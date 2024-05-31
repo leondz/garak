@@ -67,6 +67,7 @@ class Single(Generator):
     ):  # name="", generations=self.generations):
         if len(kwargs) > 0:
             self.kwargs = kwargs.copy()
+        self.name = name
         self.generations = generations  # if the user's function requires `generations` it would have been extracted from kwargs and will not be passed later
         self._load_config(config_root)
 
@@ -76,7 +77,6 @@ class Single(Generator):
             gen_module_name
         )  # limits ability to test this for general instantiation
         self.generator = getattr(gen_module, gen_function_name)
-        # for name, klass in inspect.getmembers(base_klass, inspect.isclass)
         import inspect
 
         if "generations" in inspect.signature(self.generator).parameters:
@@ -84,7 +84,9 @@ class Single(Generator):
                 'Incompatible function signature: "generations" is incompatible with this Generator'
             )
 
-        super().__init__(name, generations=self.generations, config_root=config_root)
+        super().__init__(
+            self.name, generations=self.generations, config_root=config_root
+        )
 
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
