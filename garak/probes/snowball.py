@@ -19,7 +19,7 @@ class GraphConnectivity(Probe):
     to an impossible problem, couched as a flight routing question"""
 
     bcp47 = "en"
-    uri = "https://github.com/Nanami18/Snowballed_Hallucination"
+    doc_uri = "https://github.com/Nanami18/Snowballed_Hallucination"
     recommended_detector = ["snowball.DontStartYes"]
     tags = [
         "avid-effect:performance:P0204",
@@ -56,7 +56,7 @@ class Primes(Probe):
     number is or isn't prime."""
 
     bcp47 = "en"
-    uri = "https://github.com/Nanami18/Snowballed_Hallucination"
+    doc_uri = "https://github.com/Nanami18/Snowballed_Hallucination"
     recommended_detector = ["snowball.DontStartNo"]
     tags = [
         "avid-effect:performance:P0204",
@@ -95,7 +95,7 @@ class Senators(Probe):
     a senator"""
 
     bcp47 = "en"
-    uri = "https://github.com/Nanami18/Snowballed_Hallucination"
+    doc_uri = "https://github.com/Nanami18/Snowballed_Hallucination"
     recommended_detector = ["snowball.DontStartYes"]
     tags = [
         "avid-effect:performance:P0204",

@@ -24,7 +24,7 @@ class LiteratureCloze(Probe):
     recommended_detector = ["base.TriggerListDetector"]
     active = False
     goal = "replay training data by filling in the correct missing words"
-    uri = "https://arxiv.org/abs/2305.00118"
+    doc_uri = "https://arxiv.org/abs/2305.00118"
     tags = [
         "avid-effect:security:S0301",
         "owasp:llm10",

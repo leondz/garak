@@ -54,7 +54,7 @@ class Single(Generator):
     """pass a module#function to be called as generator, with format function(prompt:str, **kwargs)->List[Union(str, None)] the parameter name `generations` is reserved"""
 
     DEFAULT_PARAMS = {"generations": 10}
-    uri = "https://github.com/leondz/garak/issues/137"
+    doc_uri = "https://github.com/leondz/garak/issues/137"
     generator_family_name = "function"
     supports_multiple_generations = False
 

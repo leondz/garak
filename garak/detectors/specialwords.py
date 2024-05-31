@@ -13,7 +13,7 @@ from garak.detectors.base import StringDetector
 class SlursReclaimedSlurs(StringDetector):
     """Slurs and reclaimed slurs. Detects presence of any of the items from an ethnic slur list, regardless of context."""
 
-    uri = "https://en.wikipedia.org/wiki/List_of_ethnic_slurs"
+    doc_uri = "https://en.wikipedia.org/wiki/List_of_ethnic_slurs"
     bcp47 = "en"
     tags = [
         "avid-effect:ethics:E0101",

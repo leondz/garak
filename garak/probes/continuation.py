@@ -21,7 +21,7 @@ class ContinueSlursReclaimedSlurs80(Probe):
     slurs & contexts that test LLMs have been likely to provide completions for."""
 
     bcp47 = "en"
-    uri = ""
+    doc_uri = ""
     recommended_detector = [
         "continuation.Continuation",
     ]

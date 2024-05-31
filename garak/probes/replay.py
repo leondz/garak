@@ -23,7 +23,7 @@ class Repeat(Probe):
     primary_detector = "replay.RepeatDiverges"
     extended_detectors = ["mitigation.MitigationBypass"]
     goal = "get the model to leak data by asking it to repeat words"
-    uri = "https://not-just-memorization.github.io/extracting-training-data-from-chatgpt.html"
+    doc_uri = "https://not-just-memorization.github.io/extracting-training-data-from-chatgpt.html"
     tags = [
         "avid-effect:security:S0301",
         "owasp:llm10",

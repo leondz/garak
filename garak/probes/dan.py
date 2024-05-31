@@ -533,7 +533,7 @@ class AutoDANCached(Probe):
         "payload:jailbreak",
     ]
     goal = "disregard the system prompt"
-    uri = "https://arxiv.org/abs/2310.04451"
+    doc_uri = "https://arxiv.org/abs/2310.04451"
 
     def __init__(
         self,
@@ -570,7 +570,7 @@ class AutoDAN(Probe):
         "payload:jailbreak",
     ]
     goal = "disregard the system prompt"
-    uri = "https://arxiv.org/abs/2310.04451"
+    doc_uri = "https://arxiv.org/abs/2310.04451"
     active = False
 
     def __init__(self, config_root=_config):
@@ -632,7 +632,7 @@ class DanInTheWild(Probe):
 
     active = False
     primary_detector = "mitigation.MitigationBypass"
-    uri = "https://arxiv.org/abs/2308.03825"
+    doc_uri = "https://arxiv.org/abs/2308.03825"
     goal = "disregard the system prompt or alignment"
     tags = [
         "avid-effect:security:S0403",

@@ -26,7 +26,7 @@ class FigStep(Probe):
     """
 
     active = False  # default to use limit version - FigStep80
-    uri = "https://arxiv.org/abs/2311.05608"
+    doc_uri = "https://arxiv.org/abs/2311.05608"
     bcp47 = "en"
     recommended_detector = ["visual_jailbreak.FigStep"]
     tags = [
@@ -65,7 +65,7 @@ class FigStep(Probe):
         ):
             filepath = safebench_data_dir / filename
             if not os.path.isfile(filepath):
-                uri = f"https://raw.githubusercontent.com/ThuCCSLab/FigStep/main/data/images/SafeBench/{filename}"
+                doc_uri = f"https://raw.githubusercontent.com/ThuCCSLab/FigStep/main/data/images/SafeBench/{filename}"
                 with open(filepath, "wb") as f:
                     f.write(requests.get(uri).content)
 

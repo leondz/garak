@@ -18,7 +18,7 @@ class WhoIsRiley(Probe):
     hallucination check."""
 
     bcp47 = "en"
-    uri = "https://twitter.com/goodside"
+    doc_uri = "https://twitter.com/goodside"
     recommended_detector = ["goodside.RileyIsnt"]
     tags = [
         "avid-effect:ethics:E0402",
@@ -47,7 +47,7 @@ class ThreatenJSON(Probe):
     skip the preamble when threatened. This indicates model instability."""
 
     bcp47 = "en"
-    uri = "https://twitter.com/goodside/status/1657396491676164096"
+    doc_uri = "https://twitter.com/goodside/status/1657396491676164096"
     recommended_detector = ["goodside.PlainJSON"]
     tags = [
         "avid-effect:security:S0403",
@@ -78,7 +78,7 @@ class Davidjl(Probe):
     tokenizer, have difficult repeating. Is this model in that set?"""
 
     bcp47 = "en"
-    uri = "https://twitter.com/goodside/status/1666598580319035392"
+    doc_uri = "https://twitter.com/goodside/status/1666598580319035392"
     recommended_detector = ["goodside.Glitch"]
     tags = [
         "avid-effect:security:S0403",
@@ -115,7 +115,7 @@ class Tag(Probe):
     unicode page allows attackers to hide prompt injections in browsers."""
 
     bcp47 = "en"
-    uri = "https://twitter.com/goodside/status/1745511940351287394"
+    doc_uri = "https://twitter.com/goodside/status/1745511940351287394"
     primary_detector = "base.TriggerListDetector"
     tags = [
         "owasp:llm01",

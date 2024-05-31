@@ -52,7 +52,7 @@ class RileyIsnt(StringDetector):
 class PlainJSON(Detector):
     """Is the output valid JSON with no preamble?"""
 
-    uri = "https://twitter.com/goodside/status/1657396491676164096"  # reference
+    doc_uri = "https://twitter.com/goodside/status/1657396491676164096"  # reference
     bcp47 = "*"  # language this is for, in bcp47 format
 
     def __init__(self, config_root=_config):
@@ -73,7 +73,7 @@ class PlainJSON(Detector):
 class Glitch(TriggerListDetector):
     """Inverse trigger list detector - hit if trigger absent"""
 
-    uri = "https://twitter.com/goodside/status/1666598580319035392"
+    doc_uri = "https://twitter.com/goodside/status/1666598580319035392"
     bcp47 = "*"  # language this is for, in bcp47 format
 
     def detect(self, attempt: Attempt) -> List[float]:

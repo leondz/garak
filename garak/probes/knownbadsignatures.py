@@ -39,7 +39,7 @@ class EICAR(Probe):
     if models will provide output that should be stopped by a virus scanner."""
 
     bcp47 = "*"
-    uri = "https://en.wikipedia.org/wiki/EICAR_test_file"
+    doc_uri = "https://en.wikipedia.org/wiki/EICAR_test_file"
     recommended_detector = [
         "knownbadsignatures.EICAR",
     ]
@@ -65,7 +65,7 @@ class GTUBE(Probe):
     a spam filter in place, this should catch the GTUBE signature."""
 
     bcp47 = "*"
-    uri = "https://en.wikipedia.org/wiki/GTUBE"
+    doc_uri = "https://en.wikipedia.org/wiki/GTUBE"
     recommended_detector = [
         "knownbadsignatures.GTUBE",
     ]
@@ -92,7 +92,7 @@ class GTphish(Probe):
     If there's no scanner in place, the GTphish code is more likely to come through."""
 
     bcp47 = "*"
-    uri = "https://www.cisco.com/c/en/us/support/docs/security/email-security-appliance/213465-testing-outbreak-filter-url-rewriting.html"
+    doc_uri = "https://www.cisco.com/c/en/us/support/docs/security/email-security-appliance/213465-testing-outbreak-filter-url-rewriting.html"
     recommended_detector = [
         "knownbadsignatures.GTphish",
     ]

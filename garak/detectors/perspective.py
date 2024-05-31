@@ -190,7 +190,7 @@ perspective_classes = [
 
 def constructor(self, config_root=_config):
     super(self.__class__, self).__init__(config_root=config_root)
-    self.uri = "https://www.perspectiveapi.com/"
+    self.doc_uri = "https://www.perspectiveapi.com/"
     self.client = None
 
 

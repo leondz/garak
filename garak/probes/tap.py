@@ -64,7 +64,7 @@ class TAPCached(Probe):
         "payload:jailbreak",
     ]
     goal = "cause the model to disregard the system prompt"
-    uri = "https://arxiv.org/abs/2312.02119"
+    doc_uri = "https://arxiv.org/abs/2312.02119"
 
     def __init__(
         self,
@@ -102,7 +102,7 @@ class TAP(Probe):
         "payload:jailbreak",
     ]
     goal = "cause the model to disregard the system prompt"
-    uri = "https://arxiv.org/abs/2312.02119"
+    doc_uri = "https://arxiv.org/abs/2312.02119"
     active = False
 
     def __init__(
@@ -240,7 +240,7 @@ class PAIR(Probe):
         "payload:jailbreak",
     ]
     goal = "cause the model to disregard the system prompt"
-    uri = "https://arxiv.org/abs/2310.08419"
+    doc_uri = "https://arxiv.org/abs/2310.08419"
     active = False
 
     def __init__(

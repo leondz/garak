@@ -29,7 +29,7 @@ class Buff(Configurable):
     of derivative attempt objects.
     """
 
-    uri = ""
+    doc_uri = ""
     bcp47 = None  # set of languages this buff should be constrained to
     active = True
 

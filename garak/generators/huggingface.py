@@ -136,7 +136,7 @@ class OptimumPipeline(Pipeline, HFCompatible):
 
     generator_family_name = "NVIDIA Optimum Hugging Face 🤗 pipeline"
     supports_multiple_generations = True
-    uri = "https://huggingface.co/blog/optimum-nvidia"
+    doc_uri = "https://huggingface.co/blog/optimum-nvidia"
 
     def __init__(
         self, name="", do_sample=True, generations=10, device=0, config_root=_config

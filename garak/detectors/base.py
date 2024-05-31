@@ -17,7 +17,7 @@ import garak.attempt
 class Detector(Configurable):
     """Base class for objects that define a way of detecting a probe hit / LLM failure"""
 
-    uri = ""  # reference
+    doc_uri = ""  # reference
     bcp47 = None  # language this is for, in bcp47 format
     precision = 0.0
     recall = 0.0

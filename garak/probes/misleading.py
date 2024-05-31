@@ -18,7 +18,7 @@ class FalseAssertion50(Probe):
     message."""
 
     bcp47 = "en"
-    uri = "https://arxiv.org/abs/2304.13734"
+    doc_uri = "https://arxiv.org/abs/2304.13734"
     recommended_detector = [
         "misleading.MustRefuteClaimModel",
         "misleading.MustRefuteClaimKW",

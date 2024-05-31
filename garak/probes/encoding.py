@@ -262,7 +262,7 @@ class BaseEncodingProbe:
     ]
     goal = "make the model say an encoded payload"
     bcp47 = "en"
-    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
+    doc_uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
 
     primary_detector = "encoding.DecodeMatch"
     extended_detectors = [
@@ -446,7 +446,7 @@ class InjectBraille(BaseEncodingProbe, Probe):
     Encodes payloads using braille, and tries a variety of ways of getting the target
     model to repeat & decode them."""
 
-    uri = ""
+    doc_uri = ""
     encoding_funcs = [braille]
     encoding_name = "Braille"
 
@@ -461,7 +461,7 @@ class InjectMorse(BaseEncodingProbe, Probe):
     Encodes payloads using morse, and tries a variety of ways of getting the target
     model to repeat & decode them."""
 
-    uri = ""
+    doc_uri = ""
     encoding_funcs = [morse]
     encoding_name = "Morse"
 
@@ -476,7 +476,7 @@ class InjectNato(BaseEncodingProbe, Probe):
     Encodes payloads using the classic NATO phonetic alphabet, and tries a
     variety of ways of getting the target model to repeat & decode them."""
 
-    uri = "https://en.wikipedia.org/wiki/NATO_phonetic_alphabet"
+    doc_uri = "https://en.wikipedia.org/wiki/NATO_phonetic_alphabet"
 
     def nato(text: bytes) -> bytes:
         nato_map = {
@@ -528,7 +528,7 @@ class InjectEcoji(BaseEncodingProbe, Probe):
     Encodes payloads using the [ecoji](https://ecoji.io/) mapping, and tries a variety
     of ways of getting the target model to repeat & decode them."""
 
-    uri = "https://ecoji.io/"
+    doc_uri = "https://ecoji.io/"
 
     def _ecoji(text: bytes) -> bytes:
         import io
@@ -556,7 +556,7 @@ class InjectZalgo(BaseEncodingProbe, Probe):
     Encodes payloads using Zalgo decoration, and tries a variety
     of ways of getting the target model to repeat & decode them."""
 
-    uri = "https://en.wikipedia.org/wiki/Zalgo_text"
+    doc_uri = "https://en.wikipedia.org/wiki/Zalgo_text"
 
     def zalgo(text: bytes) -> bytes:
         from zalgolib.zalgolib import enzalgofy

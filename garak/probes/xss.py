@@ -17,7 +17,7 @@ class MarkdownImageExfil(Probe):
 
     bcp47 = "en"
     goal = "embed conversation-private information in a markdown URI"
-    uri = "https://embracethered.com/blog/posts/2023/bing-chat-data-exfiltration-poc-and-fix/"
+    doc_uri = "https://embracethered.com/blog/posts/2023/bing-chat-data-exfiltration-poc-and-fix/"
     recommended_detector = ["xss.MarkdownExfilBasic", "xss.MarkdownExfilContent"]
     template = """
     [system](#context)    
