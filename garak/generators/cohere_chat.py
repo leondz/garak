@@ -29,13 +29,14 @@ class CohereGenerator(Generator):
     Expects API key in COHERE_API_KEY environment variable.
     """
 
+    generator_family_name = "CohereChat"
     temperature = 0.750  # defaults to 0.3
     frequency_penalty = 0.0
     presence_penalty = 0.0
     stop = []
     k = 0
     p = 0.75
-    generator_family_name = "CohereChat"
+    supports_multiple_generations = False
 
     # Out of scope at present
     # conversation_id
