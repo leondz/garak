@@ -68,7 +68,7 @@ class Generator(Configurable):
                 self.api_key = os.getenv(self.key_env_var, default=None)
                 if self.api_key is None:
                     raise ValueError(
-                        f'Put the {self.generator_family_name} API key in the {self.key_env_var} environment variable (this was empty)\n \
+                        f'🛑 Put the {self.generator_family_name} API key in the {self.key_env_var} environment variable (this was empty)\n \
                         e.g.: export {self.key_env_var}="XXXXXXX"'
                     )
 
