@@ -113,7 +113,7 @@ class GarakCommands(cmd2.CommandSet):
         try:
             if self._cmd.generator:
                 generator_module_name = self._cmd.generator.split(".")[0]
-                generator_name = generator_name
+                generator_name = self._cmd.generator
             else:
                 generator_module_name = self._cmd.target_type
                 generator_name = self._cmd.target_type
