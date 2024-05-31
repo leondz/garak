@@ -92,7 +92,7 @@ class GgmlGenerator(Generator):
             self.name, generations=self.generations, config_root=config_root
         )
 
-    def _validate_evn_var(self):
+    def _validate_env_var(self):
         pass  # suppress default behavior for api_key
 
     def _call_model(

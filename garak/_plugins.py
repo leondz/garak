@@ -93,19 +93,24 @@ def load_plugin(path, break_on_fail=True, config_root=_config) -> object:
     """
     try:
         parts = path.split(".")
-        category = parts[0]
-        module_name = parts[1]
-        if len(parts) != 3:
-            generator_mod = importlib.import_module(f"garak.{category}.{module_name}")
-            if generator_mod.DEFAULT_CLASS:
-                plugin_class_name = generator_mod.DEFAULT_CLASS
-                path = f"{path}.{plugin_class_name}"
-            else:
-                raise Exception(
-                    "module {module_name} has no default class; pass module.ClassName to model_type"
+        match len(parts):
+            case 2:
+                category, module_name = parts
+                generator_mod = importlib.import_module(
+                    f"garak.{category}.{module_name}"
                 )
-        else:
-            plugin_class_name = parts[2]
+                if generator_mod.DEFAULT_CLASS:
+                    plugin_class_name = generator_mod.DEFAULT_CLASS
+                else:
+                    raise ValueError(
+                        "module {module_name} has no default class; pass module.ClassName to model_type"
+                    )
+            case 3:
+                category, module_name, plugin_class_name = parts
+            case _:
+                raise ValueError(
+                    f"Attempted to load {path} with unexpected number of tokens."
+                )
     except ValueError as ve:
         if break_on_fail:
             raise ValueError(
@@ -124,12 +129,12 @@ def load_plugin(path, break_on_fail=True, config_root=_config) -> object:
             return False
 
     try:
-        from garak.configurable import Configurable
-
-        if issubclass(getattr(mod, plugin_class_name), Configurable):
-            plugin_instance = getattr(mod, plugin_class_name)(config_root=config_root)
-        else:
-            plugin_instance = getattr(mod, plugin_class_name)()
+        klass = getattr(mod, plugin_class_name)
+        if "config_root" not in inspect.signature(klass.__init__).parameters:
+            raise AttributeError(
+                'Incompatible function signature: "config_root" is incompatible with this plugin'
+            )
+        plugin_instance = klass(config_root=config_root)
     except AttributeError as ae:
         logging.warning(
             "Exception failed instantiation of %s.%s", module_path, plugin_class_name

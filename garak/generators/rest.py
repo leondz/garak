@@ -204,14 +204,14 @@ class RestGenerator(Generator):
             self.name, generations=self.generations, config_root=config_root
         )
 
-    def _validate_evn_var(self):
+    def _validate_env_var(self):
         key_match = "$KEY"
         header_requires_key = False
         for _k, v in self.headers.items():
             if key_match in v:
                 header_requires_key = True
         if "$KEY" in self.req_template or header_requires_key:
-            return super()._validate_evn_var()
+            return super()._validate_env_var()
 
     def _json_escape(self, text: str) -> str:
         """JSON escape a string"""

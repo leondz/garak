@@ -55,14 +55,14 @@ class Generator(Configurable):
         if hasattr(self, "ENV_VAR"):
             if not hasattr(self, "key_env_var"):
                 self.key_env_var = self.ENV_VAR
-        self._validate_evn_var()
+        self._validate_env_var()
 
         print(
             f"🦜 loading {Style.BRIGHT}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: {self.generator_family_name}: {self.name}"
         )
         logging.info("generator init: %s", self)
 
-    def _validate_evn_var(self):
+    def _validate_env_var(self):
         if hasattr(self, "key_env_var"):
             if not hasattr(self, "api_key") or self.api_key is None:
                 self.api_key = os.getenv(self.key_env_var, default=None)
