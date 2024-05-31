@@ -5,8 +5,10 @@ from garak import _plugins
 
 
 class Configurable:
+    _supported_params = None  # override to provide a list of supported values
+
     def _load_config(self, config_root=_config):
-        if hasattr(self, "loaded"):
+        if hasattr(self, "_instance_configured"):
             return  # only load once, this will ensure the config is not rerun for extending classes
         local_root = (
             config_root.plugins if hasattr(config_root, "plugins") else config_root
@@ -33,8 +35,8 @@ class Configurable:
                 plugins_config = getattr(local_root, spec_type)
             if namespace in plugins_config:
                 # example values:
-                # generators: `nim/openai/huggingface`
-                # probes: `dan/gcg/xss/tap/promptinject`
+                # generators: `nim`/`openai`/`huggingface`
+                # probes: `dan`/`gcg`/`xss`/`tap`/`promptinject`
                 attributes = plugins_config[namespace]
                 namespaced_klass = f"{namespace}.{classname}"
                 self._apply_config(attributes)
@@ -47,7 +49,7 @@ class Configurable:
                     )
                     self._apply_config(plugins_config[namespaced_klass])
         self._apply_missing_instance_defaults()
-        self.loaded = True
+        self._instance_configured = True
 
     def _apply_config(self, config):
         classname = self.__class__.__name__
@@ -57,10 +59,15 @@ class Configurable:
                 # skip entries for more qualified items or any plugin type
                 # should this be coupled to `_plugins`?
                 continue
-            if hasattr(self, "_supported_params") and k not in self._supported_params:
+            if (
+                isinstance(self._supported_params, list)
+                and k not in self._supported_params
+            ):
                 # if the class has a set of supported params skip unknown params
                 # should this pass signature arguments as supported?
-                logging.warning(f"Unknown configuration key for {classname}: {k}")
+                logging.warning(
+                    f"Unknown configuration key for {classname}: '{k}' - skipping"
+                )
                 continue
             if hasattr(self, k):
                 # do not override values provide by caller that are not defaults
