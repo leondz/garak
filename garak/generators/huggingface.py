@@ -564,6 +564,7 @@ class LLaVA(Generator):
         # consider shifting below to kwargs or llava_kwargs that is a dict to allow more customization
         "dtype": torch.float16,
         "low_cpu_mem_usage": True,
+        "device_map": "cuda:0",
     }
 
     # rewrite modality setting
@@ -591,7 +592,7 @@ class LLaVA(Generator):
             low_cpu_mem_usage=self.low_cpu_mem_usage,
         )
         if torch.cuda.is_available():
-            self.model.to("cuda:0")
+            self.model.to(self.device_map)
         else:
             raise RuntimeError(
                 "CUDA is not supported on this device. Please make sure CUDA is installed and configured properly."
@@ -609,7 +610,7 @@ class LLaVA(Generator):
             raise Exception(e)
 
         inputs = self.processor(text_prompt, image_prompt, return_tensors="pt").to(
-            "cuda:0"
+            self.device_map
         )
         exist_token_number: int = inputs.data["input_ids"].shape[1]
         output = self.model.generate(
