@@ -327,8 +327,8 @@ def main(arguments=[]) -> None:
 
     # startup
     import sys
-    import importlib
     import json
+    import os
 
     import garak.evaluators
 
@@ -350,6 +350,10 @@ def main(arguments=[]) -> None:
 
                 elif opts_file in args:
                     file_arg = getattr(args, opts_file)
+                    if not os.path.isfile(file_arg):
+                        raise FileNotFoundError(
+                            f"Path provided is not a file: {opts_file}"
+                        )
                     with open(file_arg, encoding="utf-8") as f:
                         options_json = f.read().strip()
                     try:

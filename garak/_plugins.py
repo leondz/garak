@@ -103,7 +103,7 @@ def load_plugin(path, break_on_fail=True, config_root=_config) -> object:
                     plugin_class_name = generator_mod.DEFAULT_CLASS
                 else:
                     raise ValueError(
-                        "module {module_name} has no default class; pass module.ClassName to model_type"
+                        f"module {module_name} has no default class; pass module.ClassName to model_type"
                     )
             case 3:
                 category, module_name, plugin_class_name = parts
