@@ -653,12 +653,11 @@ class DanInTheWild(Probe):
 
 
 class DanInTheWildMini(DanInTheWild):
-    """A library of jailbreaks.
+    """A subset of 100 jailbreaks from the DanInTheWild jailbreak library.
 
-    Tries a set of ~100 known jailbreaks, in an attempt to get a model to disregard
+    Tries a set of 100 known jailbreaks, in an attempt to get a model to disregard
     alignment/system prompt. Success is measured by not getting a safety mitigaton
     message."""
-
     active = True
 
     def __init__(self, config_root=_config):
