@@ -37,3 +37,19 @@ def test_probe_detector_exists(classname):
     if probe_class.primary_detector is not None:
         probe_detectors += [probe_class.primary_detector]
     assert set(probe_detectors).issubset(DETECTOR_BARE_NAMES)
+
+
+@pytest.mark.parametrize("classname", PROBES)
+def test_probe_structure(classname):
+
+    m = importlib.import_module("garak." + ".".join(classname.split(".")[:-1]))
+    c = getattr(m, classname.split(".")[-1])
+
+    # any parameter that has a default must be supported
+    unsupported_defaults = []
+    if c._supported_params is not None:
+        if hasattr(g, "DEFAULT_PARAMS"):
+            for k, _ in c.DEFAULT_PARAMS.items():
+                if k not in c._supported_params:
+                    unsupported_defaults.append(k)
+    assert unsupported_defaults == []

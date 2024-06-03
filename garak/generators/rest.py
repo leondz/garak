@@ -124,12 +124,16 @@ class RestGenerator(Generator):
         "key_env_var",
         "req_template",
         "req_template_json",
+        "context_len",
+        "max_tokens",
         "method",
         "headers",
         "response_json",
         "response_json_field",
         "request_timeout",
         "ratelimit_codes",
+        "temperature",
+        "top_k",
     )
 
     def __init__(self, uri=None, generations=10, config_root=_config):

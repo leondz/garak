@@ -96,13 +96,17 @@ class LiteLLMGenerator(Generator):
     _supported_params = (
         "name",
         "generations",
+        "context_len",
+        "max_tokens",
         "api_key",
         "provider",
         "api_base",
         "temperature",
         "top_p",
+        "top_k",
         "frequency_penalty",
         "presence_penalty",
+        "stop",
     )
 
     def __init__(self, name: str = "", generations: int = 10, config_root=_config):

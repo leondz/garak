@@ -9,15 +9,8 @@ Module for Rasa REST API connections (https://rasa.com/)
 """
 
 import json
-import logging
-import os
-import requests
-from typing import List, Union
 
-import backoff
-
-from garak import _config
-from garak.generators.rest import RestGenerator, RESTRateLimitError
+from garak.generators.rest import RestGenerator
 
 
 class RasaRestGenerator(RestGenerator):
@@ -92,8 +85,8 @@ class RasaRestGenerator(RestGenerator):
         "ratelimit_codes": [429],
         "req_template": json.dumps({"sender": "garak", "message": "$INPUT"}),
         "request_timeout": 20,
-        "json_response": True,
-        "json_response_field": "text",
+        "response_json": True,
+        "response_json_field": "text",
     }
 
     ENV_VAR = "RASA_API_KEY"

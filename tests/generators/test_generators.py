@@ -148,10 +148,18 @@ def test_generator_structure(classname):
     assert (
         "generations_this_call" in inspect.signature(g.generate).parameters
     ), f"{classname}.generate() must accept parameter generations_this_call"
+    # generate("") w/ empty string doesn't fail, does return list
     assert (
         "prompt" in inspect.signature(g.generate).parameters
     ), f"{classname}.generate() must accept parameter prompt"
-    # generate("") w/ empty string doesn't fail, does return list
+    # any parameter that has a default must be supported
+    unsupported_defaults = []
+    if g._supported_params is not None:
+        if hasattr(g, "DEFAULT_PARAMS"):
+            for k, _ in g.DEFAULT_PARAMS.items():
+                if k not in g._supported_params:
+                    unsupported_defaults.append(k)
+    assert unsupported_defaults == []
 
 
 TESTABLE_GENERATORS = [
