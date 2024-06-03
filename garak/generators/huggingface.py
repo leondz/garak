@@ -14,8 +14,8 @@ be quite strong. Find your Hugging Face Inference API Key here:
  https://huggingface.co/docs/api-inference/quicktour
 """
 
+import importlib
 import logging
-from math import log
 import re
 import os
 from typing import List, Union
@@ -23,8 +23,6 @@ import warnings
 
 import backoff
 import torch
-from PIL import Image
-from transformers import LlavaNextProcessor, LlavaNextForConditionalGeneration
 
 from garak import _config
 from garak.exception import ModelNameMissingError
@@ -548,6 +546,12 @@ class LLaVA(Generator):
             raise ModelNameMissingError(
                 f"Invalid modal name {name}, current support: {self.supported_models}."
             )
+
+        from transformers import LlavaNextProcessor, LlavaNextForConditionalGeneration
+
+        PIL = importlib.import_module("PIL")
+        self.Image = PIL.Image
+
         self.processor = LlavaNextProcessor.from_pretrained(name)
         self.model = LlavaNextForConditionalGeneration.from_pretrained(
             name, torch_dtype=torch.float16, low_cpu_mem_usage=True
@@ -564,9 +568,9 @@ class LLaVA(Generator):
     ) -> List[Union[str, None]]:
         text_prompt = prompt["text"]
         try:
-            image_prompt = Image.open(prompt["image"])
-        except FileNotFoundError:
-            raise FileNotFoundError(f"Cannot open image {prompt['image']}.")
+            image_prompt = self.Image.open(prompt["image"])
+        except FileNotFoundError as exc:
+            raise FileNotFoundError(f"Cannot open image {prompt['image']}.") from exc
         except Exception as e:
             raise Exception(e)
 

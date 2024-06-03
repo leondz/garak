@@ -29,6 +29,7 @@ python -m garak --model_type litellm --model_name "phi" --generator_option_file 
 ```
 """
 
+import importlib
 import logging
 
 from os import getenv
@@ -36,17 +37,11 @@ from typing import List, Union
 
 import backoff
 
-import litellm
 
 from garak import _config
 from garak.exception import APIKeyMissingError
 from garak.generators.base import Generator
 
-# Fix issue with Ollama which does not support `presence_penalty`
-litellm.drop_params = True
-# Suppress log messages from LiteLLM
-litellm.verbose_logger.disabled = True
-# litellm.set_verbose = True
 
 # Based on the param support matrix below:
 # https://docs.litellm.ai/docs/completion/input
@@ -103,6 +98,13 @@ class LiteLLMGenerator(Generator):
 
         super().__init__(name, generations=generations)
 
+        self.litellm = importlib.import_module("litellm")
+        # Fix issue with Ollama which does not support `presence_penalty`
+        self.litellm.drop_params = True
+        # Suppress log messages from LiteLLM
+        self.litellm.verbose_logger.disabled = True
+        # litellm.set_verbose = True
+
         if "litellm.LiteLLMGenerator" in _config.plugins.generators:
             for field in (
                 "api_key",
@@ -151,7 +153,7 @@ class LiteLLMGenerator(Generator):
             print(msg)
             return []
 
-        response = litellm.completion(
+        response = self.litellm.completion(
             model=self.name,
             messages=prompt,
             temperature=self.temperature,
