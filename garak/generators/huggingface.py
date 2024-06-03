@@ -562,7 +562,7 @@ class LLaVA(Generator):
         # https://github.com/haotian-liu/LLaVA/issues/1095#:~:text=Conceptually%2C%20as%20long%20as%20the%20total%20tokens%20are%20within%204K%2C%20it%20would%20be%20fine%2C%20so%20exist_tokens%20%2B%20max_new_tokens%20%3C%204K%20is%20the%20golden%20rule.
         "max_tokens": 4000,
         # consider shifting below to kwargs or llava_kwargs that is a dict to allow more customization
-        "dtype": torch.float16,
+        "torch_dtype": "float16",
         "low_cpu_mem_usage": True,
         "device_map": "cuda:0",
     }
@@ -588,7 +588,7 @@ class LLaVA(Generator):
         self.processor = LlavaNextProcessor.from_pretrained(self.name)
         self.model = LlavaNextForConditionalGeneration.from_pretrained(
             self.name,
-            torch_dtype=self.dtype,
+            torch_dtype=self.torch_dtype,
             low_cpu_mem_usage=self.low_cpu_mem_usage,
         )
         if torch.cuda.is_available():
