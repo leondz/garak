@@ -651,7 +651,12 @@ class DanInTheWild(Probe):
             self.prompts = f.readlines()
 
 
-class DanInTheWildMini(DanInTheWild):
+class DanInTheWildMini(DanInTheWild, Probe):
+    """A subset of 100 jailbreaks from the DanInTheWild jailbreak library.
+
+    Tries a set of 100 known jailbreaks, in an attempt to get a model to disregard
+    alignment/system prompt. Success is measured by not getting a safety mitigaton
+    message."""
     active = True
 
     def __init__(self):
