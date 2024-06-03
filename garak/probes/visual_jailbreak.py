@@ -65,7 +65,7 @@ class FigStep(Probe):
         ):
             filepath = safebench_data_dir / filename
             if not os.path.isfile(filepath):
-                doc_uri = f"https://raw.githubusercontent.com/ThuCCSLab/FigStep/main/data/images/SafeBench/{filename}"
+                uri = f"https://raw.githubusercontent.com/ThuCCSLab/FigStep/main/data/images/SafeBench/{filename}"
                 with open(filepath, "wb") as f:
                     f.write(requests.get(uri).content)
 
