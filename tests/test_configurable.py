@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import pytest
 from garak.configurable import Configurable
 from garak._config import GarakSubConfig
