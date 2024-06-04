@@ -143,7 +143,13 @@ class OptimumPipeline(Pipeline, HFCompatible):
     ):
         self.fullname, self.name = name, name.split("/")[-1]
 
-        super().__init__(self.name, generations=generations, config_root=config_root)
+        super().__init__(
+            self.name,
+            do_sample=do_sample,
+            generations=generations,
+            device=device,
+            config_root=config_root,
+        )
 
         from optimum.nvidia.pipelines import pipeline
         from transformers import set_seed
@@ -165,9 +171,9 @@ class OptimumPipeline(Pipeline, HFCompatible):
 
         self.generator = pipeline(
             "text-generation",
-            model=name,
-            do_sample=do_sample,
-            device=device,
+            model=self.name,
+            do_sample=self.do_sample,
+            device=self.device,
             use_fp8=use_fp8,
         )
         self.deprefix_prompt = name in models_to_deprefix

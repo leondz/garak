@@ -22,6 +22,7 @@ class NeMoGenerator(Generator):
     """Wrapper for the NVIDIA NeMo models via NGC. Expects NGC_API_KEY and ORG_ID environment variables."""
 
     ENV_VAR = "NGC_API_KEY"
+    ORG_ENV_VAR = "ORG_ID"
     DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
         "temperature": 0.9,
         "top_p": 1.0,
@@ -48,17 +49,6 @@ class NeMoGenerator(Generator):
             self.name, generations=self.generations, config_root=config_root
         )
 
-        if self.org_id is None:
-            # TODO: consider making this pull from org_id_env_var defaulted to "ORG_ID" to allow configuration of ENV
-            self.org_id = os.getenv("ORG_ID")
-
-        if self.org_id is None:
-            raise APIKeyMissingError(
-                'Put your org ID in the ORG_ID environment variable (this was empty)\n \
-                e.g.: export ORG_ID="xxxx8yyyy/org-name"\n \
-                Check "view code" on https://llm.ngc.nvidia.com/playground to see the ID'
-            )
-
         self.nemo = nemollm.api.NemoLLM(
             api_host=self.api_host, api_key=self.api_key, org_id=self.org_id
         )
@@ -66,6 +56,21 @@ class NeMoGenerator(Generator):
         if self.name is None:
             print(json.dumps(self.nemo.list_models(), indent=2))
             raise ValueError("Please specify a NeMo model - see list above")
+
+    def _validate_env_var(self):
+        if self.org_id is None:
+            if not hasattr(self, "org_env_var"):
+                self.org_env_var = self.ORG_ENV_VAR
+            self.org_id = os.getenv(self.org_env_var, None)
+
+        if self.org_id is None:
+            raise APIKeyMissingError(
+                f'Put your org ID in the {self.org_env_var} environment variable (this was empty)\n \
+                e.g.: export {self.org_env_var}="xxxx8yyyy/org-name"\n \
+                Check "view code" on https://llm.ngc.nvidia.com/playground to see the ID'
+            )
+
+        return super()._validate_env_var()
 
     @backoff.on_exception(
         backoff.fibo,
