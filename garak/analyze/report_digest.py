@@ -52,6 +52,10 @@ def map_score(score):
     return 4
 
 
+def plugin_docstring_to_description(docstring):
+    return docstring.split("\n")[0]
+
+
 def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
     evals = []
     setup = defaultdict(str)
@@ -175,13 +179,16 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
                 f"select probe_module, probe_class, avg(score)*100 as s from results where probe_group='{probe_group}' group by probe_class order by s asc, probe_class asc;"
             )
             for probe_module, probe_class, score in res.fetchall():
-                m = importlib.import_module(f"garak.probes.{probe_module}")
+                pm = importlib.import_module(f"garak.probes.{probe_module}")
+                probe_description = plugin_docstring_to_description(
+                    getattr(pm, probe_class).__doc__
+                )
                 digest_content += probe_template.render(
                     {
                         "plugin_name": f"{probe_module}.{probe_class}",
                         "plugin_score": f"{score:.1f}%",
                         "severity": map_score(score),
-                        "plugin_descr": getattr(m, probe_class)().description,
+                        "plugin_descr": probe_description,
                     }
                 )
                 # print(f"\tplugin: {probe_module}.{probe_class} - {score:.1f}%")
@@ -195,7 +202,9 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
                         dm = importlib.import_module(
                             f"garak.detectors.{detector_module}"
                         )
-                        detector_description = getattr(dm, detector_class)().description
+                        detector_description = plugin_docstring_to_description(
+                            getattr(dm, detector_class).__doc__
+                        )
 
                         digest_content += detector_template.render(
                             {
@@ -222,4 +231,4 @@ if __name__ == "__main__":
     if len(sys.argv) == 3:
         taxonomy = sys.argv[2]
     digest_content = compile_digest(report_path, taxonomy=taxonomy)
-    print(digest_content.encode("utf-8"))
+    print(digest_content)
