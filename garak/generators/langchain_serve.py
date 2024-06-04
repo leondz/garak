@@ -28,6 +28,7 @@ class LangChainServeLLMGenerator(Generator):
     """
 
     generator_family_name = "LangChainServe"
+    ENV_VAR = "LANGCHAIN_SERVE_URI"
     DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {"config_hash": "default"}
 
     config_hash = "default"
@@ -36,8 +37,8 @@ class LangChainServeLLMGenerator(Generator):
         self, name=None, generations=10, config_root=_config
     ):  # name not required, will be extracted from uri
         self.uri = None
-        self._load_config(config_root)
         self.generations = generations
+        self._load_config(config_root)
         if self.uri is None:
             self.uri = os.getenv("LANGCHAIN_SERVE_URI")
         if not self._validate_uri(self.uri):
@@ -49,6 +50,12 @@ class LangChainServeLLMGenerator(Generator):
         super().__init__(
             self.name, generations=self.generations, config_root=config_root
         )
+
+    def _validate_env_var(self):
+        if self.uri is None:
+            self.uri = os.getenv(self.key_env_var)
+        if not self._validate_uri(self.uri):
+            raise ValueError("Invalid API endpoint URI")
 
     @staticmethod
     def _validate_uri(uri):

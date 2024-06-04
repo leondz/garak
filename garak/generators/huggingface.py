@@ -281,7 +281,6 @@ class InferenceAPI(Generator, HFCompatible):
     }
 
     def __init__(self, name="", generations=10, config_root=_config):
-        self.api_key = os.getenv(self.ENV_VAR, default=None)
         self.fullname, self.name = name, name
         self.generations = generations
         super().__init__(

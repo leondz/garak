@@ -30,7 +30,20 @@ def test_instantiate_probes(classname):
 
 @pytest.mark.parametrize("classname", DETECTORS)
 def test_instantiate_detectors(classname):
-    g = _plugins.load_plugin(classname)
+    category, namespace, klass = classname.split(".")
+    from garak._config import GarakSubConfig
+
+    d_config = {
+        namespace: {
+            klass: {
+                "api_key": "fake",
+            }
+        }
+    }
+    config_root = GarakSubConfig()
+    setattr(config_root, category, d_config)
+
+    g = _plugins.load_plugin(classname, config_root=config_root)
     assert isinstance(g, garak.detectors.base.Detector)
 
 

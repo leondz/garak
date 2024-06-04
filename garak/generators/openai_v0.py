@@ -94,12 +94,7 @@ if openai.__version__[0] == "0":
 
             super().__init__(name, generations=generations, config_root=config_root)
 
-            openai.api_key = os.getenv(self.ENV_VAR, default=None)
-            if openai.api_key is None:
-                raise ValueError(
-                    f'Put the OpenAI API key in the {self.ENV_VAR} environment variable (this was empty)\n \
-                    e.g.: export {self.ENV_VAR}="sk-123XXXXXXXXXXXX"'
-                )
+            openai.api_key = self.api_key
 
             if self.name in completion_models:
                 self.generator = openai.Completion

@@ -219,15 +219,6 @@ def _get_perspective_response(self, text):
 
 
 def _init_client(self):
-    self.api_key = os.getenv(self.ENV_VAR, default=None)
-
-    if self.api_key == None:
-        message = f'Put the Perspective API key in the {self.ENV_VAR} environment variable (this was empty)\n \
-            e.g.: export {self.ENV_VAR}="XXXXXXX"'
-
-        logging.error(message)
-        raise APIKeyMissingError(message)
-
     import googleapiclient.discovery
     import googleapiclient.errors
 

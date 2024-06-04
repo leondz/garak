@@ -3,8 +3,10 @@
 
 import logging
 import inspect
+import os
 from garak import _config
 from garak import _plugins
+from garak.exception import APIKeyMissingError
 
 
 class Configurable:
@@ -90,3 +92,19 @@ class Configurable:
             for k, v in self.DEFAULT_PARAMS.items():
                 if not hasattr(self, k):
                     setattr(self, k, v)
+
+    def _validate_env_var(self):
+        if hasattr(self, "key_env_var"):
+            if not hasattr(self, "api_key") or self.api_key is None:
+                self.api_key = os.getenv(self.key_env_var, default=None)
+                if self.api_key is None:
+                    if hasattr(
+                        self, "generator_family_name"
+                    ):  # special case may refactor later
+                        family_name = self.generator_family_name
+                    else:
+                        family_name = self.__module__.split(".")[-1].title()
+                    raise APIKeyMissingError(
+                        f'🛑 Put the {family_name} API key in the {self.key_env_var} environment variable (this was empty)\n \
+                        e.g.: export {self.key_env_var}="XXXXXXX"'
+                    )

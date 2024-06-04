@@ -4,7 +4,6 @@ All `garak` generators must inherit from this.
 """
 
 import logging
-import os
 from typing import List, Union
 
 from colorama import Fore, Style
@@ -61,16 +60,6 @@ class Generator(Configurable):
             f"🦜 loading {Style.BRIGHT}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: {self.generator_family_name}: {self.name}"
         )
         logging.info("generator init: %s", self)
-
-    def _validate_env_var(self):
-        if hasattr(self, "key_env_var"):
-            if not hasattr(self, "api_key") or self.api_key is None:
-                self.api_key = os.getenv(self.key_env_var, default=None)
-                if self.api_key is None:
-                    raise ValueError(
-                        f'🛑 Put the {self.generator_family_name} API key in the {self.key_env_var} environment variable (this was empty)\n \
-                        e.g.: export {self.key_env_var}="XXXXXXX"'
-                    )
 
     def _call_model(
         self, prompt: str, generations_this_call: int = 1

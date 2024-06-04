@@ -53,6 +53,11 @@ class Detector(Configurable):
             print(
                 f"loading {Style.RESET_ALL}{Fore.LIGHTBLUE_EX}detector{Style.RESET_ALL}: {self.detectorname}"
             )
+        if hasattr(self, "ENV_VAR"):
+            if not hasattr(self, "key_env_var"):
+                self.key_env_var = self.ENV_VAR
+        self._validate_env_var()
+
         logging.info(f"detector init: {self}")
 
     def detect(self, attempt: garak.attempt.Attempt) -> List[float]:
