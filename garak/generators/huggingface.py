@@ -70,7 +70,6 @@ class Pipeline(Generator, HFCompatible):
         super().__init__(
             self.name, generations=self.generations, config_root=config_root
         )
-        self.fullname, self.name = self.name, self.name.split("/")[-1]
 
         from transformers import pipeline, set_seed
 
@@ -140,7 +139,7 @@ class OptimumPipeline(Pipeline, HFCompatible):
     def __init__(
         self, name="", do_sample=True, generations=10, device=0, config_root=_config
     ):
-        self.fullname, self.name = name, name.split("/")[-1]
+        self.name = name
 
         super().__init__(
             self.name,
@@ -192,6 +191,7 @@ class ConversationalPipeline(Generator, HFCompatible):
     def __init__(
         self, name="", do_sample=True, generations=10, device=0, config_root=_config
     ):
+        self.name = name
         self.do_sample = do_sample
         self.generations = generations
         self.device = device
@@ -199,7 +199,6 @@ class ConversationalPipeline(Generator, HFCompatible):
         super().__init__(
             self.name, generations=self.generations, config_root=config_root
         )
-        self.fullname, self.name = name, name.split("/")[-1]
 
         from transformers import pipeline, set_seed, Conversation
 
@@ -280,7 +279,7 @@ class InferenceAPI(Generator, HFCompatible):
     }
 
     def __init__(self, name="", generations=10, config_root=_config):
-        self.fullname, self.name = name, name
+        self.name = name
         self.generations = generations
         super().__init__(
             self.name, generations=self.generations, config_root=config_root
@@ -466,7 +465,6 @@ class Model(Generator, HFCompatible):
         super().__init__(
             self.name, generations=self.generations, config_root=config_root
         )
-        self.fullname, self.name = self.name, self.name.split("/")[-1]
 
         import transformers
 
@@ -481,10 +479,10 @@ class Model(Generator, HFCompatible):
             self.device = -1
             self.init_device = "cpu"
 
-        trust_remote_code = self.fullname.startswith("mosaicml/mpt-")
+        trust_remote_code = self.name.startswith("mosaicml/mpt-")
 
         self.config = transformers.AutoConfig.from_pretrained(
-            self.fullname, trust_remote_code=trust_remote_code
+            self.name, trust_remote_code=trust_remote_code
         )
         self.config.init_device = (
             self.init_device  # or "cuda:0" For fast initialization directly on GPU!
@@ -493,11 +491,10 @@ class Model(Generator, HFCompatible):
         self._set_hf_context_len(self.config)
 
         self.model = transformers.AutoModelForCausalLM.from_pretrained(
-            self.fullname,
+            self.name,
             config=self.config,
         ).to(self.init_device)
 
-        # is this needed since it is reset based on self.fullname below?
         self.deprefix_prompt = self.name in models_to_deprefix
 
         if self.config.tokenizer_class:
@@ -506,14 +503,12 @@ class Model(Generator, HFCompatible):
             )
         else:
             self.tokenizer = transformers.AutoTokenizer.from_pretrained(
-                self.fullname, padding_side="left"
+                self.name, padding_side="left"
             )
 
-        # why is deprefix_prompt reset here
-        self.deprefix_prompt = self.fullname in models_to_deprefix
         self.do_sample = do_sample
         self.generation_config = transformers.GenerationConfig.from_pretrained(
-            self.fullname
+            self.name
         )
         self.generation_config.eos_token_id = self.model.config.eos_token_id
         self.generation_config.pad_token_id = self.model.config.eos_token_id
