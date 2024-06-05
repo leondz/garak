@@ -66,12 +66,11 @@ class Pipeline(Generator, HFCompatible):
         self.do_sample = do_sample
         self.device = device
         self._load_config(config_root)
-        self.fullname, self.name = self.name, self.name.split("/")[-1]
-        # this is a "special case" for configuration requirements
 
         super().__init__(
             self.name, generations=self.generations, config_root=config_root
         )
+        self.fullname, self.name = self.name, self.name.split("/")[-1]
 
         from transformers import pipeline, set_seed
 
@@ -82,15 +81,15 @@ class Pipeline(Generator, HFCompatible):
 
         if not torch.cuda.is_available():
             logging.debug("Using CPU, torch.cuda.is_available() returned False")
-            device = -1
+            self.device = -1
 
         self.generator = pipeline(
             "text-generation",
-            model=name,
-            do_sample=do_sample,
-            device=device,
+            model=self.name,
+            do_sample=self.do_sample,
+            device=self.device,
         )
-        self.deprefix_prompt = name in models_to_deprefix
+        self.deprefix_prompt = self.name in models_to_deprefix
         if _config.loaded:
             if _config.run.deprefix is True:
                 self.deprefix_prompt = True
@@ -196,11 +195,11 @@ class ConversationalPipeline(Generator, HFCompatible):
         self.do_sample = do_sample
         self.generations = generations
         self.device = device
-        self.fullname, self.name = name, name.split("/")[-1]
 
         super().__init__(
             self.name, generations=self.generations, config_root=config_root
         )
+        self.fullname, self.name = name, name.split("/")[-1]
 
         from transformers import pipeline, set_seed, Conversation
 
@@ -211,7 +210,7 @@ class ConversationalPipeline(Generator, HFCompatible):
 
         if not torch.cuda.is_available():
             logging.debug("Using CPU, torch.cuda.is_available() returned False")
-            device = -1
+            self.device = -1
 
         # Note that with pipeline, in order to access the tokenizer, model, or device, you must get the attribute
         # directly from self.generator instead of from the ConversationalPipeline object itself.
@@ -222,7 +221,7 @@ class ConversationalPipeline(Generator, HFCompatible):
             device=self.device,
         )
         self.conversation = Conversation()
-        self.deprefix_prompt = name in models_to_deprefix
+        self.deprefix_prompt = self.name in models_to_deprefix
         if _config.loaded:
             if _config.run.deprefix is True:
                 self.deprefix_prompt = True
@@ -460,13 +459,14 @@ class Model(Generator, HFCompatible):
     def __init__(
         self, name="", do_sample=True, generations=10, device=0, config_root=_config
     ):
-        self.fullname, self.name = name, name.split("/")[-1]
+        self.name = name
         self.device = device
         self.generations = generations
 
         super().__init__(
             self.name, generations=self.generations, config_root=config_root
         )
+        self.fullname, self.name = self.name, self.name.split("/")[-1]
 
         import transformers
 
