@@ -51,10 +51,6 @@ class Generator(Configurable):
                 self.fullname = self.name
         if not self.generator_family_name:
             self.generator_family_name = "<empty>"
-        if hasattr(self, "ENV_VAR"):
-            if not hasattr(self, "key_env_var"):
-                self.key_env_var = self.ENV_VAR
-        self._validate_env_var()
 
         print(
             f"🦜 loading {Style.BRIGHT}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: {self.generator_family_name}: {self.name}"

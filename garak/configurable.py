@@ -54,6 +54,10 @@ class Configurable:
                     )
                     self._apply_config(plugins_config[namespaced_klass])
         self._apply_missing_instance_defaults()
+        if hasattr(self, "ENV_VAR"):
+            if not hasattr(self, "key_env_var"):
+                self.key_env_var = self.ENV_VAR
+        self._validate_env_var()
         self._instance_configured = True
 
     def _apply_config(self, config):

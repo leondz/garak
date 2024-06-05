@@ -136,7 +136,6 @@ class OpenAICompatible(Generator):
         self.fullname = f"{self.generator_family_name} {self.name}"
         self.key_env_var = self.ENV_VAR
 
-        self._validate_env_var()
         self._load_client()
 
         self._validate_config()

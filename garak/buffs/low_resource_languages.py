@@ -30,8 +30,6 @@ class LRLBuff(Buff):
     ENV_VAR = "DEEPL_API_KEY"
     doc_uri = "https://arxiv.org/abs/2310.02446"
 
-    api_key_error_sent = False
-
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
         self.post_buff_hook = True
@@ -39,33 +37,18 @@ class LRLBuff(Buff):
     def transform(
         self, attempt: garak.attempt.Attempt
     ) -> Iterable[garak.attempt.Attempt]:
-        api_key = getenv(self.ENV_VAR, None)
-        if api_key is None:
-            if not self.api_key_error_sent:
-                msg = f"{self.ENV_VAR} not set in env, cannot use LRLBuff."
-                user_msg = (
-                    msg
-                    + " If you do not have a DeepL API key, sign up at https://www.deepl.com/pro#developer"
-                )
-                logging.error(msg)
-                print("⚠️ ", user_msg)
-                self.api_key_error_sent = True
-            yield attempt
-
-        else:
-            translator = Translator(api_key)
-            prompt = attempt.prompt
-            attempt.notes["original_prompt"] = prompt
-            for language in LOW_RESOURCE_LANGUAGES:
-                attempt.notes["LRL_buff_dest_lang"] = language
-                response = translator.translate_text(prompt, target_lang=language)
-                translated_prompt = response.text
-                attempt.prompt = translated_prompt
-                yield self._derive_new_attempt(attempt)
+        translator = Translator(self.api_key)
+        prompt = attempt.prompt
+        attempt.notes["original_prompt"] = prompt
+        for language in LOW_RESOURCE_LANGUAGES:
+            attempt.notes["LRL_buff_dest_lang"] = language
+            response = translator.translate_text(prompt, target_lang=language)
+            translated_prompt = response.text
+            attempt.prompt = translated_prompt
+            yield self._derive_new_attempt(attempt)
 
     def untransform(self, attempt: garak.attempt.Attempt) -> garak.attempt.Attempt:
-        api_key = getenv(self.ENV_VAR, None)
-        translator = Translator(api_key)
+        translator = Translator(self.api_key)
         outputs = attempt.outputs
         attempt.notes["original_responses"] = outputs
         translated_outputs = list()
