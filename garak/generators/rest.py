@@ -130,6 +130,7 @@ class RestGenerator(Generator):
         "headers",
         "response_json",
         "response_json_field",
+        "req_template_json_object",
         "request_timeout",
         "ratelimit_codes",
         "temperature",
@@ -153,7 +154,7 @@ class RestGenerator(Generator):
             hasattr(self, "req_template_json_object")
             and self.req_template_json_object is not None
         ):
-            self.req_template = json.dumps(self.req_template_object)
+            self.req_template = json.dumps(self.req_template_json_object)
 
         if self.response_json:
             if self.response_json_field is None:
