@@ -18,6 +18,7 @@ from typing import List, Union
 import openai
 import backoff
 
+from garak import _config
 from garak.exception import APIKeyMissingError
 from garak.generators.base import Generator
 
@@ -87,12 +88,20 @@ class OpenAICompatible(Generator):
     """Generator base class for OpenAI compatible text2text restful API. Implements shared initialization and execution methods."""
 
     ENV_VAR = "OpenAICompatible_API_KEY".upper()  # Placeholder override when extending
-    active = False  # this interface class is not active
 
+    active = False  # this interface class is not active
     supports_multiple_generations = True
     generator_family_name = "OpenAICompatible"  # Placeholder override when extending
 
     # template defaults optionally override when extending
+    DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
+        "temperature": 0.7,
+        "top_p": 1.0,
+        "frequency_penalty": 0.0,
+        "presence_penalty": 0.0,
+        "stop": ["#", ";"],
+    }
+
     temperature = 0.7
     top_p = 1.0
     frequency_penalty = 0.0
@@ -120,22 +129,20 @@ class OpenAICompatible(Generator):
     def _validate_config(self):
         pass
 
-    def __init__(self, name, generations=10):
+    def __init__(self, name="", generations=10, config_root=_config):
         self.name = name
+        self.generations = generations
+        self._load_config(config_root)
         self.fullname = f"{self.generator_family_name} {self.name}"
-
-        self.api_key = os.getenv(self.ENV_VAR, default=None)
-        if self.api_key is None:
-            raise APIKeyMissingError(
-                f'Put the {self.generator_family_name} API key in the {self.ENV_VAR} environment variable (this was empty)\n \
-                e.g.: export {self.ENV_VAR}="sk-123XXXXXXXXXXXX"'
-            )
+        self.key_env_var = self.ENV_VAR
 
         self._load_client()
 
         self._validate_config()
 
-        super().__init__(name, generations=generations)
+        super().__init__(
+            self.name, generations=self.generations, config_root=config_root
+        )
 
         # clear client config to enable object to `pickle`
         self._clear_client()
@@ -216,8 +223,8 @@ class OpenAIGenerator(OpenAICompatible):
     """Generator wrapper for OpenAI text2text models. Expects API key in the OPENAI_API_KEY environment variable"""
 
     ENV_VAR = "OPENAI_API_KEY"
-    generator_family_name = "OpenAI"
     active = True
+    generator_family_name = "OpenAI"
 
     def _load_client(self):
         self.client = openai.OpenAI(api_key=self.api_key)
@@ -249,11 +256,15 @@ class OpenAIGenerator(OpenAICompatible):
         self.generator = None
         self.client = None
 
-    def __init__(self, name):
+    def __init__(self, name="", config_root=_config):
+        self.name = name
+        self._load_config(config_root)
         if self.name in context_lengths:
             self.context_len = context_lengths[self.name]
 
-        super().__init__(name)
+        super().__init__(
+            self.name, generations=self.generations, config_root=config_root
+        )
 
 
 DEFAULT_CLASS = "OpenAIGenerator"

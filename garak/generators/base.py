@@ -10,20 +10,23 @@ from colorama import Fore, Style
 import tqdm
 
 from garak import _config
+from garak.configurable import Configurable
 
 
-class Generator:
+class Generator(Configurable):
     """Base class for objects that wrap an LLM or other text-to-text service"""
 
-    name = "Generator"
-    description = ""
-    generations = 10
-    max_tokens = 150
-    temperature = None
-    top_k = None
+    # avoid class variables for values set per instance
+    DEFAULT_PARAMS = {
+        "generations": 10,
+        "max_tokens": 150,
+        "temperature": None,
+        "top_k": None,
+        "context_len": None,
+    }
+
     active = True
     generator_family_name = None
-    context_len = None
 
     # support mainstream any-to-any large models
     # legal element for str list `modality['in']`: 'text', 'image', 'audio', 'video', '3d'
@@ -34,7 +37,8 @@ class Generator:
         False  # can more than one generation be extracted per request?
     )
 
-    def __init__(self, name="", generations=10):
+    def __init__(self, name="", generations=10, config_root=_config):
+        self._load_config(config_root)
         if "description" not in dir(self):
             self.description = self.__doc__.split("\n")[0]
         if name:
@@ -47,6 +51,7 @@ class Generator:
                 self.fullname = self.name
         if not self.generator_family_name:
             self.generator_family_name = "<empty>"
+
         print(
             f"🦜 loading {Style.BRIGHT}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: {self.generator_family_name}: {self.name}"
         )

@@ -30,6 +30,14 @@ def test_detector_structure(classname):
     assert (
         "attempt" in inspect.signature(d.detect).parameters
     ), f"{classname}.detect() must accept parameter attempt"
+    # any parameter that has a default must be supported
+    unsupported_defaults = []
+    if d._supported_params is not None:
+        if hasattr(d, "DEFAULT_PARAMS"):
+            for k, _ in d.DEFAULT_PARAMS.items():
+                if k not in d._supported_params:
+                    unsupported_defaults.append(k)
+    assert unsupported_defaults == []
 
 
 @pytest.mark.parametrize("classname", DETECTORS)

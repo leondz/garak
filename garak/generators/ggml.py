@@ -30,14 +30,18 @@ class GgmlGenerator(Generator):
     Set the path to the model as the model name, and put the path to the ggml executable in environment variable GGML_MAIN_PATH.
     """
 
-    repeat_penalty = 1.1
-    presence_penalty = 0.0
-    frequency_penalty = 0.0
-    top_k = 40
-    top_p = 0.95
-    temperature = 0.8
-    exception_on_failure = True
-    first_call = True
+    # example to inherit `DEFAULT_PARAMS` from the base.Generator class
+    DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
+        "repeat_penalty": 1.1,
+        "presence_penalty": 0.0,
+        "frequency_penalty": 0.0,
+        "top_k": 40,
+        "top_p": 0.95,
+        "temperature": 0.8,
+        "exception_on_failure": True,
+        "first_call": True,
+        "key_env_var": ENV_VAR,
+    }
 
     generator_family_name = "ggml"
 
@@ -54,10 +58,17 @@ class GgmlGenerator(Generator):
             "-s": self.seed,
         }
 
-    def __init__(self, name, generations=10):
-        self.path_to_ggml_main = os.getenv(ENV_VAR)
+    def __init__(self, name="", generations=10, config_root=_config):
+        self.name = name
+        self.generations = generations
+        self._load_config(config_root)
+
+        if not hasattr(self, "path_to_ggml_main") or self.path_to_ggml_main is None:
+            self.path_to_ggml_main = os.getenv(self.key_env_var)
         if self.path_to_ggml_main is None:
-            raise RuntimeError(f"Executable not provided by environment {ENV_VAR}")
+            raise RuntimeError(
+                f"Executable not provided by environment {self.key_env_var}"
+            )
         if not os.path.isfile(self.path_to_ggml_main):
             raise FileNotFoundError(
                 f"Path provided is not a file: {self.path_to_ggml_main}"
@@ -67,15 +78,22 @@ class GgmlGenerator(Generator):
         self.seed = _config.run.seed if _config.run.seed is not None else 0
 
         # model is a file, validate exists and sanity check file header for supported format
-        if not os.path.isfile(name):
-            raise FileNotFoundError(f"File not found, unable to load model: {name}")
+        if not os.path.isfile(self.name):
+            raise FileNotFoundError(
+                f"File not found, unable to load model: {self.name}"
+            )
         else:
-            with open(name, "rb") as model_file:
+            with open(self.name, "rb") as model_file:
                 magic_num = model_file.read(len(GGUF_MAGIC))
                 if magic_num != GGUF_MAGIC:
-                    raise RuntimeError(f"{name} is not in GGUF format")
+                    raise RuntimeError(f"{self.name} is not in GGUF format")
 
-        super().__init__(name, generations=generations)
+        super().__init__(
+            self.name, generations=self.generations, config_root=config_root
+        )
+
+    def _validate_env_var(self):
+        pass  # suppress default behavior for api_key
 
     def _call_model(
         self, prompt: str, generations_this_call: int = 1

@@ -51,7 +51,9 @@ class Tox(Probe):
     goal = "make the model say something toxic"
     parallelisable_attempts = False  # atkgen has its own dialog manager
     red_team_model = "leondz/artgpt2tox"
-    uri = "https://interhumanagreement.substack.com/p/faketoxicityprompts-automatic-red"
+    doc_uri = (
+        "https://interhumanagreement.substack.com/p/faketoxicityprompts-automatic-red"
+    )
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
         output_is_conversation = _config.system.verbose >= 2

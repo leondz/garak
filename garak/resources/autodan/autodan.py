@@ -166,10 +166,11 @@ def autodan_generate(
     conv_template = load_conversation_template(generator.name)
     crit = nn.CrossEntropyLoss(reduction="mean")
 
+    config_root = {
+        {mutation_generator_type: {"name": mutation_generator_name, "generations": 1}}
+    }
     mutation_generator = load_generator(
-        model_name=mutation_generator_name,
-        model_type=mutation_generator_type,
-        generations=1,
+        model_type=mutation_generator_type, config=config_root
     )
 
     # Feel like this could just be text instead of storing it as tensors.

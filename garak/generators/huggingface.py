@@ -15,7 +15,6 @@ be quite strong. Find your Hugging Face Inference API Key here:
 """
 
 import logging
-from math import log
 import re
 import os
 from typing import List, Union
@@ -59,15 +58,18 @@ class Pipeline(Generator, HFCompatible):
     generator_family_name = "Hugging Face 🤗 pipeline"
     supports_multiple_generations = True
 
-    def _set_hf_context_len(self, config):
-        if hasattr(config, "n_ctx"):
-            if isinstance(config.n_ctx, int):
-                self.context_len = config.n_ctx
+    def __init__(
+        self, name="", do_sample=True, generations=10, device=0, config_root=_config
+    ):
+        self.name = name
+        self.generations = generations
+        self.do_sample = do_sample
+        self.device = device
+        self._load_config(config_root)
 
-    def __init__(self, name, do_sample=True, generations=10, device=0):
-        self.fullname, self.name = name, name.split("/")[-1]
-
-        super().__init__(name, generations=generations)
+        super().__init__(
+            self.name, generations=self.generations, config_root=config_root
+        )
 
         from transformers import pipeline, set_seed
 
@@ -78,15 +80,15 @@ class Pipeline(Generator, HFCompatible):
 
         if not torch.cuda.is_available():
             logging.debug("Using CPU, torch.cuda.is_available() returned False")
-            device = -1
+            self.device = -1
 
         self.generator = pipeline(
             "text-generation",
-            model=name,
-            do_sample=do_sample,
-            device=device,
+            model=self.name,
+            do_sample=self.do_sample,
+            device=self.device,
         )
-        self.deprefix_prompt = name in models_to_deprefix
+        self.deprefix_prompt = self.name in models_to_deprefix
         if _config.loaded:
             if _config.run.deprefix is True:
                 self.deprefix_prompt = True
@@ -132,12 +134,20 @@ class OptimumPipeline(Pipeline, HFCompatible):
 
     generator_family_name = "NVIDIA Optimum Hugging Face 🤗 pipeline"
     supports_multiple_generations = True
-    uri = "https://huggingface.co/blog/optimum-nvidia"
+    doc_uri = "https://huggingface.co/blog/optimum-nvidia"
 
-    def __init__(self, name, do_sample=True, generations=10, device=0):
-        self.fullname, self.name = name, name.split("/")[-1]
+    def __init__(
+        self, name="", do_sample=True, generations=10, device=0, config_root=_config
+    ):
+        self.name = name
 
-        super().__init__(name, generations=generations)
+        super().__init__(
+            self.name,
+            do_sample=do_sample,
+            generations=generations,
+            device=device,
+            config_root=config_root,
+        )
 
         from optimum.nvidia.pipelines import pipeline
         from transformers import set_seed
@@ -159,9 +169,9 @@ class OptimumPipeline(Pipeline, HFCompatible):
 
         self.generator = pipeline(
             "text-generation",
-            model=name,
-            do_sample=do_sample,
-            device=device,
+            model=self.name,
+            do_sample=self.do_sample,
+            device=self.device,
             use_fp8=use_fp8,
         )
         self.deprefix_prompt = name in models_to_deprefix
@@ -178,10 +188,17 @@ class ConversationalPipeline(Generator, HFCompatible):
     generator_family_name = "Hugging Face 🤗 pipeline for conversations"
     supports_multiple_generations = True
 
-    def __init__(self, name, do_sample=True, generations=10, device=0):
-        self.fullname, self.name = name, name.split("/")[-1]
+    def __init__(
+        self, name="", do_sample=True, generations=10, device=0, config_root=_config
+    ):
+        self.name = name
+        self.do_sample = do_sample
+        self.generations = generations
+        self.device = device
 
-        super().__init__(name, generations=generations)
+        super().__init__(
+            self.name, generations=self.generations, config_root=config_root
+        )
 
         from transformers import pipeline, set_seed, Conversation
 
@@ -192,18 +209,18 @@ class ConversationalPipeline(Generator, HFCompatible):
 
         if not torch.cuda.is_available():
             logging.debug("Using CPU, torch.cuda.is_available() returned False")
-            device = -1
+            self.device = -1
 
         # Note that with pipeline, in order to access the tokenizer, model, or device, you must get the attribute
         # directly from self.generator instead of from the ConversationalPipeline object itself.
         self.generator = pipeline(
             "conversational",
-            model=name,
-            do_sample=do_sample,
-            device=device,
+            model=self.name,
+            do_sample=self.do_sample,
+            device=self.device,
         )
         self.conversation = Conversation()
-        self.deprefix_prompt = name in models_to_deprefix
+        self.deprefix_prompt = self.name in models_to_deprefix
         if _config.loaded:
             if _config.run.deprefix is True:
                 self.deprefix_prompt = True
@@ -253,22 +270,31 @@ class InferenceAPI(Generator, HFCompatible):
     supports_multiple_generations = True
     import requests
 
-    def __init__(self, name="", generations=10):
-        self.api_url = "https://api-inference.huggingface.co/models/" + name
-        self.api_token = os.getenv("HF_INFERENCE_TOKEN", default=None)
-        self.fullname, self.name = name, name
-        super().__init__(name, generations=generations)
+    ENV_VAR = "HF_INFERENCE_TOKEN"
+    URI = "https://api-inference.huggingface.co/models/"
+    DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
+        "deprefix_prompt": True,
+        "max_time": 20,
+        "wait_for_model": False,
+    }
 
-        if self.api_token:
-            self.headers = {"Authorization": f"Bearer {self.api_token}"}
+    def __init__(self, name="", generations=10, config_root=_config):
+        self.name = name
+        self.generations = generations
+        super().__init__(
+            self.name, generations=self.generations, config_root=config_root
+        )
+
+        self.uri = self.URI + name
+
+        # special case for api token requirement this also reserves `headers` as not configurable
+        if self.api_key:
+            self.headers = {"Authorization": f"Bearer {self.api_key}"}
         else:
             self.headers = {}
             message = " ⚠️  No Hugging Face Inference API token in HF_INFERENCE_TOKEN, expect heavier rate-limiting"
             print(message)
             logging.info(message)
-        self.deprefix_prompt = True
-        self.max_time = 20
-        self.wait_for_model = False
 
     @backoff.on_exception(
         backoff.fibo,
@@ -306,7 +332,7 @@ class InferenceAPI(Generator, HFCompatible):
 
         req_response = requests.request(
             "POST",
-            self.api_url,
+            self.uri,
             headers=self.headers,
             json=payload,
             timeout=(20, 90),  # (connect, read)
@@ -376,9 +402,9 @@ class InferenceEndpoint(InferenceAPI, HFCompatible):
 
     timeout = 120
 
-    def __init__(self, name="", generations=10):
-        super().__init__(name, generations=generations)
-        self.api_url = name
+    def __init__(self, name="", generations=10, config_root=_config):
+        super().__init__(name, generations=generations, config_root=config_root)
+        self.uri = name
 
     @backoff.on_exception(
         backoff.fibo,
@@ -412,7 +438,7 @@ class InferenceEndpoint(InferenceAPI, HFCompatible):
             payload["parameters"]["do_sample"] = True
 
         response = requests.post(
-            self.api_url, headers=self.headers, json=payload, timeout=self.timeout
+            self.uri, headers=self.headers, json=payload, timeout=self.timeout
         ).json()
         try:
             output = response[0]["generated_text"]
@@ -429,11 +455,16 @@ class Model(Generator, HFCompatible):
     generator_family_name = "Hugging Face 🤗 model"
     supports_multiple_generations = True
 
-    def __init__(self, name, do_sample=True, generations=10, device=0):
-        self.fullname, self.name = name, name.split("/")[-1]
+    def __init__(
+        self, name="", do_sample=True, generations=10, device=0, config_root=_config
+    ):
+        self.name = name
         self.device = device
+        self.generations = generations
 
-        super().__init__(name, generations=generations)
+        super().__init__(
+            self.name, generations=self.generations, config_root=config_root
+        )
 
         import transformers
 
@@ -448,10 +479,10 @@ class Model(Generator, HFCompatible):
             self.device = -1
             self.init_device = "cpu"
 
-        trust_remote_code = self.fullname.startswith("mosaicml/mpt-")
+        trust_remote_code = self.name.startswith("mosaicml/mpt-")
 
         self.config = transformers.AutoConfig.from_pretrained(
-            self.fullname, trust_remote_code=trust_remote_code
+            self.name, trust_remote_code=trust_remote_code
         )
         self.config.init_device = (
             self.init_device  # or "cuda:0" For fast initialization directly on GPU!
@@ -460,11 +491,11 @@ class Model(Generator, HFCompatible):
         self._set_hf_context_len(self.config)
 
         self.model = transformers.AutoModelForCausalLM.from_pretrained(
-            self.fullname,
+            self.name,
             config=self.config,
         ).to(self.init_device)
 
-        self.deprefix_prompt = name in models_to_deprefix
+        self.deprefix_prompt = self.name in models_to_deprefix
 
         if self.config.tokenizer_class:
             self.tokenizer = transformers.AutoTokenizer.from_pretrained(
@@ -472,13 +503,12 @@ class Model(Generator, HFCompatible):
             )
         else:
             self.tokenizer = transformers.AutoTokenizer.from_pretrained(
-                self.fullname, padding_side="left"
+                self.name, padding_side="left"
             )
 
-        self.deprefix_prompt = self.fullname in models_to_deprefix
         self.do_sample = do_sample
         self.generation_config = transformers.GenerationConfig.from_pretrained(
-            self.fullname
+            self.name
         )
         self.generation_config.eos_token_id = self.model.config.eos_token_id
         self.generation_config.pad_token_id = self.model.config.eos_token_id
@@ -527,9 +557,15 @@ class Model(Generator, HFCompatible):
 class LLaVA(Generator):
     """Get LLaVA ([ text + image ] -> text) generations"""
 
-    # "exist_tokens + max_new_tokens < 4K is the golden rule."
-    # https://github.com/haotian-liu/LLaVA/issues/1095#:~:text=Conceptually%2C%20as%20long%20as%20the%20total%20tokens%20are%20within%204K%2C%20it%20would%20be%20fine%2C%20so%20exist_tokens%20%2B%20max_new_tokens%20%3C%204K%20is%20the%20golden%20rule.
-    max_tokens = 4000
+    DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
+        # "exist_tokens + max_new_tokens < 4K is the golden rule."
+        # https://github.com/haotian-liu/LLaVA/issues/1095#:~:text=Conceptually%2C%20as%20long%20as%20the%20total%20tokens%20are%20within%204K%2C%20it%20would%20be%20fine%2C%20so%20exist_tokens%20%2B%20max_new_tokens%20%3C%204K%20is%20the%20golden%20rule.
+        "max_tokens": 4000,
+        # consider shifting below to kwargs or llava_kwargs that is a dict to allow more customization
+        "torch_dtype": "float16",
+        "low_cpu_mem_usage": True,
+        "device_map": "cuda:0",
+    }
 
     # rewrite modality setting
     modality = {"in": {"text", "image"}, "out": {"text"}}
@@ -543,17 +579,20 @@ class LLaVA(Generator):
         "llava-hf/llava-v1.6-mistral-7b-hf",
     ]
 
-    def __init__(self, name="", generations=10):
-        if name not in self.supported_models:
+    def __init__(self, name="", generations=10, config_root=_config):
+        super().__init__(name, generations=generations, config_root=config_root)
+        if self.name not in self.supported_models:
             raise ModelNameMissingError(
-                f"Invalid modal name {name}, current support: {self.supported_models}."
+                f"Invalid modal name {self.name}, current support: {self.supported_models}."
             )
-        self.processor = LlavaNextProcessor.from_pretrained(name)
+        self.processor = LlavaNextProcessor.from_pretrained(self.name)
         self.model = LlavaNextForConditionalGeneration.from_pretrained(
-            name, torch_dtype=torch.float16, low_cpu_mem_usage=True
+            self.name,
+            torch_dtype=self.torch_dtype,
+            low_cpu_mem_usage=self.low_cpu_mem_usage,
         )
         if torch.cuda.is_available():
-            self.model.to("cuda:0")
+            self.model.to(self.device_map)
         else:
             raise RuntimeError(
                 "CUDA is not supported on this device. Please make sure CUDA is installed and configured properly."
@@ -571,7 +610,7 @@ class LLaVA(Generator):
             raise Exception(e)
 
         inputs = self.processor(text_prompt, image_prompt, return_tensors="pt").to(
-            "cuda:0"
+            self.device_map
         )
         exist_token_number: int = inputs.data["input_ids"].shape[1]
         output = self.model.generate(

@@ -64,7 +64,7 @@ class TAPCached(Probe):
         "payload:jailbreak",
     ]
     goal = "cause the model to disregard the system prompt"
-    uri = "https://arxiv.org/abs/2312.02119"
+    doc_uri = "https://arxiv.org/abs/2312.02119"
 
     def __init__(
         self,
@@ -73,6 +73,7 @@ class TAPCached(Probe):
         / "tap"
         / "data"
         / "tap_jailbreaks.txt",
+        config_root=_config,
     ):
         self.prompts_location = prompts_location
 
@@ -82,7 +83,7 @@ class TAPCached(Probe):
             msg = f"No prompts found in {self.prompts_location}"
             raise EOFError(msg)
         self.prompts = prompts
-        super().__init__()
+        super().__init__(config_root=config_root)
 
 
 class TAP(Probe):
@@ -101,7 +102,7 @@ class TAP(Probe):
         "payload:jailbreak",
     ]
     goal = "cause the model to disregard the system prompt"
-    uri = "https://arxiv.org/abs/2312.02119"
+    doc_uri = "https://arxiv.org/abs/2312.02119"
     active = False
 
     def __init__(
@@ -120,6 +121,7 @@ class TAP(Probe):
         n_streams: int = 1,
         keep_last_n: int = 1,
         pruning: bool = True,
+        config_root=_config,
     ):
         self.goal_str = goal
         self.target = target
@@ -136,7 +138,7 @@ class TAP(Probe):
         self.keep_last_n = keep_last_n
         self.pruning = pruning
         self.run_tap = None
-        super().__init__()
+        super().__init__(config_root=config_root)
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
         self.generator = generator
@@ -238,7 +240,7 @@ class PAIR(Probe):
         "payload:jailbreak",
     ]
     goal = "cause the model to disregard the system prompt"
-    uri = "https://arxiv.org/abs/2310.08419"
+    doc_uri = "https://arxiv.org/abs/2310.08419"
     active = False
 
     def __init__(
@@ -255,6 +257,7 @@ class PAIR(Probe):
         depth: int = 10,
         n_streams: int = 1,
         keep_last_n: int = 1,
+        config_root=_config,
     ):
         self.goal = goal
         self.target = target
@@ -271,7 +274,7 @@ class PAIR(Probe):
         self.keep_last_n = keep_last_n
         self.pruning = False
         self.run_tap = None
-        super().__init__()
+        super().__init__(config_root=config_root)
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
         self.generator = generator

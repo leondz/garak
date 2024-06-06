@@ -20,9 +20,6 @@ import garak._plugins as _plugins
 
 
 class PxD(Harness):
-    def __init__(self):
-        super().__init__()
-
     def run(self, model, probe_names, detector_names, evaluator, buff_names=[]):
         probe_names = sorted(probe_names)
         detector_names = sorted(detector_names)
