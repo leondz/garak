@@ -64,11 +64,16 @@ class Pipeline(Generator, HFCompatible):
         self.generations = generations
         self.do_sample = do_sample
         self.device = device
-        self._load_config(config_root)
 
         super().__init__(
             self.name, generations=self.generations, config_root=config_root
         )
+
+        self._load_client()
+
+    def _load_client(self):
+        if hasattr(self, "generator") and self.generator is not None:
+            return
 
         from transformers import pipeline, set_seed
 
@@ -95,9 +100,13 @@ class Pipeline(Generator, HFCompatible):
 
                 self._set_hf_context_len(self.generator.model.config)
 
+    def _clear_client():
+        self.generator = None
+
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
+        self._load_client()
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=UserWarning)
             try:
@@ -136,18 +145,9 @@ class OptimumPipeline(Pipeline, HFCompatible):
     supports_multiple_generations = True
     doc_uri = "https://huggingface.co/blog/optimum-nvidia"
 
-    def __init__(
-        self, name="", do_sample=True, generations=10, device=0, config_root=_config
-    ):
-        self.name = name
-
-        super().__init__(
-            self.name,
-            do_sample=do_sample,
-            generations=generations,
-            device=device,
-            config_root=config_root,
-        )
+    def _load_client(self):
+        if hasattr(self, "generator") and self.generator is not None:
+            return
 
         from optimum.nvidia.pipelines import pipeline
         from transformers import set_seed
@@ -183,23 +183,15 @@ class OptimumPipeline(Pipeline, HFCompatible):
         self._set_hf_context_len(self.generator.model.config)
 
 
-class ConversationalPipeline(Generator, HFCompatible):
+class ConversationalPipeline(Pipeline, HFCompatible):
     """Conversational text generation using HuggingFace pipelines"""
 
     generator_family_name = "Hugging Face 🤗 pipeline for conversations"
     supports_multiple_generations = True
 
-    def __init__(
-        self, name="", do_sample=True, generations=10, device=0, config_root=_config
-    ):
-        self.name = name
-        self.do_sample = do_sample
-        self.generations = generations
-        self.device = device
-
-        super().__init__(
-            self.name, generations=self.generations, config_root=config_root
-        )
+    def _load_client(self):
+        if hasattr(self, "generator") and self.generator is not None:
+            return
 
         from transformers import pipeline, set_seed, Conversation
 
@@ -239,6 +231,7 @@ class ConversationalPipeline(Generator, HFCompatible):
     ) -> List[Union[str, None]]:
         """Take a conversation as a list of dictionaries and feed it to the model"""
 
+        self._load_client()
         # If conversation is provided as a list of dicts, create the conversation.
         # Otherwise, maintain state in Generator
         if isinstance(prompt, str):
@@ -451,22 +444,15 @@ class InferenceEndpoint(InferenceAPI, HFCompatible):
         return [output]
 
 
-class Model(Generator, HFCompatible):
+class Model(Pipeline, HFCompatible):
     """Get text generations from a locally-run Hugging Face model"""
 
     generator_family_name = "Hugging Face 🤗 model"
     supports_multiple_generations = True
 
-    def __init__(
-        self, name="", do_sample=True, generations=10, device=0, config_root=_config
-    ):
-        self.name = name
-        self.device = device
-        self.generations = generations
-
-        super().__init__(
-            self.name, generations=self.generations, config_root=config_root
-        )
+    def _load_client(self):
+        if hasattr(self, "model") and self.model is not None:
+            return
 
         import transformers
 
@@ -509,16 +495,21 @@ class Model(Generator, HFCompatible):
                 self.name, padding_side="left"
             )
 
-        self.do_sample = do_sample
         self.generation_config = transformers.GenerationConfig.from_pretrained(
             self.name
         )
         self.generation_config.eos_token_id = self.model.config.eos_token_id
         self.generation_config.pad_token_id = self.model.config.eos_token_id
 
+    def _clear_client(self):
+        self.model = None
+        self.config = None
+        self.generation_config = None
+
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
+        self._load_client()
         self.generation_config.max_new_tokens = self.max_tokens
         self.generation_config.do_sample = self.do_sample
         self.generation_config.num_return_sequences = generations_this_call
