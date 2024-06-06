@@ -327,58 +327,48 @@ def main(arguments=[]) -> None:
 
     # startup
     import sys
-    import importlib
     import json
+    import os
 
     import garak.evaluators
 
     try:
-        # do a special thing for CLIprobe options, generator options
-        if "probe_options" in args or "probe_option_file" in args:
-            if "probe_options" in args:
-                try:
-                    probe_cli_config = json.loads(args.probe_options)
-                except json.JSONDecodeError as e:
-                    logging.warning("Failed to parse JSON probe_options: %s", e.args[0])
+        plugin_types = ["probe", "generator"]
+        # do a special thing for CLI probe options, generator options
+        for plugin_type in plugin_types:
+            opts_arg = f"{plugin_type}_options"
+            opts_file = f"{plugin_type}_option_file"
+            if opts_arg in args or opts_file in args:
+                if opts_arg in args:
+                    opts_argv = getattr(args, opts_arg)
+                    try:
+                        opts_cli_config = json.loads(opts_argv)
+                    except json.JSONDecodeError as e:
+                        logging.warning(
+                            "Failed to parse JSON %s: %s", opts_arg, e.args[0]
+                        )
 
-            elif "probe_option_file" in args:
-                with open(args.probe_option_file, encoding="utf-8") as f:
-                    probe_options_json = f.read().strip()
-                try:
-                    probe_cli_config = json.loads(probe_options_json)
-                except json.decoder.JSONDecodeError as e:
-                    logging.warning(
-                        "Failed to parse JSON probe_options: %s", {e.args[0]}
-                    )
-                    raise e
+                elif opts_file in args:
+                    file_arg = getattr(args, opts_file)
+                    if not os.path.isfile(file_arg):
+                        raise FileNotFoundError(
+                            f"Path provided is not a file: {opts_file}"
+                        )
+                    with open(file_arg, encoding="utf-8") as f:
+                        options_json = f.read().strip()
+                    try:
+                        opts_cli_config = json.loads(options_json)
+                    except json.decoder.JSONDecodeError as e:
+                        logging.warning(
+                            "Failed to parse JSON %s: %s", opts_file, {e.args[0]}
+                        )
+                        raise e
 
-            _config.plugins.probes = _config._combine_into(
-                probe_cli_config, _config.plugins.probes
-            )
+                config_plugin_type = getattr(_config.plugins, f"{plugin_type}s")
 
-        if "generator_options" in args or "generator_option_file" in args:
-            if "generator_options" in args:
-                try:
-                    generator_cli_config = json.loads(args.generator_options)
-                except json.JSONDecodeError as e:
-                    logging.warning(
-                        "Failed to parse JSON generator_options: %s", e.args[0]
-                    )
-
-            elif "generator_option_file" in args:
-                with open(args.generator_option_file, encoding="utf-8") as f:
-                    generator_options_json = f.read().strip()
-                try:
-                    generator_cli_config = json.loads(generator_options_json)
-                except json.decoder.JSONDecodeError as e:
-                    logging.warning(
-                        "Failed to parse JSON generator_options: %s", {e.args[0]}
-                    )
-                    raise e
-
-            _config.plugins.generators = _config._combine_into(
-                generator_cli_config, _config.plugins.generators
-            )
+                config_plugin_type = _config._combine_into(
+                    opts_cli_config, config_plugin_type
+                )
 
         # process commands
         if args.interactive:
@@ -427,6 +417,24 @@ def main(arguments=[]) -> None:
 
         # model is specified, we're doing something
         elif _config.plugins.model_type:
+            conf_root = _config.plugins.generators
+            for part in _config.plugins.model_type.split("."):
+                if not part in conf_root:
+                    conf_root[part] = {}
+                conf_root = conf_root[part]
+            if _config.plugins.model_name:
+                # if passed generator options and config files are already loaded
+                # cli provided name overrides config from file
+                conf_root["name"] = _config.plugins.model_name
+            if (
+                hasattr(_config.run, "generations")
+                and _config.run.generations is not None
+            ):
+                conf_root["generations"] = _config.run.generations
+            if hasattr(_config.run, "seed") and _config.run.seed is not None:
+                conf_root["seed"] = _config.run.seed
+
+            # Can this check be deferred to the generator instantiation?
             if (
                 _config.plugins.model_type
                 in ("openai", "replicate", "ggml", "huggingface", "litellm")
@@ -461,30 +469,11 @@ def main(arguments=[]) -> None:
 
             evaluator = garak.evaluators.ThresholdEvaluator(_config.run.eval_threshold)
 
-            generator_module_name = _config.plugins.model_type.split(".")[0]
-            generator_mod = importlib.import_module(
-                "garak.generators." + generator_module_name
-            )
-            if "." not in _config.plugins.model_type:
-                if generator_mod.DEFAULT_CLASS:
-                    generator_class_name = generator_mod.DEFAULT_CLASS
-                else:
-                    raise ValueError(
-                        "module {generator_module_name} has no default class; pass module.ClassName to --model_type"
-                    )
-            else:
-                generator_class_name = _config.plugins.model_type.split(".")[1]
+            from garak import _plugins
 
-            generator = getattr(generator_mod, generator_class_name)(
-                _config.plugins.model_name
+            generator = _plugins.load_plugin(
+                f"generators.{_config.plugins.model_type}", config_root=_config
             )
-            if (
-                hasattr(_config.run, "generations")
-                and _config.run.generations is not None
-            ):
-                generator.generations = _config.run.generations
-            if hasattr(_config.run, "seed") and _config.run.seed is not None:
-                generator.seed = _config.run.seed
 
             if "generate_autodan" in args and args.generate_autodan:
                 from garak.resources.autodan import autodan_generate

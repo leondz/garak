@@ -42,9 +42,9 @@ class SurgeProfanitySexual(StringDetector):
     matchtype = "word"
     tags = ["avid-effect:performance:P0401"]
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         substrings = surge_list["sexual anatomy / sexual acts"]
-        super().__init__(substrings)
+        super().__init__(substrings, config_root=config_root)
 
 
 class SurgeProfanityBodilyFluids(StringDetector):
@@ -54,9 +54,9 @@ class SurgeProfanityBodilyFluids(StringDetector):
     matchtype = "word"
     tags = ["avid-effect:performance:P0401"]
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         substrings = surge_list["bodily fluids / excrement"]
-        super().__init__(substrings)
+        super().__init__(substrings, config_root=config_root)
 
 
 class SurgeProfanitySexualOrientationGender(StringDetector):
@@ -70,9 +70,9 @@ class SurgeProfanitySexualOrientationGender(StringDetector):
         "avid-effect:performance:P0401",
     ]
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         substrings = surge_list["sexual orientation / gender"]
-        super().__init__(substrings)
+        super().__init__(substrings, config_root=config_root)
 
 
 class SurgeProfanityRacialEthnic(StringDetector):
@@ -86,9 +86,9 @@ class SurgeProfanityRacialEthnic(StringDetector):
         "avid-effect:performance:P0401",
     ]
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         substrings = surge_list["racial / ethnic"]
-        super().__init__(substrings)
+        super().__init__(substrings, config_root=config_root)
 
 
 class SurgeProfanityMentalDisability(StringDetector):
@@ -102,9 +102,9 @@ class SurgeProfanityMentalDisability(StringDetector):
         "avid-effect:performance:P0401",
     ]
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         substrings = surge_list["mental disability"]
-        super().__init__(substrings)
+        super().__init__(substrings, config_root=config_root)
 
 
 class SurgeProfanityPhysicalDisability(StringDetector):
@@ -118,9 +118,9 @@ class SurgeProfanityPhysicalDisability(StringDetector):
         "avid-effect:performance:P0401",
     ]
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         substrings = surge_list["physical disability"]
-        super().__init__(substrings)
+        super().__init__(substrings, config_root=config_root)
 
 
 class SurgeProfanityPhysicalAttributes(StringDetector):
@@ -130,9 +130,9 @@ class SurgeProfanityPhysicalAttributes(StringDetector):
     matchtype = "word"
     tags = ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"]
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         substrings = surge_list["physical attributes"]
-        super().__init__(substrings)
+        super().__init__(substrings, config_root=config_root)
 
 
 class SurgeProfanityAnimalReferences(StringDetector):
@@ -142,9 +142,9 @@ class SurgeProfanityAnimalReferences(StringDetector):
     matchtype = "word"
     tags = ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"]
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         substrings = surge_list["animal references"]
-        super().__init__(substrings)
+        super().__init__(substrings, config_root=config_root)
 
 
 class SurgeProfanityReligious(StringDetector):
@@ -154,9 +154,9 @@ class SurgeProfanityReligious(StringDetector):
     matchtype = "word"
     tags = ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"]
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         substrings = surge_list["religious offense"]
-        super().__init__(substrings)
+        super().__init__(substrings, config_root=config_root)
 
 
 class SurgeProfanityPolitical(StringDetector):
@@ -171,9 +171,9 @@ class SurgeProfanityPolitical(StringDetector):
         "avid-effect:performance:P0401",
     ]
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         substrings = surge_list["political"]
-        super().__init__(substrings)
+        super().__init__(substrings, config_root=config_root)
 
 
 class OfcomOffensiveGeneral(StringDetector):
@@ -184,9 +184,9 @@ class OfcomOffensiveGeneral(StringDetector):
     matchtype = "word"
     tags = ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"]
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         substrings = ofcom_list[self.term]
-        super().__init__(substrings)
+        super().__init__(substrings, config_root=config_root)
 
 
 class OfcomOffensiveSexual(StringDetector):
@@ -197,9 +197,9 @@ class OfcomOffensiveSexual(StringDetector):
     matchtype = "word"
     tags = ["avid-effect:performance:P0401"]
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         substrings = ofcom_list[self.term]
-        super().__init__(substrings)
+        super().__init__(substrings, config_root=config_root)
 
 
 class OfcomOffensiveDiscriminatory(StringDetector):
@@ -214,9 +214,9 @@ class OfcomOffensiveDiscriminatory(StringDetector):
         "avid-effect:performance:P0401",
     ]
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         substrings = ofcom_list[self.term]
-        super().__init__(substrings)
+        super().__init__(substrings, config_root=config_root)
 
 
 class OfcomOffensiveSexGender(StringDetector):
@@ -231,9 +231,9 @@ class OfcomOffensiveSexGender(StringDetector):
         "avid-effect:performance:P0401",
     ]
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         substrings = ofcom_list[self.term]
-        super().__init__(substrings)
+        super().__init__(substrings, config_root=config_root)
 
 
 class OfcomOffensiveMentalHealth(StringDetector):
@@ -248,9 +248,9 @@ class OfcomOffensiveMentalHealth(StringDetector):
         "avid-effect:performance:P0401",
     ]
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         substrings = ofcom_list[self.term]
-        super().__init__(substrings)
+        super().__init__(substrings, config_root=config_root)
 
 
 class OfcomOffensiveRaceEthnic(StringDetector):
@@ -265,9 +265,9 @@ class OfcomOffensiveRaceEthnic(StringDetector):
         "avid-effect:performance:P0401",
     ]
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         substrings = ofcom_list[self.term]
-        super().__init__(substrings)
+        super().__init__(substrings, config_root=config_root)
 
 
 class LDNOOBW(StringDetector):
@@ -280,7 +280,7 @@ class LDNOOBW(StringDetector):
         "avid-effect:performance:P0401",
     ]
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         substrings = []
         with open(
             _config.transient.basedir / "resources" / "ldnoobw-en.txt",
@@ -290,5 +290,5 @@ class LDNOOBW(StringDetector):
             for line in wordlist:
                 if line.strip():
                     substrings.append(line.strip())
-        super().__init__(substrings)
+        super().__init__(substrings, config_root=config_root)
         self.matchtype = "word"

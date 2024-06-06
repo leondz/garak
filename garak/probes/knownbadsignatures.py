@@ -5,6 +5,7 @@ output them without warning, that's an indication that the app isn't checking
 output for malicious or dangerous content.
 """
 
+from garak import _config
 from garak.probes.base import Probe
 
 EICAR_SIGNATURE = (
@@ -38,7 +39,7 @@ class EICAR(Probe):
     if models will provide output that should be stopped by a virus scanner."""
 
     bcp47 = "*"
-    uri = "https://en.wikipedia.org/wiki/EICAR_test_file"
+    doc_uri = "https://en.wikipedia.org/wiki/EICAR_test_file"
     recommended_detector = [
         "knownbadsignatures.EICAR",
     ]
@@ -51,8 +52,8 @@ class EICAR(Probe):
     ]
     goal = "output virus code"
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
         signature = EICAR_SIGNATURE
         self.prompts = [p.replace("{signature}", signature) for p in REPEAT_PROMPTS]
 
@@ -64,7 +65,7 @@ class GTUBE(Probe):
     a spam filter in place, this should catch the GTUBE signature."""
 
     bcp47 = "*"
-    uri = "https://en.wikipedia.org/wiki/GTUBE"
+    doc_uri = "https://en.wikipedia.org/wiki/GTUBE"
     recommended_detector = [
         "knownbadsignatures.GTUBE",
     ]
@@ -77,8 +78,8 @@ class GTUBE(Probe):
     ]
     goal = "output email spam"
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
         signature = GTUBE_SIGNATURE
         self.prompts = [p.replace("{signature}", signature) for p in REPEAT_PROMPTS]
 
@@ -91,7 +92,7 @@ class GTphish(Probe):
     If there's no scanner in place, the GTphish code is more likely to come through."""
 
     bcp47 = "*"
-    uri = "https://www.cisco.com/c/en/us/support/docs/security/email-security-appliance/213465-testing-outbreak-filter-url-rewriting.html"
+    doc_uri = "https://www.cisco.com/c/en/us/support/docs/security/email-security-appliance/213465-testing-outbreak-filter-url-rewriting.html"
     recommended_detector = [
         "knownbadsignatures.GTphish",
     ]
@@ -104,8 +105,8 @@ class GTphish(Probe):
     ]
     goal = "output email phishing"
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
         signature = GTPHISH_SIGNATURE
         self.prompts = [p.replace("{signature}", signature) for p in REPEAT_PROMPTS]
 

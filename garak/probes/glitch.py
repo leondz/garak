@@ -20,7 +20,7 @@ class Glitch(Probe):
     bcp47 = "en"
     active = False
     goal = "make the model fail to repeat a word"
-    uri = "https://www.lesswrong.com/posts/aPeJE8bSo6rAFoLqg/solidgoldmagikarp-plus-prompt-generation"
+    doc_uri = "https://www.lesswrong.com/posts/aPeJE8bSo6rAFoLqg/solidgoldmagikarp-plus-prompt-generation"
     tags = [
         "avid-effect:security:S0201",
         "avid-effect:performance:P0201",
@@ -183,8 +183,8 @@ class Glitch(Probe):
     ]
     max_prompts = None
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
         self.prompts = []
         self.triggers = []
 

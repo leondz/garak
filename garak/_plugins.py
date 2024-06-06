@@ -11,6 +11,18 @@ from typing import List
 
 from garak import _config
 
+PLUGIN_TYPES = ("probes", "detectors", "generators", "harnesses", "buffs")
+PLUGIN_CLASSES = ("Probe", "Detector", "Generator", "Harness", "Buff")
+
+
+@staticmethod
+def _extract_modules_klasses(base_klass):
+    return [  # Extract only classes with same source package name
+        name
+        for name, klass in inspect.getmembers(base_klass, inspect.isclass)
+        if klass.__module__.startswith(base_klass.__name__)
+    ]
+
 
 def enumerate_plugins(
     category: str = "probes", skip_base_classes=True
@@ -31,27 +43,12 @@ def enumerate_plugins(
     :type category: str
     """
 
-    if category not in ("probes", "detectors", "generators", "harnesses", "buffs"):
+    if category not in PLUGIN_TYPES:
         raise ValueError("Not a recognised plugin type:", category)
 
     base_mod = importlib.import_module(f"garak.{category}.base")
 
-    if category == "harnesses":
-        root_plugin_classname = "Harness"
-    else:
-        root_plugin_classname = category.title()[:-1]
-
-    base_plugin_classnames = set(
-        [
-            # be careful with what's imported into base modules
-            n
-            for n in dir(base_mod) # everything in the module ..
-            if "__class__" in dir(getattr(base_mod, n)) # .. that's a class ..
-            and getattr(base_mod, n).__class__.__name__ # .. and not a base class
-            == "type"  
-        ]
-        + [root_plugin_classname]
-    )
+    base_plugin_classnames = set(_extract_modules_klasses(base_mod))
 
     plugin_class_names = []
 
@@ -63,17 +60,18 @@ def enumerate_plugins(
         if module_filename == "base.py" and skip_base_classes:
             continue
         module_name = module_filename.replace(".py", "")
-        mod = importlib.import_module(f"garak.{category}.{module_name}")
-        module_entries = set(
-            [entry for entry in dir(mod) if not entry.startswith("__")]
-        )
+        mod = importlib.import_module(
+            f"garak.{category}.{module_name}"
+        )  # import here will access all namespace level imports consider a cache to speed up processing
+        module_entries = set(_extract_modules_klasses(mod))
         if skip_base_classes:
             module_entries = module_entries.difference(base_plugin_classnames)
         module_plugin_names = set()
         for module_entry in module_entries:
             obj = getattr(mod, module_entry)
-            if inspect.isclass(obj):
-                if obj.__bases__[-1].__name__ in base_plugin_classnames:
+            for interface in base_plugin_classnames:
+                klass = getattr(base_mod, interface)
+                if issubclass(obj, klass):
                     module_plugin_names.add((module_entry, obj.active))
 
         for module_plugin_name, active in sorted(module_plugin_names):
@@ -83,17 +81,7 @@ def enumerate_plugins(
     return plugin_class_names
 
 
-def configure_plugin(plugin_path: str, plugin: object) -> object:
-    category, module_name, plugin_class_name = plugin_path.split(".")
-    plugin_name = f"{module_name}.{plugin_class_name}"
-    plugin_type_config = getattr(_config.plugins, category)
-    if plugin_name in plugin_type_config:
-        for k, v in plugin_type_config[plugin_name].items():
-            setattr(plugin, k, v)
-    return plugin
-
-
-def load_plugin(path, break_on_fail=True) -> object:
+def load_plugin(path, break_on_fail=True, config_root=_config) -> object:
     """load_plugin takes a path to a plugin class, and attempts to load that class.
     If successful, it returns an instance of that class.
 
@@ -104,7 +92,25 @@ def load_plugin(path, break_on_fail=True) -> object:
     :type break_on_fail: bool
     """
     try:
-        category, module_name, plugin_class_name = path.split(".")
+        parts = path.split(".")
+        match len(parts):
+            case 2:
+                category, module_name = parts
+                generator_mod = importlib.import_module(
+                    f"garak.{category}.{module_name}"
+                )
+                if generator_mod.DEFAULT_CLASS:
+                    plugin_class_name = generator_mod.DEFAULT_CLASS
+                else:
+                    raise ValueError(
+                        f"module {module_name} has no default class; pass module.ClassName to model_type"
+                    )
+            case 3:
+                category, module_name, plugin_class_name = parts
+            case _:
+                raise ValueError(
+                    f"Attempted to load {path} with unexpected number of tokens."
+                )
     except ValueError as ve:
         if break_on_fail:
             raise ValueError(
@@ -123,7 +129,12 @@ def load_plugin(path, break_on_fail=True) -> object:
             return False
 
     try:
-        plugin_instance = getattr(mod, plugin_class_name)()
+        klass = getattr(mod, plugin_class_name)
+        if "config_root" not in inspect.signature(klass.__init__).parameters:
+            raise AttributeError(
+                'Incompatible function signature: "config_root" is incompatible with this plugin'
+            )
+        plugin_instance = klass(config_root=config_root)
     except AttributeError as ae:
         logging.warning(
             "Exception failed instantiation of %s.%s", module_path, plugin_class_name
@@ -143,7 +154,5 @@ def load_plugin(path, break_on_fail=True) -> object:
             raise Exception(e) from e
         else:
             return False
-
-    plugin_instance = configure_plugin(path, plugin_instance)
 
     return plugin_instance

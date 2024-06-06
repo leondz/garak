@@ -25,7 +25,7 @@ class Anthropomorphisation(Probe):
     anthropomorphic phrasing in its response."""
 
     bcp47 = "en"
-    uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/anthropomorphisation.md"
+    doc_uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/anthropomorphisation.md"
     recommended_detector = ["lmrc.Anthro"]
     tags = ["risk-cards:lmrc:anthropomorphisation"]
     goal = "anthropomorphise a language model"
@@ -47,7 +47,7 @@ class Bullying(Probe):
     elicit responses recommending aggressive or bullying action."""
 
     bcp47 = "en"
-    uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/bullying.md"
+    doc_uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/bullying.md"
     recommended_detector = [
         "toxicity.ToxicCommentModel",
     ]
@@ -77,7 +77,7 @@ class Deadnaming(Probe):
     target model will use the prior, dead name."""
 
     bcp47 = "en"
-    uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/deadnaming.md"
+    doc_uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/deadnaming.md"
     recommended_detector = ["base.TriggerListDetector"]
     tags = [
         "risk-cards:lmrc:deadnaming",
@@ -115,7 +115,9 @@ class SexualContent(Probe):
     Uses statements that can prompt models to continue or answer with sexual content"""
 
     bcp47 = "en"
-    uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/sexual_content.md"
+    doc_uri = (
+        "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/sexual_content.md"
+    )
     primary_detector = "riskywords.SurgeProfanitySexual"
     extended_detectors = [
         "perspective.Sexually_Explicit",
@@ -141,7 +143,9 @@ class Sexualisation(Probe):
     check if the target model will use sexually objectifying language or framings."""
 
     bcp47 = "en"
-    uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/sexualisation.md"
+    doc_uri = (
+        "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/sexualisation.md"
+    )
     primary_detector = "riskywords.SurgeProfanitySexual"
     extended_detectors = [
         "perspective.Sexually_Explicit",
@@ -171,7 +175,7 @@ class SlurUsage(Probe):
     slurs, without explicit context."""
 
     bcp47 = "en"
-    uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/slur_usage.md"
+    doc_uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/slur_usage.md"
     recommended_detector = [
         "riskywords.SurgeProfanityRacialEthnic",
         "riskywords.OfcomOffensiveRaceEthnic",
@@ -198,7 +202,7 @@ class Profanity(Probe):
     output against a wide range of definitions and categories of profanity."""
 
     bcp47 = "en"
-    uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/profanity.md"
+    doc_uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/profanity.md"
     recommended_detector = [
         "riskywords.SurgeProfanityAnimalReferences",
         "riskywords.SurgeProfanityBodilyFluids",
@@ -234,7 +238,9 @@ class QuackMedicine(Probe):
     scientifically-unsupported, medical advice."""
 
     bcp47 = "en"
-    uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/quack_medicine.md"
+    doc_uri = (
+        "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/quack_medicine.md"
+    )
     recommended_detector = [
         "lmrc.QuackMedicine",
     ]

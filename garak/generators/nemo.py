@@ -21,39 +21,33 @@ from garak.generators.base import Generator
 class NeMoGenerator(Generator):
     """Wrapper for the NVIDIA NeMo models via NGC. Expects NGC_API_KEY and ORG_ID environment variables."""
 
+    ENV_VAR = "NGC_API_KEY"
+    ORG_ENV_VAR = "ORG_ID"
+    DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
+        "temperature": 0.9,
+        "top_p": 1.0,
+        "top_k": 2,
+        "repetition_penalty": 1.1,  # between 1 and 2 incl., or none
+        "beam_search_diversity_rate": 0.0,
+        "beam_width": 1,
+        "length_penalty": 1,
+        "guardrail": None,  # NotImplemented in library
+        "api_host": "https://api.llm.ngc.nvidia.com/v1",
+    }
+
     supports_multiple_generations = False
     generator_family_name = "NeMo"
-    temperature = 0.9
-    top_p = 1.0
-    top_k = 2
-    repetition_penalty = 1.1  # between 1 and 2 incl., or none
-    beam_search_diversity_rate = 0.0
-    beam_width = 1
-    length_penalty = 1
-    guardrail = None  # NotImplemented in library
 
-    def __init__(self, name=None, generations=10):
+    def __init__(self, name=None, generations=10, config_root=_config):
         self.name = name
+        self.org_id = None
+        self._load_config(config_root)
         self.fullname = f"NeMo {self.name}"
         self.seed = _config.run.seed
-        self.api_host = "https://api.llm.ngc.nvidia.com/v1"
 
-        super().__init__(name, generations=generations)
-
-        self.api_key = os.getenv("NGC_API_KEY", default=None)
-        if self.api_key is None:
-            raise APIKeyMissingError(
-                'Put the NGC API key in the NGC_API_KEY environment variable (this was empty)\n \
-                e.g.: export NGC_API_KEY="xXxXxXxXxXxXxXxXxXxX"'
-            )
-        self.org_id = os.getenv("ORG_ID")
-
-        if self.org_id is None:
-            raise APIKeyMissingError(
-                'Put your org ID in the ORG_ID environment variable (this was empty)\n \
-                e.g.: export ORG_ID="xxxx8yyyy/org-name"\n \
-                Check "view code" on https://llm.ngc.nvidia.com/playground to see the ID'
-            )
+        super().__init__(
+            self.name, generations=self.generations, config_root=config_root
+        )
 
         self.nemo = nemollm.api.NemoLLM(
             api_host=self.api_host, api_key=self.api_key, org_id=self.org_id
@@ -62,6 +56,21 @@ class NeMoGenerator(Generator):
         if self.name is None:
             print(json.dumps(self.nemo.list_models(), indent=2))
             raise ValueError("Please specify a NeMo model - see list above")
+
+    def _validate_env_var(self):
+        if self.org_id is None:
+            if not hasattr(self, "org_env_var"):
+                self.org_env_var = self.ORG_ENV_VAR
+            self.org_id = os.getenv(self.org_env_var, None)
+
+        if self.org_id is None:
+            raise APIKeyMissingError(
+                f'Put your org ID in the {self.org_env_var} environment variable (this was empty)\n \
+                e.g.: export {self.org_env_var}="xxxx8yyyy/org-name"\n \
+                Check "view code" on https://llm.ngc.nvidia.com/playground to see the ID'
+            )
+
+        return super()._validate_env_var()
 
     @backoff.on_exception(
         backoff.fibo,

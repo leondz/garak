@@ -28,8 +28,8 @@ def load_local_data(self):
         self.prompts = f.read().strip().split("\n")
 
 
-def local_constructor(self):
-    super(self.__class__, self).__init__()
+def local_constructor(self, config_root=_config):
+    super(self.__class__, self).__init__(config_root=config_root)
     self.load_data()
 
 

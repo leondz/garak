@@ -16,9 +16,6 @@ from garak import _config, _plugins
 
 
 class ProbewiseHarness(Harness):
-    def __init__(self):
-        super().__init__()
-
     def _load_detector(self, detector_name: str) -> Detector:
         detector = _plugins.load_plugin(
             "detectors." + detector_name, break_on_fail=False
