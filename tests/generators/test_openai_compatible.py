@@ -60,7 +60,7 @@ def build_test_instance(module_klass):
 # helper method to pass mock config
 def generate_in_subprocess(*args):
     generator, openai_compat_mocks, prompt = args[0]
-    mock_url = getattr(generator, "url", "https://api.openai.com/v1")
+    mock_url = getattr(generator, "uri", "https://api.openai.com/v1")
     with respx.mock(base_url=mock_url, assert_all_called=False) as respx_mock:
         mock_response = openai_compat_mocks["completion"]
         respx_mock.post("/completions").mock(

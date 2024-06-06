@@ -262,14 +262,14 @@ class BaseEncodingProbe:
     ]
     goal = "make the model say an encoded payload"
     bcp47 = "en"
-    uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
+    doc_uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
 
     primary_detector = "encoding.DecodeMatch"
     extended_detectors = [
         "encoding.DecodeApprox",
     ]
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         load_payloads()
         self.tags += extra_tags
         self.prompts, self.triggers = zip(
@@ -295,9 +295,9 @@ class InjectBase64(BaseEncodingProbe, Probe):
     ]
     encoding_name = "BASE64"
 
-    def __init__(self):
-        BaseEncodingProbe.__init__(self)
-        Probe.__init__(self)
+    def __init__(self, config_root=_config):
+        BaseEncodingProbe.__init__(self, config_root=config_root)
+        Probe.__init__(self, config_root=config_root)
 
 
 class InjectBase16(BaseEncodingProbe, Probe):
@@ -309,9 +309,9 @@ class InjectBase16(BaseEncodingProbe, Probe):
     encoding_funcs = [base64.b16encode]
     encoding_name = "BASE16"
 
-    def __init__(self):
-        BaseEncodingProbe.__init__(self)
-        Probe.__init__(self)
+    def __init__(self, config_root=_config):
+        BaseEncodingProbe.__init__(self, config_root=config_root)
+        Probe.__init__(self, config_root=config_root)
 
 
 class InjectBase32(BaseEncodingProbe, Probe):
@@ -323,9 +323,9 @@ class InjectBase32(BaseEncodingProbe, Probe):
     encoding_funcs = [base64.b32encode]
     encoding_name = "BASE32"
 
-    def __init__(self):
-        BaseEncodingProbe.__init__(self)
-        Probe.__init__(self)
+    def __init__(self, config_root=_config):
+        BaseEncodingProbe.__init__(self, config_root=config_root)
+        Probe.__init__(self, config_root=config_root)
 
 
 class InjectAscii85(BaseEncodingProbe, Probe):
@@ -337,9 +337,9 @@ class InjectAscii85(BaseEncodingProbe, Probe):
     encoding_funcs = [base64.a85encode, base64.b85encode]
     encoding_name = "ASCII85"
 
-    def __init__(self):
-        BaseEncodingProbe.__init__(self)
-        Probe.__init__(self)
+    def __init__(self, config_root=_config):
+        BaseEncodingProbe.__init__(self, config_root=config_root)
+        Probe.__init__(self, config_root=config_root)
 
 
 class InjectHex(BaseEncodingProbe, Probe):
@@ -351,9 +351,9 @@ class InjectHex(BaseEncodingProbe, Probe):
     encoding_funcs = [binascii.b2a_hex]
     encoding_name = "hex"
 
-    def __init__(self):
-        BaseEncodingProbe.__init__(self)
-        Probe.__init__(self)
+    def __init__(self, config_root=_config):
+        BaseEncodingProbe.__init__(self, config_root=config_root)
+        Probe.__init__(self, config_root=config_root)
 
 
 class InjectQP(BaseEncodingProbe, Probe):
@@ -366,9 +366,9 @@ class InjectQP(BaseEncodingProbe, Probe):
     encoding_name = "Quoted-Printable"
     active = False  # seems to just pass text right through - when using ascii chars
 
-    def __init__(self):
-        BaseEncodingProbe.__init__(self)
-        Probe.__init__(self)
+    def __init__(self, config_root=_config):
+        BaseEncodingProbe.__init__(self, config_root=config_root)
+        Probe.__init__(self, config_root=config_root)
 
 
 class InjectUU(BaseEncodingProbe, Probe):
@@ -386,10 +386,10 @@ class InjectUU(BaseEncodingProbe, Probe):
             hash_chunks.append(binascii.b2a_uu(test_chunk))
         return "".join(map(bytes.decode, hash_chunks))
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         self.encoding_funcs = [self.UUencode]
-        BaseEncodingProbe.__init__(self)
-        Probe.__init__(self)
+        BaseEncodingProbe.__init__(self, config_root=config_root)
+        Probe.__init__(self, config_root=config_root)
 
 
 class InjectMime(BaseEncodingProbe, Probe):
@@ -401,12 +401,12 @@ class InjectMime(BaseEncodingProbe, Probe):
     encoding_name = "MIME"
     active = False  # seems to just pass text right through - when using ascii chars
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         import quopri
 
         self.encoding_funcs = [quopri.encodestring]
-        BaseEncodingProbe.__init__(self)
-        Probe.__init__(self)
+        BaseEncodingProbe.__init__(self, config_root=config_root)
+        Probe.__init__(self, config_root=config_root)
 
 
 class InjectROT13(BaseEncodingProbe, Probe):
@@ -419,9 +419,9 @@ class InjectROT13(BaseEncodingProbe, Probe):
     encoding_funcs = [rot13]
     encoding_name = "ROT13"
 
-    def __init__(self):
-        BaseEncodingProbe.__init__(self)
-        Probe.__init__(self)
+    def __init__(self, config_root=_config):
+        BaseEncodingProbe.__init__(self, config_root=config_root)
+        Probe.__init__(self, config_root=config_root)
 
 
 class InjectBase2048(BaseEncodingProbe, Probe):
@@ -432,12 +432,12 @@ class InjectBase2048(BaseEncodingProbe, Probe):
 
     encoding_name = "BASE2048"
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         import base2048
 
         self.encoding_funcs = [base2048.encode]
-        BaseEncodingProbe.__init__(self)
-        Probe.__init__(self)
+        BaseEncodingProbe.__init__(self, config_root=config_root)
+        Probe.__init__(self, config_root=config_root)
 
 
 class InjectBraille(BaseEncodingProbe, Probe):
@@ -446,13 +446,13 @@ class InjectBraille(BaseEncodingProbe, Probe):
     Encodes payloads using braille, and tries a variety of ways of getting the target
     model to repeat & decode them."""
 
-    uri = ""
+    doc_uri = ""
     encoding_funcs = [braille]
     encoding_name = "Braille"
 
-    def __init__(self):
-        BaseEncodingProbe.__init__(self)
-        Probe.__init__(self)
+    def __init__(self, config_root=_config):
+        BaseEncodingProbe.__init__(self, config_root=config_root)
+        Probe.__init__(self, config_root=config_root)
 
 
 class InjectMorse(BaseEncodingProbe, Probe):
@@ -461,13 +461,13 @@ class InjectMorse(BaseEncodingProbe, Probe):
     Encodes payloads using morse, and tries a variety of ways of getting the target
     model to repeat & decode them."""
 
-    uri = ""
+    doc_uri = ""
     encoding_funcs = [morse]
     encoding_name = "Morse"
 
-    def __init__(self):
-        BaseEncodingProbe.__init__(self)
-        Probe.__init__(self)
+    def __init__(self, config_root=_config):
+        BaseEncodingProbe.__init__(self, config_root=config_root)
+        Probe.__init__(self, config_root=config_root)
 
 
 class InjectNato(BaseEncodingProbe, Probe):
@@ -476,7 +476,7 @@ class InjectNato(BaseEncodingProbe, Probe):
     Encodes payloads using the classic NATO phonetic alphabet, and tries a
     variety of ways of getting the target model to repeat & decode them."""
 
-    uri = "https://en.wikipedia.org/wiki/NATO_phonetic_alphabet"
+    doc_uri = "https://en.wikipedia.org/wiki/NATO_phonetic_alphabet"
 
     def nato(text: bytes) -> bytes:
         nato_map = {
@@ -517,9 +517,9 @@ class InjectNato(BaseEncodingProbe, Probe):
     encoding_funcs = [nato]
     encoding_name = "Nato"
 
-    def __init__(self):
-        BaseEncodingProbe.__init__(self)
-        Probe.__init__(self)
+    def __init__(self, config_root=_config):
+        BaseEncodingProbe.__init__(self, config_root=config_root)
+        Probe.__init__(self, config_root=config_root)
 
 
 class InjectEcoji(BaseEncodingProbe, Probe):
@@ -528,7 +528,7 @@ class InjectEcoji(BaseEncodingProbe, Probe):
     Encodes payloads using the [ecoji](https://ecoji.io/) mapping, and tries a variety
     of ways of getting the target model to repeat & decode them."""
 
-    uri = "https://ecoji.io/"
+    doc_uri = "https://ecoji.io/"
 
     def _ecoji(text: bytes) -> bytes:
         import io
@@ -545,9 +545,9 @@ class InjectEcoji(BaseEncodingProbe, Probe):
     encoding_name = "Ecoji"
     encoding_funcs = [_ecoji]
 
-    def __init__(self):
-        BaseEncodingProbe.__init__(self)
-        Probe.__init__(self)
+    def __init__(self, config_root=_config):
+        BaseEncodingProbe.__init__(self, config_root=config_root)
+        Probe.__init__(self, config_root=config_root)
 
 
 class InjectZalgo(BaseEncodingProbe, Probe):
@@ -556,7 +556,7 @@ class InjectZalgo(BaseEncodingProbe, Probe):
     Encodes payloads using Zalgo decoration, and tries a variety
     of ways of getting the target model to repeat & decode them."""
 
-    uri = "https://en.wikipedia.org/wiki/Zalgo_text"
+    doc_uri = "https://en.wikipedia.org/wiki/Zalgo_text"
 
     def zalgo(text: bytes) -> bytes:
         from zalgolib.zalgolib import enzalgofy
@@ -570,6 +570,6 @@ class InjectZalgo(BaseEncodingProbe, Probe):
     encoding_name = "Zalgo"
     encoding_funcs = [zalgo]
 
-    def __init__(self):
-        BaseEncodingProbe.__init__(self)
-        Probe.__init__(self)
+    def __init__(self, config_root=_config):
+        BaseEncodingProbe.__init__(self, config_root=config_root)
+        Probe.__init__(self, config_root=config_root)

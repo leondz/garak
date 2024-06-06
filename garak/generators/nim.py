@@ -33,19 +33,20 @@ class NVOpenAIChat(OpenAICompatible):
     # per https://docs.nvidia.com/ai-enterprise/nim-llm/latest/openai-api.html
     # 2024.05.02, `n>1` is not supported
     ENV_VAR = "NIM_API_KEY"
+    DEFAULT_PARAMS = OpenAICompatible.DEFAULT_PARAMS | {
+        "temperature": 0.1,
+        "top_p": 0.7,
+        "top_k": 0,  # top_k is hard set to zero as of 24.04.30
+        "uri": "https://integrate.api.nvidia.com/v1/",
+    }
     active = True
     supports_multiple_generations = False
     generator_family_name = "NIM"
-    temperature = 0.1
-    top_p = 0.7
-    top_k = 0  # top_k is hard set to zero as of 24.04.30
-
-    url = "https://integrate.api.nvidia.com/v1/"
 
     timeout = 60
 
     def _load_client(self):
-        self.client = openai.OpenAI(base_url=self.url, api_key=self.api_key)
+        self.client = openai.OpenAI(base_url=self.uri, api_key=self.api_key)
         if self.name in ("", None):
             raise ValueError(
                 "NIMs require model name to be set, e.g. --model_name mistralai/mistral-8x7b-instruct-v0.1\nCurrent models:\n"
@@ -89,7 +90,7 @@ class NVOpenAICompletion(NVOpenAIChat):
     """
 
     def _load_client(self):
-        self.client = openai.OpenAI(base_url=self.url, api_key=self.api_key)
+        self.client = openai.OpenAI(base_url=self.uri, api_key=self.api_key)
         self.generator = self.client.completions
 
 

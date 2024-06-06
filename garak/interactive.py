@@ -113,27 +113,20 @@ class GarakCommands(cmd2.CommandSet):
         try:
             if self._cmd.generator:
                 generator_module_name = self._cmd.generator.split(".")[0]
-                generator_class_name = self._cmd.generator.split(".")[1]
+                generator_name = self._cmd.generator
             else:
                 generator_module_name = self._cmd.target_type
-                generator_class_name = None
-            generator_mod = importlib.import_module(
-                "garak.generators." + generator_module_name
+                generator_name = self._cmd.target_type
+
+            gen_conf = {generator_module_name: {"name": self._cmd.target_model}}
+            _config._combine_into(gen_conf, _config.plugins.generators)
+
+            from garak import _plugins
+
+            generator = _plugins.load_plugin(
+                f"generators.{generator_name}", config_root=_config
             )
-            if generator_class_name is None:
-                logger.info(
-                    f"Loading default generator class for {generator_module_name}"
-                )
-                try:
-                    generator_class_name = generator_mod.DEFAULT_CLASS
-                except Exception as e:
-                    logger.error(
-                        f"Module {generator_module_name} has no default class. Specify a generator."
-                    )
-                    return
-            generator = getattr(generator_mod, generator_class_name)(
-                self._cmd.target_model
-            )
+
         except ImportError as e:
             logger.error(e)
             print("Could not load generator from Garak generators.")

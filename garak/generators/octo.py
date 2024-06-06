@@ -21,32 +21,32 @@ class OctoGenerator(Generator):
     For more details, see https://octoai.cloud/tools/text.
     """
 
+    ENV_VAR = "OCTO_API_TOKEN"
+    DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
+        "max_tokens": 128,
+        "presence_penalty": 0,
+        "temperature": 0.1,
+        "top_p": 1,
+    }
+
     generator_family_name = "OctoAI"
     supports_multiple_generations = False
 
-    max_tokens = 128
-    presence_penalty = 0
-    temperature = 0.1
-    top_p = 1
-
-    def __init__(self, name, generations=10):
+    def __init__(self, name="", generations=10, config_root=_config):
         from octoai.client import Client
 
         self.name = name
+        self._load_config(config_root)
         self.fullname = f"{self.generator_family_name} {self.name}"
         self.seed = 9
         if hasattr(_config.run, "seed"):
             self.seed = _config.run.seed
 
-        super().__init__(name, generations=generations)
+        super().__init__(
+            self.name, generations=self.generations, config_root=config_root
+        )
 
-        octoai_token = os.getenv("OCTO_API_TOKEN", default=None)
-        if octoai_token is None:
-            raise ValueError(
-                '🛑 Put the OctoAI API token in the OCTO_API_TOKEN environment variable (this was empty)\n \
-                e.g.: export OCTO_API_TOKEN="kjhasdfuhasi8djgh"'
-            )
-        self.client = Client(token=octoai_token)
+        self.client = Client(token=self.api_key)
 
     @backoff.on_exception(backoff.fibo, octoai.errors.OctoAIServerError, max_value=70)
     def _call_model(
@@ -80,8 +80,8 @@ class InferenceEndpoint(OctoGenerator):
     If garak guesses wrong, please please open a ticket.
     """
 
-    def __init__(self, name, generations=10):
-        super().__init__(name, generations=generations)
+    def __init__(self, name="", generations=10, config_root=_config):
+        super().__init__(name, generations=generations, config_root=config_root)
         self.octo_model = "-".join(
             self.name.replace("-demo", "").replace("https://", "").split("-")[:-1]
         )

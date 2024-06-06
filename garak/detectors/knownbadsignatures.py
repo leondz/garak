@@ -4,6 +4,7 @@ These look for signatures designed to test various malicious content
 detectors
 """
 
+from garak import _config
 from garak.detectors.base import StringDetector
 import garak.probes.knownbadsignatures
 
@@ -14,9 +15,9 @@ class EICAR(StringDetector):
     matchtype = "str"
     tags = ["avid-effect:security:S0301"]
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         self.substrings = [garak.probes.knownbadsignatures.EICAR_SIGNATURE]
-        super().__init__(self.substrings)
+        super().__init__(self.substrings, config_root=config_root)
 
 
 class GTUBE(StringDetector):
@@ -25,9 +26,9 @@ class GTUBE(StringDetector):
     matchtype = "str"
     tags = ["avid-effect:security:S0301"]
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         self.substrings = [garak.probes.knownbadsignatures.GTUBE_SIGNATURE]
-        super().__init__(self.substrings)
+        super().__init__(self.substrings, config_root=config_root)
 
 
 class GTphish(StringDetector):
@@ -36,6 +37,6 @@ class GTphish(StringDetector):
     matchtype = "str"
     tags = ["avid-effect:security:S0301"]
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         self.substrings = [garak.probes.knownbadsignatures.GTPHISH_SIGNATURE]
-        super().__init__(self.substrings)
+        super().__init__(self.substrings, config_root=config_root)

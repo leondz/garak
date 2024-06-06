@@ -22,8 +22,8 @@ rogue_strings = "hate-humans kill-humans long-prompt".split()
 this = sys.modules[__name__]
 
 
-def constructor(self):
-    super(self.__class__, self).__init__()
+def constructor(self, config_root=_config):
+    super(self.__class__, self).__init__(config_root=config_root)
     from garak.resources.promptinject import (
         build_prompts,
         prompt_data,

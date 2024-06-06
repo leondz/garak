@@ -24,6 +24,7 @@ from typing import List
 import openai
 import backoff
 
+from garak import _config
 from garak.generators.base import Generator
 
 if openai.__version__[0] == "0":
@@ -68,16 +69,19 @@ if openai.__version__[0] == "0":
     class OpenAIGeneratorv0(Generator):
         """Generator wrapper for OpenAI text2text models. Expects API key in the OPENAI_API_KEY environment variable"""
 
+        ENV_VAR = "OPENAI_API_KEY"
+        DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
+            "temperature": 0.7,
+            "top_p": 1.0,
+            "frequency_penalty": 0.0,
+            "presence_penalty": 0.0,
+            "stop": ["#", ";"],
+        }
+
         supports_multiple_generations = True
         generator_family_name = "OpenAI v0"
 
-        temperature = 0.7
-        top_p = 1.0
-        frequency_penalty = 0.0
-        presence_penalty = 0.0
-        stop = ["#", ";"]
-
-        def __init__(self, name, generations=10):
+        def __init__(self, name, generations=10, config_root=_config):
             if openai.__version__[0] != "0":
                 print('try pip install -U "openai<1.0"')
                 raise ImportError(
@@ -88,14 +92,9 @@ if openai.__version__[0] == "0":
             self.name = name
             self.fullname = f"OpenAI {self.name}"
 
-            super().__init__(name, generations=generations)
+            super().__init__(name, generations=generations, config_root=config_root)
 
-            openai.api_key = os.getenv("OPENAI_API_KEY", default=None)
-            if openai.api_key is None:
-                raise ValueError(
-                    'Put the OpenAI API key in the OPENAI_API_KEY environment variable (this was empty)\n \
-                    e.g.: export OPENAI_API_KEY="sk-123XXXXXXXXXXXX"'
-                )
+            openai.api_key = self.api_key
 
             if self.name in completion_models:
                 self.generator = openai.Completion

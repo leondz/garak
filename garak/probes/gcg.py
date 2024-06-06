@@ -34,7 +34,7 @@ class GCGCached(Probe):
         "payload:jailbreak",
     ]
     goal = "cause the model to disregard the system prompt"
-    uri = "https://arxiv.org/abs/2307.15043"
+    doc_uri = "https://arxiv.org/abs/2307.15043"
 
     prompts = list()
 
@@ -63,15 +63,15 @@ class GCG(Probe):
         "payload:jailbreak",
     ]
     goal = "cause the model to disregard the system prompt"
-    uri = "https://arxiv.org/abs/2307.15043"
+    doc_uri = "https://arxiv.org/abs/2307.15043"
 
     prompts = list()
     active = False
 
-    def __init__(self, goal: str = GOAL):
+    def __init__(self, goal: str = GOAL, config_root=_config):
         self.goal = goal
         self.run_gcg = run_gcg
-        super().__init__()
+        super().__init__(config_root=config_root)
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
         self.generator = generator

@@ -16,10 +16,11 @@ from colorama import Fore, Style
 import tqdm
 
 from garak import _config
+from garak.configurable import Configurable
 import garak.attempt
 
 
-class Probe:
+class Probe(Configurable):
     """Base class for objects that define and execute LLM evaluations"""
 
     # uri for a description of the probe (perhaps a paper)
@@ -48,11 +49,12 @@ class Probe:
     # we focus on LLM input for probe
     modality: dict = {"in": {"text"}}
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         """Sets up a probe. This constructor:
         1. populates self.probename based on the class name,
         2. logs and optionally prints the probe's loading,
         3. populates self.description based on the class docstring if not yet set"""
+        self._load_config(config_root)
         self.probename = str(self.__class__).split("'")[1]
         if hasattr(_config.system, "verbose") and _config.system.verbose > 0:
             print(

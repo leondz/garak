@@ -21,14 +21,16 @@ import tqdm
 import garak.attempt
 from garak import _config
 from garak import _plugins
+from garak.configurable import Configurable
 
 
-class Harness:
+class Harness(Configurable):
     """Class to manage the whole process of probing, detecting and evaluating"""
 
     active = True
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
+        self._load_config(config_root)
         logging.info("harness init: %s", self)
 
     def _load_buffs(self, buff_names: List) -> None:

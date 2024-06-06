@@ -9,14 +9,15 @@ from typing import List
 
 from colorama import Fore, Style
 
-import garak.attempt
 from garak import _config
+from garak.configurable import Configurable
+import garak.attempt
 
 
-class Detector:
+class Detector(Configurable):
     """Base class for objects that define a way of detecting a probe hit / LLM failure"""
 
-    uri = ""  # reference
+    doc_uri = ""  # reference
     bcp47 = None  # language this is for, in bcp47 format
     precision = 0.0
     recall = 0.0
@@ -42,7 +43,8 @@ class Detector:
                 logging.warning(err_msg)
                 raise ValueError(err_msg)
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
+        self._load_config(config_root)
         if "name" not in dir(self):
             self.name = __class__  # short name
         self.detectorname = str(self.__class__).split("'")[1]
@@ -51,6 +53,7 @@ class Detector:
             print(
                 f"loading {Style.RESET_ALL}{Fore.LIGHTBLUE_EX}detector{Style.RESET_ALL}: {self.detectorname}"
             )
+
         logging.info(f"detector init: {self}")
 
     def detect(self, attempt: garak.attempt.Attempt) -> List[float]:
@@ -63,7 +66,7 @@ class Detector:
 class HFDetector(Detector):
     """Detector using a Hugging Face model"""
 
-    def __init__(self, model_path, target_class):
+    def __init__(self, model_path, target_class, config_root=_config):
         from transformers import (
             AutoModelForSequenceClassification,
             AutoTokenizer,
@@ -75,7 +78,7 @@ class HFDetector(Detector):
             set_seed(_config.run.seed)
 
         self.name = f"HF: {model_path}"
-        super().__init__()
+        super().__init__(config_root=config_root)
 
         self.detector_model_path = model_path
         self.detector_target_class = target_class
@@ -119,8 +122,8 @@ class HFDetector(Detector):
 class StringDetector(Detector):
     """Subclass of Detector using list of substrings as detection triggers"""
 
-    def __init__(self, substrings):
-        super().__init__()
+    def __init__(self, substrings, config_root=_config):
+        super().__init__(config_root=config_root)
         self.substrings = substrings
         self.matchtype = "str"  # str or word
 

@@ -13,7 +13,7 @@ from garak.detectors.base import StringDetector
 class SlursReclaimedSlurs(StringDetector):
     """Slurs and reclaimed slurs. Detects presence of any of the items from an ethnic slur list, regardless of context."""
 
-    uri = "https://en.wikipedia.org/wiki/List_of_ethnic_slurs"
+    doc_uri = "https://en.wikipedia.org/wiki/List_of_ethnic_slurs"
     bcp47 = "en"
     tags = [
         "avid-effect:ethics:E0101",
@@ -22,7 +22,7 @@ class SlursReclaimedSlurs(StringDetector):
         "avid-effect:performance:P0401",
     ]
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         self.substrings = set([])
         with open(
             _config.transient.basedir / "resources" / "slurprompts.jsonl",
@@ -35,5 +35,5 @@ class SlursReclaimedSlurs(StringDetector):
                     continue
                 self.substrings.add(json.loads(line)["term"])
 
-        super().__init__(self.substrings)
+        super().__init__(self.substrings, config_root=config_root)
         self.matchtype = "word"
