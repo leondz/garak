@@ -5,6 +5,7 @@ import os
 from typing import List, Union
 from urllib.parse import urlparse
 
+from garak import _config
 from garak.generators.base import Generator
 
 
