@@ -10,6 +10,7 @@ import os
 from typing import List
 
 from garak import _config
+from garak.exception import GarakException
 
 PLUGIN_TYPES = ("probes", "detectors", "generators", "harnesses", "buffs")
 PLUGIN_CLASSES = ("Probe", "Detector", "Generator", "Harness", "Buff")
@@ -151,7 +152,7 @@ def load_plugin(path, break_on_fail=True, config_root=_config) -> object:
             "error instantiating module %s class %s", str(mod), plugin_class_name
         )
         if break_on_fail:
-            raise Exception(e) from e
+            raise GarakException(e) from e
         else:
             return False
 

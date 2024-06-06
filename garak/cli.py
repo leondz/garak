@@ -12,6 +12,7 @@ def main(arguments=[]) -> None:
 
     from garak import __version__, __description__
     from garak import _config
+    from garak.exception import GarakException
 
     _config.transient.starttime = datetime.datetime.now()
     _config.transient.starttime_iso = _config.transient.starttime.isoformat()
@@ -512,10 +513,11 @@ def main(arguments=[]) -> None:
                     "💡 try setting --model_type (--model_name is currently set but not --model_type)"
                 )
             logging.info("nothing to do 🤷")
-    except KeyboardInterrupt:
+    except KeyboardInterrupt as e:
         msg = "User cancel received, terminating all runs"
+        logging.exception(e)
         logging.info(msg)
         print(msg)
-    except ValueError as e:
-        logging.error(e)
+    except (ValueError, GarakException) as e:
+        logging.exception(e)
         print(e)
