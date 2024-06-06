@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from typing import Union
 from argparse import ArgumentParser
 import torch.multiprocessing as mp
 from datetime import datetime
@@ -91,7 +92,7 @@ def run_gcg(
     transfer: bool = False,
     progressive: bool = False,
     stop_success: bool = True,
-    train_data: str = gcg_resource_data / "advbench" / "harmful_behaviors.csv",
+    train_data: Union[str,None] = None,
     n_train: int = 50,
     n_test: int = 0,
     outfile: str = gcg_resource_data / "gcg.txt",

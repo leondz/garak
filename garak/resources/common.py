@@ -1,3 +1,8 @@
+import logging
+import urllib.error
+from pathlib import Path
+import pandas as pd
+
 import garak._config
 
 rejection_strings = [
@@ -35,4 +40,24 @@ rejection_strings = [
     "never",
 ]
 
-advbench_path = garak._config.transient.basedir / "resources" / "gcg" / "data" / "advbench" / "harmful_behaviors.csv"
+
+def load_advbench() -> pd.DataFrame:
+    advbench_path = garak._config.transient.basedir / "resources" / "advbench" / "harmful_behaviors.csv"
+    if not Path(advbench_path).is_file():
+        try:
+            hb = "https://raw.githubusercontent.com/llm-attacks/llm-attacks/main/data/advbench/harmful_behaviors.csv"
+            df = pd.read_csv(hb)
+        except pd.errors.ParserError as e:
+            msg = f"Failed to parse the csv at {hb}"
+            logging.error(msg)
+            raise pd.errors.ParserError
+        except urllib.error.HTTPError as e:
+            msg = f"Encountered error {e} trying to retrieve {hb}"
+            logging.error(msg)
+            raise urllib.error.HTTPError
+        df.to_csv(advbench_path, index=False)
+    else:
+        df = pd.read_csv(advbench_path)
+
+    return df
+
