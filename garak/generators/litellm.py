@@ -122,7 +122,6 @@ class LiteLLMGenerator(Generator):
             self.name, generations=self.generations, config_root=config_root
         )
         
-        self.litellm = importlib.import_module("litellm")
         if self.provider is None:
             raise ValueError(
                 "litellm generator needs to have a provider value configured - see docs"
@@ -137,6 +136,13 @@ class LiteLLMGenerator(Generator):
                         f"Please supply an OpenAI API key in the {self.key_env_var} environment variable"
                         " or in the configuration file"
                     )
+        self.litellm = importlib.import_module("litellm")
+        # Fix issue with Ollama which does not support `presence_penalty`
+        self.litellm.drop_params = True
+        # Suppress log messages from LiteLLM
+        self.litellm.verbose_logger.disabled = True
+
+
 
     @backoff.on_exception(backoff.fibo, Exception, max_value=70)
     def _call_model(
