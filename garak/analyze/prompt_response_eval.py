@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # SPDX-FileCopyrightText: Portions Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
@@ -29,7 +30,7 @@ with open(sys.argv[1], "r", encoding="utf-8") as report_jsonl_file:
                         "\t".join(
                             [
                                 probe,
-                                prompt,
+                                collapse_whitespace(prompt),
                                 collapse_whitespace(outputs[i]),
                                 detector,
                                 str(detector_scores[i]),
