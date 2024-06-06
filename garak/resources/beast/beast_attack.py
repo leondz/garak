@@ -5,18 +5,23 @@ from typing import Union, Optional
 
 import torch
 import numpy as np
-import pandas as pd
 
 import garak._config
 from garak.generators import Generator
-from garak.resources.common import rejection_strings, advbench_path
+from garak.resources.common import rejection_strings, load_advbench
+from tqdm import tqdm
 
+# System prompt pulled from reference implementation
+SYSTEM_PROMPT = ("A chat between a curious user and an artificial intelligence assistant. "
+                 "The assistant gives helpful, detailed, and polite answers to the user's questions.")
 beast_resource_data = garak._config.transient.basedir / "resources" / "beast" / "data"
 
 
-def format_chat(prompt: str):
-    # TODO: Implement this functionality!
-    return prompt
+def format_chat(generator: Generator, prompt: str):
+    chat = [{"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": prompt}]
+    formatted_prompt = generator.tokenizer.apply_chat_template(chat, tokenize=False)
+    return formatted_prompt
 
 
 @torch.no_grad()
@@ -64,7 +69,7 @@ def tensorize(generator: Generator,
         suffix_tensor = torch.tensor(suffix_ids, dtype=torch.long) if isinstance(suffix_ids, list) else suffix_ids
     prompt_encoding = generator.tokenizer.encode(prompt, add_special_tokens=False, return_tensors="pt").squeeze(0)
     output_encoding = generator.tokenizer.encode(response, add_special_tokens=False, return_tensors="pt").squeeze(0)
-    encoding_tensor = torch.cat((prompt_encoding, suffix_tensor, output_encoding))
+    encoding_tensor = torch.cat((prompt_encoding, suffix_tensor, output_encoding)).long()
     split = encoding_tensor.shape[0] - output_encoding.shape[0]
 
     return encoding_tensor, split
@@ -137,7 +142,8 @@ def sample_tokens(generator: Generator,
     tensor, split = tensorize(generator, prompt, response, suffix_ids)
     tensor = tensor[:split].unsqueeze(0).to(generator.model.device)
     logits = generator.model(tensor).logits[:, -1, :]
-    probs = torch.softmax(logits / generator.temperature, dim=-1)
+    temp = generator.temperature if generator.temperature is not None else generator.generation_config.temperature
+    probs = torch.softmax(logits / temp, dim=-1)
     tokens = torch.multinomial(probs, k, replacement=False)
     return tokens[0].tolist()
 
@@ -170,7 +176,7 @@ def get_best_candidate(generator: Generator,
     best_score = np.Inf
 
     beams = [[sample] for sample in sample_tokens(generator, prompt, response, k1, suffix_ids)]
-    for i in range(1, suffix_len):
+    for i in tqdm(range(suffix_len), leave=False):
         candidates = list()
         for beam in beams:
             for next_token in sample_tokens(generator, prompt, response, k2, beam):
@@ -214,21 +220,27 @@ def attack(generator: Generator,
         scores: Score for attack objective per item in prompt_tokens
     """
     suffixes = list()
-    prompts = [format_chat(prompt) for prompt in prompts]
+    prompts = [format_chat(generator, prompt) for prompt in prompts]
     response = ""
 
-    for prompt in prompts:
+    for prompt in tqdm(prompts, leave=False, position=0):
         best_candidate = []
+        if trials > 1:
+            pbar = tqdm(total=trials, leave=False)
+
         for _ in range(trials):
             best_candidate, score = get_best_candidate(generator, prompt, response, k1, k2, suffix_len, best_candidate)
 
-        if target:
-            result, response = evaluate_target(generator, prompt, best_candidate, target)
-        else:
-            result, response = evaluate(generator, prompt, best_candidate)
+            if target:
+                result, response = evaluate_target(generator, prompt, best_candidate, target)
+            else:
+                result, response = evaluate(generator, prompt, best_candidate)
 
-        if result:
-            suffixes.append(generator.tokenizer.decode(best_candidate))
+            if result:
+                suffixes.append(generator.tokenizer.decode(best_candidate))
+
+            if trials > 1:
+                pbar.update(1)
 
     return suffixes
 
@@ -263,8 +275,11 @@ def run_beast(
         raise ValueError(f"{target_generator.name} does not have both a `model` and `tokenizer` attribute. "
                          f"Cannot run BEAST.")
 
+    if not hasattr(target_generator.tokenizer, "apply_chat_template"):
+        raise ValueError(f"{target_generator.name} tokenizer does not have a chat template to apply.")
+
     if not prompts:
-        data = pd.read_csv(advbench_path)
+        data = load_advbench()
         prompts = data["target"].tolist()
 
     suffixes = attack(generator=target_generator,

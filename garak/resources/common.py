@@ -55,6 +55,7 @@ def load_advbench() -> pd.DataFrame:
             msg = f"Encountered error {e} trying to retrieve {hb}"
             logging.error(msg)
             raise urllib.error.HTTPError
+        Path(advbench_path).parent.mkdir(parents=True, exist_ok=True)
         df.to_csv(advbench_path, index=False)
     else:
         df = pd.read_csv(advbench_path)
