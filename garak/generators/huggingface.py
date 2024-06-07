@@ -87,7 +87,8 @@ class Pipeline(Generator, HFCompatible):
             do_sample=self.do_sample,
             device=self.device,
         )
-        self.deprefix_prompt = self.name in models_to_deprefix
+        if not hasattr(self, "deprefix_prompt"):
+            self.deprefix_prompt = self.name in models_to_deprefix
         if _config.loaded:
             if _config.run.deprefix is True:
                 self.deprefix_prompt = True
@@ -173,7 +174,8 @@ class OptimumPipeline(Pipeline, HFCompatible):
             device=self.device,
             use_fp8=use_fp8,
         )
-        self.deprefix_prompt = name in models_to_deprefix
+        if not hasattr(self, "deprefix_prompt"):
+            self.deprefix_prompt = self.name in models_to_deprefix
         if _config.loaded:
             if _config.run.deprefix is True:
                 self.deprefix_prompt = True
@@ -219,7 +221,8 @@ class ConversationalPipeline(Generator, HFCompatible):
             device=self.device,
         )
         self.conversation = Conversation()
-        self.deprefix_prompt = self.name in models_to_deprefix
+        if not hasattr(self, "deprefix_prompt"):
+            self.deprefix_prompt = self.name in models_to_deprefix
         if _config.loaded:
             if _config.run.deprefix is True:
                 self.deprefix_prompt = True
@@ -494,7 +497,8 @@ class Model(Generator, HFCompatible):
             config=self.config,
         ).to(self.init_device)
 
-        self.deprefix_prompt = self.name in models_to_deprefix
+        if not hasattr(self, "deprefix_prompt"):
+            self.deprefix_prompt = self.name in models_to_deprefix
 
         if self.config.tokenizer_class:
             self.tokenizer = transformers.AutoTokenizer.from_pretrained(
