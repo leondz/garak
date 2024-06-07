@@ -56,6 +56,7 @@ class Pipeline(Generator, HFCompatible):
 
     generator_family_name = "Hugging Face 🤗 pipeline"
     supports_multiple_generations = True
+    parallel_capable = False
 
     def __init__(
         self, name="", do_sample=True, generations=10, device=0, config_root=_config
@@ -98,9 +99,9 @@ class Pipeline(Generator, HFCompatible):
             if _config.run.deprefix is True:
                 self.deprefix_prompt = True
 
-                self._set_hf_context_len(self.generator.model.config)
+        self._set_hf_context_len(self.generator.model.config)
 
-    def _clear_client():
+    def _clear_client(self):
         self.generator = None
 
     def _call_model(
@@ -237,7 +238,7 @@ class ConversationalPipeline(Pipeline, HFCompatible):
         if isinstance(prompt, str):
             self.conversation.add_message({"role": "user", "content": prompt})
             self.conversation = self.generator(self.conversation)
-            generations = [self.conversation[-1]["content"]]
+            generations = [self.conversation[-1]["content"]]  # what is this doing?
 
         elif isinstance(prompt, list):
             from transformers import Conversation
