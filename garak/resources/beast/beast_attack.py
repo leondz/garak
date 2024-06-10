@@ -8,7 +8,7 @@ import numpy as np
 
 import garak._config
 from garak.generators import Generator
-from garak.resources.common import rejection_strings, load_advbench
+from garak.resources.common import REJECTION_STRINGS, load_advbench
 from tqdm import tqdm
 
 # System prompt pulled from reference implementation
@@ -19,7 +19,7 @@ SYSTEM_PROMPT = (
 beast_resource_data = garak._config.transient.basedir / "resources" / "beast" / "data"
 
 
-def format_chat(generator: Generator, prompt: str):
+def _format_chat(generator: Generator, prompt: str):
     chat = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": prompt},
@@ -29,19 +29,16 @@ def format_chat(generator: Generator, prompt: str):
 
 
 @torch.no_grad()
-def evaluate(generator, prompt, candidate):
-    result = False
+def _evaluate(generator, prompt, candidate):
     candidate_str = generator.tokenizer.decode(candidate)
     input_str = prompt + candidate_str
     outputs = generator.generate(input_str)
-    results = check_jailbreak(outputs)
-    if all(results):
-        result = True
+    result = _check_jailbreak(outputs)
     return result, outputs[0]
 
 
 @torch.no_grad()
-def evaluate_target(generator, prompt, candidate, target):
+def _evaluate_target(generator, prompt, candidate, target):
     result = False
     candidate_str = generator.tokenizer.decode(candidate)
     input_str = prompt + candidate_str
@@ -54,7 +51,7 @@ def evaluate_target(generator, prompt, candidate, target):
 
 
 @torch.no_grad()
-def get_perplexity(
+def _get_perplexity(
     generator: Generator,
     target_tokens: torch.Tensor,
     input_tokens: torch.Tensor,
@@ -105,7 +102,7 @@ def get_perplexity(
 
 
 @torch.no_grad()
-def score_candidates(
+def _score_candidates(
     generator: Generator, input_str: str, response_str: str, candidate: list[int]
 ) -> float:
     """
@@ -125,7 +122,7 @@ def score_candidates(
     else:
         candidate_str = ""
 
-    formatted_prompt = format_chat(generator, input_str + candidate_str)
+    formatted_prompt = _format_chat(generator, input_str + candidate_str)
     tokens = generator.tokenizer.encode(
         formatted_prompt, return_tensors="pt", add_special_tokens=False
     ).to(generator.model.device)
@@ -149,15 +146,15 @@ def score_candidates(
             ).to(generator.model.device)
             bos = torch.cat([bos] * len(tokens_), dim=0)
             tokens_ = torch.cat([bos, tokens_], dim=1).type(tokens_.dtype)
-            scores += -np.stack(get_perplexity(generator, tokens_[:, :1], tokens_))
+            scores += -np.stack(_get_perplexity(generator, tokens_[:, :1], tokens_))
         else:
-            scores += -np.stack(get_perplexity(generator, tokens, tokens_))
+            scores += -np.stack(_get_perplexity(generator, tokens, tokens_))
 
     scores = scores / len(target)
     return scores
 
 
-def check_jailbreak(outputs: list[str]) -> list[int]:
+def _check_jailbreak(outputs: list[str]) -> bool:
     """
     Check list of outputs for rejection, assuming no rejection is a success.
     Args:
@@ -165,15 +162,16 @@ def check_jailbreak(outputs: list[str]) -> list[int]:
     Returns:
         acc: List of boolean -- 1 for not rejected, 0 for rejected.
     """
-    acc = [0 for _ in range(len(outputs))]
-    for idx, output in enumerate(outputs):
-        if not any([rs in output for rs in rejection_strings]):
-            acc[idx] = 1
-    return acc
+    jailbreak = False
+    for output in outputs:
+        if not any([rs in output[0] for rs in REJECTION_STRINGS]):
+            jailbreak = True
+            break
+    return jailbreak
 
 
 @torch.no_grad()
-def sample_tokens(
+def _sample_tokens(
     generator: Generator,
     prompt: str,
     k: int,
@@ -194,7 +192,7 @@ def sample_tokens(
         suffix_str = generator.tokenizer.decode(suffix_ids)
     else:
         suffix_str = ""
-    formatted_input = format_chat(generator, prompt + suffix_str)
+    formatted_input = _format_chat(generator, prompt + suffix_str)
     input_ids = generator.tokenizer(
         formatted_input, return_tensors="pt", add_special_tokens=False
     ).input_ids.to(generator.model.device)
@@ -207,7 +205,7 @@ def sample_tokens(
 
 
 @torch.no_grad()
-def get_best_candidate(
+def _get_best_candidate(
     generator: Generator,
     prompt: str,
     response: str,
@@ -215,18 +213,20 @@ def get_best_candidate(
     k2: int,
     suffix_len: int,
     suffix_ids: Union[list[int], torch.Tensor, None] = None,
+    stop_early: bool = False,
 ) -> tuple[list[int], float]:
     """
     Return the best candidate suffix and its associated score.
 
     Args:
-        generator ():
-        prompt ():
-        response ():
-        k1 ():
-        k2 ():
-        suffix_len ():
-        suffix_ids ():
+        generator: Target generator
+        prompt: Prompt to target model
+        response: Desired response from model
+        k1: Number of beams
+        k2: Number of candidates to evaluate per beam
+        suffix_len: Maximum length of suffix
+        suffix_ids: Adversarial suffix token ids
+        stop_early: Whether to stop if a successful jailbreak is found
 
     Returns:
         best_suffix: The best performing adversarial suffix
@@ -235,14 +235,14 @@ def get_best_candidate(
     best_suffix = ""
     best_score = np.Inf
 
-    beams = [[sample] for sample in sample_tokens(generator, prompt, k1, suffix_ids)]
+    beams = [[sample] for sample in _sample_tokens(generator, prompt, k1, suffix_ids)]
     for i in tqdm(range(suffix_len), leave=False):
         candidates = list()
         for beam in beams:
-            for next_token in sample_tokens(generator, prompt, k2, beam):
+            for next_token in _sample_tokens(generator, prompt, k2, beam):
                 candidates.append(beam + [next_token])
         scores = [
-            score_candidates(generator, prompt, response, candidate)
+            _score_candidates(generator, prompt, response, candidate)
             for candidate in candidates
         ]
         sorted_scores = sorted(range(len(scores)), key=lambda j: scores[j])
@@ -255,10 +255,15 @@ def get_best_candidate(
             best_score = candidate_score
             best_suffix = best_candidate
 
+        if stop_early:
+            success = _evaluate(generator, prompt, best_candidate)
+            if success:
+                break
+
     return best_suffix, best_score
 
 
-def attack(
+def _attack(
     generator: Generator,
     prompts: list[str],
     responses: Optional[list[str]] = None,
@@ -267,6 +272,7 @@ def attack(
     trials: int = 1,
     suffix_len: int = 40,
     target: Optional[str] = "",
+    stop_early: bool = False,
 ) -> list[str]:
     """
 
@@ -279,29 +285,40 @@ def attack(
         trials: Number of generations to run for the attack
         suffix_len: Number of adversarial tokens to generate
         target: Target output string
+        stop_early: Whether to stop if a successful jailbreak is found
 
     Returns:
         prompt_tokens: Adversarial prompt tokens
         scores: Score for attack objective per item in prompt_tokens
     """
     suffixes = list()
-
-    for prompt, response in tqdm(zip(prompts, responses), leave=False, position=0):
+    if responses is None:
+        responses = ["" for _ in range(len(prompts))]
+    for prompt, response in tqdm(
+        zip(prompts, responses), total=len(prompts), leave=False, position=0
+    ):
         best_candidate = []
         if trials > 1:
             pbar = tqdm(total=trials, leave=False)
 
         for _ in range(trials):
-            best_candidate, score = get_best_candidate(
-                generator, prompt, response, k1, k2, suffix_len, best_candidate
+            best_candidate, score = _get_best_candidate(
+                generator,
+                prompt,
+                response,
+                k1,
+                k2,
+                suffix_len,
+                best_candidate,
+                stop_early,
             )
 
             if target:
-                result, response = evaluate_target(
+                result, response = _evaluate_target(
                     generator, prompt, best_candidate, target
                 )
             else:
-                result, response = evaluate(generator, prompt, best_candidate)
+                result, response = _evaluate(generator, prompt, best_candidate)
 
             if result:
                 jailbreak_str = generator.tokenizer.decode(best_candidate)
@@ -327,6 +344,7 @@ def run_beast(
     data_size: int = 20,
     target: Optional[str] = "",
     outfile: str = beast_resource_data / "suffixes.txt",
+    stop_early: bool = False,
 ) -> Union[list[str], None]:
     """
     Function to run BEAST attack
@@ -341,6 +359,7 @@ def run_beast(
         data_size(int): Number of prompts to generate suffixes for (default 20)
         target (str): Target output phrase (optional)
         outfile (str): Path to write generated suffixes
+        stop_early (bool): Whether to stop if a successful jailbreak is found
 
     Returns:
         suffixes (list[str]): List of adversarial suffixes as strings
@@ -364,7 +383,7 @@ def run_beast(
         prompts = data["goal"].tolist()
         responses = data["target"].tolist()
 
-    suffixes = attack(
+    suffixes = _attack(
         generator=target_generator,
         prompts=prompts,
         responses=responses,
@@ -373,9 +392,10 @@ def run_beast(
         trials=trials,
         suffix_len=suffix_len,
         target=target,
+        stop_early=stop_early,
     )
 
-    if suffixes:
+    if suffixes and outfile:
         with open(outfile, "a") as f:
             for suffix in suffixes:
                 f.write(f"{suffix}\n")

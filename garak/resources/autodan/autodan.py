@@ -22,7 +22,7 @@ from garak.resources.autodan.model_utils import (
     load_conversation_template,
     check_for_attack_success,
 )
-from garak.resources.common import rejection_strings
+from garak.resources.common import REJECTION_STRINGS
 
 
 logger = getLogger(__name__)
@@ -72,7 +72,6 @@ autodan_parser.add_argument(
 developer_dict = {"llama2": "Meta"}
 
 allow_non_ascii = False
-test_prefixes = rejection_strings
 
 
 def autodan_generate(
@@ -179,7 +178,7 @@ def autodan_generate(
 
             adv_prefix = best_new_adv_prefix
             gen_str = generator.generate(prompt=adv_prefix)[0]
-            success = check_for_attack_success(gen_str, test_prefixes)
+            success = check_for_attack_success(gen_str, REJECTION_STRINGS)
             if success:
                 logger.info(
                     f"Found a successful AutoDAN prompt!\n{adv_prefix}\nAppending to {out_path}."

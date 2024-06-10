@@ -45,7 +45,7 @@ from tqdm import tqdm
 
 import garak.generators
 from garak.generators.huggingface import Model
-from garak.resources.common import load_advbench, rejection_strings
+from garak.resources.common import load_advbench, REJECTION_STRINGS
 
 logger = getLogger(__name__)
 
@@ -152,7 +152,7 @@ class AttackPrompt(object):
         tokenizer,
         conv_template,
         control_init="! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !",
-        test_prefixes=rejection_strings,
+        test_prefixes=REJECTION_STRINGS,
         *args,
         **kwargs,
     ):
@@ -535,7 +535,7 @@ class PromptManager(object):
         tokenizer,
         conv_template,
         control_init="! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !",
-        test_prefixes=rejection_strings,
+        test_prefixes=REJECTION_STRINGS,
         managers=None,
         *args,
         **kwargs,
@@ -670,7 +670,7 @@ class MultiPromptAttack(object):
         targets,
         workers,
         control_init="! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !",
-        test_prefixes=rejection_strings,
+        test_prefixes=REJECTION_STRINGS,
         logfile=None,
         outfile=None,
         managers=None,
@@ -1023,7 +1023,7 @@ class ProgressiveMultiPromptAttack(object):
         progressive_goals=True,
         progressive_models=True,
         control_init="! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !",
-        test_prefixes=rejection_strings,
+        test_prefixes=REJECTION_STRINGS,
         logfile=None,
         outfile=None,
         managers=None,
@@ -1282,7 +1282,7 @@ class IndividualPromptAttack(object):
         targets,
         workers,
         control_init="! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !",
-        test_prefixes=rejection_strings,
+        test_prefixes=REJECTION_STRINGS,
         logfile=None,
         outfile=None,
         managers=None,
@@ -1500,7 +1500,7 @@ class EvaluateAttack(object):
         targets,
         workers,
         control_init="! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !",
-        test_prefixes=rejection_strings,
+        test_prefixes=REJECTION_STRINGS,
         logfile=None,
         managers=None,
         test_goals=[],
@@ -1830,7 +1830,11 @@ def get_workers(generators: list, n_train_models=1, evaluate=False):
 
 
 def get_goals_and_targets(
-    train_data: Union[None, str], test_data: str, offset: int = 0, n_train: int = 0, n_test: int = 0
+    train_data: Union[None, str],
+    test_data: str,
+    offset: int = 0,
+    n_train: int = 0,
+    n_test: int = 0,
 ):
     """
     Get goals and targets for GCG attack.
