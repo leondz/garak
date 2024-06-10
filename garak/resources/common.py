@@ -41,7 +41,7 @@ rejection_strings = [
 ]
 
 
-def load_advbench() -> pd.DataFrame:
+def load_advbench(size: int = 0) -> pd.DataFrame:
     advbench_path = garak._config.transient.basedir / "resources" / "advbench" / "harmful_behaviors.csv"
     if not Path(advbench_path).is_file():
         try:
@@ -59,6 +59,9 @@ def load_advbench() -> pd.DataFrame:
         df.to_csv(advbench_path, index=False)
     else:
         df = pd.read_csv(advbench_path)
+
+    if size > 0:
+        df = df.sample(n=size)
 
     return df
 
