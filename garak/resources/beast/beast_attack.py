@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+import logging
 from typing import Union, Optional, Tuple
 
 import torch
@@ -322,9 +323,7 @@ def _attack(
 
             if result:
                 jailbreak_str = generator.tokenizer.decode(best_candidate)
-                print(
-                    f"Jailbreak found!\nPrompt:{prompt + jailbreak_str}\nOutput:{response}"
-                )
+                logging.info("BEAST found a likely successful jailbreak")
                 suffixes.append(jailbreak_str)
 
             if trials > 1:
