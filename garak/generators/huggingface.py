@@ -14,6 +14,7 @@ be quite strong. Find your Hugging Face Inference API Key here:
  https://huggingface.co/docs/api-inference/quicktour
 """
 
+import inspect
 import logging
 import re
 from typing import List, Union
@@ -25,7 +26,7 @@ from PIL import Image
 from transformers import LlavaNextProcessor, LlavaNextForConditionalGeneration
 
 from garak import _config
-from garak.exception import ModelNameMissingError
+from garak.exception import ModelNameMissingError, GarakException
 from garak.generators.base import Generator
 
 
@@ -70,6 +71,10 @@ class Pipeline(Generator, HFCompatible):
             self.name, generations=self.generations, config_root=config_root
         )
 
+        import torch.multiprocessing as mp
+
+        mp.set_start_method("spawn", force=True)
+
         self._load_client()
 
     def _load_client(self):
@@ -83,16 +88,17 @@ class Pipeline(Generator, HFCompatible):
 
         import torch.cuda
 
-        if not torch.cuda.is_available():
-            logging.debug("Using CPU, torch.cuda.is_available() returned False")
-            self.device = -1
-
-        self.generator = pipeline(
-            "text-generation",
-            model=self.name,
-            do_sample=self.do_sample,
-            device=self.device,
+        # consider how this could be abstracted well
+        self.device = (
+            "cuda:" + str(self.device)
+            if torch.cuda.is_available()
+            else "mps" if torch.backends.mps.is_available() else "cpu"
         )
+
+        logging.debug("Using %s, based on torch environment evaluation", self.device)
+
+        pipline_kwargs = self._gather_pipeline_params(pipeline=pipeline)
+        self.generator = pipeline("text-generation", **pipline_kwargs)
         if not hasattr(self, "deprefix_prompt"):
             self.deprefix_prompt = self.name in models_to_deprefix
         if _config.loaded:
@@ -103,6 +109,17 @@ class Pipeline(Generator, HFCompatible):
 
     def _clear_client(self):
         self.generator = None
+
+    def _gather_pipeline_params(self, pipeline):
+        # this may be a bit too naive as it will pass any parameter valid for the pipeline signature
+        args = {}
+        for k in inspect.signature(pipeline).parameters:
+            if k == "model":
+                # special case of known mapping as `model` may be reserved for the class
+                args[k] = self.name
+            if hasattr(self, k):
+                args[k] = getattr(self, k)
+        return args
 
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
@@ -150,8 +167,14 @@ class OptimumPipeline(Pipeline, HFCompatible):
         if hasattr(self, "generator") and self.generator is not None:
             return
 
-        from optimum.nvidia.pipelines import pipeline
-        from transformers import set_seed
+        try:
+            from optimum.nvidia.pipelines import pipeline
+            from transformers import set_seed
+        except Exception as e:
+            logging.exception(e)
+            raise GarakException(
+                f"Missing required dependencies for {self.__class__.__name__}"
+            )
 
         if _config.run.seed is not None:
             set_seed(_config.run.seed)
@@ -161,20 +184,15 @@ class OptimumPipeline(Pipeline, HFCompatible):
         if not torch.cuda.is_available():
             message = "OptimumPipeline needs CUDA, but torch.cuda.is_available() returned False; quitting"
             logging.critical(message)
-            raise ValueError(message)
+            raise GarakException(message)
 
-        use_fp8 = False
+        self.use_fp8 = False
         if _config.loaded:
             if "use_fp8" in _config.plugins.generators.OptimumPipeline:
-                use_fp8 = True
+                self.use_fp8 = True
 
-        self.generator = pipeline(
-            "text-generation",
-            model=self.name,
-            do_sample=self.do_sample,
-            device=self.device,
-            use_fp8=use_fp8,
-        )
+        pipline_kwargs = self._gather_pipeline_params(pipeline=pipeline)
+        self.generator = pipeline("text-generation", **pipline_kwargs)
         if not hasattr(self, "deprefix_prompt"):
             self.deprefix_prompt = self.name in models_to_deprefix
         if _config.loaded:
@@ -201,18 +219,19 @@ class ConversationalPipeline(Pipeline, HFCompatible):
 
         import torch.cuda
 
-        if not torch.cuda.is_available():
-            logging.debug("Using CPU, torch.cuda.is_available() returned False")
-            self.device = -1
+        # consider how this could be abstracted well
+        self.device = (
+            "cuda:" + str(self.device)
+            if torch.cuda.is_available()
+            else "mps" if torch.backends.mps.is_available() else "cpu"
+        )
+
+        logging.debug("Using %s, based on torch environment evaluation", self.device)
 
         # Note that with pipeline, in order to access the tokenizer, model, or device, you must get the attribute
         # directly from self.generator instead of from the ConversationalPipeline object itself.
-        self.generator = pipeline(
-            "conversational",
-            model=self.name,
-            do_sample=self.do_sample,
-            device=self.device,
-        )
+        pipline_kwargs = self._gather_pipeline_params(pipeline=pipeline)
+        self.generator = pipeline("conversational", **pipline_kwargs)
         self.conversation = Conversation()
         if not hasattr(self, "deprefix_prompt"):
             self.deprefix_prompt = self.name in models_to_deprefix
@@ -460,8 +479,14 @@ class Model(Pipeline, HFCompatible):
         if _config.run.seed is not None:
             transformers.set_seed(_config.run.seed)
 
-        self.init_device = "cuda:" + str(self.device)
         import torch.cuda
+
+        # consider how this could be abstracted well
+        self.init_device = (
+            "cuda:" + str(self.device)
+            if torch.cuda.is_available()
+            else "mps" if torch.backends.mps.is_available() else "cpu"
+        )
 
         if not torch.cuda.is_available():
             logging.debug("Using CPU, torch.cuda.is_available() returned False")
