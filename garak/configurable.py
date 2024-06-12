@@ -69,7 +69,7 @@ class Configurable:
                 # should this be coupled to `_plugins`?
                 continue
             if (
-                isinstance(self._supported_params, list)
+                isinstance(self._supported_params, tuple)
                 and k not in self._supported_params
             ):
                 # if the class has a set of supported params skip unknown params

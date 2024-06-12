@@ -77,7 +77,7 @@ def test_config_supported_params(generator_sub_config):
     class mock_supported(mockConfigurable):
         __module__ = "garak.generators.mock"
 
-        _supported_params = ["constructor_param", "defaulted_constructor_param"]
+        _supported_params = ("constructor_param", "defaulted_constructor_param")
 
     m = mock_supported(config_root=generator_sub_config)
     for k, v in generator_sub_config.generators["mock"].items():
