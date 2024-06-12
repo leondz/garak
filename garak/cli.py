@@ -6,7 +6,7 @@
 command_options = "list_detectors list_probes list_generators list_buffs list_config plugin_info interactive report version".split()
 
 
-def main(arguments=[]) -> None:
+def main(arguments=None) -> None:
     """Main entry point for garak runs invoked from the CLI"""
     import datetime
 
@@ -17,6 +17,9 @@ def main(arguments=[]) -> None:
     _config.transient.starttime = datetime.datetime.now()
     _config.transient.starttime_iso = _config.transient.starttime.isoformat()
     _config.version = __version__
+
+    if arguments is None:
+        arguments = []
 
     import garak.command as command
     import logging

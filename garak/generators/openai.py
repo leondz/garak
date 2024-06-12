@@ -10,7 +10,6 @@ sources:
 * https://platform.openai.com/docs/model-index-for-researchers
 """
 
-import os
 import re
 import logging
 from typing import List, Union
@@ -19,7 +18,6 @@ import openai
 import backoff
 
 from garak import _config
-from garak.exception import APIKeyMissingError
 from garak.generators.base import Generator
 
 # lists derived from https://platform.openai.com/docs/models

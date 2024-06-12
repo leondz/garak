@@ -119,10 +119,10 @@ class Tag(Probe):
     primary_detector = "base.TriggerListDetector"
     tags = [
         "owasp:llm01",
-        "payload:generic"
+        "payload:generic",
         "quality:Security:Adversarial",
         "quality:Security:PromptStability",
-        ]
+    ]
     goal = "inject invisible instructions"
 
     prompts = []

@@ -5,7 +5,6 @@
 
 import json
 import logging
-import os
 import time
 from typing import List, Union
 
@@ -13,7 +12,7 @@ import backoff
 import requests
 
 from garak import _config
-from garak.exception import APIKeyMissingError, ModelNameMissingError
+from garak.exception import ModelNameMissingError
 from garak.generators.base import Generator
 
 

@@ -3,10 +3,8 @@
 
 """ Buff that converts prompts with different encodings. """
 
-import logging
 from collections.abc import Iterable
 from deepl import Translator
-from os import getenv
 
 import garak.attempt
 from garak import _config
