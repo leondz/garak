@@ -2,11 +2,8 @@
 
 Detectors for guessing whether a jailbreak with both image and text prompt has been successful """
 
-import garak.attempt
 from garak import _config
 from garak.detectors.base import StringDetector
-from typing import List
-import re
 
 
 class FigStep(StringDetector):

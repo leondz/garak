@@ -231,4 +231,4 @@ if __name__ == "__main__":
     if len(sys.argv) == 3:
         taxonomy = sys.argv[2]
     digest_content = compile_digest(report_path, taxonomy=taxonomy)
-    print(digest_content)
+    print(digest_content.encode("utf-8"))

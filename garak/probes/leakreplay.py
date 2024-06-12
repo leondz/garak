@@ -5,7 +5,6 @@ Probes for evaluating if a model will replay training data
 
 import csv
 import re
-from typing import List
 
 from garak.attempt import Attempt
 from garak import _config

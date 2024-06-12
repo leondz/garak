@@ -5,7 +5,6 @@ These describe evaluators for assessing detector results.
 
 import json
 import logging
-import os
 from typing import List
 
 from colorama import Fore, Style

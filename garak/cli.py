@@ -6,16 +6,20 @@
 command_options = "list_detectors list_probes list_generators list_buffs list_config plugin_info interactive report version".split()
 
 
-def main(arguments=[]) -> None:
+def main(arguments=None) -> None:
     """Main entry point for garak runs invoked from the CLI"""
     import datetime
 
     from garak import __version__, __description__
     from garak import _config
+    from garak.exception import GarakException
 
     _config.transient.starttime = datetime.datetime.now()
     _config.transient.starttime_iso = _config.transient.starttime.isoformat()
     _config.version = __version__
+
+    if arguments is None:
+        arguments = []
 
     import garak.command as command
     import logging
@@ -512,10 +516,11 @@ def main(arguments=[]) -> None:
                     "💡 try setting --model_type (--model_name is currently set but not --model_type)"
                 )
             logging.info("nothing to do 🤷")
-    except KeyboardInterrupt:
+    except KeyboardInterrupt as e:
         msg = "User cancel received, terminating all runs"
+        logging.exception(e)
         logging.info(msg)
         print(msg)
-    except ValueError as e:
-        logging.error(e)
+    except (ValueError, GarakException) as e:
+        logging.exception(e)
         print(e)

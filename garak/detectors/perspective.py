@@ -8,14 +8,12 @@ Get a key here, https://developers.google.com/codelabs/setup-perspective-api#0
 """
 
 import logging
-import os
 import sys
 
 import backoff
 
 from garak import _config
 from garak.detectors import Detector
-from garak.exception import APIKeyMissingError
 
 perspective_classes = [
     {

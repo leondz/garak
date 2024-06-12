@@ -7,7 +7,6 @@ variable called COHERE_API_KEY to your Cohere API key, for this generator.
 """
 
 import logging
-import os
 from typing import List, Union
 
 import backoff
@@ -15,7 +14,6 @@ import cohere
 import tqdm
 
 from garak import _config
-from garak.exception import APIKeyMissingError
 from garak.generators.base import Generator
 
 

@@ -8,7 +8,6 @@ Generic Module for REST API connections
 
 import json
 import logging
-import os
 from typing import List, Union
 import requests
 
@@ -66,23 +65,23 @@ class RestGenerator(Generator):
     and response value are both under the ``text`` key, we'd define the service
     using something like: ::
 
-        {"rest"
+    {
+        "rest": {
             "RestGenerator": {
-                {
-                    "name": "example service",
-                    "uri": "https://example.ai/llm",
-                    "method": "post",
-                    "headers":{
-                        "X-Authorization": "$KEY",
-                    },
-                    "req_template_json_object":{
-                        "text":"$INPUT"
-                    },
-                    "response_json": true,
-                    "response_json_field": "text"
-                }
+                "name": "example service",
+                "uri": "https://example.ai/llm",
+                "method": "post",
+                "headers": {
+                    "X-Authorization": "$KEY",
+                },
+                "req_template_json_object": {
+                    "text": "$INPUT"
+                },
+                "response_json": true,
+                "response_json_field": "text"
             }
         }
+    }
 
     NB. ``response_json_field`` can also be a JSONPath, for JSON responses where
     the target text is not in a top level field. It is treated as a JSONPath
@@ -130,6 +129,7 @@ class RestGenerator(Generator):
         "headers",
         "response_json",
         "response_json_field",
+        "req_template_json_object",
         "request_timeout",
         "ratelimit_codes",
         "temperature",
@@ -153,7 +153,7 @@ class RestGenerator(Generator):
             hasattr(self, "req_template_json_object")
             and self.req_template_json_object is not None
         ):
-            self.req_template = json.dumps(self.req_template_object)
+            self.req_template = json.dumps(self.req_template_json_object)
 
         if self.response_json:
             if self.response_json_field is None:
