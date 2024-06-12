@@ -116,14 +116,14 @@ class LiteLLMGenerator(Generator):
         self._load_client()
 
     def _load_client(self):
-        self.client = importlib.import_module("litellm")
+        self.litellm = importlib.import_module("litellm")
         # Fix issue with Ollama which does not support `presence_penalty`
-        self.client.drop_params = True
+        self.litellm.drop_params = True
         # Suppress log messages from LiteLLM
-        self.client.verbose_logger.disabled = True
+        self.litellm.verbose_logger.disabled = True
 
     def _clear_client(self):
-        self.client = None
+        self.litellm = None
 
     def __init__(self, name: str = "", generations: int = 10, config_root=_config):
         self.name = name
@@ -174,7 +174,7 @@ class LiteLLMGenerator(Generator):
             print(msg)
             return []
 
-        response = self.client.completion(
+        response = self.litellm.completion(
             model=self.name,
             messages=prompt,
             temperature=self.temperature,
