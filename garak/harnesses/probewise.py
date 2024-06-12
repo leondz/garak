@@ -27,7 +27,7 @@ class ProbewiseHarness(Harness):
             logging.error(f" detector load failed: {detector_name}, skipping >>")
         return False
 
-    def run(self, model, probenames, evaluator, buff_names=[]):
+    def run(self, model, probenames, evaluator, buff_names=None):
         """Execute a probe-by-probe scan
 
         Probes are executed in name order. For each probe, the detectors
@@ -53,6 +53,9 @@ class ProbewiseHarness(Harness):
         :param buff_names: a list of buff names to be used this run
         :type buff_names: List[str]
         """
+
+        if buff_names is None:
+            buff_names = []
 
         if not probenames:
             msg = "No probes, nothing to do"
