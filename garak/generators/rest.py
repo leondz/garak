@@ -8,7 +8,6 @@ Generic Module for REST API connections
 
 import json
 import logging
-import os
 from typing import List, Union
 import requests
 

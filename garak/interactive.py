@@ -4,7 +4,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import argparse
-import importlib
 from logging import getLogger
 import random
 import sys

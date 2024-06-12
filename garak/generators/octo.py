@@ -4,7 +4,6 @@
 """OctoML LLM interface"""
 
 
-import os
 from typing import List, Union
 
 import backoff
