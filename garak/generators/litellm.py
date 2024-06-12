@@ -41,6 +41,7 @@ import backoff
 
 
 from garak import _config
+from garak.exception import APIKeyMissingError
 from garak.generators.base import Generator
 
 
@@ -104,6 +105,26 @@ class LiteLLMGenerator(Generator):
         "stop",
     )
 
+    # avoid attempt to pickle the client attribute
+    def __getstate__(self) -> object:
+        self._clear_client()
+        return dict(self.__dict__)
+
+    # restore the client attribute
+    def __setstate__(self, d) -> object:
+        self.__dict__.update(d)
+        self._load_client()
+
+    def _load_client(self):
+        self.client = importlib.import_module("litellm")
+        # Fix issue with Ollama which does not support `presence_penalty`
+        self.client.drop_params = True
+        # Suppress log messages from LiteLLM
+        self.client.verbose_logger.disabled = True
+
+    def _clear_client(self):
+        self.client = None
+
     def __init__(self, name: str = "", generations: int = 10, config_root=_config):
         self.name = name
         self.api_base = None
@@ -121,14 +142,11 @@ class LiteLLMGenerator(Generator):
         super().__init__(
             self.name, generations=self.generations, config_root=config_root
         )
-        
-        if self.provider is None:
-            raise ValueError(
-                "litellm generator needs to have a provider value configured - see docs"
-            )
-        elif (
+
+        if (
             self.api_key is None
         ):  # TODO: special case where api_key is not always required
+            # TODO: add other providers
             if self.provider == "openai":
                 self.api_key = getenv(self.key_env_var, None)
                 if self.api_key is None:
@@ -136,13 +154,8 @@ class LiteLLMGenerator(Generator):
                         f"Please supply an OpenAI API key in the {self.key_env_var} environment variable"
                         " or in the configuration file"
                     )
-        self.litellm = importlib.import_module("litellm")
-        # Fix issue with Ollama which does not support `presence_penalty`
-        self.litellm.drop_params = True
-        # Suppress log messages from LiteLLM
-        self.litellm.verbose_logger.disabled = True
 
-
+        self._load_client()
 
     @backoff.on_exception(backoff.fibo, Exception, max_value=70)
     def _call_model(
@@ -161,7 +174,7 @@ class LiteLLMGenerator(Generator):
             print(msg)
             return []
 
-        response = self.litellm.completion(
+        response = self.client.completion(
             model=self.name,
             messages=prompt,
             temperature=self.temperature,
