@@ -106,6 +106,12 @@ def end_run():
     from garak import _config
 
     logging.info("run complete, ending")
+    end_object = {
+        "entry_type": "completion",
+        "end_time": datetime.datetime.now().isoformat(),
+        "run": _config.transient.run_id,
+    }
+    _config.transient.reportfile.write(json.dumps(end_object))
     _config.transient.reportfile.close()
     print(f"📜 report closed :) {_config.transient.report_filename}")
     if _config.transient.hitlogfile:
@@ -117,7 +123,7 @@ def end_run():
     print(f"📜 report html summary being written to {digest_filename}")
     try:
         write_report_digest(_config.transient.report_filename, digest_filename)
-    except Exception as e:
+    except BaseException as e:
         print("Didn't successfully build the report - JSON log preserved.", repr(e))
 
     msg = f"garak run complete in {timetaken:.2f}s"
@@ -192,7 +198,7 @@ def plugin_info(plugin_name):
 
     except ValueError as e:
         print(e)
-    except Exception as e:
+    except BaseException as e:
         print(e)
         print(
             f"Plugin {plugin_name} not found. Try --list_probes, or --list_detectors."
