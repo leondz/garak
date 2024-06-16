@@ -248,9 +248,9 @@ Code reference documentation is at [garak.readthedocs.io](https://garak.readthed
 ## Citing garak
 
 ```
-@misc{garak,
-  title={garak: {A Framework for Large Language Model Red Teaming}},
-  author={Leon Derczynski and Erick Galinkin and Subho Majumdar},
+@article{garak,
+  title={{garak: A Framework for Security Probing Large Language Models}},
+  author={Leon Derczynski and Erick Galinkin and Jeffrey Martin and Subho Majumdar and Nanna Inie},
   year={2024},
   howpublished={\url{https://garak.ai}}
 }
