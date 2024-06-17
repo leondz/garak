@@ -29,7 +29,7 @@ class CohereGenerator(Generator):
     """
 
     ENV_VAR = "COHERE_API_KEY"
-    DEFAULT_PARAMS = {
+    DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
         "temperature": 0.750,
         "k": 0,
         "p": 0.75,
