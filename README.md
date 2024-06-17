@@ -247,6 +247,8 @@ Code reference documentation is at [garak.readthedocs.io](https://garak.readthed
 
 ## Citing garak
 
+You can read the [garak preprint paper](garak-paper.pdf). If you use garak, please cite us.
+
 ```
 @article{garak,
   title={{garak: A Framework for Security Probing Large Language Models}},
