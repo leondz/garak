@@ -123,7 +123,7 @@ def end_run():
     print(f"📜 report html summary being written to {digest_filename}")
     try:
         write_report_digest(_config.transient.report_filename, digest_filename)
-    except BaseException as e:
+    except Exception as e:
         print("Didn't successfully build the report - JSON log preserved.", repr(e))
 
     msg = f"garak run complete in {timetaken:.2f}s"
@@ -198,7 +198,7 @@ def plugin_info(plugin_name):
 
     except ValueError as e:
         print(e)
-    except BaseException as e:
+    except Exception as e:
         print(e)
         print(
             f"Plugin {plugin_name} not found. Try --list_probes, or --list_detectors."
