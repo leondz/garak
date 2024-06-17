@@ -19,6 +19,7 @@ For a detailed oversight into how a probe operates, see :ref:`garak.probes.base.
    garak.probes.gcg
    garak.probes.glitch
    garak.probes.goodside
+   garak.probes.grandma
    garak.probes.knownbadsignatures
    garak.probes.leakreplay
    garak.probes.lmrc
