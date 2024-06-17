@@ -247,7 +247,7 @@ Code reference documentation is at [garak.readthedocs.io](https://garak.readthed
 
 ## Citing garak
 
-You can read the [garak preprint paper](garak-preprint.pdf). If you use garak, please cite us.
+You can read the [garak preprint paper](garak-paper.pdf). If you use garak, please cite us.
 
 ```
 @article{garak,
