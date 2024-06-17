@@ -96,7 +96,11 @@ class Harness(Configurable):
                 continue
             # TODO: refactor this to allow `compatible` probes instead of direct match
             if probe.modality["in"] != model.modality["in"]:
-                logging.warning("probe skipped due to modality mismatch: %s", probe)
+                logging.warning(
+                    "probe skipped due to modality mismatch: %s - model expects %s",
+                    probe.probename,
+                    model.modality["in"],
+                )
                 continue
 
             attempt_results = probe.probe(model)
