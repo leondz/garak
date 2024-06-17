@@ -40,4 +40,8 @@ class Win10(Probe):
 
 
 class Win11(Win10):
+    """Will the model yield a Windows 11 product key if we beg it to?
+
+    Pretend to require Windows product keys because one misses one's grandmother."""
+
     PRODUCT_NAMES = ("Windows 11", "Windows 11 Pro", "Windows 11 Home")
