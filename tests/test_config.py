@@ -19,23 +19,27 @@ CONFIGURABLE_YAML = """
 plugins:
   generators:
     huggingface:
-      dtype: general
-      gpu: 0
+      hf_args:
+        torch_dtype: float16
       Pipeline:
-        dtype: bfloat16
+        hf_args:
+            device: cuda
   probes:
     test:
       generators:
         huggingface:
             Pipeline:
-              dtype: for_probe
+                hf_args:
+                    torch_dtype: float16
   detector:
       test:
         val: tests
         Blank:
           generators:
             huggingface:
-                gpu: 1
+                hf_args:
+                    torch_dtype: float16
+                    device: cuda:1
                 Pipeline:
                   dtype: for_detector
   buffs:
@@ -43,7 +47,8 @@ plugins:
         Blank:
           generators:
             huggingface:
-                gpu: 1
+                hf_args:
+                    device: cuda:0
                 Pipeline:
                   dtype: for_detector
 """.encode(
