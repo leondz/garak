@@ -1,11 +1,25 @@
 import transformers
 import garak.generators.huggingface
+from garak._config import GarakSubConfig
 
 DEFAULT_GENERATIONS_QTY = 10
 
 
 def test_pipeline():
-    g = garak.generators.huggingface.Pipeline("gpt2")
+    gen_config = {
+        "huggingface": {
+            "Pipeline": {
+                "name": "gpt2",
+                "hf_args": {
+                    "device": "cpu",
+                },
+            }
+        }
+    }
+    config_root = GarakSubConfig()
+    setattr(config_root, "generators", gen_config)
+
+    g = garak.generators.huggingface.Pipeline("gpt2", config_root=config_root)
     assert g.name == "gpt2"
     assert g.generations == DEFAULT_GENERATIONS_QTY
     assert isinstance(g.generator, transformers.pipelines.text_generation.Pipeline)
