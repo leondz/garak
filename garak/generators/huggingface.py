@@ -548,7 +548,7 @@ class Model(Generator, HFCompatible):
                 )
 
         if not self.deprefix_prompt:
-            return [text_output]
+            return text_output
         else:
             return [re.sub("^" + re.escape(prompt), "", i) for i in text_output]
 
