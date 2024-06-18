@@ -563,6 +563,7 @@ class Model(Pipeline, HFCompatible):
     def _clear_client(self):
         self.model = None
         self.config = None
+        self.tokenizer = None
         self.generation_config = None
 
     def _call_model(
