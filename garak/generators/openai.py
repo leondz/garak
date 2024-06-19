@@ -198,18 +198,23 @@ class OpenAICompatible(Generator):
                 logging.error(msg)
                 print(msg)
                 return list()
-            response = self.generator.create(
-                model=self.name,
-                messages=messages,
-                temperature=self.temperature,
-                top_p=self.top_p,
-                n=generations_this_call,
-                stop=self.stop,
-                max_tokens=self.max_tokens,
-                presence_penalty=self.presence_penalty,
-                frequency_penalty=self.frequency_penalty,
-            )
-            return [c.message.content for c in response.choices]
+            try:
+                response = self.generator.create(
+                    model=self.name,
+                    messages=messages,
+                    temperature=self.temperature,
+                    top_p=self.top_p,
+                    n=generations_this_call,
+                    stop=self.stop,
+                    max_tokens=self.max_tokens,
+                    presence_penalty=self.presence_penalty,
+                    frequency_penalty=self.frequency_penalty,
+                )
+                return [c.message.content for c in response.choices]
+            except openai.BadRequestError:
+                msg = "Bad request: " + str(repr(prompt))
+                logging.error(msg)
+                return [None]
 
         else:
             raise ValueError(
