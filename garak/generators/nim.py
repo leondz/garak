@@ -42,6 +42,9 @@ class NVOpenAIChat(OpenAICompatible):
     active = True
     supports_multiple_generations = False
     generator_family_name = "NIM"
+    frequency_penalty = None
+    presence_penalty = None
+    blocked_params = {"n"}
 
     timeout = 60
 
@@ -66,6 +69,8 @@ class NVOpenAIChat(OpenAICompatible):
         assert (
             generations_this_call == 1
         ), "generations_per_call / n > 1 is not supported"
+        self.presence_penalty = None
+        self.frequency_penalty = None
         return super()._call_model(prompt, generations_this_call)
 
 
