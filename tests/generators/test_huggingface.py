@@ -1,3 +1,4 @@
+import pytest
 import transformers
 import garak.generators.huggingface
 from garak._config import GarakSubConfig
@@ -68,3 +69,26 @@ def test_model():
     assert len(output) == DEFAULT_GENERATIONS_QTY
     for item in output:
         assert item is None  # gpt2 is known raise exception returning `None`
+
+
+def test_select_hf_device():
+    from garak.generators.huggingface import HFCompatible
+    import torch
+
+    class mockHF(HFCompatible):
+        def __init__(self, key, value):
+            self.hf_args = {key: value}
+            pass
+
+    m = mockHF("device", -1)
+    with pytest.raises(ValueError) as exc_info:
+        device = m._select_hf_device()
+    assert "CUDA device numbering starts" in str(exc_info.value)
+
+    m = mockHF("device", "cpu")
+    device = m._select_hf_device()
+    assert device == torch.device("cpu")
+
+    m = mockHF("device_map", "auto")
+    device = m._select_hf_device()
+    assert isinstance(device, torch.device)
