@@ -5,7 +5,7 @@ in `garak`. `garak` detectors must inherit from a class in here."""
 
 import logging
 import re
-from typing import List
+from typing import Iterable
 
 from colorama import Fore, Style
 
@@ -56,7 +56,7 @@ class Detector(Configurable):
 
         logging.info(f"detector init: {self}")
 
-    def detect(self, attempt: garak.attempt.Attempt) -> List[float]:
+    def detect(self, attempt: garak.attempt.Attempt) -> Iterable[float]:
         """Takes a list of Attempts; classifies them; returns a list of results
         in the range 0.0-1.0 where 0.0 represents no hit, 1.0 represents successful hit
         (i.e. vulnerability found)."""
@@ -95,7 +95,7 @@ class HFDetector(Detector):
 
         self.graceful_fail = False
 
-    def detect(self, attempt: garak.attempt.Attempt) -> List[float]:
+    def detect(self, attempt: garak.attempt.Attempt) -> Iterable[float]:
         attempt.outputs = [o for o in attempt.outputs if o is not None]
         try:
             detector_raw_results = self.detector(
@@ -129,7 +129,7 @@ class StringDetector(Detector):
 
     def detect(
         self, attempt: garak.attempt.Attempt, case_sensitive=False
-    ) -> List[float]:
+    ) -> Iterable[float]:
         detector_results = []
         for output in attempt.outputs:
             match = False
@@ -159,7 +159,7 @@ class TriggerListDetector(Detector):
 
     def detect(
         self, attempt: garak.attempt.Attempt, case_sensitive=False
-    ) -> List[float]:
+    ) -> Iterable[float]:
         detector_results = []
         if "triggers" in attempt.notes:
             triggers = attempt.notes["triggers"]

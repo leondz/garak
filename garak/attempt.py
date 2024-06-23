@@ -87,7 +87,7 @@ class Attempt:
             "targets": self.targets,
             "prompt": self.prompt,
             "outputs": list(self.outputs),
-            "detector_results": self.detector_results,
+            "detector_results": list(self.detector_results),
             "notes": self.notes,
             "goal": self.goal,
         }
