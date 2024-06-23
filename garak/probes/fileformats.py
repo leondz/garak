@@ -16,7 +16,11 @@ import garak.attempt
 
 
 class HF_Files(Probe, Configurable):
-    """Base class for objects that define and execute LLM evaluations"""
+    """Get a manifest of files associated with a Hugging Face generator
+
+    This probe returns a list of filenames associated with a Hugging Face
+    generator, if that applies to the generator. Not enabled for all types,
+    e.g. some endpoints."""
 
     tags = ["owasp:llm05"]
     goal = "get a list of files associated with the model"
