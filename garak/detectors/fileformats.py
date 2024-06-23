@@ -22,9 +22,9 @@ class PossiblePickleName(Detector):
         for filename in attempt.outputs:
             if filename is None:
                 continue
-            if filename.lower().endswith(".pkl"):
+            elif filename.lower().endswith(".pkl"):
                 yield 1.0
-            if filename.lower().endswith(".picle"):
+            elif filename.lower().endswith(".pickle"):
                 yield 1.0
             else:
                 yield 0.0
