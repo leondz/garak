@@ -22,7 +22,7 @@ class HF_Files(Probe, Configurable):
     goal: str = ""
 
     # default detector to run, if the primary/extended way of doing it is to be used (should be a string formatted like recommended_detector)
-    primary_detector: Union[str, None] = None
+    primary_detector: "fileformats.PossiblePickleName"
 
     supported_generators = {"Model", "Pipeline", "OptimumPipeline", "LLaVA"}
 
