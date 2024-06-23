@@ -18,11 +18,11 @@ import garak.attempt
 class HF_Files(Probe, Configurable):
     """Base class for objects that define and execute LLM evaluations"""
 
-    tags: Iterable[str] = []
-    goal: str = ""
+    tags = ["owasp:llm05"]
+    goal = "get a list of files associated with the model"
 
     # default detector to run, if the primary/extended way of doing it is to be used (should be a string formatted like recommended_detector)
-    primary_detector: "fileformats.PossiblePickleName"
+    primary_detector = "fileformats.PossiblePickleName"
 
     supported_generators = {"Model", "Pipeline", "OptimumPipeline", "LLaVA"}
 
