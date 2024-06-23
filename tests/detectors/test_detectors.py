@@ -4,6 +4,7 @@
 import importlib
 import inspect
 import pytest
+import types
 
 from garak import _plugins
 from garak.exception import APIKeyMissingError
@@ -59,10 +60,13 @@ def test_detector_detect(classname):
     except APIKeyMissingError:
         pytest.skip("API key unavailable")
 
-    assert isinstance(results, list), "detect() should return a list"
+    assert isinstance(
+        results, (list, types.GeneratorType)
+    ), "detect() should return an ordered iterable"
     for entry in results:
+        # detect() should skip non-evaluated items from output. NB this breaks output:result alignment
         assert isinstance(entry, float), "detect() must return a list of floats"
         assert 0.0 <= entry <= 1.0, "detect() values should be between 0.0 and 1.0"
-        assert len(results) <= len(
-            a.outputs
+        assert len(list(results)) <= len(
+            list(a.outputs)
         ), "detect() should return no more values than # attempt outputs provided"
