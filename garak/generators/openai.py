@@ -99,9 +99,10 @@ class OpenAICompatible(Generator):
         "presence_penalty": 0.0,
         "stop": ["#", ";"],
         "blocked_params": set(),
+        "generations": 10,
     }
 
-    blocked_params = set()
+    suppressed_params = set()
 
     # avoid attempt to pickle the client attribute
     def __getstate__(self) -> object:
@@ -159,6 +160,23 @@ class OpenAICompatible(Generator):
         if self.client is None:
             # reload client once when consuming the generator
             self._load_client()
+
+        create_args = {
+            "model": self.name,
+            "temperature": self.temperature,
+            "max_tokens": self.max_tokens,
+            "n": generations_this_call,
+            "top_p": self.top_p,
+            "frequency_penalty": self.frequency_penalty,
+            "presence_penalty": self.presence_penalty,
+            "stop": self.stop,
+        }
+
+        create_args = {k: v for k, v in create_args.items() if v is not None}
+        create_args = {
+            k: v for k, v in create_args.items() if k not in self.suppressed_params
+        }
+
         if self.generator == self.client.completions:
             if not isinstance(prompt, str):
                 msg = (
@@ -169,21 +187,7 @@ class OpenAICompatible(Generator):
                 print(msg)
                 return list()
 
-            create_args = {
-                "model": self.name,
-                "prompt": prompt,
-                "temperature": self.temperature,
-                "max_tokens": self.max_tokens,
-                "n": generations_this_call,
-                "top_p": self.top_p,
-                "frequency_penalty": self.frequency_penalty,
-                "presence_penalty": self.presence_penalty,
-                "stop": self.stop,
-            }
-            create_args = {k: v for k, v in create_args.items() if v is not None}
-            create_args = {
-                k: v for k, v in create_args.items() if k not in self.blocked_params
-            }
+            create_args["prompt"] = prompt
 
             response = self.generator.create(**create_args)
             return [c.text for c in response.choices]
@@ -202,22 +206,7 @@ class OpenAICompatible(Generator):
                 print(msg)
                 return list()
             try:
-                create_args = {
-                    "model": self.name,
-                    "messages": messages,
-                    "temperature": self.temperature,
-                    "top_p": self.top_p,
-                    "n": generations_this_call,
-                    "stop": self.stop,
-                    "max_tokens": self.max_tokens,
-                    "presence_penalty": self.presence_penalty,
-                    "frequency_penalty": self.frequency_penalty,
-                }
-                create_args = {k: v for k, v in create_args.items() if v is not None}
-                create_args = {
-                    k: v for k, v in create_args.items() if k not in self.blocked_params
-                }
-
+                create_args["messages"] = messages
                 response = self.generator.create(**create_args)
 
                 return [c.message.content for c in response.choices]
