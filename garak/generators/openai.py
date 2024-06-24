@@ -101,11 +101,6 @@ class OpenAICompatible(Generator):
         "blocked_params": set(),
     }
 
-    temperature = 0.7
-    top_p = 1.0
-    frequency_penalty = 0.0
-    presence_penalty = 0.0
-    stop = ["#", ";"]
     blocked_params = set()
 
     # avoid attempt to pickle the client attribute
