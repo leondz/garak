@@ -33,7 +33,7 @@ class NVOpenAIChat(OpenAICompatible):
     # per https://docs.nvidia.com/ai-enterprise/nim-llm/latest/openai-api.html
     # 2024.05.02, `n>1` is not supported
     ENV_VAR = "NIM_API_KEY"
-    DEFAULT_PARAMS = {
+    DEFAULT_PARAMS = OpenAICompatible.DEFAULT_PARAMS | {
         "temperature": 0.1,
         "top_p": 0.7,
         "top_k": 0,  # top_k is hard set to zero as of 24.04.30
