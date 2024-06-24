@@ -42,9 +42,7 @@ class NVOpenAIChat(OpenAICompatible):
     active = True
     supports_multiple_generations = False
     generator_family_name = "NIM"
-    frequency_penalty = None
-    presence_penalty = None
-    suppressed_params = {"n"}
+    suppressed_params = {"n", "frequency_penalty", "presence_penalty"}
 
     timeout = 60
 
