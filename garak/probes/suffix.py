@@ -150,24 +150,7 @@ class BEAST(Probe):
 
         if beast_output:
             self.prompts = [self.goal + beast_output]
-
-            # build list of attempts
-            attempts_todo = []
-            prompts = list(self.prompts)
-            for seq, prompt in enumerate(prompts):
-                attempts_todo.append(self._mint_attempt(prompt, seq))
-
-            # buff hook
-            attempts_todo = self._buff_hook(attempts_todo)
-
-            # iterate through attempts
-            attempts_completed = self._execute_all(attempts_todo)
-
-            logging.debug(
-                "probe return: %s with %s attempts", self, len(attempts_completed)
-            )
-
-            return attempts_completed
+            return super().probe(generator)
 
         else:
             logging.warning("BEAST failed to find a jailbreak!")
