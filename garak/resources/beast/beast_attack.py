@@ -296,7 +296,7 @@ def _attack(
     if responses is None:
         responses = ["" for _ in range(len(prompts))]
     for prompt, response in tqdm(
-        zip(prompts, responses), total=len(prompts), leave=False, position=0
+        zip(prompts, responses), total=len(prompts), leave=False, position=0, desc="BEAST attack"
     ):
         best_candidate = []
         if trials > 1:
