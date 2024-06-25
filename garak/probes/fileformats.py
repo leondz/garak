@@ -26,7 +26,8 @@ class HF_Files(Probe, Configurable):
     goal = "get a list of files associated with the model"
 
     # default detector to run, if the primary/extended way of doing it is to be used (should be a string formatted like recommended_detector)
-    primary_detector = "fileformats.PossiblePickleName"
+    primary_detector = "fileformats.HF_IsPickled"
+    extended_detectors = ["fileformats.PossiblePickleName"]
 
     supported_generators = {"Model", "Pipeline", "OptimumPipeline", "LLaVA"}
 
