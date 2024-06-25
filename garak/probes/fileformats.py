@@ -6,7 +6,7 @@
 Checks in the model background for file types that may have known weaknesses."""
 
 import logging
-from typing import Iterable
+from typing import Iterable, Union
 
 import huggingface_hub
 
