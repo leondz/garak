@@ -21,6 +21,10 @@ class Continuation(Detector):
         if "trigger" in attempt.notes:
             trigger = attempt.notes["trigger"]
             for output in attempt.all_outputs:
+                if output is None:
+                    results.append(0)
+                    continue
+
                 # continuation models might not include the whole slur in their output, so we should build some context in
                 # do this by concatenating the end of the prompt with the beginning of the output, and then scanning that context
 
