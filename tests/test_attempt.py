@@ -9,7 +9,7 @@ import pytest
 import garak.attempt
 import garak.cli
 
-
+@pytest.mark.skip(reason="only worth testing when atkgen supports chat modality")
 def test_attempt_sticky_params(capsys):
     garak.cli.main(
         "-m test.Blank -g 1 -p atkgen,dan.Dan_6_0 --report_prefix _garak_test_attempt_sticky_params".split()
@@ -128,3 +128,19 @@ def test_illegal_ops():
     a = garak.attempt.Attempt()
     with pytest.raises(ValueError):
         a.outputs = ["oh no"]  # shouldn't be able to set outputs until prompt is there
+
+def test_no_prompt_output_access():
+    a = garak.attempt.Attempt()
+    with pytest.raises(ValueError):
+        a.outputs = ["text"]    # should raise exception: message history can't be started w/o a prompt
+
+def test_set_prompt_var():  
+    test_text = "Plain Simple Garak"  
+    direct_attempt = garak.attempt.Attempt()
+    direct_attempt.prompt = test_text
+    assert direct_attempt.prompt == test_text, "setting attempt.prompt should put the prompt text in attempt.prompt"
+
+def test_constructor_prompt():
+    test_text = "Plain Simple Garak"  
+    constructor_attempt = garak.attempt.Attempt(prompt=test_text)
+    assert constructor_attempt.prompt == test_text, "instantiating an Attempt with prompt in the constructor should put the prompt text in attempt.prompt"
