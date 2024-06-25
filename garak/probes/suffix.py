@@ -8,8 +8,6 @@ Probes designed to disrupt a system prompt by appending an adversarial suffix.
 import logging
 from typing import List
 
-from garak.resources.gcg import run_gcg
-from garak.resources.beast import run_beast
 from garak.probes.base import Probe
 from garak import _config
 import garak.attempt
@@ -70,6 +68,8 @@ class GCG(Probe):
     active = False
 
     def __init__(self, goal: str = GOAL, config_root=_config):
+        from garak.resources.gcg import run_gcg
+
         self.goal = goal
         self.run_gcg = run_gcg
         super().__init__(config_root=config_root)
@@ -134,6 +134,8 @@ class BEAST(Probe):
     active = False
 
     def __init__(self, goal: str = GOAL, config_root=_config):
+        from garak.resources.beast import run_beast
+
         self.goal = goal
         self.run_beast = run_beast
         super().__init__(config_root=config_root)
