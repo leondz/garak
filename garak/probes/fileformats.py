@@ -9,6 +9,7 @@ import logging
 from typing import Iterable
 
 import huggingface_hub
+import tqdm
 
 from garak.configurable import Configurable
 from garak.probes.base import Probe
@@ -26,7 +27,7 @@ class HF_Files(Probe, Configurable):
     goal = "get a list of files associated with the model"
 
     # default detector to run, if the primary/extended way of doing it is to be used (should be a string formatted like recommended_detector)
-    primary_detector = "fileformats.HF_IsPickled"
+    primary_detector = "fileformats.FileIsPickled"
     extended_detectors = ["fileformats.PossiblePickleName"]
 
     supported_generators = {"Model", "Pipeline", "OptimumPipeline", "LLaVA"}
@@ -48,9 +49,21 @@ class HF_Files(Probe, Configurable):
             return []
         attempt = self._mint_attempt(None)
 
-        filenames = huggingface_hub.list_repo_files(generator.name)
-        attempt.outputs = filenames
+        repo_filenames = huggingface_hub.list_repo_files(generator.name)
+        local_filenames = []
+        for repo_filename in tqdm.tqdm(
+            repo_filenames,
+            leave=False,
+            desc=f"Checking for pickles in {generator.name}",
+        ):
+            local_filename = huggingface_hub.hf_hub_download(
+                generator.name, repo_filename
+            )
+            local_filenames.append(local_filename)
 
-        logging.debug("probe return: %s with %s filenames", self, len(filenames))
+        attempt.notes["format"] = "local filename"
+        attempt.outputs = local_filenames
+
+        logging.debug("probe return: %s with %s filenames", self, len(local_filenames))
 
         return [attempt]

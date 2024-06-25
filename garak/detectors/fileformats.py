@@ -8,13 +8,7 @@ These detectors examine file formats, based on name or content."""
 import pickletools
 from typing import Iterable
 
-import huggingface_hub
-import tqdm
-
-# import huggingface_hub.utils
-
 from garak.attempt import Attempt
-import garak._config
 from garak.detectors.base import Detector
 
 
@@ -37,26 +31,18 @@ class PossiblePickleName(Detector):
                 yield 0.0
 
 
-class HF_IsPickled(Detector):
+class FileIsPickled(Detector):
     """
     Check whether a file is pickled.
     """
 
     def detect(self, attempt: Attempt) -> Iterable[float]:
-        if "model_name" not in dir(garak._config.plugins):
-            return [0.0] * len(attempt.outputs)
-        hf_repo_name = garak._config.plugins.model_name
-        for repo_filename in tqdm.tqdm(
-            attempt.outputs, leave=False, desc=f"Checking for pickles in {hf_repo_name}"
-        ):
-            if repo_filename is None:
+        for local_filename in attempt.outputs:
+            if local_filename is None or local_filename == "":
                 continue
             else:
                 try:
                     # huggingface_hub.utils.disable_progress_bars()
-                    local_filename = huggingface_hub.hf_hub_download(
-                        hf_repo_name, repo_filename
-                    )
                     # huggingface_hub.utils.enable_progress_bars()
                     with open(local_filename, "rb") as f:
                         pkl_data = pickletools.genops(f)
