@@ -55,7 +55,7 @@ class Attempt:
 
     Patterns/expectations for Attempt setting:
     .prompt - sets the first prompt, or fails if this has already been done
-    .outputs - sets a new layer of model responses. silently handles expansion of prompt to multiple histories
+    .outputs - sets a new layer of model responses. silently handles expansion of prompt to multiple histories. prompt must be set
     .latest_prompts - adds a new set of user prompts
 
 
@@ -177,18 +177,19 @@ class Attempt:
                     "Message histories need prompt to be set before outputs can be set"
                 )
             # append each list item to each history, with role:assistant
-            self.add_turns("assistant", value)
+            self.add_turn("assistant", value)
 
         elif name == "latest_prompts":
             assert isinstance(value, list)
-            self.add_turns("user", value)
+            self.add_turn("user", value)
 
         else:
             return super().__setattr__(name, value)
 
     def add_first_turn(self, role: str, content: str) -> None:
+        """add the first turn (after a prompt) to a message history"""
         if self.messages != []:
-            raise ValueError(
+            raise TypeError(
                 "Cannot set prompt of attempt uuid %s with content already in message history: "
                 % str(self.uuid)
                 + repr(self.messages)
@@ -201,7 +202,14 @@ class Attempt:
             % ("'/'".join(roles), role)
         )
 
-    def add_turns(self, role: str, contents: List[str]) -> None:
+    def add_turn(self, role: str, contents: List[str]) -> None:
+        """add a 'layer' to a message history.
+        
+        the contents should be as broad as the established number of 
+        generations for this attempt. e.g. if there's a prompt and a
+        first turn with three responses, every add_turn on the attempt
+        must give a list with three entries.
+        """
         if len(contents) != len(self.messages):
             raise ValueError(
                 "Message history misalignment in attempt uuid %s: tried to add %d items to %d message histories"
@@ -211,7 +219,7 @@ class Attempt:
             len(self.messages) == 0 or isinstance(self.messages[0], dict)
         ):
             raise ValueError(
-                "can only add a list of user prompts after at least one system generation, so that generations count is known"
+                "Can only add a list of user prompts after at least one system generation, so that generations count is known"
             )
         if role in roles:
             for idx, entry in enumerate(contents):

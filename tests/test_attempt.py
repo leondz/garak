@@ -131,7 +131,7 @@ def test_illegal_ops():
 
 def test_no_prompt_output_access():
     a = garak.attempt.Attempt()
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         a.outputs = ["text"]    # should raise exception: message history can't be started w/o a prompt
 
 def test_set_prompt_var():  
