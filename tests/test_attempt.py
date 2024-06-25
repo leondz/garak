@@ -9,6 +9,7 @@ import pytest
 import garak.attempt
 import garak.cli
 
+
 @pytest.mark.skip(reason="only worth testing when atkgen supports chat modality")
 def test_attempt_sticky_params(capsys):
     garak.cli.main(
@@ -107,13 +108,13 @@ def test_illegal_ops():
 
     a = garak.attempt.Attempt()
     a.prompt = "prompt"
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         a.prompt = "shouldn't be able to set initial prompt twice"
 
     a = garak.attempt.Attempt()
     a.prompt = "prompt"
     a.outputs = ["output"]
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         a.prompt = "shouldn't be able to set initial prompt after output turned up"
 
     a = garak.attempt.Attempt()
@@ -126,21 +127,170 @@ def test_illegal_ops():
         ]  # latest_prompts size must match outputs size
 
     a = garak.attempt.Attempt()
-    with pytest.raises(ValueError):
-        a.outputs = ["oh no"]  # shouldn't be able to set outputs until prompt is there
+    with pytest.raises(TypeError):
+        a.outputs = [
+            "oh no"
+        ]  # "shouldn't be able to set outputs until prompt is there"
+
+    a = garak.attempt.Attempt()
+    with pytest.raises(TypeError):
+        a._expand_prompt_to_histories(
+            5
+        )  # "shouldn't be able to expand histories with no prompt"
+
+    a = garak.attempt.Attempt()
+    with pytest.raises(TypeError):
+        a.prompt = "obsidian"
+        a.outputs = ["order"]
+        a._expand_prompt_to_histories(
+            1
+        )  # "shouldn't be able to expand histories twice"
+
+    a = garak.attempt.Attempt()
+    with pytest.raises(TypeError):
+        a.prompt = "obsidian"
+        a._expand_prompt_to_histories(3)
+        a._expand_prompt_to_histories(
+            3
+        )  # "shouldn't be able to expand histories twice"
+
 
 def test_no_prompt_output_access():
     a = garak.attempt.Attempt()
     with pytest.raises(TypeError):
-        a.outputs = ["text"]    # should raise exception: message history can't be started w/o a prompt
+        a.outputs = [
+            "text"
+        ]  # should raise exception: message history can't be started w/o a prompt
 
-def test_set_prompt_var():  
-    test_text = "Plain Simple Garak"  
+
+def test_set_prompt_var():
+    test_text = "Plain Simple Garak"
     direct_attempt = garak.attempt.Attempt()
     direct_attempt.prompt = test_text
-    assert direct_attempt.prompt == test_text, "setting attempt.prompt should put the prompt text in attempt.prompt"
+    assert (
+        direct_attempt.prompt == test_text
+    ), "setting attempt.prompt should put the prompt text in attempt.prompt"
+
 
 def test_constructor_prompt():
-    test_text = "Plain Simple Garak"  
+    test_text = "Plain Simple Garak"
     constructor_attempt = garak.attempt.Attempt(prompt=test_text)
-    assert constructor_attempt.prompt == test_text, "instantiating an Attempt with prompt in the constructor should put the prompt text in attempt.prompt"
+    assert (
+        constructor_attempt.prompt == test_text
+    ), "instantiating an Attempt with prompt in the constructor should put the prompt text in attempt.prompt"
+
+
+def test_demo_dialogue_accessor_usage():
+    test_prompt = "Plain Simple Garak"
+    test_sys1 = "sys aa987h0f"
+    test_user_reply = "user kjahsdg09"
+    test_sys2 = "sys m0sd0fg"
+
+    demo_a = garak.attempt.Attempt()
+
+    demo_a.prompt = test_prompt
+    assert demo_a.messages == [{"role": "user", "content": test_prompt}]
+    assert demo_a.prompt == test_prompt
+
+    demo_a.outputs = [test_sys1]
+    assert demo_a.messages == [
+        [
+            {"role": "user", "content": test_prompt},
+            {"role": "assistant", "content": test_sys1},
+        ]
+    ]
+    assert demo_a.outputs == [test_sys1]
+
+    demo_a.latest_prompts = [test_user_reply]
+    assert demo_a.messages == [
+        [
+            {"role": "user", "content": test_prompt},
+            {"role": "assistant", "content": test_sys1},
+            {"role": "user", "content": test_user_reply},
+        ]
+    ]
+    assert demo_a.latest_prompts == [test_user_reply]
+
+    demo_a.outputs = [test_sys2]
+    assert demo_a.messages == [
+        [
+            {"role": "user", "content": test_prompt},
+            {"role": "assistant", "content": test_sys1},
+            {"role": "user", "content": test_user_reply},
+            {"role": "assistant", "content": test_sys2},
+        ]
+    ]
+    assert demo_a.outputs == [test_sys2]
+
+
+def test_demo_dialogue_method_usage():
+    test_prompt = "Plain Simple Garak"
+    test_sys1 = "sys aa987h0f"
+    test_user_reply = "user kjahsdg09"
+    test_sys2 = "sys m0sd0fg"
+
+    demo_a = garak.attempt.Attempt()
+    demo_a._add_first_turn("user", test_prompt)
+    assert demo_a.messages == [{"role": "user", "content": test_prompt}]
+    assert demo_a.prompt == test_prompt
+
+    demo_a._expand_prompt_to_histories(1)
+    assert demo_a.messages == [[{"role": "user", "content": test_prompt}]]
+    assert demo_a.prompt == test_prompt
+
+    demo_a._add_turn("assistant", [test_sys1])
+    assert demo_a.messages == [
+        [
+            {"role": "user", "content": test_prompt},
+            {"role": "assistant", "content": test_sys1},
+        ]
+    ]
+    assert demo_a.outputs == [test_sys1]
+
+    demo_a._add_turn("user", [test_user_reply])
+    assert demo_a.messages == [
+        [
+            {"role": "user", "content": test_prompt},
+            {"role": "assistant", "content": test_sys1},
+            {"role": "user", "content": test_user_reply},
+        ]
+    ]
+    assert demo_a.latest_prompts == [test_user_reply]
+
+    demo_a._add_turn("assistant", [test_sys2])
+    assert demo_a.messages == [
+        [
+            {"role": "user", "content": test_prompt},
+            {"role": "assistant", "content": test_sys1},
+            {"role": "user", "content": test_user_reply},
+            {"role": "assistant", "content": test_sys2},
+        ]
+    ]
+    assert demo_a.outputs == [test_sys2]
+
+
+def test_outputs():
+    test_prompt = "Plain Simple Garak"
+    test_sys1 = "sys aa987h0f"
+    expansion = 2
+
+    output_a = garak.attempt.Attempt()
+    assert output_a.outputs == []
+
+    output_a.prompt = test_prompt
+    assert output_a.outputs == []
+
+    output_a.outputs = [test_sys1]
+    assert output_a.outputs == [test_sys1]
+
+    output_a_4 = garak.attempt.Attempt()
+    output_a_4.prompt = test_prompt
+    output_a_4.outputs = [test_sys1] * 4
+    assert output_a_4.outputs == [test_sys1, test_sys1, test_sys1, test_sys1]
+
+    output_a_expand = garak.attempt.Attempt()
+    output_a_expand.prompt = test_prompt
+    output_a_expand._expand_prompt_to_histories(2)
+    output_a_expand.outputs = [test_sys1] * expansion
+
+    assert output_a_expand.outputs == [test_sys1] * expansion

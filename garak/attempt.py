@@ -139,8 +139,8 @@ class Attempt:
                 return []
 
         elif name == "latest_prompts":
-            if len(self.messages) > 1:
-                # work out last_output_turn that was assistant
+            if len(self.messages[0]) > 1:
+                # work out last_output_turn that was user
                 last_output_turn = max(
                     [
                         idx
@@ -160,33 +160,44 @@ class Attempt:
 
     def __setattr__(self, name: str, value: Any) -> None:
         """override prompt and outputs access to take from history
-        NB. output elements need to be able to be None
-        """
+        NB. output elements need to be able to be None"""
         if name == "prompt":
             assert isinstance(value, str)
-            self.add_first_turn("user", value)
+            self._add_first_turn("user", value)
 
         elif name == "outputs":
-            assert isinstance(value, list)
-            # do we have only one prompt? in which case, let's flesh out messages a bit
-            if len(self.messages) == 1:
-                base_message = dict(self.messages[0])
-                self.messages = [[base_message] for i in range(len(value))]
-            elif len(self.messages) == 0:
-                raise ValueError(
-                    "Message histories need prompt to be set before outputs can be set"
-                )
+            if not isinstance(value, list):
+                raise TypeError("Value for attempt.outputs must be a list")
+            if len(self.messages) == 0:
+                raise TypeError("A prompt must be set before outputs are given")
+            # do we have only the initial prompt? in which case, let's flesh out messages a bit
+            elif len(self.messages) == 1 and isinstance(self.messages[0], dict):
+                self._expand_prompt_to_histories(len(value))
             # append each list item to each history, with role:assistant
-            self.add_turn("assistant", value)
+            self._add_turn("assistant", value)
 
         elif name == "latest_prompts":
             assert isinstance(value, list)
-            self.add_turn("user", value)
+            self._add_turn("user", value)
 
         else:
             return super().__setattr__(name, value)
 
-    def add_first_turn(self, role: str, content: str) -> None:
+    def _expand_prompt_to_histories(self, breadth):
+        """expand a prompt-only message history to many threads"""
+        if len(self.messages) == 0:
+            raise TypeError(
+                "A prompt needs to be set before it can be expanded to conversation threads"
+            )
+        elif isinstance(self.messages[0], list):
+            raise TypeError(
+                "attempt.messages contains lists, expected a single dict of one turn"
+            )
+
+        base_message = dict(self.messages[0])
+        self.messages = [[base_message] for i in range(breadth)]
+
+    def _add_first_turn(self, role: str, content: str) -> None:
         """add the first turn (after a prompt) to a message history"""
         if self.messages != []:
             raise TypeError(
@@ -202,10 +213,10 @@ class Attempt:
             % ("'/'".join(roles), role)
         )
 
-    def add_turn(self, role: str, contents: List[str]) -> None:
+    def _add_turn(self, role: str, contents: List[str]) -> None:
         """add a 'layer' to a message history.
-        
-        the contents should be as broad as the established number of 
+
+        the contents should be as broad as the established number of
         generations for this attempt. e.g. if there's a prompt and a
         first turn with three responses, every add_turn on the attempt
         must give a list with three entries.
