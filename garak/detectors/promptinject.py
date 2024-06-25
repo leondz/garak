@@ -21,7 +21,7 @@ class AttackRogueString(Detector):
         results = []
         try:
             trigger = attempt.notes["trigger"]
-            for output in attempt.outputs:
+            for output in attempt.all_outputs:
                 if not case_sensitive:
                     trigger, output = trigger.lower(), output.lower()
                 if trigger in output:

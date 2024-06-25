@@ -156,6 +156,15 @@ class Attempt:
                     self.prompt
                 )  # returning a string instead of a list tips us off that generation count is not yet known
 
+        elif name == "all_outputs":
+            all_outputs = []
+            if len(self.messages) and not isinstance(self.messages[0], dict):
+                for thread in self.messages:
+                    for turn in thread:
+                        if turn["role"] == "assistant":
+                            all_outputs.append(turn["content"])
+            return all_outputs
+
         else:
             return super().__getattribute__(name)
 

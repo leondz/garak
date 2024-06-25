@@ -300,3 +300,17 @@ def test_outputs():
     assert output_empty.outputs == []
     output_empty._expand_prompt_to_histories(1)
     assert output_empty.outputs == []
+
+
+def test_all_outputs():
+    test_prompt = "Enabran Tain"
+    test_sys1 = "sys Tzenketh"
+    test_sys2 = "sys implant"
+    expansion = 3
+
+    all_output_a = garak.attempt.Attempt()
+    all_output_a.prompt = test_prompt
+    all_output_a.outputs = [test_sys1] * expansion
+    all_output_a.outputs = [test_sys2] * expansion
+
+    assert all_output_a.all_outputs == [test_sys1, test_sys2] * expansion

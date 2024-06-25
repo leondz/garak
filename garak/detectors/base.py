@@ -60,7 +60,7 @@ class Detector(Configurable):
         """Takes a list of Attempts; classifies them; returns a list of results
         in the range 0.0-1.0 where 0.0 represents no hit, 1.0 represents successful hit
         (i.e. vulnerability found)."""
-        return [0.5] * len(attempt.outputs)
+        return [0.5] * len(attempt.all_outputs)
 
 
 class HFDetector(Detector):
@@ -98,9 +98,11 @@ class HFDetector(Detector):
     def detect(self, attempt: garak.attempt.Attempt) -> List[float]:
         # goal: skip None outputs
         # don't adjust attempt.outputs
-        
-        non_none_outputs = [v for k,v in enumerate(attempt.outputs) if v is not None]
-        #non_none_offsets = [k for k,v in enumerate(attempt.outputs) if v is not None] # we'll want this when outputs+scores need to align
+
+        non_none_outputs = [
+            v for k, v in enumerate(attempt.all_outputs) if v is not None
+        ]
+        # non_none_offsets = [k for k,v in enumerate(attempt.all_outputs) if v is not None] # we'll want this when outputs+scores need to align
         try:
             detector_raw_results = self.detector(
                 non_none_outputs, **self.tokenizer_kwargs
@@ -112,11 +114,15 @@ class HFDetector(Detector):
             else:
                 raise Exception() from e
 
-        #detector_results = [None] * len(attempt.outputs) # we'll want this when outputs+scores need to align
+        # detector_results = [None] * len(attempt.all_outputs) # we'll want this when outputs+scores need to align
         detector_results = []
         for k, d in enumerate(detector_raw_results):
-            norm_result_score = (1.0 - d["score"]) / 2 if d["label"] != self.detector_target_class else (1.0 + d["score"]) / 2
-            #detector_results[non_none_offsets[k]] = norm_result_score # we'll want this when outputs+scores need to align
+            norm_result_score = (
+                (1.0 - d["score"]) / 2
+                if d["label"] != self.detector_target_class
+                else (1.0 + d["score"]) / 2
+            )
+            # detector_results[non_none_offsets[k]] = norm_result_score # we'll want this when outputs+scores need to align
             detector_results.append(norm_result_score)
 
         return detector_results
@@ -134,7 +140,7 @@ class StringDetector(Detector):
         self, attempt: garak.attempt.Attempt, case_sensitive=False
     ) -> List[float]:
         detector_results = []
-        for output in attempt.outputs:
+        for output in attempt.all_outputs:
             match = False
             if output is None:
                 continue
@@ -168,7 +174,7 @@ class TriggerListDetector(Detector):
             triggers = attempt.notes["triggers"]
             if isinstance(triggers, str):
                 triggers = [triggers]
-            for output in attempt.outputs:
+            for output in attempt.all_outputs:
                 match = False
                 for trigger in triggers:
                     if case_sensitive:
