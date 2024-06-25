@@ -98,11 +98,10 @@ class OpenAICompatible(Generator):
         "frequency_penalty": 0.0,
         "presence_penalty": 0.0,
         "stop": ["#", ";"],
-        "blocked_params": set(),
+        "suppressed_params": set(),
         "generations": 10,
+        "suppressed_params": set(),
     }
-
-    suppressed_params = set()
 
     # avoid attempt to pickle the client attribute
     def __getstate__(self) -> object:
