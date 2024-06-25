@@ -99,8 +99,6 @@ class OpenAICompatible(Generator):
         "presence_penalty": 0.0,
         "stop": ["#", ";"],
         "suppressed_params": set(),
-        "generations": 10,
-        "suppressed_params": set(),
     }
 
     # avoid attempt to pickle the client attribute
