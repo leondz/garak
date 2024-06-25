@@ -174,6 +174,10 @@ class Attempt:
             if len(self.messages) == 1:
                 base_message = dict(self.messages[0])
                 self.messages = [[base_message] for i in range(len(value))]
+            elif len(self.messages) == 0:
+                raise ValueError(
+                    "Message histories need prompt to be set before outputs can be set"
+                )
             # append each list item to each history, with role:assistant
             self.add_turns("assistant", value)
 
