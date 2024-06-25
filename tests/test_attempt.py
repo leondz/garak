@@ -108,11 +108,6 @@ def test_illegal_ops():
 
     a = garak.attempt.Attempt()
     a.prompt = "prompt"
-    with pytest.raises(TypeError):
-        a.prompt = "shouldn't be able to set initial prompt twice"
-
-    a = garak.attempt.Attempt()
-    a.prompt = "prompt"
     a.outputs = ["output"]
     with pytest.raises(TypeError):
         a.prompt = "shouldn't be able to set initial prompt after output turned up"
@@ -161,6 +156,20 @@ def test_no_prompt_output_access():
         a.outputs = [
             "text"
         ]  # should raise exception: message history can't be started w/o a prompt
+
+
+def test_reset_prompt():
+    test2 = "obsidian"
+
+    a = garak.attempt.Attempt()
+    a.prompt = "prompt"
+    a.prompt = test2
+    assert a.prompt == test2
+
+    a = garak.attempt.Attempt()
+    a._add_first_turn("user", "whatever")
+    a._add_first_turn("user", test2)
+    assert a.prompt == test2
 
 
 def test_set_prompt_var():

@@ -171,6 +171,7 @@ class Attempt:
     def __setattr__(self, name: str, value: Any) -> None:
         """override prompt and outputs access to take from history
         NB. output elements need to be able to be None"""
+
         if name == "prompt":
             assert isinstance(value, str)
             self._add_first_turn("user", value)
@@ -209,19 +210,26 @@ class Attempt:
 
     def _add_first_turn(self, role: str, content: str) -> None:
         """add the first turn (after a prompt) to a message history"""
-        if self.messages != []:
-            raise TypeError(
-                "Cannot set prompt of attempt uuid %s with content already in message history: "
-                % str(self.uuid)
-                + repr(self.messages)
-            )
-        if role in roles:
+
+        if len(self.messages):
+            if isinstance(self.messages[0], list):
+                raise TypeError(
+                    "Cannot set prompt of attempt uuid %s with content already in message history: "
+                    % str(self.uuid)
+                    + repr(self.messages)
+                )
+
+            elif isinstance(self.messages[0], dict):  # we only have the prompt
+                if self.messages[0]["role"] == "user":
+                    self.messages[0] = {"role": role, "content": content}
+                else:
+                    raise ValueError(
+                        "Unexpected state in attempt messages - first message not from user"
+                    )
+
+        else:
             self.messages.append({"role": role, "content": content})
             return
-        raise ValueError(
-            "Conversation turn role must be one of '%s', got '%s'"
-            % ("'/'".join(roles), role)
-        )
 
     def _add_turn(self, role: str, contents: List[str]) -> None:
         """add a 'layer' to a message history.
