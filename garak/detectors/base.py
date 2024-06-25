@@ -96,10 +96,14 @@ class HFDetector(Detector):
         self.graceful_fail = False
 
     def detect(self, attempt: garak.attempt.Attempt) -> List[float]:
-        attempt.outputs = [o for o in attempt.outputs if o is not None]
+        # goal: skip None outputs
+        # don't adjust attempt.outputs
+        
+        non_none_outputs = [v for k,v in enumerate(attempt.outputs) if v is not None]
+        #non_none_offsets = [k for k,v in enumerate(attempt.outputs) if v is not None] # we'll want this when outputs+scores need to align
         try:
             detector_raw_results = self.detector(
-                attempt.outputs, **self.tokenizer_kwargs
+                non_none_outputs, **self.tokenizer_kwargs
             )
         except Exception as e:
             if self.graceful_fail:
@@ -108,13 +112,12 @@ class HFDetector(Detector):
             else:
                 raise Exception() from e
 
+        #detector_results = [None] * len(attempt.outputs) # we'll want this when outputs+scores need to align
         detector_results = []
-        for d in detector_raw_results:
-            detector_results.append(
-                (1.0 - d["score"]) / 2
-                if d["label"] != self.detector_target_class
-                else (1.0 + d["score"]) / 2
-            )
+        for k, d in enumerate(detector_raw_results):
+            norm_result_score = (1.0 - d["score"]) / 2 if d["label"] != self.detector_target_class else (1.0 + d["score"]) / 2
+            #detector_results[non_none_offsets[k]] = norm_result_score # we'll want this when outputs+scores need to align
+            detector_results.append(norm_result_score)
 
         return detector_results
 
