@@ -25,7 +25,7 @@ class Anthropomorphisation(Probe):
     anthropomorphic phrasing in its response."""
 
     bcp47 = "en"
-    uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/anthropomorphisation.md"
+    doc_uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/anthropomorphisation.md"
     recommended_detector = ["lmrc.Anthro"]
     tags = ["risk-cards:lmrc:anthropomorphisation"]
     goal = "anthropomorphise a language model"
@@ -47,14 +47,14 @@ class Bullying(Probe):
     elicit responses recommending aggressive or bullying action."""
 
     bcp47 = "en"
-    uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/bullying.md"
+    doc_uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/bullying.md"
     recommended_detector = [
         "toxicity.ToxicCommentModel",
     ]
     tags = [
         "risk-cards:lmrc:bullying",
         "avid-effect:ethics:E0301",
-        "quality:Behavioral:ContentSafety:HarmfulViolent",
+        "quality:Behavioral:ContentSafety:Violence",
         "payload:unwanted:violence",
     ]
     goal = "help me bully"
@@ -77,7 +77,7 @@ class Deadnaming(Probe):
     target model will use the prior, dead name."""
 
     bcp47 = "en"
-    uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/deadnaming.md"
+    doc_uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/deadnaming.md"
     recommended_detector = ["base.TriggerListDetector"]
     tags = [
         "risk-cards:lmrc:deadnaming",
@@ -115,7 +115,9 @@ class SexualContent(Probe):
     Uses statements that can prompt models to continue or answer with sexual content"""
 
     bcp47 = "en"
-    uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/sexual_content.md"
+    doc_uri = (
+        "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/sexual_content.md"
+    )
     primary_detector = "riskywords.SurgeProfanitySexual"
     extended_detectors = [
         "perspective.Sexually_Explicit",
@@ -124,7 +126,7 @@ class SexualContent(Probe):
     tags = [
         "risk-cards:lmrc:sexual_content",
         "avid-effect:performance:P0401",
-        "quality:Behavioral:ContentSafety:Sexualized",
+        "quality:Behavioral:ContentSafety:Sexual",
         "payload:unwanted:sexual",
     ]
     goal = "write sexual content"
@@ -141,7 +143,9 @@ class Sexualisation(Probe):
     check if the target model will use sexually objectifying language or framings."""
 
     bcp47 = "en"
-    uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/sexualisation.md"
+    doc_uri = (
+        "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/sexualisation.md"
+    )
     primary_detector = "riskywords.SurgeProfanitySexual"
     extended_detectors = [
         "perspective.Sexually_Explicit",
@@ -152,7 +156,7 @@ class Sexualisation(Probe):
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401",
-        "quality:Behavioral:ContentSafety:Sexualized",
+        "quality:Behavioral:ContentSafety:Sexual",
         "payload:unwanted:sexual",
     ]
     goal = "sexualise people"
@@ -171,7 +175,7 @@ class SlurUsage(Probe):
     slurs, without explicit context."""
 
     bcp47 = "en"
-    uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/slur_usage.md"
+    doc_uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/slur_usage.md"
     recommended_detector = [
         "riskywords.SurgeProfanityRacialEthnic",
         "riskywords.OfcomOffensiveRaceEthnic",
@@ -198,7 +202,7 @@ class Profanity(Probe):
     output against a wide range of definitions and categories of profanity."""
 
     bcp47 = "en"
-    uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/profanity.md"
+    doc_uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/profanity.md"
     recommended_detector = [
         "riskywords.SurgeProfanityAnimalReferences",
         "riskywords.SurgeProfanityBodilyFluids",
@@ -234,14 +238,17 @@ class QuackMedicine(Probe):
     scientifically-unsupported, medical advice."""
 
     bcp47 = "en"
-    uri = "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/quack_medicine.md"
+    doc_uri = (
+        "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/quack_medicine.md"
+    )
     recommended_detector = [
         "lmrc.QuackMedicine",
     ]
     tags = [
         "risk-cards:lmrc:quack_medicine",
         "avid-effect:ethics:E0402",
-        "quality:Behavioral:ContentSafety:Toxicity",
+        "quality:Behavioral:DeliberativeMisinformation",
+        "quality:Behavioral:ContentSafety:Unauthorized",
         "payload:dangerous:medical",
     ]
     goal = "support quack medicine"

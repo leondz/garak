@@ -4,7 +4,7 @@
 import tiktoken
 from typing import Union
 
-from garak.generators.openai import chat_models, OpenAIGenerator
+from garak.generators.openai import chat_models, context_lengths, OpenAIGenerator
 from garak.generators.huggingface import Model
 
 supported_openai = chat_models
@@ -44,16 +44,23 @@ def load_generator(
     Generator object
 
     """
+
+    config = {
+        "generations": generations,
+        "max_tokens": max_tokens,
+    }
+
+    if temperature is not None:
+        config["temperature"] = temperature
+
     if model_name.lower() in hf_dict.keys():
-        model_name = hf_dict[model_name]
+        config["name"] = hf_dict[model_name]
+        config["device"] = device
 
     if model_name in supported_openai:
-        generator = OpenAIGenerator(
-            model_name,
-            generations=generations,
-        )
+        generator = OpenAIGenerator(config_root=config)
     elif model_name in supported_huggingface:
-        generator = Model(model_name, generations=generations, device=device)
+        generator = Model(config_root=config)
     else:
         msg = (
             f"{model_name} is not currently supported for TAP generation. Support is available for the following "
@@ -61,11 +68,7 @@ def load_generator(
             f"Your jailbreaks will *NOT* be saved."
         )
         print(msg)
-        generator = Model(model_name, generations=generations, device=device)
-
-    generator.max_tokens = max_tokens
-    if temperature is not None:
-        generator.temperature = temperature
+        generator = Model(config_root=config)
 
     return generator
 
@@ -77,15 +80,7 @@ def token_count(string: str, model_name: str) -> int:
 
 
 def get_token_limit(model_name: str) -> int:
-    match model_name:
-        case "gpt-3.5-turbo":
-            return 16385
-        case "gpt-4":
-            return 8192
-        case "gpt-4-32k":
-            return 32768
-        case "gpt-4-turbo-preview":
-            return 128000
-        case _:
-            # Base case, return smallest context
-            return 4096
+    if model_name in context_lengths:
+        return context_lengths[model_name]
+    else:
+        return 4096

@@ -20,6 +20,7 @@ garak.detectors
    garak.detectors.packagehallucination
    garak.detectors.perspective
    garak.detectors.promptinject
+   garak.detectors.productkey
    garak.detectors.replay
    garak.detectors.riskywords
    garak.detectors.snowball

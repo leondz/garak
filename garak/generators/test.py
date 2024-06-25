@@ -47,4 +47,4 @@ class Single(Generator):
             )
 
 
-default_class = "Blank"
+DEFAULT_CLASS = "Blank"

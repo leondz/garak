@@ -10,7 +10,6 @@ sources:
 * https://platform.openai.com/docs/model-index-for-researchers
 """
 
-import os
 import re
 import logging
 from typing import List, Union
@@ -18,6 +17,7 @@ from typing import List, Union
 import openai
 import backoff
 
+from garak import _config
 from garak.generators.base import Generator
 
 # lists derived from https://platform.openai.com/docs/models
@@ -87,15 +87,34 @@ class OpenAICompatible(Generator):
 
     ENV_VAR = "OpenAICompatible_API_KEY".upper()  # Placeholder override when extending
 
+    active = False  # this interface class is not active
     supports_multiple_generations = True
     generator_family_name = "OpenAICompatible"  # Placeholder override when extending
 
     # template defaults optionally override when extending
+    DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
+        "temperature": 0.7,
+        "top_p": 1.0,
+        "frequency_penalty": 0.0,
+        "presence_penalty": 0.0,
+        "stop": ["#", ";"],
+    }
+
     temperature = 0.7
     top_p = 1.0
     frequency_penalty = 0.0
     presence_penalty = 0.0
     stop = ["#", ";"]
+
+    # avoid attempt to pickle the client attribute
+    def __getstate__(self) -> object:
+        self._clear_client()
+        return dict(self.__dict__)
+
+    # restore the client attribute
+    def __setstate__(self, d) -> object:
+        self.__dict__.update(d)
+        self._load_client()
 
     def _load_client(self):
         # Required stub implemented when extending `OpenAICompatible`
@@ -108,22 +127,20 @@ class OpenAICompatible(Generator):
     def _validate_config(self):
         pass
 
-    def __init__(self, name, generations=10):
+    def __init__(self, name="", generations=10, config_root=_config):
         self.name = name
+        self.generations = generations
+        self._load_config(config_root)
         self.fullname = f"{self.generator_family_name} {self.name}"
-
-        self.api_key = os.getenv(self.ENV_VAR, default=None)
-        if self.api_key is None:
-            raise ValueError(
-                f'Put the {self.generator_family_name} API key in the {self.ENV_VAR} environment variable (this was empty)\n \
-                e.g.: export {self.ENV_VAR}="sk-123XXXXXXXXXXXX"'
-            )
+        self.key_env_var = self.ENV_VAR
 
         self._load_client()
 
         self._validate_config()
 
-        super().__init__(name, generations=generations)
+        super().__init__(
+            self.name, generations=self.generations, config_root=config_root
+        )
 
         # clear client config to enable object to `pickle`
         self._clear_client()
@@ -140,8 +157,8 @@ class OpenAICompatible(Generator):
         max_value=70,
     )
     def _call_model(
-        self, prompt: Union[str, list[dict]], generations_this_call: int = 1
-    ) -> List[str]:
+        self, prompt: Union[str, List[dict]], generations_this_call: int = 1
+    ) -> List[Union[str, None]]:
         if self.client is None:
             # reload client once when consuming the generator
             self._load_client()
@@ -181,18 +198,23 @@ class OpenAICompatible(Generator):
                 logging.error(msg)
                 print(msg)
                 return list()
-            response = self.generator.create(
-                model=self.name,
-                messages=messages,
-                temperature=self.temperature,
-                top_p=self.top_p,
-                n=generations_this_call,
-                stop=self.stop,
-                max_tokens=self.max_tokens,
-                presence_penalty=self.presence_penalty,
-                frequency_penalty=self.frequency_penalty,
-            )
-            return [c.message.content for c in response.choices]
+            try:
+                response = self.generator.create(
+                    model=self.name,
+                    messages=messages,
+                    temperature=self.temperature,
+                    top_p=self.top_p,
+                    n=generations_this_call,
+                    stop=self.stop,
+                    max_tokens=self.max_tokens,
+                    presence_penalty=self.presence_penalty,
+                    frequency_penalty=self.frequency_penalty,
+                )
+                return [c.message.content for c in response.choices]
+            except openai.BadRequestError:
+                msg = "Bad request: " + str(repr(prompt))
+                logging.error(msg)
+                return [None]
 
         else:
             raise ValueError(
@@ -204,6 +226,7 @@ class OpenAIGenerator(OpenAICompatible):
     """Generator wrapper for OpenAI text2text models. Expects API key in the OPENAI_API_KEY environment variable"""
 
     ENV_VAR = "OPENAI_API_KEY"
+    active = True
     generator_family_name = "OpenAI"
 
     def _load_client(self):
@@ -236,11 +259,15 @@ class OpenAIGenerator(OpenAICompatible):
         self.generator = None
         self.client = None
 
-    def __init__(self, name):
+    def __init__(self, name="", config_root=_config):
+        self.name = name
+        self._load_config(config_root)
         if self.name in context_lengths:
             self.context_len = context_lengths[self.name]
 
-        super().__init__(name)
+        super().__init__(
+            self.name, generations=self.generations, config_root=config_root
+        )
 
 
-default_class = "OpenAIGenerator"
+DEFAULT_CLASS = "OpenAIGenerator"

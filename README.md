@@ -182,6 +182,7 @@ For testing. This generator repeats back the prompt it received.
 | atkgen | Automated Attack Generation. A red-teaming LLM probes the target and reacts to it in an attempt to get toxic output. Prototype, mostly stateless, for now uses a simple GPT-2 [fine-tuned](https://huggingface.co/leondz/artgpt2tox) on the subset of hhrlhf attempts that yielded detectable toxicity (the only target currently supported for now). |
 | continuation | Probes that test if the model will continue a probably undesirable word |
 | dan | Various [DAN](https://adguard.com/en/blog/chatgpt-dan-prompt-abuse.html) and DAN-like attacks |
+| donotanswer | Prompts to which responsible language models should not answer. |
 | encoding | Prompt injection through text encoding |
 | gcg | Disrupt a system prompt by appending an adversarial suffix. |
 | glitch | Probe model for glitch tokens that provoke unusual behavior. |
@@ -246,10 +247,12 @@ Code reference documentation is at [garak.readthedocs.io](https://garak.readthed
 
 ## Citing garak
 
+You can read the [garak preprint paper](garak-paper.pdf). If you use garak, please cite us.
+
 ```
-@misc{garak,
-  title={garak: {A Framework for Large Language Model Red Teaming}},
-  author={Leon Derczynski and Erick Galinkin and Subho Majumdar},
+@article{garak,
+  title={{garak: A Framework for Security Probing Large Language Models}},
+  author={Leon Derczynski and Erick Galinkin and Jeffrey Martin and Subho Majumdar and Nanna Inie},
   year={2024},
   howpublished={\url{https://garak.ai}}
 }

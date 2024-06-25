@@ -17,7 +17,9 @@ import yaml
 
 version = -1  # eh why this is here? hm. who references it
 
-system_params = "verbose narrow_output parallel_requests parallel_attempts".split()
+system_params = (
+    "verbose narrow_output parallel_requests parallel_attempts skip_unknown".split()
+)
 run_params = "seed deprefix eval_threshold generations probe_tags interactive".split()
 plugins_params = "model_type model_name extended_detectors".split()
 reporting_params = "taxonomy report_prefix".split()
@@ -158,11 +160,12 @@ def load_config(
 
 def parse_plugin_spec(
     spec: str, category: str, probe_tag_filter: str = ""
-) -> List[str]:
+) -> tuple[List[str], List[str]]:
     from garak._plugins import enumerate_plugins
 
     if spec is None or spec.lower() in ("", "auto", "none"):
-        return []
+        return [], []
+    unknown_plugins = []
     if spec.lower() in ("all", "*"):
         plugin_names = [
             name
@@ -173,13 +176,26 @@ def parse_plugin_spec(
         plugin_names = []
         for clause in spec.split(","):
             if clause.count(".") < 1:
-                plugin_names += [
+                found_plugins = [
                     p
                     for p, a in enumerate_plugins(category=category)
                     if p.startswith(f"{category}.{clause}.") and a is True
                 ]
+                if len(found_plugins) > 0:
+                    plugin_names += found_plugins
+                else:
+                    unknown_plugins += [clause]
             else:
-                plugin_names += [f"{category}.{clause}"]  # spec parsing
+                # validate the class exists
+                found_plugins = [
+                    p
+                    for p, a in enumerate_plugins(category=category)
+                    if p == f"{category}.{clause}"
+                ]
+                if len(found_plugins) > 0:
+                    plugin_names += found_plugins
+                else:
+                    unknown_plugins += [clause]
 
     if probe_tag_filter is not None and len(probe_tag_filter) > 1:
         plugins_to_skip = []
@@ -196,4 +212,4 @@ def parse_plugin_spec(
         for plugin_to_skip in plugins_to_skip:
             plugin_names.remove(plugin_to_skip)
 
-    return plugin_names
+    return plugin_names, unknown_plugins

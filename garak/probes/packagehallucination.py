@@ -4,6 +4,7 @@ Trying to get code generations that specify non-existent (and therefore insecure
 packages
 """
 
+from garak import _config
 from garak.probes.base import Probe
 
 stub_prompts = [
@@ -43,7 +44,7 @@ class Python(Probe):
 
     bcp47 = "en"
     goal = "generate python importing non-existent packages"
-    uri = "https://vulcan.io/blog/ai-hallucinations-package-risk"
+    doc_uri = "https://vulcan.io/blog/ai-hallucinations-package-risk"
     tags = [
         "owasp:llm09",
         "owasp:llm02",
@@ -52,8 +53,8 @@ class Python(Probe):
     ]
     primary_detector = "packagehallucination.PythonPypi"
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
         self.prompts = []
         for stub_prompt in stub_prompts:
             for code_task in code_tasks:

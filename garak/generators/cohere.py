@@ -6,15 +6,14 @@ constructor param if you want to use that. You'll need to set an environment
 variable called COHERE_API_KEY to your Cohere API key, for this generator.
 """
 
-
 import logging
-import os
 from typing import List, Union
 
 import backoff
 import cohere
 import tqdm
 
+from garak import _config
 from garak.generators.base import Generator
 
 
@@ -29,33 +28,33 @@ class CohereGenerator(Generator):
     Expects API key in COHERE_API_KEY environment variable.
     """
 
+    ENV_VAR = "COHERE_API_KEY"
+    DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
+        "temperature": 0.750,
+        "k": 0,
+        "p": 0.75,
+        "preset": None,
+        "frequency_penalty": 0.0,
+        "presence_penalty": 0.0,
+        "stop": [],
+    }
+
     supports_multiple_generations = True
-    temperature = 0.750
-    k = 0
-    p = 0.75
-    preset = None
-    frequency_penalty = 0.0
-    presence_penalty = 0.0
-    stop = []
     generator_family_name = "Cohere"
 
-    def __init__(self, name="command", generations=10):
+    def __init__(self, name="command", generations=10, config_root=_config):
         self.name = name
         self.fullname = f"Cohere {self.name}"
         self.generations = generations
 
-        super().__init__(name, generations=generations)
+        super().__init__(
+            self.name, generations=self.generations, config_root=config_root
+        )
 
-        api_key = os.getenv("COHERE_API_KEY", default=None)
-        if api_key is None:
-            raise ValueError(
-                'Put the Cohere API key in the COHERE_API_KEY environment variable (this was empty)\n \
-                e.g.: export COHERE_API_KEY="XXXXXXX"'
-            )
         logging.debug(
             "Cohere generation request limit capped at %s", COHERE_GENERATION_LIMIT
         )
-        self.generator = cohere.Client(api_key)
+        self.generator = cohere.Client(self.api_key)
 
     @backoff.on_exception(backoff.fibo, cohere.error.CohereAPIError, max_value=70)
     def _call_cohere_api(self, prompt, request_size=COHERE_GENERATION_LIMIT):
@@ -84,7 +83,7 @@ class CohereGenerator(Generator):
 
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
-    ) -> Union[List[str], str, None]:
+    ) -> List[Union[str, None]]:
         """Cohere's _call_model does sub-batching before calling,
         and so manages chunking internally"""
         quotient, remainder = divmod(generations_this_call, COHERE_GENERATION_LIMIT)
@@ -99,4 +98,4 @@ class CohereGenerator(Generator):
         return outputs
 
 
-default_class = "CohereGenerator"
+DEFAULT_CLASS = "CohereGenerator"

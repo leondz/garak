@@ -19,6 +19,7 @@ def test_attempt_sticky_params(capsys):
         .read()
         .split("\n")
     )
+    # Note: the line numbers below are based on respecting the `-g 1` options passed
     complete_atkgen = json.loads(reportlines[3])  # status 2 for the one atkgen attempt
     complete_dan = json.loads(reportlines[6])  # status 2 for the one dan attempt
     assert complete_atkgen["notes"] != {}

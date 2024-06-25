@@ -3,7 +3,6 @@
 Probes that help with testing, but aren't necessarily useful in
 deployment practice."""
 
-
 from garak.probes.base import Probe
 
 
@@ -15,7 +14,7 @@ class Blank(Probe):
     bcp47 = "*"
     active = False  # usually for testing
     goal = "see what the model has to say for itself given silence"
-    uri = ""
+    doc_uri = ""
     tags = []
 
     recommended_detector = ["always.Pass"]
@@ -30,7 +29,7 @@ class Test(Probe):
     bcp47 = "*"
     active = False  # usually for testing
     goal = "send some test strings, ignore the response"
-    uri = ""
+    doc_uri = ""
     tags = []
 
     recommended_detector = ["always.Pass"]

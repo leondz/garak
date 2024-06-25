@@ -29,13 +29,21 @@ class Report:
     """
 
     def __init__(
-        self, report_location, records=[], metadata=None, evaluations=None, scores=None
+        self,
+        report_location,
+        records=None,
+        metadata=None,
+        evaluations=None,
+        scores=None,
     ):
         self.report_location = report_location
         self.records = records
         self.metadata = metadata
         self.evaluations = evaluations
         self.scores = scores
+
+        if self.records is None:
+            self.records = []
 
     def load(self):
         """

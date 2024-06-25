@@ -54,6 +54,8 @@ Code reference
    basic
    attempt
    cli
+   command
+   interactive
 
 Plugin structure
 ^^^^^^^^^^^^^^^^
@@ -61,10 +63,10 @@ Plugin structure
 .. toctree::
    :maxdepth: 1
 
-   probes
-   detectors
-   generators
    buffs
-   harnesses
+   detectors
    evaluators
+   generators
+   harnesses
+   probes
    report

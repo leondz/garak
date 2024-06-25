@@ -16,9 +16,6 @@ from garak import _config, _plugins
 
 
 class ProbewiseHarness(Harness):
-    def __init__(self):
-        super().__init__()
-
     def _load_detector(self, detector_name: str) -> Detector:
         detector = _plugins.load_plugin(
             "detectors." + detector_name, break_on_fail=False
@@ -30,7 +27,7 @@ class ProbewiseHarness(Harness):
             logging.error(f" detector load failed: {detector_name}, skipping >>")
         return False
 
-    def run(self, model, probenames, evaluator, buff_names=[]):
+    def run(self, model, probenames, evaluator, buff_names=None):
         """Execute a probe-by-probe scan
 
         Probes are executed in name order. For each probe, the detectors
@@ -57,11 +54,15 @@ class ProbewiseHarness(Harness):
         :type buff_names: List[str]
         """
 
+        if buff_names is None:
+            buff_names = []
+
         if not probenames:
-            logging.warning("No probes, nothing to do")
+            msg = "No probes, nothing to do"
+            logging.warning(msg)
             if hasattr(_config.system, "verbose") and _config.system.verbose >= 2:
-                print("No probes, nothing to do")
-            return None
+                print(msg)
+            raise ValueError(msg)
 
         self._load_buffs(buff_names)
 

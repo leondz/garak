@@ -16,9 +16,11 @@ from colorama import Fore, Style
 import tqdm
 
 import garak.attempt
+from garak import _config
+from garak.configurable import Configurable
 
 
-class Buff:
+class Buff(Configurable):
     """Base class for a buff.
 
     A buff should take as input a list of attempts, and return
@@ -27,11 +29,12 @@ class Buff:
     of derivative attempt objects.
     """
 
-    uri = ""
+    doc_uri = ""
     bcp47 = None  # set of languages this buff should be constrained to
     active = True
 
-    def __init__(self) -> None:
+    def __init__(self, config_root=_config) -> None:
+        self._load_config(config_root)
         module = self.__class__.__module__.replace("garak.buffs.", "")
         self.fullname = f"{module}.{self.__class__.__name__}"
         self.post_buff_hook = False

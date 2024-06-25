@@ -6,20 +6,25 @@
 command_options = "list_detectors list_probes list_generators list_buffs list_config plugin_info interactive report version".split()
 
 
-def main(arguments=[]) -> None:
+def main(arguments=None) -> None:
     """Main entry point for garak runs invoked from the CLI"""
     import datetime
 
     from garak import __version__, __description__
     from garak import _config
+    from garak.exception import GarakException
 
     _config.transient.starttime = datetime.datetime.now()
     _config.transient.starttime_iso = _config.transient.starttime.isoformat()
     _config.version = __version__
 
+    if arguments is None:
+        arguments = []
+
     import garak.command as command
     import logging
     import re
+    from colorama import Fore, Style
 
     command.start_logging()
     _config.load_base_config()
@@ -66,6 +71,11 @@ def main(arguments=[]) -> None:
         type=int,
         default=_config.system.parallel_attempts,
         help="How many probe attempts to launch in parallel.",
+    )
+    parser.add_argument(
+        "--skip_unknown",
+        action="store_true",
+        help="allow skip of unknown probes, detectors, or buffs",
     )
 
     ## RUN
@@ -321,72 +331,62 @@ def main(arguments=[]) -> None:
 
     # startup
     import sys
-    import importlib
     import json
+    import os
 
     import garak.evaluators
 
     try:
-        if not args.version and not args.report:
-            command.start_run()
+        plugin_types = ["probe", "generator"]
+        # do a special thing for CLI probe options, generator options
+        for plugin_type in plugin_types:
+            opts_arg = f"{plugin_type}_options"
+            opts_file = f"{plugin_type}_option_file"
+            if opts_arg in args or opts_file in args:
+                if opts_arg in args:
+                    opts_argv = getattr(args, opts_arg)
+                    try:
+                        opts_cli_config = json.loads(opts_argv)
+                    except json.JSONDecodeError as e:
+                        logging.warning(
+                            "Failed to parse JSON %s: %s", opts_arg, e.args[0]
+                        )
 
-        # do a special thing for CLIprobe options, generator options
-        if "probe_options" in args or "probe_option_file" in args:
-            if "probe_options" in args:
-                try:
-                    probe_cli_config = json.loads(args.probe_options)
-                except json.JSONDecodeError as e:
-                    logging.warning("Failed to parse JSON probe_options: %s", e.args[0])
+                elif opts_file in args:
+                    file_arg = getattr(args, opts_file)
+                    if not os.path.isfile(file_arg):
+                        raise FileNotFoundError(
+                            f"Path provided is not a file: {opts_file}"
+                        )
+                    with open(file_arg, encoding="utf-8") as f:
+                        options_json = f.read().strip()
+                    try:
+                        opts_cli_config = json.loads(options_json)
+                    except json.decoder.JSONDecodeError as e:
+                        logging.warning(
+                            "Failed to parse JSON %s: %s", opts_file, {e.args[0]}
+                        )
+                        raise e
 
-            elif "probe_option_file" in args:
-                with open(args.probe_option_file, encoding="utf-8") as f:
-                    probe_options_json = f.read().strip()
-                try:
-                    probe_cli_config = json.loads(probe_options_json)
-                except json.decoder.JSONDecodeError as e:
-                    logging.warning(
-                        "Failed to parse JSON probe_options: %s", {e.args[0]}
-                    )
-                    raise e
+                config_plugin_type = getattr(_config.plugins, f"{plugin_type}s")
 
-            _config.plugins.probes = _config._combine_into(
-                probe_cli_config, _config.plugins.probes
-            )
-
-        if "generator_options" in args or "generator_option_file" in args:
-            if "generator_options" in args:
-                try:
-                    generator_cli_config = json.loads(args.generator_options)
-                except json.JSONDecodeError as e:
-                    logging.warning(
-                        "Failed to parse JSON generator_options: %s", e.args[0]
-                    )
-
-            elif "generator_option_file" in args:
-                with open(args.generator_option_file, encoding="utf-8") as f:
-                    generator_options_json = f.read().strip()
-                try:
-                    generator_cli_config = json.loads(generator_options_json)
-                except json.decoder.JSONDecodeError as e:
-                    logging.warning(
-                        "Failed to parse JSON generator_options: %s", {e.args[0]}
-                    )
-                    raise e
-
-            _config.plugins.generators = _config._combine_into(
-                generator_cli_config, _config.plugins.generators
-            )
+                config_plugin_type = _config._combine_into(
+                    opts_cli_config, config_plugin_type
+                )
 
         # process commands
         if args.interactive:
             from garak.interactive import interactive_mode
 
             try:
+                command.start_run()  # start run to track actions
                 interactive_mode()
             except Exception as e:
                 logging.error(e)
                 print(e)
                 sys.exit(1)
+            finally:
+                command.end_run()
 
         if args.version:
             pass
@@ -421,6 +421,24 @@ def main(arguments=[]) -> None:
 
         # model is specified, we're doing something
         elif _config.plugins.model_type:
+            conf_root = _config.plugins.generators
+            for part in _config.plugins.model_type.split("."):
+                if not part in conf_root:
+                    conf_root[part] = {}
+                conf_root = conf_root[part]
+            if _config.plugins.model_name:
+                # if passed generator options and config files are already loaded
+                # cli provided name overrides config from file
+                conf_root["name"] = _config.plugins.model_name
+            if (
+                hasattr(_config.run, "generations")
+                and _config.run.generations is not None
+            ):
+                conf_root["generations"] = _config.run.generations
+            if hasattr(_config.run, "seed") and _config.run.seed is not None:
+                conf_root["seed"] = _config.run.seed
+
+            # Can this check be deferred to the generator instantiation?
             if (
                 _config.plugins.model_type
                 in ("openai", "replicate", "ggml", "huggingface", "litellm")
@@ -429,35 +447,37 @@ def main(arguments=[]) -> None:
                 message = f"⚠️  Model type '{_config.plugins.model_type}' also needs a model name\n You can set one with e.g. --model_name \"billwurtz/gpt-1.0\""
                 logging.error(message)
                 raise ValueError(message)
-            print(f"📜 reporting to {_config.transient.report_filename}")
 
-            generator_module_name = _config.plugins.model_type.split(".")[0]
-            generator_mod = importlib.import_module(
-                "garak.generators." + generator_module_name
-            )
-            if "." not in _config.plugins.model_type:
-                if generator_mod.default_class:
-                    generator_class_name = generator_mod.default_class
-                else:
-                    raise ValueError(
-                        "module {generator_module_name} has no default class; pass module.ClassName to --model_type"
-                    )
-            else:
-                generator_class_name = _config.plugins.model_type.split(".")[1]
+            parsable_specs = ["probe", "detector", "buff"]
+            parsed_specs = {}
+            for spec_type in parsable_specs:
+                spec_namespace = f"{spec_type}s"
+                config_spec = getattr(_config.plugins, f"{spec_type}_spec", "")
+                config_tags = getattr(_config.run, f"{spec_type}_tags", "")
+                names, rejected = _config.parse_plugin_spec(
+                    config_spec, spec_namespace, config_tags
+                )
+                parsed_specs[spec_type] = names
+                if rejected is not None and len(rejected) > 0:
+                    if hasattr(args, "skip_unknown"):  # attribute only set when True
+                        header = f"Unknown {spec_namespace}:"
+                        skip_msg = Fore.LIGHTYELLOW_EX + "SKIP" + Style.RESET_ALL
+                        msg = f"{Fore.LIGHTYELLOW_EX}{header}\n" + "\n".join(
+                            [f"{skip_msg} {spec}" for spec in rejected]
+                        )
+                        logging.warning(f"{header} " + ",".join(rejected))
+                        print(msg)
+                    else:
+                        msg_list = ",".join(rejected)
+                        raise ValueError(f"❌Unknown {spec_namespace}❌: {msg_list}")
 
-            #        if 'model_name' not in args:
-            #            generator = getattr(generator_mod, generator_class_name)()
-            #        else:
-            generator = getattr(generator_mod, generator_class_name)(
-                _config.plugins.model_name
+            evaluator = garak.evaluators.ThresholdEvaluator(_config.run.eval_threshold)
+
+            from garak import _plugins
+
+            generator = _plugins.load_plugin(
+                f"generators.{_config.plugins.model_type}", config_root=_config
             )
-            if (
-                hasattr(_config.run, "generations")
-                and _config.run.generations is not None
-            ):
-                generator.generations = _config.run.generations
-            if hasattr(_config.run, "seed") and _config.run.seed is not None:
-                generator.seed = _config.run.seed
 
             if "generate_autodan" in args and args.generate_autodan:
                 from garak.resources.autodan import autodan_generate
@@ -472,22 +492,20 @@ def main(arguments=[]) -> None:
                     )
                 autodan_generate(generator=generator, prompt=prompt, target=target)
 
-            probe_names = _config.parse_plugin_spec(
-                _config.plugins.probe_spec, "probes", _config.run.probe_tags
-            )
-            detector_names = _config.parse_plugin_spec(
-                _config.plugins.detector_spec, "detectors"
-            )
-            buff_names = _config.parse_plugin_spec(_config.plugins.buff_spec, "buffs")
+            command.start_run()  # start the run now that all config validation is complete
+            print(f"📜 reporting to {_config.transient.report_filename}")
 
-            evaluator = garak.evaluators.ThresholdEvaluator(_config.run.eval_threshold)
-
-            if detector_names == []:
-                command.probewise_run(generator, probe_names, evaluator, buff_names)
-
+            if parsed_specs["detector"] == []:
+                command.probewise_run(
+                    generator, parsed_specs["probe"], evaluator, parsed_specs["buff"]
+                )
             else:
                 command.pxd_run(
-                    generator, probe_names, detector_names, evaluator, buff_names
+                    generator,
+                    parsed_specs["probe"],
+                    parsed_specs["detector"],
+                    evaluator,
+                    parsed_specs["buff"],
                 )
 
             command.end_run()
@@ -498,5 +516,11 @@ def main(arguments=[]) -> None:
                     "💡 try setting --model_type (--model_name is currently set but not --model_type)"
                 )
             logging.info("nothing to do 🤷")
-    except KeyboardInterrupt:
-        print("User cancel received, terminating all runs")
+    except KeyboardInterrupt as e:
+        msg = "User cancel received, terminating all runs"
+        logging.exception(e)
+        logging.info(msg)
+        print(msg)
+    except (ValueError, GarakException) as e:
+        logging.exception(e)
+        print(e)

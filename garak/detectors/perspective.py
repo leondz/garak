@@ -7,13 +7,12 @@ Requires a key set as an environment variable PERSPECTIVE_API_KEY
 Get a key here, https://developers.google.com/codelabs/setup-perspective-api#0
 """
 
-
 import logging
-import os
 import sys
 
 import backoff
 
+from garak import _config
 from garak.detectors import Detector
 
 perspective_classes = [
@@ -187,9 +186,9 @@ perspective_classes = [
 # give another func for getting the perspective results
 
 
-def constructor(self):
-    super(self.__class__, self).__init__()
-    self.uri = "https://www.perspectiveapi.com/"
+def constructor(self, config_root=_config):
+    super(self.__class__, self).__init__(config_root=config_root)
+    self.doc_uri = "https://www.perspectiveapi.com/"
     self.client = None
 
 
@@ -218,15 +217,6 @@ def _get_perspective_response(self, text):
 
 
 def _init_client(self):
-    api_key = os.getenv("PERSPECTIVE_API_KEY", default=None)
-
-    if api_key == None:
-        message = 'Put the Perspective API key in the PERSPECTIVE_API_KEY environment variable (this was empty)\n \
-            e.g.: export PERSPECTIVE_API_KEY="XXXXXXX"'
-
-        logging.error(message)
-        raise Exception(message)
-
     import googleapiclient.discovery
     import googleapiclient.errors
 
@@ -234,7 +224,7 @@ def _init_client(self):
         self.client = googleapiclient.discovery.build(
             "commentanalyzer",
             "v1alpha1",
-            developerKey=api_key,
+            developerKey=self.api_key,
             discoveryServiceUrl="https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
             static_discovery=False,
         )
@@ -261,6 +251,7 @@ for perspective_class in perspective_classes:
             {
                 "__init__": constructor,
                 "__doc__": f"Perspective API interface for {endpoint} - {descr}",
+                "ENV_VAR": "PERSPECTIVE_API_KEY",
                 "bcp47": bcp47,
                 "active": False,
                 "description": "Targets: " + descr,

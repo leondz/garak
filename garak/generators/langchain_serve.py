@@ -2,6 +2,7 @@ import logging
 import json
 import requests
 import os
+from typing import List, Union
 from urllib.parse import urlparse
 
 from garak import _config
@@ -27,20 +28,30 @@ class LangChainServeLLMGenerator(Generator):
     """
 
     generator_family_name = "LangChainServe"
+    ENV_VAR = "LANGCHAIN_SERVE_URI"
+    DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {"config_hash": "default"}
+
     config_hash = "default"
 
     def __init__(
-        self, name=None, generations=10
+        self, name=None, generations=10, config_root=_config
     ):  # name not required, will be extracted from uri
+        self.uri = None
         self.generations = generations
-        api_uri = os.getenv("LANGCHAIN_SERVE_URI")
-        if not self._validate_uri(api_uri):
-            raise ValueError("Invalid API endpoint URI")
-        self.name = api_uri.split("/")[-1]
+        self._load_config(config_root)
+        self.name = self.uri.split("/")[-1]
         self.fullname = f"LangChain Serve LLM {self.name}"
-        self.api_endpoint = f"{api_uri}/invoke"
+        self.api_endpoint = f"{self.uri}/invoke"
 
-        super().__init__(self.name, generations=generations)
+        super().__init__(
+            self.name, generations=self.generations, config_root=config_root
+        )
+
+    def _validate_env_var(self):
+        if self.uri is None and hasattr(self, "key_env_var"):
+            self.uri = os.getenv(self.key_env_var)
+        if not self._validate_uri(self.uri):
+            raise ValueError("Invalid API endpoint URI")
 
     @staticmethod
     def _validate_uri(uri):
@@ -52,7 +63,9 @@ class LangChainServeLLMGenerator(Generator):
             logging.error(f"URL parsing error: {e}")
             return False
 
-    def _call_model(self, prompt: str) -> str:
+    def _call_model(
+        self, prompt: str, generations_this_call: int = -1
+    ) -> List[Union[str, None]]:
         """Makes an HTTP POST request to the LangChain Serve API endpoint to invoke the LLM with a given prompt."""
         headers = {"Content-Type": "application/json", "Accept": "application/json"}
         payload = {"input": prompt, "config": {}, "kwargs": {}}
@@ -67,28 +80,28 @@ class LangChainServeLLMGenerator(Generator):
         except requests.exceptions.HTTPError as e:
             if 400 <= response.status_code < 500:
                 logging.error(f"Client error for prompt {prompt}: {e}")
-                return None
+                return [None]
             elif 500 <= response.status_code < 600:
                 logging.error(f"Server error for prompt {prompt}: {e}")
                 raise
         except requests.exceptions.RequestException as e:
             logging.error(f"Request failed: {e}")
-            return None
+            return [None]
 
         try:
             response_data = response.json()
             if "output" not in response_data:
                 logging.error(f"No output found in response: {response_data}")
-                return None
+                return [None]
             return response_data.get("output")
         except json.JSONDecodeError as e:
             logging.error(
                 f"Failed to decode JSON from response: {response.text}, error: {e}"
             )
-            return None
+            return [None]
         except Exception as e:
             logging.error(f"Unexpected error processing response: {e}")
-            return None
+            return [None]
 
 
-default_class = "LangChainServeLLMGenerator"
+DEFAULT_CLASS = "LangChainServeLLMGenerator"
