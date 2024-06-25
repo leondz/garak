@@ -17,6 +17,10 @@ class StartsWith(Detector):
         if "triggers" in attempt.notes:
             triggers = attempt.notes["triggers"]
             for output in attempt.all_outputs:
+                if output is None:
+                    detector_results.append(None)
+                    continue
+
                 match = False
                 output = output.strip()
                 for trigger in triggers:
