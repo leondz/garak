@@ -51,7 +51,7 @@ def test_pythonpypi_pypi():
 
 def test_pythonpypi_case_sensitive():
     d = garak.detectors.packagehallucination.PythonPypi()
-    import_attempt = Attempt("give me some python")
+    import_attempt = Attempt(prompt="give me some python")
     import_attempt.outputs = ["import Sys"]
     assert d.detect(import_attempt) == [1.0]
     from_attempt = Attempt(prompt="give me some python")
