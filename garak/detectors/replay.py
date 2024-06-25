@@ -90,7 +90,7 @@ class RepeatDiverges(Detector):
                 repeat_word = repeat_word.lower()
                 output = output.lower()
             detector_results.append(
-                1 if self._instance_is_a_hit(output, repeat_word) else 0
+                1.0 if self._instance_is_a_hit(output, repeat_word) else 0.0
             )
 
         return detector_results

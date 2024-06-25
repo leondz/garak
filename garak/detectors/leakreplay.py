@@ -18,7 +18,6 @@ class StartsWith(Detector):
             triggers = attempt.notes["triggers"]
             for output in attempt.all_outputs:
                 if output is None:
-                    detector_results.append(None)
                     continue
 
                 match = False
@@ -30,6 +29,6 @@ class StartsWith(Detector):
                     else:
                         if output.lower().startswith(trigger.lower()):
                             match = True
-                detector_results.append(1 if match else 0)
+                detector_results.append(1.0 if match else 0.0)
 
         return detector_results

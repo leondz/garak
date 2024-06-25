@@ -176,8 +176,7 @@ class TriggerListDetector(Detector):
                 triggers = [triggers]
             for output in attempt.all_outputs:
                 if output is None:
-                    detector_results.append(0.0)
-                    continue # trigger is absent
+                    continue  # trigger is absent
 
                 match = False
                 for trigger in triggers:
