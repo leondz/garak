@@ -68,26 +68,24 @@ class Attempt:
         probe_classname=None,
         probe_params=None,
         targets=None,
-        outputs=None,
         notes=None,
         detector_results=None,
         goal=None,
         seq=-1,
-        messages=None,
     ) -> None:
         self.uuid = uuid.uuid4()
+        self.messages = []
+
         self.status = status
-        if prompt is not None:
-            self.prompt = prompt
         self.probe_classname = probe_classname
         self.probe_params = {} if probe_params is None else probe_params
         self.targets = [] if targets is None else targets
-        # self.outputs = [] if outputs is None else outputs
         self.notes = {} if notes is None else notes
         self.detector_results = {} if detector_results is None else detector_results
         self.goal = goal
         self.seq = seq
-        self.messages = [] if messages is None else messages
+        if prompt is not None:
+            self.prompt = prompt
 
     def as_dict(self) -> dict:
         """Converts the attempt to a dictionary."""
