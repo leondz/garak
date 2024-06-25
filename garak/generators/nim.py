@@ -67,8 +67,6 @@ class NVOpenAIChat(OpenAICompatible):
         assert (
             generations_this_call == 1
         ), "generations_per_call / n > 1 is not supported"
-        self.presence_penalty = None
-        self.frequency_penalty = None
         return super()._call_model(prompt, generations_this_call)
 
 
