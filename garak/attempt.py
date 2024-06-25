@@ -126,13 +126,14 @@ class Attempt:
         elif name == "outputs":
             if len(self.messages) and isinstance(self.messages[0], list):
                 # work out last_output_turn that was assistant
-                last_output_turn = max(
-                    [
-                        idx
-                        for idx, val in enumerate(self.messages[0])
-                        if val["role"] == "assistant"
-                    ]
-                )
+                assistant_turns = [
+                    idx
+                    for idx, val in enumerate(self.messages[0])
+                    if val["role"] == "assistant"
+                ]
+                if assistant_turns == []:
+                    return []
+                last_output_turn = max(assistant_turns)
                 # return these (via list compr)
                 return [m[last_output_turn]["content"] for m in self.messages]
             else:
@@ -218,8 +219,8 @@ class Attempt:
 
         the contents should be as broad as the established number of
         generations for this attempt. e.g. if there's a prompt and a
-        first turn with three responses, every add_turn on the attempt
-        must give a list with three entries.
+        first turn with k responses, every add_turn on the attempt
+        must give a list with k entries.
         """
         if len(contents) != len(self.messages):
             raise ValueError(

@@ -292,5 +292,11 @@ def test_outputs():
     output_a_expand.prompt = test_prompt
     output_a_expand._expand_prompt_to_histories(2)
     output_a_expand.outputs = [test_sys1] * expansion
-
     assert output_a_expand.outputs == [test_sys1] * expansion
+
+    output_empty = garak.attempt.Attempt()
+    assert output_empty.outputs == []
+    output_empty._add_first_turn("user", "cardassia prime")
+    assert output_empty.outputs == []
+    output_empty._expand_prompt_to_histories(1)
+    assert output_empty.outputs == []
