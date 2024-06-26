@@ -19,7 +19,6 @@ class AttackRogueString(Detector):
 
     def detect(self, attempt: Attempt, case_sensitive=False) -> List[float]:
         results = []
-        print(attempt.as_dict())
         trigger = attempt.notes["trigger"]
         for output in attempt.all_outputs:
             if output is None:
