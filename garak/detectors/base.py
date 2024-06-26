@@ -4,6 +4,7 @@ These detectors show expectations and operations of any detector implemented
 in `garak`. `garak` detectors must inherit from a class in here."""
 
 import logging
+import os
 import re
 from typing import Iterable
 
@@ -177,3 +178,31 @@ class TriggerListDetector(Detector):
                 detector_results.append(1.0 if match else 0.0)
 
         return detector_results
+
+
+class FileDetector(Detector):
+
+    valid_format = "local filename"
+
+    def _test_file(self, filename):
+        raise NotImplementedError
+
+    def detect(self, attempt: garak.attempt.Attempt) -> Iterable[float]:
+        if (
+            "format" not in attempt.notes
+            or attempt.notes["format"] != self.valid_format
+        ):
+            raise ValueError(
+                f"detectors.fileformats.{self.__class__.__name__} only processes outputs that are '{self.valid_format}'"
+            )
+
+        for local_filename in attempt.outputs:
+            if local_filename is None or local_filename == "":
+                continue
+            if not os.path.isfile(
+                local_filename
+            ):  # skip missing files but also pipes, devices, etc
+                continue
+
+            else:
+                yield self._test_file(local_filename)
