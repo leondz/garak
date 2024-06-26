@@ -31,6 +31,7 @@ python -m garak --model_type litellm --model_name "phi" --generator_option_file 
 ```
 """
 
+import importlib
 import logging
 
 from os import getenv
@@ -38,16 +39,11 @@ from typing import List, Union
 
 import backoff
 
-import litellm
 
 from garak import _config
+from garak.exception import APIKeyMissingError
 from garak.generators.base import Generator
 
-# Fix issue with Ollama which does not support `presence_penalty`
-litellm.drop_params = True
-# Suppress log messages from LiteLLM
-litellm.verbose_logger.disabled = True
-# litellm.set_verbose = True
 
 # Based on the param support matrix below:
 # https://docs.litellm.ai/docs/completion/input
@@ -109,6 +105,26 @@ class LiteLLMGenerator(Generator):
         "stop",
     )
 
+    # avoid attempt to pickle the client attribute
+    def __getstate__(self) -> object:
+        self._clear_client()
+        return dict(self.__dict__)
+
+    # restore the client attribute
+    def __setstate__(self, d) -> object:
+        self.__dict__.update(d)
+        self._load_client()
+
+    def _load_client(self):
+        self.litellm = importlib.import_module("litellm")
+        # Fix issue with Ollama which does not support `presence_penalty`
+        self.litellm.drop_params = True
+        # Suppress log messages from LiteLLM
+        self.litellm.verbose_logger.disabled = True
+
+    def _clear_client(self):
+        self.litellm = None
+
     def __init__(self, name: str = "", generations: int = 10, config_root=_config):
         self.name = name
         self.api_base = None
@@ -127,13 +143,10 @@ class LiteLLMGenerator(Generator):
             self.name, generations=self.generations, config_root=config_root
         )
 
-        if self.provider is None:
-            raise ValueError(
-                "litellm generator needs to have a provider value configured - see docs"
-            )
-        elif (
+        if (
             self.api_key is None
         ):  # TODO: special case where api_key is not always required
+            # TODO: add other providers
             if self.provider == "openai":
                 self.api_key = getenv(self.key_env_var, None)
                 if self.api_key is None:
@@ -141,6 +154,8 @@ class LiteLLMGenerator(Generator):
                         f"Please supply an OpenAI API key in the {self.key_env_var} environment variable"
                         " or in the configuration file"
                     )
+
+        self._load_client()
 
     @backoff.on_exception(backoff.fibo, Exception, max_value=70)
     def _call_model(
@@ -159,7 +174,7 @@ class LiteLLMGenerator(Generator):
             print(msg)
             return []
 
-        response = litellm.completion(
+        response = self.litellm.completion(
             model=self.name,
             messages=prompt,
             temperature=self.temperature,
