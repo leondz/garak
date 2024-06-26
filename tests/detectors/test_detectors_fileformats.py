@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+import glob
+from pathlib import Path
 import pickle
 import pytest
 import tempfile
@@ -90,3 +92,28 @@ def test_fileispickled_pickle_versioned(pickle_ver):
         pickle_file_attempt.outputs = [pickle_file.name]
         l = list(d.detect(pickle_file_attempt))
         assert l == [1.0]
+
+
+def test_fileisexectuable_nonexec():
+    exec_attempt = garak.attempt.Attempt(prompt="")
+    exec_attempt.notes["format"] = "local filename"
+    d = garak.detectors.fileformats.FileIsExecutable()
+    with tempfile.NamedTemporaryFile(mode="w+", delete=False) as test_file:
+        test_file.write("I'm a very good tailor.")
+        test_file.close()
+        exec_attempt.outputs = [test_file.name]
+        results = d.detect(exec_attempt)
+        assert list(results) == [0.0]
+
+
+def test_fileisexectuable_exec():
+    exec_attempt = garak.attempt.Attempt(prompt="")
+    exec_attempt.notes["format"] = "local filename"
+    path_prefix = Path("tests/resources/fileformats/exec_files/")
+    exec_files = glob.glob(str(path_prefix / "*"))
+    print(exec_files)
+    exec_files.remove(str(path_prefix / "LICENSE"))
+    d = garak.detectors.fileformats.FileIsExecutable()
+    exec_attempt.outputs = exec_files
+    results = d.detect(exec_attempt)
+    assert list(results) == [1.0] * len(exec_files)

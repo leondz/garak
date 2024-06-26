@@ -28,7 +28,10 @@ class HF_Files(Probe, Configurable):
 
     # default detector to run, if the primary/extended way of doing it is to be used (should be a string formatted like recommended_detector)
     primary_detector = "fileformats.FileIsPickled"
-    extended_detectors = ["fileformats.PossiblePickleName"]
+    extended_detectors = [
+        "fileformats.FileIsExecutable",
+        "fileformats.PossiblePickleName",
+    ]
 
     supported_generators = {"Model", "Pipeline", "OptimumPipeline", "LLaVA"}
 
@@ -54,10 +57,11 @@ class HF_Files(Probe, Configurable):
         for repo_filename in tqdm.tqdm(
             repo_filenames,
             leave=False,
-            desc=f"Checking for pickles in {generator.name}",
+            desc=f"Gathering files in {generator.name}",
+            colour="#e5a70e",  # probe theme colour
         ):
             local_filename = huggingface_hub.hf_hub_download(
-                generator.name, repo_filename
+                generator.name, repo_filename, force_download=False
             )
             local_filenames.append(local_filename)
 
