@@ -10,7 +10,6 @@ import garak.attempt
 import garak.cli
 
 
-@pytest.mark.skip(reason="only worth testing when atkgen supports chat modality")
 def test_attempt_sticky_params(capsys):
     garak.cli.main(
         "-m test.Blank -g 1 -p atkgen,dan.Dan_6_0 --report_prefix _garak_test_attempt_sticky_params".split()
