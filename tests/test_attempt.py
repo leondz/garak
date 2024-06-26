@@ -148,6 +148,10 @@ def test_illegal_ops():
             3
         )  # "shouldn't be able to expand histories twice"
 
+    a = garak.attempt.Attempt()
+    with pytest.raises(TypeError):
+        a.prompt = None  # "can't have 'None' as a prompting dialogue turn"
+
 
 def test_no_prompt_output_access():
     a = garak.attempt.Attempt()
