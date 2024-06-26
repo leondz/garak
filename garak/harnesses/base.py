@@ -11,9 +11,9 @@ inherit from.
 """
 
 
-from collections import defaultdict
 import json
 import logging
+import types
 from typing import List
 
 import tqdm
@@ -105,8 +105,8 @@ class Harness(Configurable):
 
             attempt_results = probe.probe(model)
             assert isinstance(
-                attempt_results, list
-            ), "probing should always return a list/iterable"
+                attempt_results, (list, types.GeneratorType)
+            ), "probing should always return an ordered iterable"
 
             for d in detectors:
                 logging.debug("harness: run detector %s", d.detectorname)

@@ -37,10 +37,15 @@ class FileIsPickled(Detector):
     Check whether a file is pickled.
     """
 
+    valid_format = "local filename"
+
     def detect(self, attempt: Attempt) -> Iterable[float]:
-        if "format" not in attempt.notes or attempt.notes["format"] != "local filename":
+        if (
+            "format" not in attempt.notes
+            or attempt.notes["format"] != self.valid_format
+        ):
             raise ValueError(
-                "detectors.fileformats.FileIsPickled only processes outputs that are filenames"
+                f"detectors.fileformats.FileIsPickled only processes outputs that are '{self.valid_format}'"
             )
 
         for local_filename in attempt.outputs:
