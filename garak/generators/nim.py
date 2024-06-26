@@ -38,6 +38,7 @@ class NVOpenAIChat(OpenAICompatible):
         "top_p": 0.7,
         "top_k": 0,  # top_k is hard set to zero as of 24.04.30
         "uri": "https://integrate.api.nvidia.com/v1/",
+        "suppressed_params": {"n", "frequency_penalty", "presence_penalty"},
     }
     active = True
     supports_multiple_generations = False
