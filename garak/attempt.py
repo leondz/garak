@@ -173,6 +173,8 @@ class Attempt:
         NB. output elements need to be able to be None"""
 
         if name == "prompt":
+            if value is None:
+                raise TypeError("'None' prompts are not valid")
             assert isinstance(value, str)
             self._add_first_turn("user", value)
 
