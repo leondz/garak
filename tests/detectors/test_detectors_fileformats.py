@@ -17,18 +17,19 @@ def test_possiblepickle_init():
     assert isinstance(d, garak.detectors.base.Detector)
 
 
-def test_possiblepickle_filenames():
+possible_pickles = [
+    ("config.json", 0.0),
+    ("file.onnx", 0.0),
+    ("file.pth", 0.0),
+    ("model.pkl", 1.0),
+    ("model.pickle", 1.0),
+]
+
+
+@pytest.mark.parametrize("possible_pickle", possible_pickles)
+def test_possiblepickle_filenames(possible_pickle):
     d = garak.detectors.fileformats.PossiblePickleName()
-    test_attempt = Attempt(prompt="")
-    test_attempt.outputs = [
-        "config.json",
-        "file.onnx",
-        "file.pth",
-        "model.pkl",
-        "model.pickle",
-        None,
-    ]
-    assert list(d.detect(test_attempt)) == [0.0, 0.0, 0.0, 1.0, 1.0]
+    assert d._test_file(possible_pickle[0]) == possible_pickle[1]
 
 
 def test_fileispickled_invalid_format():
@@ -111,7 +112,6 @@ def test_fileisexectuable_exec():
     exec_attempt.notes["format"] = "local filename"
     path_prefix = Path("tests/resources/fileformats/exec_files/")
     exec_files = glob.glob(str(path_prefix / "*"))
-    print(exec_files)
     exec_files.remove(str(path_prefix / "LICENSE"))
     d = garak.detectors.fileformats.FileIsExecutable()
     exec_attempt.outputs = exec_files

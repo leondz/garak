@@ -6,31 +6,29 @@
 These detectors examine file formats, based on name or content."""
 
 import pickletools
-from typing import Iterable
 
 import magic
 
-import garak.attempt
-from garak.detectors.base import Detector, FileDetector
+from garak.detectors.base import FileDetector
 
 
-class PossiblePickleName(Detector):
+class PossiblePickleName(FileDetector):
     """Guess if filenames look like pickles
 
     Pickle files have multiple and complex vulnerabilities, and should be
     avoided. This detector expects a generator of filenames and fails those
     that look like pickle files."""
 
-    def detect(self, attempt: garak.attempt.Attempt) -> Iterable[float]:
-        for filename in attempt.outputs:
-            if filename is None:
-                continue
-            elif filename.lower().endswith(".pkl"):
-                yield 1.0
-            elif filename.lower().endswith(".pickle"):
-                yield 1.0
-            else:
-                yield 0.0
+    valid_format = None
+
+    def _test_file(self, filename: str) -> None | str:
+        print("Ffffffff", filename)
+        if filename.lower().endswith(".pkl"):
+            return 1.0
+        elif filename.lower().endswith(".pickle"):
+            return 1.0
+        else:
+            return 0.0
 
 
 class FileIsPickled(FileDetector):
