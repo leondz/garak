@@ -6,6 +6,7 @@
 These detectors examine file formats, based on name or content."""
 
 import pickletools
+import os
 from typing import Iterable
 
 from garak.attempt import Attempt
@@ -37,13 +38,21 @@ class FileIsPickled(Detector):
     """
 
     def detect(self, attempt: Attempt) -> Iterable[float]:
+        if "format" not in attempt.notes or attempt.notes["format"] != "local filename":
+            raise ValueError(
+                "detectors.fileformats.FileIsPickled only processes outputs that are filenames"
+            )
+
         for local_filename in attempt.outputs:
             if local_filename is None or local_filename == "":
                 continue
+            if not os.path.isfile(
+                local_filename
+            ):  # skip missing files but also pipes, devices, etc
+                continue
+
             else:
                 try:
-                    # huggingface_hub.utils.disable_progress_bars()
-                    # huggingface_hub.utils.enable_progress_bars()
                     with open(local_filename, "rb") as f:
                         pkl_data = pickletools.genops(f)
 
@@ -68,5 +77,6 @@ class FileIsPickled(Detector):
                     IndexError,
                     UnicodeDecodeError,
                     ValueError,
+                    OSError,
                 ) as e:
                     yield 0.0
