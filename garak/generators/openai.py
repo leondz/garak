@@ -169,7 +169,11 @@ class OpenAICompatible(Generator):
             "stop": self.stop,
         }
 
-        create_args = {k: v for k, v in create_args.items() if v is not None and k not in self.suppressed_params}
+        create_args = {
+            k: v
+            for k, v in create_args.items()
+            if v is not None and k not in self.suppressed_params
+        }
 
         if self.generator == self.client.completions:
             if not isinstance(prompt, str):
