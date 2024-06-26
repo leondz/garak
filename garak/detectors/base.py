@@ -6,7 +6,7 @@ in `garak`. `garak` detectors must inherit from a class in here."""
 import logging
 import os
 import re
-from typing import Iterable
+from typing import Iterable, Union
 
 from colorama import Fore, Style
 
@@ -184,11 +184,11 @@ class FileDetector(Detector):
 
     valid_format = "local filename"
 
-    def _test_file(self, filename):
+    def _test_file(self, filename: str) -> Union[None, str]:
         raise NotImplementedError
 
     def detect(self, attempt: garak.attempt.Attempt) -> Iterable[float]:
-        if (
+        if self.valid_format and (
             "format" not in attempt.notes
             or attempt.notes["format"] != self.valid_format
         ):
@@ -205,4 +205,5 @@ class FileDetector(Detector):
                 continue
 
             else:
-                yield self._test_file(local_filename)
+                test_result = self._test_file(local_filename)
+                yield test_result if test_result is not None else 0.0
