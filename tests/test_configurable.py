@@ -24,7 +24,13 @@ class mockConfigurable(Configurable):
     # Configurable is coupled to hierarchy of plugin types
     __module__ = "garak.generators.mock"
 
-    DEFAULT_PARAMS = {"class_var": "from_class"}
+    DEFAULT_PARAMS = {
+        "class_var": "from_class",
+        "class_dict_var": {
+            "dict_a": "dict_val",
+            "dict_b": "dict_val",
+        },
+    }
 
     def __init__(
         self,
@@ -63,6 +69,17 @@ def test_param_provided(generator_sub_config):
 def test_class_vars_propagate_to_instance(generator_sub_config):
     m = mockConfigurable(config_root=generator_sub_config)
     assert m.class_var == m.DEFAULT_PARAMS["class_var"]
+    assert m.class_dict_var == m.DEFAULT_PARAMS["class_dict_var"]
+
+
+# when a default parameter dictionary is provided merge on the resulting object
+def test_class_dict_merge_to_instance(generator_sub_config):
+    config_dict_var = {"dict_a": "test_val", "dict_c": "test_val"}
+    generator_sub_config.generators["mock"]["class_dict_var"] = config_dict_var
+    m = mockConfigurable(config_root=generator_sub_config)
+    assert m.class_dict_var == m.DEFAULT_PARAMS["class_dict_var"] | config_dict_var
+    assert m.class_dict_var["dict_a"] == config_dict_var["dict_a"]
+    assert m.class_dict_var["dict_c"] == config_dict_var["dict_c"]
 
 
 # when a default parameter is provided and not config_root set on the resulting object

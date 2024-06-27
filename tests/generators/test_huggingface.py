@@ -1,11 +1,26 @@
+import pytest
 import transformers
 import garak.generators.huggingface
+from garak._config import GarakSubConfig
 
 DEFAULT_GENERATIONS_QTY = 10
 
 
 def test_pipeline():
-    g = garak.generators.huggingface.Pipeline("gpt2")
+    gen_config = {
+        "huggingface": {
+            "Pipeline": {
+                "name": "gpt2",
+                "hf_args": {
+                    "device": "cpu",
+                },
+            }
+        }
+    }
+    config_root = GarakSubConfig()
+    setattr(config_root, "generators", gen_config)
+
+    g = garak.generators.huggingface.Pipeline("gpt2", config_root=config_root)
     assert g.name == "gpt2"
     assert g.generations == DEFAULT_GENERATIONS_QTY
     assert isinstance(g.generator, transformers.pipelines.text_generation.Pipeline)
@@ -54,3 +69,26 @@ def test_model():
     assert len(output) == DEFAULT_GENERATIONS_QTY
     for item in output:
         assert item is None  # gpt2 is known raise exception returning `None`
+
+
+def test_select_hf_device():
+    from garak.generators.huggingface import HFCompatible
+    import torch
+
+    class mockHF(HFCompatible):
+        def __init__(self, key, value):
+            self.hf_args = {key: value}
+            pass
+
+    m = mockHF("device", -1)
+    with pytest.raises(ValueError) as exc_info:
+        device = m._select_hf_device()
+    assert "CUDA device numbering starts" in str(exc_info.value)
+
+    m = mockHF("device", "cpu")
+    device = m._select_hf_device()
+    assert device == torch.device("cpu")
+
+    m = mockHF("device_map", "auto")
+    device = m._select_hf_device()
+    assert isinstance(device, torch.device)
