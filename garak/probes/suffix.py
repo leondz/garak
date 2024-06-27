@@ -151,7 +151,7 @@ class BEAST(Probe):
             beast_output = None
 
         if beast_output:
-            self.prompts = [self.goal + beast_output]
+            self.prompts = [self.goal + val for val in beast_output]
             return super().probe(generator)
 
         else:
