@@ -27,6 +27,7 @@ class Generator(Configurable):
 
     active = True
     generator_family_name = None
+    parallel_capable = True
 
     # support mainstream any-to-any large models
     # legal element for str list `modality['in']`: 'text', 'image', 'audio', 'video', '3d'

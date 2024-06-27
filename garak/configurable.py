@@ -88,6 +88,8 @@ class Configurable:
                     )
                 ):
                     continue
+                if isinstance(v, dict):  # if value is an existing dictionary merge
+                    v = getattr(self, k) | v
             setattr(self, k, v)  # This will set attribute to the full dictionary value
 
     def _apply_missing_instance_defaults(self):
@@ -95,6 +97,9 @@ class Configurable:
         if hasattr(self, "DEFAULT_PARAMS"):
             for k, v in self.DEFAULT_PARAMS.items():
                 if not hasattr(self, k):
+                    setattr(self, k, v)
+                elif isinstance(v, dict):
+                    v = v | getattr(self, k)
                     setattr(self, k, v)
 
     def _validate_env_var(self):
