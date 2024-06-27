@@ -23,8 +23,8 @@ import garak.attempt
 class Probe(Configurable):
     """Base class for objects that define and execute LLM evaluations"""
 
-    # uri for a description of the probe (perhaps a paper)
-    uri: str = ""
+    # docs uri for a description of the probe (perhaps a paper)
+    doc_uri: str = ""
     # language this is for, in bcp47 format; * for all langs
     bcp47: Union[Iterable[str], None] = None
     # should this probe be included by default?
