@@ -56,7 +56,6 @@ def test_detector_detect(classname):
     a.prompt = ""
     a.notes["format"] = "local filename"
     a.outputs = ["", None]
-    print(a.as_dict())
     try:
         results = di.detect(a)
     except APIKeyMissingError:
