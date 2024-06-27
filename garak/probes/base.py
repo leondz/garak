@@ -153,6 +153,7 @@ class Probe(Configurable):
         return copy.deepcopy(this_attempt)
 
     def _execute_all(self, attempts) -> Iterable[garak.attempt.Attempt]:
+        """handles sending a set of attempt to the generator"""
         attempts_completed: Iterable[garak.attempt.Attempt] = []
 
         if (
@@ -160,6 +161,7 @@ class Probe(Configurable):
             and _config.system.parallel_attempts > 1
             and self.parallelisable_attempts
             and len(attempts) > 1
+            and self.generator.parallel_capable
         ):
             from multiprocessing import Pool
 
