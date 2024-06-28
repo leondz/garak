@@ -3,11 +3,11 @@ import os
 from pathlib import Path
 import pytest
 
-top_paths = ["probes", "detectors", "harnesses", "generators", "evaluators", "buffs"]
-doc_source = os.path.join("docs", "source")
+TOP_PATHS = ["probes", "detectors", "harnesses", "generators", "evaluators", "buffs"]
+DOC_SOURCE = os.path.join("docs", "source")
 
 m = {}
-for top_path in top_paths:
+for top_path in TOP_PATHS:
     m[top_path] = [
         str(i).split(os.sep)[2].replace(".py", "")
         for i in Path(f"garak{os.sep}{top_path}").glob("*py")
@@ -15,19 +15,19 @@ for top_path in top_paths:
     ]
 
 
-@pytest.mark.parametrize("category", top_paths)
+@pytest.mark.parametrize("category", TOP_PATHS)
 def test_top_docs(category):
-    file_path = os.path.join(doc_source, f"garak.{category}.rst")
+    file_path = os.path.join(DOC_SOURCE, f"garak.{category}.rst")
     assert os.path.isfile(file_path)
     assert os.path.getsize(file_path) > 0
 
 
 @pytest.mark.parametrize("classname", m["probes"])
 def test_docs_probes(classname):
-    file_path = os.path.join(doc_source, f"garak.probes.{classname}.rst")
+    file_path = os.path.join(DOC_SOURCE, f"garak.probes.{classname}.rst")
     assert os.path.isfile(file_path)
     assert os.path.getsize(file_path) > 0
-    category_file = os.path.join(doc_source, "probes.rst")
+    category_file = os.path.join(DOC_SOURCE, "probes.rst")
     target_doc = f"garak.probes.{classname}\n"
     assert (
         open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
@@ -36,10 +36,10 @@ def test_docs_probes(classname):
 
 @pytest.mark.parametrize("classname", m["detectors"])
 def test_docs_detectors(classname):
-    file_path = os.path.join(doc_source, f"garak.detectors.{classname}.rst")
+    file_path = os.path.join(DOC_SOURCE, f"garak.detectors.{classname}.rst")
     assert os.path.isfile(file_path)
     assert os.path.getsize(file_path) > 0
-    category_file = os.path.join(doc_source, "detectors.rst")
+    category_file = os.path.join(DOC_SOURCE, "detectors.rst")
     target_doc = f"garak.detectors.{classname}\n"
     assert (
         open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
@@ -48,10 +48,10 @@ def test_docs_detectors(classname):
 
 @pytest.mark.parametrize("classname", m["harnesses"])
 def test_docs_harnesses(classname):
-    file_path = os.path.join(doc_source, f"garak.harnesses.{classname}.rst")
+    file_path = os.path.join(DOC_SOURCE, f"garak.harnesses.{classname}.rst")
     assert os.path.isfile(file_path)
     assert os.path.getsize(file_path) > 0
-    category_file = os.path.join(doc_source, "harnesses.rst")
+    category_file = os.path.join(DOC_SOURCE, "harnesses.rst")
     target_doc = f"garak.harnesses.{classname}\n"
     assert (
         open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
@@ -60,10 +60,10 @@ def test_docs_harnesses(classname):
 
 @pytest.mark.parametrize("classname", m["evaluators"])
 def test_docs_evaluators(classname):
-    file_path = os.path.join(doc_source, f"garak.evaluators.{classname}.rst")
+    file_path = os.path.join(DOC_SOURCE, f"garak.evaluators.{classname}.rst")
     assert os.path.isfile(file_path)
     assert os.path.getsize(file_path) > 0
-    category_file = os.path.join(doc_source, "evaluators.rst")
+    category_file = os.path.join(DOC_SOURCE, "evaluators.rst")
     target_doc = f"garak.evaluators.{classname}\n"
     assert (
         open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
@@ -72,10 +72,10 @@ def test_docs_evaluators(classname):
 
 @pytest.mark.parametrize("classname", m["generators"])
 def test_docs_generators(classname):
-    file_path = os.path.join(doc_source, f"garak.generators.{classname}.rst")
+    file_path = os.path.join(DOC_SOURCE, f"garak.generators.{classname}.rst")
     assert os.path.isfile(file_path)
     assert os.path.getsize(file_path) > 0
-    category_file = os.path.join(doc_source, "generators.rst")
+    category_file = os.path.join(DOC_SOURCE, "generators.rst")
     target_doc = f"garak.generators.{classname}\n"
     assert (
         open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1
@@ -84,10 +84,10 @@ def test_docs_generators(classname):
 
 @pytest.mark.parametrize("classname", m["buffs"])
 def test_docs_generators(classname):
-    file_path = os.path.join(doc_source, f"garak.buffs.{classname}.rst")
+    file_path = os.path.join(DOC_SOURCE, f"garak.buffs.{classname}.rst")
     assert os.path.isfile(file_path)
     assert os.path.getsize(file_path) > 0
-    category_file = os.path.join(doc_source, "buffs.rst")
+    category_file = os.path.join(DOC_SOURCE, "buffs.rst")
     target_doc = f"garak.buffs.{classname}\n"
     assert (
         open(category_file, "r", encoding="utf-8").read().find(target_doc) != -1

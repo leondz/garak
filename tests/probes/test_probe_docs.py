@@ -8,10 +8,10 @@ import re
 
 from garak import _plugins
 
-probes = [classname for (classname, active) in _plugins.enumerate_plugins("probes")]
+PROBES = [classname for (classname, active) in _plugins.enumerate_plugins("probes")]
 
 
-@pytest.mark.parametrize("plugin_name", probes)
+@pytest.mark.parametrize("plugin_name", PROBES)
 def test_check_docstring(plugin_name):
     plugin_name_parts = plugin_name.split(".")
     module_name = "garak." + ".".join(plugin_name_parts[:-1])

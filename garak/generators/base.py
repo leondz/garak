@@ -10,20 +10,24 @@ from colorama import Fore, Style
 import tqdm
 
 from garak import _config
+from garak.configurable import Configurable
 
 
-class Generator:
+class Generator(Configurable):
     """Base class for objects that wrap an LLM or other text-to-text service"""
 
-    name = "Generator"
-    description = ""
-    generations = 10
-    max_tokens = 150
-    temperature = None
-    top_k = None
+    # avoid class variables for values set per instance
+    DEFAULT_PARAMS = {
+        "generations": 10,
+        "max_tokens": 150,
+        "temperature": None,
+        "top_k": None,
+        "context_len": None,
+    }
+
     active = True
     generator_family_name = None
-    context_len = None
+    parallel_capable = True
 
     # support mainstream any-to-any large models
     # legal element for str list `modality['in']`: 'text', 'image', 'audio', 'video', '3d'
@@ -34,12 +38,17 @@ class Generator:
         False  # can more than one generation be extracted per request?
     )
 
-    def __init__(self, name="", generations=10):
+    def __init__(self, name="", generations=10, config_root=_config):
+        self._load_config(config_root)
         if "description" not in dir(self):
             self.description = self.__doc__.split("\n")[0]
         if name:
             self.name = name
-        self.generations = generations
+        if (
+            not hasattr(self, "generations")
+            or getattr(self, "generations", None) == self.DEFAULT_PARAMS["generations"]
+        ):
+            self.generations = generations
         if "fullname" not in dir(self):
             if self.generator_family_name is not None:
                 self.fullname = f"{self.generator_family_name}:{self.name}"
@@ -47,6 +56,7 @@ class Generator:
                 self.fullname = self.name
         if not self.generator_family_name:
             self.generator_family_name = "<empty>"
+
         print(
             f"🦜 loading {Style.BRIGHT}{Fore.LIGHTMAGENTA_EX}generator{Style.RESET_ALL}: {self.generator_family_name}: {self.name}"
         )
@@ -54,7 +64,7 @@ class Generator:
 
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
-    ) -> Union[List[str], str, None]:
+    ) -> List[Union[str, None]]:
         """Takes a prompt and returns an API output
 
         _call_api() is fully responsible for the request, and should either
@@ -70,7 +80,9 @@ class Generator:
     def clear_history(self):
         pass
 
-    def generate(self, prompt: str, generations_this_call: int = -1) -> List[str]:
+    def generate(
+        self, prompt: str, generations_this_call: int = -1
+    ) -> List[Union[str, None]]:
         """Manages the process of getting generations out from a prompt
 
         This will involve iterating through prompts, getting the generations
@@ -92,11 +104,11 @@ class Generator:
             logging.debug("generate() called with generations_this_call = 0")
             return []
 
-        if self.supports_multiple_generations:
-            return self._call_model(prompt, generations_this_call)
+        if generations_this_call == 1:
+            outputs = self._call_model(prompt, 1)
 
-        elif generations_this_call <= 1:
-            return self._call_model(prompt, generations_this_call)
+        if self.supports_multiple_generations:
+            outputs = self._call_model(prompt, generations_this_call)
 
         else:
             outputs = []
@@ -138,9 +150,4 @@ class Generator:
                     ), "_call_model's item must be a string or None"
                     outputs.append(output_one[0])
 
-            cleaned_outputs = [
-                o for o in outputs if o is not None
-            ]  # "None" means no good response
-            outputs = cleaned_outputs
-
-            return outputs
+        return outputs

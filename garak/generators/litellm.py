@@ -12,10 +12,12 @@ This also enables support for any custom provider that follows the OAI format.
 e.g Supply a JSON like this for Ollama's OAI api:
 ```json
 {
-    "litellm.LiteLLMGenerator" : {
-        "api_base" : "http://localhost:11434/v1",
-        "provider" : "openai",
-        "api_key" : "test"
+    "litellm": {
+        "LiteLLMGenerator" : {
+            "api_base" : "http://localhost:11434/v1",
+            "provider" : "openai",
+            "api_key" : "test"
+        }
     }
 }
 ```
@@ -79,64 +81,71 @@ class LiteLLMGenerator(Generator):
     providers using the OpenAI API format.
     """
 
+    ENV_VAR = "OPENAI_API_KEY"
+    DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
+        "temperature": 0.7,
+        "top_p": 1.0,
+        "frequency_penalty": 0.0,
+        "presence_penalty": 0.0,
+        "stop": ["#", ";"],
+    }
+
     supports_multiple_generations = True
     generator_family_name = "LiteLLM"
 
-    temperature = 0.7
-    top_p = 1.0
-    frequency_penalty = 0.0
-    presence_penalty = 0.0
-    stop = ["#", ";"]
+    _supported_params = (
+        "name",
+        "generations",
+        "context_len",
+        "max_tokens",
+        "api_key",
+        "provider",
+        "api_base",
+        "temperature",
+        "top_p",
+        "top_k",
+        "frequency_penalty",
+        "presence_penalty",
+        "stop",
+    )
 
-    def __init__(self, name: str, generations: int = 10):
+    def __init__(self, name: str = "", generations: int = 10, config_root=_config):
         self.name = name
-        self.fullname = f"LiteLLM {self.name}"
-        self.generations = generations
         self.api_base = None
         self.api_key = None
         self.provider = None
+        self.key_env_var = self.ENV_VAR
+        self.generations = generations
+        self._load_config(config_root)
+        self.fullname = f"LiteLLM {self.name}"
         self.supports_multiple_generations = not any(
             self.name.startswith(provider)
             for provider in unsupported_multiple_gen_providers
         )
 
-        super().__init__(name, generations=generations)
+        super().__init__(
+            self.name, generations=self.generations, config_root=config_root
+        )
 
-        if "litellm.LiteLLMGenerator" in _config.plugins.generators:
-            for field in (
-                "api_key",
-                "provider",
-                "api_base",
-                "temperature",
-                "top_p",
-                "frequency_penalty",
-                "presence_penalty",
-            ):
-                if field in _config.plugins.generators["litellm.LiteLLMGenerator"]:
-                    setattr(
-                        self,
-                        field,
-                        _config.plugins.generators["litellm.LiteLLMGenerator"][field],
+        if self.provider is None:
+            raise ValueError(
+                "litellm generator needs to have a provider value configured - see docs"
+            )
+        elif (
+            self.api_key is None
+        ):  # TODO: special case where api_key is not always required
+            if self.provider == "openai":
+                self.api_key = getenv(self.key_env_var, None)
+                if self.api_key is None:
+                    raise APIKeyMissingError(
+                        f"Please supply an OpenAI API key in the {self.key_env_var} environment variable"
+                        " or in the configuration file"
                     )
-
-                    if field == "provider" and self.api_key is None:
-                        if self.provider == "openai":
-                            self.api_key = getenv("OPENAI_API_KEY", None)
-                            if self.api_key is None:
-                                raise ValueError(
-                                    "Please supply an OpenAI API key in the OPENAI_API_KEY environment variable"
-                                    " or in the configuration file"
-                                )
-                else:
-                    if field in ("provider"):  # required fields here
-                        raise ValueError(
-                            "litellm generator needs to have a provider value configured - see docs"
-                        )
 
     @backoff.on_exception(backoff.fibo, Exception, max_value=70)
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
-    ) -> Union[List[str], str, None]:
+    ) -> List[Union[str, None]]:
         if isinstance(prompt, str):
             prompt = [{"role": "user", "content": prompt}]
         elif isinstance(prompt, list):
@@ -148,7 +157,7 @@ class LiteLLMGenerator(Generator):
             )
             logging.error(msg)
             print(msg)
-            return list()
+            return []
 
         response = litellm.completion(
             model=self.name,
@@ -168,7 +177,7 @@ class LiteLLMGenerator(Generator):
         if self.supports_multiple_generations:
             return [c.message.content for c in response.choices]
         else:
-            return response.choices[0].message.content
+            return [response.choices[0].message.content]
 
 
-default_class = "LiteLLMGenerator"
+DEFAULT_CLASS = "LiteLLMGenerator"

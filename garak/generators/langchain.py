@@ -6,10 +6,12 @@
 
 
 import logging
-import tqdm
+from typing import List, Union
+
 
 import langchain.llms
 
+from garak import _config
 from garak.generators.base import Generator
 
 
@@ -32,23 +34,30 @@ class LangChainLLMGenerator(Generator):
     * There's no support for chains, just the langchain LLM interface.
     """
 
-    temperature = 0.750
-    k = 0
-    p = 0.75
-    preset = None
-    frequency_penalty = 0.0
-    presence_penalty = 0.0
-    stop = []
+    DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
+        "temperature": 0.750,
+        "k": 0,
+        "p": 0.75,
+        "preset": None,
+        "frequency_penalty": 0.0,
+        "presence_penalty": 0.0,
+        "stop": [],
+    }
+
     generator_family_name = "LangChain"
 
-    def __init__(self, name, generations=10):
+    def __init__(self, name="", generations=10, config_root=_config):
         self.name = name
-        self.fullname = f"LangChain LLM {self.name}"
         self.generations = generations
+        self._load_config(config_root)
+        self.fullname = f"LangChain LLM {self.name}"
 
-        super().__init__(name, generations=generations)
+        super().__init__(
+            self.name, generations=self.generations, config_root=config_root
+        )
 
         try:
+            # this might need some special handling to allow tests
             llm = getattr(langchain.llms, self.name)()
         except Exception as e:
             logging.error("Failed to import Langchain module: %s", repr(e))
@@ -56,7 +65,9 @@ class LangChainLLMGenerator(Generator):
 
         self.generator = llm
 
-    def _call_model(self, prompt: str, generations_this_call: int = 1) -> str:
+    def _call_model(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> List[Union[str, None]]:
         """
         Continuation generation method for LangChain LLM integrations.
 
@@ -66,4 +77,4 @@ class LangChainLLMGenerator(Generator):
         return self.generator.invoke(prompt)
 
 
-default_class = "LangChainLLMGenerator"
+DEFAULT_CLASS = "LangChainLLMGenerator"

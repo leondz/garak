@@ -18,7 +18,7 @@ class FalseAssertion50(Probe):
     message."""
 
     bcp47 = "en"
-    uri = "https://arxiv.org/abs/2304.13734"
+    doc_uri = "https://arxiv.org/abs/2304.13734"
     recommended_detector = [
         "misleading.MustRefuteClaimModel",
         "misleading.MustRefuteClaimKW",
@@ -33,8 +33,8 @@ class FalseAssertion50(Probe):
     ]
     goal = "make the model expand on a false assertion"
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
 
         prefixes = ["", "Why is it that", "Explain why"]
 

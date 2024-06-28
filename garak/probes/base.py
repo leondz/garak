@@ -16,14 +16,15 @@ from colorama import Fore, Style
 import tqdm
 
 from garak import _config
+from garak.configurable import Configurable
 import garak.attempt
 
 
-class Probe:
+class Probe(Configurable):
     """Base class for objects that define and execute LLM evaluations"""
 
-    # uri for a description of the probe (perhaps a paper)
-    uri: str = ""
+    # docs uri for a description of the probe (perhaps a paper)
+    doc_uri: str = ""
     # language this is for, in bcp47 format; * for all langs
     bcp47: Union[Iterable[str], None] = None
     # should this probe be included by default?
@@ -46,21 +47,20 @@ class Probe:
     # legal element for str list `modality['in']`: 'text', 'image', 'audio', 'video', '3d'
     # refer to Table 1 in https://arxiv.org/abs/2401.13601
     # we focus on LLM input for probe
-    modality: dict = {
-        'in': {'text'}
-    }
+    modality: dict = {"in": {"text"}}
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         """Sets up a probe. This constructor:
         1. populates self.probename based on the class name,
         2. logs and optionally prints the probe's loading,
         3. populates self.description based on the class docstring if not yet set"""
+        self._load_config(config_root)
         self.probename = str(self.__class__).split("'")[1]
         if hasattr(_config.system, "verbose") and _config.system.verbose > 0:
             print(
                 f"loading {Style.BRIGHT}{Fore.LIGHTYELLOW_EX}probe: {Style.RESET_ALL}{self.probename}"
             )
-        logging.info("probe init: {self}")
+        logging.info(f"probe init: {self}")
         if "description" not in dir(self):
             if self.__doc__:
                 self.description = self.__doc__.split("\n", maxsplit=1)[0]
@@ -150,6 +150,7 @@ class Probe:
         return copy.deepcopy(this_attempt)
 
     def _execute_all(self, attempts) -> Iterable[garak.attempt.Attempt]:
+        """handles sending a set of attempt to the generator"""
         attempts_completed: Iterable[garak.attempt.Attempt] = []
 
         if (
@@ -157,6 +158,7 @@ class Probe:
             and _config.system.parallel_attempts > 1
             and self.parallelisable_attempts
             and len(attempts) > 1
+            and self.generator.parallel_capable
         ):
             from multiprocessing import Pool
 

@@ -4,6 +4,7 @@ Detectors for assessing how well a given payload from probes.encoding is
 output by the model
 """
 
+from garak import _config
 from garak.attempt import Attempt
 from garak.detectors.base import Detector, StringDetector
 
@@ -14,11 +15,11 @@ class DecodeMatch(StringDetector):
     bcp47 = "en"
     matchtype = "str"
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         import garak.probes.encoding
 
         self.substrings = garak.probes.encoding.payloads
-        super().__init__(self.substrings)
+        super().__init__(self.substrings, config_root=config_root)
 
 
 class DecodeApprox(Detector):
@@ -26,11 +27,11 @@ class DecodeApprox(Detector):
 
     bcp47 = "en"
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
         import garak.probes.encoding
 
         self.substrings = garak.probes.encoding.payloads
-        super().__init__()
+        super().__init__(config_root=config_root)
 
     def _ngram_match_func(self, target, text, case_sensitive=False, n=3):
         if len(target) < n:
@@ -46,6 +47,10 @@ class DecodeApprox(Detector):
     def detect(self, attempt: Attempt, case_sensitive=False, n=4):
         detector_results = []
         for q in attempt.outputs:
+
+            if q is None:
+                continue
+
             best_match = 0.0
             for s in self.substrings:
                 match = self._ngram_match_func(s, q, case_sensitive=case_sensitive, n=n)

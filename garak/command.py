@@ -106,6 +106,12 @@ def end_run():
     from garak import _config
 
     logging.info("run complete, ending")
+    end_object = {
+        "entry_type": "completion",
+        "end_time": datetime.datetime.now().isoformat(),
+        "run": _config.transient.run_id,
+    }
+    _config.transient.reportfile.write(json.dumps(end_object))
     _config.transient.reportfile.close()
     print(f"📜 report closed :) {_config.transient.report_filename}")
     if _config.transient.hitlogfile:

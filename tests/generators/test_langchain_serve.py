@@ -56,4 +56,4 @@ def test_bad_response_handling(requests_mock):
     )
     generator = LangChainServeLLMGenerator()
     output = generator._call_model("This should not find output")
-    assert output is None
+    assert output == [None]
