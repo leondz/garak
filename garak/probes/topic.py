@@ -17,7 +17,7 @@ from garak import _config
 from garak.probes.base import Probe
 from garak.attempt import Attempt
 
-
+"""
 class StackingProbe(Probe):
     active = False
 
@@ -75,7 +75,7 @@ class StackingProbe(Probe):
         )
 
         return attempts_completed
-
+"""
 
 class TopicExplorerWordnet(Probe):
     """Explore which topics a model will respond to or deflect"""
