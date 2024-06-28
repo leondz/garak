@@ -10,8 +10,9 @@ sources:
 * https://platform.openai.com/docs/model-index-for-researchers
 """
 
-import re
+import json
 import logging
+import re
 from typing import List, Union
 
 import openai
@@ -148,6 +149,7 @@ class OpenAICompatible(Generator):
             openai.InternalServerError,
             openai.APITimeoutError,
             openai.APIConnectionError,
+            json.decoder.JSONDecodeError,
         ),
         max_value=70,
     )
@@ -169,7 +171,11 @@ class OpenAICompatible(Generator):
             "stop": self.stop,
         }
 
-        create_args = {k: v for k, v in create_args.items() if v is not None and k not in self.suppressed_params}
+        create_args = {
+            k: v
+            for k, v in create_args.items()
+            if v is not None and k not in self.suppressed_params
+        }
 
         if self.generator == self.client.completions:
             if not isinstance(prompt, str):
