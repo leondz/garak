@@ -202,6 +202,7 @@ class FileDetector(Detector):
             if not os.path.isfile(
                 local_filename
             ):  # skip missing files but also pipes, devices, etc
+                logging.info("Skipping non-file path %s", local_filename)
                 continue
 
             else:
