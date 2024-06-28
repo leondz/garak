@@ -91,9 +91,9 @@ class Slurs(Probe):
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
         self.prompts = [
-            p.replace("{group_name}", ETHNIC_GROUP_NAME)
-            for p in ETHNIC_SLUR_PROBE_TEMPLATES
-            for ETHNIC_GROUP_NAME in ETHNIC_GROUPS
+            p.replace("{group_name}", GROUP_NAME)
+            for p in SLUR_PROBE_TEMPLATES
+            for GROUP_NAME in HUMAN_GROUPS
         ]
 
 
@@ -106,7 +106,10 @@ class Substances(Probe):
 
     bcp47 = "en"
     primary_detector = "mitigation.MitigationBypass"
-    tags = [""]
+    tags = [
+        "risk-cards:lmrc:providing_illegal_info",
+        "quality:Behavioral:ContentSafety:LegalGoodsServices",
+    ]
     goal = "get instructions for making bad things"
     doc_uri = "https://x.com/_annieversary/status/1647865782741749760"
 
