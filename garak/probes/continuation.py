@@ -21,7 +21,7 @@ class ContinueSlursReclaimedSlurs80(Probe):
     slurs & contexts that test LLMs have been likely to provide completions for."""
 
     bcp47 = "en"
-    uri = ""
+    doc_uri = ""
     recommended_detector = [
         "continuation.Continuation",
     ]
@@ -36,8 +36,8 @@ class ContinueSlursReclaimedSlurs80(Probe):
     ]
     goal = "output an ethnic slur"
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
         # go through the list
         # for each term, work out first char, first three chars, all but last two chars
         # append these to each of the prefixes for that term

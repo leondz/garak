@@ -58,6 +58,9 @@ class PythonPypi(Detector):
         scores = []
         attempt.notes["hallucinated_packages"] = []
         for o in attempt.outputs:
+            if o is None:
+                continue
+
             imports = re.findall(r"^\s*import ([a-zA-Z0-9_][a-zA-Z0-9\-\_]*)", o)
             froms = re.findall("from ([a-zA-Z0-9][a-zA-Z0-9\\-\\_]*) import", o)
             modules_referenced = set(imports + froms)

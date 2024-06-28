@@ -8,14 +8,15 @@ Generic Module for REST API connections
 
 import json
 import logging
-import os
-from typing import List
+from typing import List, Union
 import requests
 
 import backoff
 import jsonpath_ng
+from jsonpath_ng.exceptions import JsonPathParserError
 
 from garak import _config
+from garak.exception import APIKeyMissingError
 from garak.generators.base import Generator
 
 
@@ -28,7 +29,7 @@ class RESTRateLimitError(Exception):
 class RestGenerator(Generator):
     """Generic API interface for REST models
 
-    Uses the following options from ``_config.run.generators["rest.RestGenerator"]``:
+    Uses the following options from ``_config.plugins.generators["rest.RestGenerator"]``:
     * ``uri`` - (optional) the URI of the REST endpoint; this can also be passed
             in --model_name
     * ``name`` - a short name for this service; defaults to the uri
@@ -64,21 +65,23 @@ class RestGenerator(Generator):
     and response value are both under the ``text`` key, we'd define the service
     using something like: ::
 
-        {"rest.RestGenerator":
-            {
+    {
+        "rest": {
+            "RestGenerator": {
                 "name": "example service",
                 "uri": "https://example.ai/llm",
                 "method": "post",
-                "headers":{
+                "headers": {
                     "X-Authorization": "$KEY",
                 },
-                "req_template_json_object":{
-                    "text":"$INPUT"
+                "req_template_json_object": {
+                    "text": "$INPUT"
                 },
                 "response_json": true,
                 "response_json_field": "text"
             }
         }
+    }
 
     NB. ``response_json_field`` can also be a JSONPath, for JSON responses where
     the target text is not in a top level field. It is treated as a JSONPath
@@ -99,71 +102,70 @@ class RestGenerator(Generator):
     from RestGenerator :)
     """
 
+    DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
+        "headers": {},
+        "method": "post",
+        "ratelimit_codes": [429],
+        "response_json": False,
+        "response_json_field": None,
+        "req_template": "$INPUT",
+        "request_timeout": 20,
+    }
+
+    ENV_VAR = "REST_API_KEY"
     generator_family_name = "REST"
 
-    def __init__(self, uri=None, generations=10):
+    _supported_params = (
+        "api_key",
+        "name",
+        "uri",
+        "generations",
+        "key_env_var",
+        "req_template",
+        "req_template_json",
+        "context_len",
+        "max_tokens",
+        "method",
+        "headers",
+        "response_json",
+        "response_json_field",
+        "req_template_json_object",
+        "request_timeout",
+        "ratelimit_codes",
+        "temperature",
+        "top_k",
+    )
+
+    def __init__(self, uri=None, generations=10, config_root=_config):
         self.uri = uri
         self.name = uri
         self.seed = _config.run.seed
-        self.headers = {}
-        self.method = "post"
-        self.req_template = "$INPUT"
+        self.generations = generations
         self.supports_multiple_generations = False  # not implemented yet
-        self.response_json = False
-        self.response_json_field = None
-        self.request_timeout = 20  # seconds
-        self.ratelimit_codes = [429]
         self.escape_function = self._json_escape
         self.retry_5xx = True
-        self.key_env_var = "REST_API_KEY"
+        self.key_env_var = self.ENV_VAR if hasattr(self, "ENV_VAR") else None
 
-        if "rest.RestGenerator" in _config.plugins.generators:
-            for field in (
-                "name",
-                "uri",
-                "key_env_var",
-                "req_template",  # req_template_json is processed later
-                "method",
-                "headers",
-                "response_json",  # response_json_field is processed later
-                "request_timeout",
-                "ratelimit_codes",
-            ):
-                if field in _config.plugins.generators["rest.RestGenerator"]:
-                    setattr(
-                        self,
-                        field,
-                        _config.plugins.generators["rest.RestGenerator"][field],
-                    )
+        # load configuration since super.__init__ has not been called
+        self._load_config(config_root)
 
-            if (
-                "req_template_json_object"
-                in _config.plugins.generators["rest.RestGenerator"]
-            ):
-                self.req_template = json.dumps(
-                    _config.plugins.generators["rest.RestGenerator"][
-                        "req_template_json_object"
-                    ]
+        if (
+            hasattr(self, "req_template_json_object")
+            and self.req_template_json_object is not None
+        ):
+            self.req_template = json.dumps(self.req_template_json_object)
+
+        if self.response_json:
+            if self.response_json_field is None:
+                raise ValueError(
+                    "RestGenerator response_json is True but response_json_field isn't set"
                 )
-
-            if (
-                self.response_json
-                and "response_json_field"
-                in _config.plugins.generators["rest.RestGenerator"]
-            ):
-                self.response_json_field = _config.plugins.generators[
-                    "rest.RestGenerator"
-                ]["response_json_field"]
-                if self.response_json_field is None:
-                    raise ValueError(
-                        "RestGenerator response_json is True but response_json_field isn't set"
-                    )
-                if not isinstance(self.response_json_field, str):
-                    raise ValueError("response_json_field must be a string")
-                if self.response_json_field == "":
-                    raise ValueError(
-                        "RestGenerator response_json is True but response_json_field is an empty string. If the root object is the target object, use a JSONPath."
-                    )
+            if not isinstance(self.response_json_field, str):
+                raise ValueError("response_json_field must be a string")
+            if self.response_json_field == "":
+                raise ValueError(
+                    "RestGenerator response_json is True but response_json_field is an empty string. If the root object is the target object, use a JSONPath."
+                )
 
         if self.name is None:
             self.name = self.uri
@@ -173,7 +175,7 @@ class RestGenerator(Generator):
                 "No REST endpoint URI definition found in either constructor param, JSON, or --model_name. Please specify one."
             )
 
-        self.fullname = f"REST {self.name}"
+        self.fullname = f"{self.generator_family_name} {self.name}"
 
         self.method = self.method.lower()
         if self.method not in (
@@ -192,8 +194,6 @@ class RestGenerator(Generator):
             self.method = "post"
         self.http_function = getattr(requests, self.method)
 
-        self.rest_api_key = os.getenv(self.key_env_var, default=None)
-
         # validate jsonpath
         if self.response_json and self.response_json_field:
             try:
@@ -204,10 +204,18 @@ class RestGenerator(Generator):
                 )
                 raise e
 
-        if _config.run.generations:
-            generations = _config.run.generations
+        super().__init__(
+            self.name, generations=self.generations, config_root=config_root
+        )
 
-        super().__init__(uri, generations=generations)
+    def _validate_env_var(self):
+        key_match = "$KEY"
+        header_requires_key = False
+        for _k, v in self.headers.items():
+            if key_match in v:
+                header_requires_key = True
+        if "$KEY" in self.req_template or header_requires_key:
+            return super()._validate_env_var()
 
     def _json_escape(self, text: str) -> str:
         """JSON escape a string"""
@@ -228,19 +236,21 @@ class RestGenerator(Generator):
         """
         output = template
         if "$KEY" in template:
-            if self.rest_api_key is None:
-                raise ValueError(
+            if self.api_key is None:
+                raise APIKeyMissingError(
                     f"Template requires an API key but {self.key_env_var} env var isn't set"
                 )
             if json_escape_key:
-                output = output.replace("$KEY", self.escape_function(self.rest_api_key))
+                output = output.replace("$KEY", self.escape_function(self.api_key))
             else:
-                output = output.replace("$KEY", self.rest_api_key)
+                output = output.replace("$KEY", self.api_key)
         return output.replace("$INPUT", self.escape_function(text))
 
     # we'll overload IOError as the rate limit exception
     @backoff.on_exception(backoff.fibo, RESTRateLimitError, max_value=70)
-    def _call_model(self, prompt: str, generations_this_call: int = 1):
+    def _call_model(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> List[Union[str, None]]:
         """Individual call to get a rest from the REST API
 
         :param prompt: the input to be placed into the request template and sent to the endpoint
@@ -286,7 +296,7 @@ class RestGenerator(Generator):
                 raise ConnectionError(error_msg)
 
         if not self.response_json:
-            return str(resp.text)
+            return [str(resp.text)]
 
         response_object = json.loads(resp.content)
 
@@ -301,7 +311,7 @@ class RestGenerator(Generator):
             len(self.response_json_field) > 0
         ), "response_json_field needs to be complete if response_json is true; ValueError should have been raised in constructor"
         if self.response_json_field[0] != "$":
-            response = response_object[self.response_json_field]
+            response = [response_object[self.response_json_field]]
         else:
             field_path_expr = jsonpath_ng.parse(self.response_json_field)
             responses = field_path_expr.find(response_object)
@@ -318,9 +328,9 @@ class RestGenerator(Generator):
                     "RestGenerator JSONPath in response_json_field yielded nothing. Response content: %s"
                     % repr(resp.content)
                 )
-                return None
+                return [None]
 
         return response
 
 
-default_class = "RestGenerator"
+DEFAULT_CLASS = "RestGenerator"

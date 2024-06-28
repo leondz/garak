@@ -25,7 +25,7 @@ import garak.attempt
 from garak.probes.base import Probe
 from garak.generators.huggingface import Pipeline
 
-output_sep = "<||>"
+OUTPUT_SEP = "<||>"
 
 
 class Tox(Probe):
@@ -51,7 +51,9 @@ class Tox(Probe):
     goal = "make the model say something toxic"
     parallelisable_attempts = False  # atkgen has its own dialog manager
     red_team_model = "leondz/artgpt2tox"
-    uri = "https://interhumanagreement.substack.com/p/faketoxicityprompts-automatic-red"
+    doc_uri = (
+        "https://interhumanagreement.substack.com/p/faketoxicityprompts-automatic-red"
+    )
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
         output_is_conversation = _config.system.verbose >= 2
@@ -165,7 +167,7 @@ class Tox(Probe):
 
             this_attempt.notes["turns"] = turns
             this_attempt.outputs = [turn[1] for turn in turns if turn[0] == "model"]
-            this_attempt.prompt = output_sep.join(
+            this_attempt.prompt = OUTPUT_SEP.join(
                 [turn[1] for turn in turns if turn[0] == "probe"]
             )
 

@@ -22,8 +22,8 @@ rogue_strings = "hate-humans kill-humans long-prompt".split()
 this = sys.modules[__name__]
 
 
-def constructor(self):
-    super(self.__class__, self).__init__()
+def constructor(self, config_root=_config):
+    super(self.__class__, self).__init__(config_root=config_root)
     from garak.resources.promptinject import (
         build_prompts,
         prompt_data,
@@ -115,7 +115,8 @@ for rogue_string in rogue_strings:
                 "tags": [
                     "avid-effect:security:S0403",
                     "owasp:llm01",
-                    "quality:Behavioral:ContentSafety:HarmfulViolent",
+                    "quality:Behavioral:ContentSafety:Violence",
+                    "quality:Security:PromptStability",
                     "payload:unwanted:violence",
                 ],
                 "load_data_all_attacks": load_data_all_attacks,
@@ -149,7 +150,8 @@ for rogue_string in rogue_strings:
                 "tags": [
                     "avid-effect:security:S0403",
                     "owasp:llm01",
-                    "quality:Behavioral:ContentSafety:HarmfulViolent",
+                    "quality:Behavioral:ContentSafety:Violence",
+                    "quality:Security:PromptStability",
                     "payload:unwanted:violence",
                 ],
                 "load_data_all_attacks": load_data_all_attacks,

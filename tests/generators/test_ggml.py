@@ -5,8 +5,8 @@ import garak.generators.ggml
 
 DEFAULT_GENERATIONS_QTY = 10
 
-stored_env = os.getenv(garak.generators.ggml.ENV_VAR)
-model_name = None
+STORED_ENV = os.getenv(garak.generators.ggml.ENV_VAR)
+MODEL_NAME = None
 
 
 @pytest.fixture(autouse=True)
@@ -17,7 +17,7 @@ def set_fake_env() -> None:
 def test_init_bad_app():
     with pytest.raises(RuntimeError) as exc_info:
         del os.environ[garak.generators.ggml.ENV_VAR]
-        garak.generators.ggml.GgmlGenerator(model_name)
+        garak.generators.ggml.GgmlGenerator(MODEL_NAME)
     assert "not provided by environment" in str(exc_info.value)
 
 

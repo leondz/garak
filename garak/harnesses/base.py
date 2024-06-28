@@ -21,14 +21,16 @@ import tqdm
 import garak.attempt
 from garak import _config
 from garak import _plugins
+from garak.configurable import Configurable
 
 
-class Harness:
+class Harness(Configurable):
     """Class to manage the whole process of probing, detecting and evaluating"""
 
     active = True
 
-    def __init__(self):
+    def __init__(self, config_root=_config):
+        self._load_config(config_root)
         logging.info("harness init: %s", self)
 
     def _load_buffs(self, buff_names: List) -> None:
@@ -75,21 +77,32 @@ class Harness:
         :type announce_probe: bool, optional
         """
         if not detectors:
-            logging.warning("No detectors, nothing to do")
+            msg = "No detectors, nothing to do"
+            logging.warning(msg)
             if hasattr(_config.system, "verbose") and _config.system.verbose >= 2:
-                print("No detectors, nothing to do")
-            return None
+                print(msg)
+            raise ValueError(msg)
 
         if not probes:
-            logging.warning("No probes, nothing to do")
+            msg = "No probes, nothing to do"
+            logging.warning(msg)
             if hasattr(_config.system, "verbose") and _config.system.verbose >= 2:
-                print("No probes, nothing to do")
-            return None
+                print(msg)
+            raise ValueError(msg)
 
         for probe in probes:
             logging.debug("harness: probe start for %s", probe.probename)
             if not probe:
                 continue
+            # TODO: refactor this to allow `compatible` probes instead of direct match
+            if probe.modality["in"] != model.modality["in"]:
+                logging.warning(
+                    "probe skipped due to modality mismatch: %s - model expects %s",
+                    probe.probename,
+                    model.modality["in"],
+                )
+                continue
+
             attempt_results = probe.probe(model)
             assert isinstance(attempt_results, list)
 

@@ -73,9 +73,10 @@ dependencies = [
 tests = [
   "pytest>=8.0",
   "requests-mock==1.12.1",
+  "respx>=0.21.1",
 ]
 lint = [
-  "black>=22.3",
+  "black==24.4.2",
   "pylint>=3.1.0",
 ]
 
@@ -94,7 +95,7 @@ packages = ["garak"]
 
 [tool.black]
 line-length = 88
-target-version = ['py310', 'py311', 'py312']
+target-version = ['py310']
 include = '\.pyi?$'
 
 [tool.pytest.ini_options]

@@ -3,7 +3,7 @@
 
 """NVIDIA Inference Microservice LLM interface"""
 
-from typing import List
+from typing import List, Union
 
 import openai
 
@@ -33,18 +33,21 @@ class NVOpenAIChat(OpenAICompatible):
     # per https://docs.nvidia.com/ai-enterprise/nim-llm/latest/openai-api.html
     # 2024.05.02, `n>1` is not supported
     ENV_VAR = "NIM_API_KEY"
+    DEFAULT_PARAMS = OpenAICompatible.DEFAULT_PARAMS | {
+        "temperature": 0.1,
+        "top_p": 0.7,
+        "top_k": 0,  # top_k is hard set to zero as of 24.04.30
+        "uri": "https://integrate.api.nvidia.com/v1/",
+        "suppressed_params": {"n", "frequency_penalty", "presence_penalty"},
+    }
+    active = True
     supports_multiple_generations = False
     generator_family_name = "NIM"
-    temperature = 0.1
-    top_p = 0.7
-    top_k = 0  # top_k is hard set to zero as of 24.04.30
-
-    url = "https://integrate.api.nvidia.com/v1/"
 
     timeout = 60
 
     def _load_client(self):
-        self.client = openai.OpenAI(base_url=self.url, api_key=self.api_key)
+        self.client = openai.OpenAI(base_url=self.uri, api_key=self.api_key)
         if self.name in ("", None):
             raise ValueError(
                 "NIMs require model name to be set, e.g. --model_name mistralai/mistral-8x7b-instruct-v0.1\nCurrent models:\n"
@@ -60,8 +63,10 @@ class NVOpenAIChat(OpenAICompatible):
 
     def _call_model(
         self, prompt: str | List[dict], generations_this_call: int = 1
-    ) -> List[str]:
-        assert generations_this_call == 1, "n>1 is not supported"
+    ) -> List[Union[str, None]]:
+        assert (
+            generations_this_call == 1
+        ), "generations_per_call / n > 1 is not supported"
         return super()._call_model(prompt, generations_this_call)
 
 
@@ -88,8 +93,8 @@ class NVOpenAICompletion(NVOpenAIChat):
     """
 
     def _load_client(self):
-        self.client = openai.OpenAI(base_url=self.url, api_key=self.api_key)
+        self.client = openai.OpenAI(base_url=self.uri, api_key=self.api_key)
         self.generator = self.client.completions
 
 
-default_class = "NVOpenAIChat"
+DEFAULT_CLASS = "NVOpenAIChat"
