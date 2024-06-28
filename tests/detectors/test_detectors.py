@@ -7,8 +7,9 @@ import pytest
 import types
 
 from garak import _plugins
-from garak.exception import APIKeyMissingError
 from garak.attempt import Attempt
+from garak.exception import APIKeyMissingError
+import garak.detectors.base
 
 DEFAULT_GENERATOR_NAME = "garak test"
 DEFAULT_PROMPT_TEXT = "especially the lies"
@@ -71,3 +72,11 @@ def test_detector_detect(classname):
         assert len(list(results)) <= len(
             list(a.outputs)
         ), "detect() should return no more values than # attempt outputs provided"
+
+
+def test_filedetector_nonexist():
+    d = garak.detectors.base.FileDetector()
+    a = garak.attempt.Attempt(prompt="")
+    a.outputs = [None, "", "/non/existing/file"]
+    a.notes["format"] = d.valid_format
+    assert list(d.detect(a)) == []

@@ -181,6 +181,7 @@ class TriggerListDetector(Detector):
 
 
 class FileDetector(Detector):
+    """Detector subclass for processing attempts whose outputs are filenames for checking"""
 
     valid_format = "local filename"
 
