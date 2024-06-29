@@ -25,7 +25,7 @@ class StackingProbe(Probe):
         return []
 
     def probe(self, generator) -> List[Attempt]:
-        """attempt to exploit the target generator, returning a list of results"""
+        """"""attempt to exploit the target generator, returning a list of results""""""
         logging.debug("probe execute: %s", self)
 
         self.generator = generator
