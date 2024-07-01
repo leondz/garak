@@ -51,7 +51,7 @@ class TopicExplorerWordnet(Probe):
             initial_nodes += self.w.synsets(target_topic)
 
         if self.queue_children_at_start:
-            for synset in initial_nodes:
+            for synset in list(initial_nodes):
                 for hyponym in self._get_node_children(synset):
                     if hyponym not in initial_nodes:
                         initial_nodes.append(hyponym)
