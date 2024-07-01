@@ -135,10 +135,9 @@ class Probe(Configurable):
             goal=self.goal,
             status=garak.attempt.ATTEMPT_STARTED,
             seq=seq,
+            prompt=prompt,
         )
 
-        if prompt is not None:
-            new_attempt.prompt = prompt
         new_attempt = self._attempt_prestore_hook(new_attempt, seq)
         return new_attempt
 
