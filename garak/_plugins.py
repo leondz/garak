@@ -18,9 +18,6 @@ from garak.exception import GarakException
 PLUGIN_TYPES = ("probes", "detectors", "generators", "harnesses", "buffs")
 PLUGIN_CLASSES = ("Probe", "Detector", "Generator", "Harness", "Buff")
 
-_user_plugin_cache_file = _config.transient.userdir / "resources" / "plugin_cache.json"
-_plugin_cache_file = _config.transient.basedir / "resources" / "plugin_cache.json"
-
 
 class PluginEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -36,135 +33,146 @@ class PluginEncoder(json.JSONEncoder):
             return None  # skip items that cannot be serialized at this time
 
 
-@staticmethod
-def _extract_modules_klasses(base_klass):
-    return [  # Extract only classes with same source package name
-        name
-        for name, klass in inspect.getmembers(base_klass, inspect.isclass)
-        if klass.__module__.startswith(base_klass.__name__)
-    ]
+class _PluginCache:
+    _plugin_cache_file = _config.transient.basedir / "resources" / "plugin_cache.json"
+    _user_plugin_cache_file = _plugin_cache_file
+    _plugin_cache_dict = None
 
+    def __init__(self) -> None:
+        if self._plugin_cache_dict is None:
+            self._plugin_cache_dict = self._load_plugin_cache()
 
-@staticmethod
-def _load_plugin_cache():
-    if not os.path.exists(_plugin_cache_file):
-        _build_plugin_cache()
-    if not os.path.exists(_user_plugin_cache_file):
-        shutil.copy2(_plugin_cache_file, _user_plugin_cache_file)
-    with open(_user_plugin_cache_file, "r", encoding="utf-8") as cache_file:
-        local_cache = json.load(cache_file)
-        return local_cache
+    @staticmethod
+    def _extract_modules_klasses(base_klass):
+        return [  # Extract only classes with same source package name
+            name
+            for name, klass in inspect.getmembers(base_klass, inspect.isclass)
+            if klass.__module__.startswith(base_klass.__name__)
+        ]
 
+    def _load_plugin_cache(self):
+        if not os.path.exists(self._plugin_cache_file):
+            self._build_plugin_cache()
+        if not os.path.exists(self._user_plugin_cache_file):
+            shutil.copy2(self._plugin_cache_file, self._user_plugin_cache_file)
+        with open(self._user_plugin_cache_file, "r", encoding="utf-8") as cache_file:
+            local_cache = json.load(cache_file)
+            return local_cache
 
-@staticmethod
-def _build_plugin_cache():
-    # this method writes only to the user's cache
-    local_cache = {}
+    def _build_plugin_cache(self):
+        # this method writes only to the user's cache
+        local_cache = {}
 
-    for plugin_type in PLUGIN_TYPES:
-        plugin_dict = {}
-        for plugin in _enumerate_plugin_klasses(plugin_type):
+        for plugin_type in PLUGIN_TYPES:
+            plugin_dict = {}
+            for plugin in self._enumerate_plugin_klasses(plugin_type):
+                plugin_name = ".".join([plugin.__module__, plugin.__name__]).replace(
+                    "garak.", ""
+                )
+                plugin_dict[plugin_name] = self.plugin_info(plugin)
+            local_cache[plugin_type] = plugin_dict
+
+        with open(self._user_plugin_cache_file, "w", encoding="utf-8") as cache_file:
+            json.dump(local_cache, cache_file, cls=PluginEncoder, indent=2)
+
+    def _enumerate_plugin_klasses(self, category: str) -> List[Callable]:
+        if category not in PLUGIN_TYPES:
+            raise ValueError("Not a recognised plugin type:", category)
+
+        base_mod = importlib.import_module(f"garak.{category}.base")
+
+        base_plugin_classnames = set(self._extract_modules_klasses(base_mod))
+
+        module_plugin_names = set()
+
+        for module_filename in sorted(os.listdir(_config.transient.basedir / category)):
+            if not module_filename.endswith(".py"):
+                continue
+            if module_filename.startswith("__"):
+                continue
+            module_name = module_filename.replace(".py", "")
+            mod = importlib.import_module(
+                f"garak.{category}.{module_name}"
+            )  # import here will access all namespace level imports consider a cache to speed up processing
+            module_entries = set(self._extract_modules_klasses(mod))
+
+            for module_entry in module_entries:
+                obj = getattr(mod, module_entry)
+                for interface in base_plugin_classnames:
+                    klass = getattr(base_mod, interface)
+                    if issubclass(obj, klass):
+                        module_plugin_names.add(obj)
+
+        return module_plugin_names
+
+    def instance(self) -> dict:
+        return self._plugin_cache_dict
+
+    def plugin_info(self, plugin: Union[Callable, str]) -> dict:
+        if isinstance(plugin, str):
+            plugin_name = plugin
+            category = plugin_name.split(".")[0]
+
+            _plugin_cache = self._load_plugin_cache()
+            plugin_metadata = _plugin_cache[category].get(plugin_name, {})
+            if len(plugin_metadata) > 0:
+                return plugin_metadata
+            else:
+                # the requested plugin is not cached import the class for eval
+                parts = plugin.split(".")
+                match len(parts):
+                    case 2:
+                        module = ".".join(parts[:-1])
+                        klass = parts[-1]
+                        imported_module = importlib.import_module(f"garak.{module}")
+                        plugin = getattr(imported_module, klass)
+                    case _:
+                        raise ValueError
+        else:
             plugin_name = ".".join([plugin.__module__, plugin.__name__]).replace(
                 "garak.", ""
             )
-            plugin_dict[plugin_name] = plugin_info(plugin)
-        local_cache[plugin_type] = plugin_dict
 
-    with open(_user_plugin_cache_file, "w", encoding="utf-8") as cache_file:
-        json.dump(local_cache, cache_file, cls=PluginEncoder, indent=2)
+        try:
+            plugin_metadata = {}
+            priority_fields = ["description"]
+            skip_fields = [
+                "prompts",
+                "triggers",
+                "encoding_funcs",  # encoding_funcs are functions
+            ]
+            # print the attribs it has
+            for v in priority_fields:
+                if hasattr(plugin, v):
+                    plugin_metadata[v] = getattr(plugin, v)
+            for v in sorted(dir(plugin)):
+                if v in priority_fields or v in skip_fields:
+                    continue
+                value = getattr(plugin, v)
+                if (
+                    v.startswith("_")
+                    or inspect.ismethod(value)
+                    or inspect.isfunction(value)
+                ):
+                    continue
+                if isinstance(value, set):
+                    continue
+                plugin_metadata[v] = value
+
+        except ValueError as e:
+            logging.exception(e)
+        except Exception as e:
+            logging.error(f"Plugin {plugin_name} not found.")
+            logging.exception(e)
+
+        return plugin_metadata
 
 
-@staticmethod
+_plugin_cache = _PluginCache()
+
+
 def plugin_info(plugin: Union[Callable, str]) -> dict:
-    if isinstance(plugin, str):
-        plugin_name = plugin
-        category = plugin_name.split(".")[0]
-
-        _plugin_cache = _load_plugin_cache()
-        plugin_metadata = _plugin_cache[category].get(plugin_name, {})
-        if len(plugin_metadata) > 0:
-            return plugin_metadata
-        else:
-            # the requested plugin is not cached import the class for eval
-            parts = plugin.split(".")
-            match len(parts):
-                case 2:
-                    module = ".".join(parts[:-1])
-                    klass = parts[-1]
-                    imported_module = importlib.import_module(f"garak.{module}")
-                    plugin = getattr(imported_module, klass)
-                case _:
-                    raise ValueError
-    else:
-        plugin_name = ".".join([plugin.__module__, plugin.__name__]).replace(
-            "garak.", ""
-        )
-
-    try:
-        plugin_metadata = {}
-        priority_fields = ["description"]
-        skip_fields = [
-            "prompts",
-            "triggers",
-            "encoding_funcs",  # encoding_funcs are functions
-        ]
-        # print the attribs it has
-        for v in priority_fields:
-            if hasattr(plugin, v):
-                plugin_metadata[v] = getattr(plugin, v)
-        for v in sorted(dir(plugin)):
-            if v in priority_fields or v in skip_fields:
-                continue
-            value = getattr(plugin, v)
-            if (
-                v.startswith("_")
-                or inspect.ismethod(value)
-                or inspect.isfunction(value)
-            ):
-                continue
-            if isinstance(value, set):
-                continue
-            plugin_metadata[v] = value
-
-    except ValueError as e:
-        logging.exception(e)
-    except Exception as e:
-        logging.error(f"Plugin {plugin_name} not found.")
-        logging.exception(e)
-
-    return plugin_metadata
-
-
-@staticmethod
-def _enumerate_plugin_klasses(category: str) -> List[Callable]:
-    if category not in PLUGIN_TYPES:
-        raise ValueError("Not a recognised plugin type:", category)
-
-    base_mod = importlib.import_module(f"garak.{category}.base")
-
-    base_plugin_classnames = set(_extract_modules_klasses(base_mod))
-
-    module_plugin_names = set()
-
-    for module_filename in sorted(os.listdir(_config.transient.basedir / category)):
-        if not module_filename.endswith(".py"):
-            continue
-        if module_filename.startswith("__"):
-            continue
-        module_name = module_filename.replace(".py", "")
-        mod = importlib.import_module(
-            f"garak.{category}.{module_name}"
-        )  # import here will access all namespace level imports consider a cache to speed up processing
-        module_entries = set(_extract_modules_klasses(mod))
-
-        for module_entry in module_entries:
-            obj = getattr(mod, module_entry)
-            for interface in base_plugin_classnames:
-                klass = getattr(base_mod, interface)
-                if issubclass(obj, klass):
-                    module_plugin_names.add(obj)
-
-    return module_plugin_names
+    return _plugin_cache.plugin_info(plugin)
 
 
 def enumerate_plugins(
@@ -191,13 +199,11 @@ def enumerate_plugins(
 
     base_mod = importlib.import_module(f"garak.{category}.base")
 
-    base_plugin_classnames = set(_extract_modules_klasses(base_mod))
+    base_plugin_classnames = set(_PluginCache._extract_modules_klasses(base_mod))
 
     plugin_class_names = set()
 
-    _plugin_cache = _load_plugin_cache()
-
-    for k, v in _plugin_cache[category].items():
+    for k, v in _plugin_cache.instance()[category].items():
         if skip_base_classes and k in base_plugin_classnames:
             continue
         enum_entry = (k, v["active"])
