@@ -116,6 +116,7 @@ class OpenAICompatible(Generator):
 
     def _load_client(self):
         # Required stub implemented when extending `OpenAICompatible`
+        # should populate self.generator with an openai api compliant object
         raise NotImplementedError
 
     def _clear_client(self):
@@ -133,6 +134,14 @@ class OpenAICompatible(Generator):
         self.key_env_var = self.ENV_VAR
 
         self._load_client()
+
+        if self.generator not in (
+            self.client.chat.completions,
+            self.client.completions,
+        ):
+            raise ValueError(
+                "Unsupported model at generation time in generators/openai.py - please add a clause!"
+            )
 
         self._validate_config()
 
@@ -178,14 +187,6 @@ class OpenAICompatible(Generator):
             for k, v in create_args.items()
             if v is not None and k not in self.suppressed_params
         }
-
-        if self.generator not in (
-            self.client.chat.completions,
-            self.client.completions,
-        ):
-            raise ValueError(
-                "Unsupported model at generation time in generators/openai.py - please add a clause!"
-            )
 
         if self.generator == self.client.completions:
             if not isinstance(prompt, str):
