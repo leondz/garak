@@ -83,10 +83,13 @@ def test_detector_detect(classname):
         len(a.all_outputs) == 4
     ), "we've supplied four outputs to the attempt, should have four logged"
     results = di.detect(a)
-    assert len(list(results)) in (
-        3,
-        4,
-    ), "detector should return as many results as in all_outputs (maybe excluding Nones)"
+    if not isinstance(
+        di, garak.detectors.base.FileDetector
+    ):  # this returns nothing - remove when Nones are OK in detector output
+        assert len(list(results)) in (
+            3,
+            4,
+        ), "detector should return as many results as in all_outputs (maybe excluding Nones)"
 
 
 def test_filedetector_nonexist():

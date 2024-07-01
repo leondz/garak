@@ -209,7 +209,7 @@ class FileDetector(Detector):
                 f"detectors.fileformats.{self.__class__.__name__} only processes outputs that are '{self.valid_format}'"
             )
 
-        for local_filename in attempt.outputs:
+        for local_filename in attempt.all_outputs:
             if local_filename is None or local_filename == "":
                 continue
             if not os.path.isfile(
