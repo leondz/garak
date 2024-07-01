@@ -46,7 +46,7 @@ class DecodeApprox(Detector):
 
     def detect(self, attempt: Attempt, case_sensitive=False, n=4):
         detector_results = []
-        for q in attempt.outputs:
+        for q in attempt.all_outputs:
 
             if q is None:
                 continue

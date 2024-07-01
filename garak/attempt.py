@@ -1,5 +1,6 @@
 """Defines the Attempt class, which encapsulates a prompt with metadata and results"""
 
+from typing import Any, List
 import uuid
 
 (
@@ -7,6 +8,8 @@ import uuid
     ATTEMPT_STARTED,
     ATTEMPT_COMPLETE,
 ) = range(3)
+
+roles = {"system", "user", "assistant"}
 
 
 class Attempt:
@@ -33,6 +36,29 @@ class Attempt:
     :type goal: str
     :param seq: Sequence number (starting 0) set in :meth:`garak.probes.base.Probe.probe`, to allow matching individual prompts with lists of answers/targets or other post-hoc ordering and keying
     :type seq: int
+    :param messages: conversation turn histories; list of list of dicts have the format {"role": role, "content": text}, with actor being something like "system", "user", "assistant"
+    :type messages: List(dict)
+
+    Expected use
+    * an attempt tracks a seed prompt and responses to it
+    * there's a 1:1 relationship between attempts and source prompts
+    * attempts track all generations
+    * this means messages tracks many histories, one per generation
+    * for compatibility, setting Attempt.prompt will set just one turn, and this is unpacked later
+      when output is set; we don't know the # generations to expect until some output arrives
+    * to keep alignment, generators need to return aligned lists of length #generations
+
+    Patterns/expectations for Attempt access:
+    .prompt - returns the first user prompt
+    .outputs - returns the most recent model outputs
+    .latest_prompts - returns a list of the latest user prompts
+
+    Patterns/expectations for Attempt setting:
+    .prompt - sets the first prompt, or fails if this has already been done
+    .outputs - sets a new layer of model responses. silently handles expansion of prompt to multiple histories. prompt must be set
+    .latest_prompts - adds a new set of user prompts
+
+
     """
 
     def __init__(
@@ -42,38 +68,24 @@ class Attempt:
         probe_classname=None,
         probe_params=None,
         targets=None,
-        outputs=None,
         notes=None,
         detector_results=None,
         goal=None,
         seq=-1,
     ) -> None:
         self.uuid = uuid.uuid4()
+        self.messages = []
+
         self.status = status
-        self.prompt = prompt
         self.probe_classname = probe_classname
-        if probe_params is None:
-            self.probe_params = {}
-        else:
-            self.probe_params = probe_params
-        if targets is None:
-            self.targets = []
-        else:
-            self.targets = targets
-        if outputs is None:
-            self.outputs = []
-        else:
-            self.outputs = outputs
-        if notes is None:
-            self.notes = {}
-        else:
-            self.notes = notes
-        if detector_results is None:
-            self.detector_results = {}
-        else:
-            self.detector_results = detector_results
+        self.probe_params = {} if probe_params is None else probe_params
+        self.targets = [] if targets is None else targets
+        self.notes = {} if notes is None else notes
+        self.detector_results = {} if detector_results is None else detector_results
         self.goal = goal
         self.seq = seq
+        if prompt is not None:
+            self.prompt = prompt
 
     def as_dict(self) -> dict:
         """Converts the attempt to a dictionary."""
@@ -90,4 +102,161 @@ class Attempt:
             "detector_results": self.detector_results,
             "notes": self.notes,
             "goal": self.goal,
+            "messages": self.messages,
         }
+
+    def __getattribute__(self, name: str) -> Any:
+        """override prompt and outputs access to take from history"""
+        if name == "prompt":
+            if len(self.messages) == 0:  # nothing set
+                return None
+            if isinstance(self.messages[0], dict):  # only initial prompt set
+                return self.messages[0]["content"]
+            if isinstance(
+                self.messages, list
+            ):  # there's initial prompt plus some history
+                return self.messages[0][0]["content"]
+            else:
+                raise ValueError(
+                    "Message history of attempt uuid %s in unexpected state, sorry: "
+                    % str(self.uuid)
+                    + repr(self.messages)
+                )
+
+        elif name == "outputs":
+            if len(self.messages) and isinstance(self.messages[0], list):
+                # work out last_output_turn that was assistant
+                assistant_turns = [
+                    idx
+                    for idx, val in enumerate(self.messages[0])
+                    if val["role"] == "assistant"
+                ]
+                if assistant_turns == []:
+                    return []
+                last_output_turn = max(assistant_turns)
+                # return these (via list compr)
+                return [m[last_output_turn]["content"] for m in self.messages]
+            else:
+                return []
+
+        elif name == "latest_prompts":
+            if len(self.messages[0]) > 1:
+                # work out last_output_turn that was user
+                last_output_turn = max(
+                    [
+                        idx
+                        for idx, val in enumerate(self.messages[0])
+                        if val["role"] == "user"
+                    ]
+                )
+                # return these (via list compr)
+                return [m[last_output_turn]["content"] for m in self.messages]
+            else:
+                return (
+                    self.prompt
+                )  # returning a string instead of a list tips us off that generation count is not yet known
+
+        elif name == "all_outputs":
+            all_outputs = []
+            if len(self.messages) and not isinstance(self.messages[0], dict):
+                for thread in self.messages:
+                    for turn in thread:
+                        if turn["role"] == "assistant":
+                            all_outputs.append(turn["content"])
+            return all_outputs
+
+        else:
+            return super().__getattribute__(name)
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        """override prompt and outputs access to take from history
+        NB. output elements need to be able to be None"""
+
+        if name == "prompt":
+            if value is None:
+                raise TypeError("'None' prompts are not valid")
+            assert isinstance(value, str)
+            self._add_first_turn("user", value)
+
+        elif name == "outputs":
+            if not isinstance(value, list):
+                raise TypeError("Value for attempt.outputs must be a list")
+            if len(self.messages) == 0:
+                raise TypeError("A prompt must be set before outputs are given")
+            # do we have only the initial prompt? in which case, let's flesh out messages a bit
+            elif len(self.messages) == 1 and isinstance(self.messages[0], dict):
+                self._expand_prompt_to_histories(len(value))
+            # append each list item to each history, with role:assistant
+            self._add_turn("assistant", value)
+
+        elif name == "latest_prompts":
+            assert isinstance(value, list)
+            self._add_turn("user", value)
+
+        else:
+            return super().__setattr__(name, value)
+
+    def _expand_prompt_to_histories(self, breadth):
+        """expand a prompt-only message history to many threads"""
+        if len(self.messages) == 0:
+            raise TypeError(
+                "A prompt needs to be set before it can be expanded to conversation threads"
+            )
+        elif isinstance(self.messages[0], list):
+            raise TypeError(
+                "attempt.messages contains lists, expected a single dict of one turn"
+            )
+
+        base_message = dict(self.messages[0])
+        self.messages = [[base_message] for i in range(breadth)]
+
+    def _add_first_turn(self, role: str, content: str) -> None:
+        """add the first turn (after a prompt) to a message history"""
+
+        if len(self.messages):
+            if isinstance(self.messages[0], list):
+                raise TypeError(
+                    "Cannot set prompt of attempt uuid %s with content already in message history: "
+                    % str(self.uuid)
+                    + repr(self.messages)
+                )
+
+            elif isinstance(self.messages[0], dict):  # we only have the prompt
+                if self.messages[0]["role"] == "user":
+                    self.messages[0] = {"role": role, "content": content}
+                else:
+                    raise ValueError(
+                        "Unexpected state in attempt messages - first message not from user"
+                    )
+
+        else:
+            self.messages.append({"role": role, "content": content})
+            return
+
+    def _add_turn(self, role: str, contents: List[str]) -> None:
+        """add a 'layer' to a message history.
+
+        the contents should be as broad as the established number of
+        generations for this attempt. e.g. if there's a prompt and a
+        first turn with k responses, every add_turn on the attempt
+        must give a list with k entries.
+        """
+        if len(contents) != len(self.messages):
+            raise ValueError(
+                "Message history misalignment in attempt uuid %s: tried to add %d items to %d message histories"
+                % (str(self.uuid), len(contents), len(self.messages))
+            )
+        if role == "user" and (
+            len(self.messages) == 0 or isinstance(self.messages[0], dict)
+        ):
+            raise ValueError(
+                "Can only add a list of user prompts after at least one system generation, so that generations count is known"
+            )
+        if role in roles:
+            for idx, entry in enumerate(contents):
+                self.messages[idx].append({"role": role, "content": entry})
+            return
+        raise ValueError(
+            "Conversation turn role must be one of '%s', got '%s'"
+            % ("'/'".join(roles), role)
+        )
