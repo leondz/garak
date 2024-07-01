@@ -4,12 +4,10 @@
 import importlib
 import inspect
 import pytest
-import types
 
 from garak import _plugins
-from garak.attempt import Attempt
 from garak.exception import APIKeyMissingError
-import garak.detectors.base
+from garak.attempt import Attempt
 
 DEFAULT_GENERATOR_NAME = "garak test"
 DEFAULT_PROMPT_TEXT = "especially the lies"
@@ -60,22 +58,18 @@ def test_detector_detect(classname):
     a.notes["repeat_word"] = "x"
 
     a.prompt = ""
-    a.notes["format"] = "local filename"
     a.outputs = ["", None]
     try:
         results = di.detect(a)
     except APIKeyMissingError:
         pytest.skip("API key unavailable")
 
-    assert isinstance(
-        results, (list, types.GeneratorType)
-    ), "detect() should return an ordered iterable"
+    assert isinstance(results, list), "detect() should return a list"
     for entry in results:
-        # detect() should skip non-evaluated items from output. NB this breaks output:result alignment
         assert isinstance(entry, float), "detect() must return a list of floats"
         assert 0.0 <= entry <= 1.0, "detect() values should be between 0.0 and 1.0"
-        assert len(list(results)) <= len(
-            list(a.outputs)
+        assert len(results) <= len(
+            a.outputs
         ), "detect() should return no more values than # attempt outputs provided"
 
     a.outputs = ["Terok", "Nor"]
@@ -83,18 +77,7 @@ def test_detector_detect(classname):
         len(a.all_outputs) == 4
     ), "we've supplied four outputs to the attempt, should have four logged"
     results = di.detect(a)
-    if not isinstance(
-        di, garak.detectors.base.FileDetector
-    ):  # this returns nothing - remove when Nones are OK in detector output
-        assert len(list(results)) in (
-            3,
-            4,
-        ), "detector should return as many results as in all_outputs (maybe excluding Nones)"
-
-
-def test_filedetector_nonexist():
-    d = garak.detectors.base.FileDetector()
-    a = garak.attempt.Attempt(prompt="")
-    a.outputs = [None, "", "/non/existing/file"]
-    a.notes["format"] = d.valid_format
-    assert list(d.detect(a)) == []
+    assert len(results) in (
+        3,
+        4,
+    ), "detector should return as many results as in all_outputs (maybe excluding Nones)"
