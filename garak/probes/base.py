@@ -252,11 +252,31 @@ class TreeSearchProbe(Probe):
 
         all_completed_attempts: Iterable[garak.attempt.Attempt] = []
 
+        if not len(nodes_to_explore):
+            logging.info("No initial nodes for %s, skipping" % self.probename)
+            return []
+
+        tree_bar = tqdm.tqdm(
+            total=int(len(nodes_to_explore) * 4),
+            leave=False,
+            colour="#e5a70e",
+        )
+        tree_bar.set_description(f"Tree search nodes traversed")
+
         while len(nodes_to_explore):
+
             logging.debug(
                 "%s Queue: %s" % (self.__class__.__name__, repr(nodes_to_explore))
             )
             current_node = nodes_to_explore.pop()
+
+            # update progress bar
+            progress_nodes_previous = len(node_ids_explored)
+            progress_nodes_todo = int(1 + len(nodes_to_explore) * 2.5)
+
+            tree_bar.total = progress_nodes_previous + progress_nodes_todo
+            tree_bar.refresh()
+
             node_ids_explored.add(self._get_node_id(current_node))
 
             # init this round's list of attempts
@@ -266,7 +286,12 @@ class TreeSearchProbe(Probe):
                 "%s %s, %s"
                 % (self.__class__.__name__, current_node, current_node.words())
             )
-            for surface_form in self._get_node_terms(current_node):
+
+            # generate surface forms
+            new_surface_forms = self._get_node_terms(current_node)
+
+            # get prompts
+            for surface_form in new_surface_forms:
                 for prompt in self._gen_prompts(surface_form):
                     a = self._mint_attempt(prompt)
                     a.notes["surface_form"] = surface_form
@@ -286,6 +311,9 @@ class TreeSearchProbe(Probe):
                 )
                 node_results += attempt.detector_results[self.primary_detector]
                 _config.transient.reportfile.write(json.dumps(attempt.as_dict()) + "\n")
+
+            tree_bar.update()
+            tree_bar.refresh()
 
             all_completed_attempts += attempts_completed
 
@@ -311,6 +339,11 @@ class TreeSearchProbe(Probe):
                         )
             else:
                 logging.debug("%s closing node" % self.__class__.__name__)
+
+        tree_bar.total = len(node_ids_explored)
+        tree_bar.update(len(node_ids_explored))
+        tree_bar.refresh()
+        tree_bar.close()
 
         # we've done detection, so let's skip the main one
         self.primary_detector_real = self.primary_detector
