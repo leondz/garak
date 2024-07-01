@@ -6,7 +6,7 @@ in `garak`. `garak` detectors must inherit from a class in here."""
 import logging
 import os
 import re
-from typing import Iterable, Union
+from typing import List, Iterable, Union
 
 from colorama import Fore, Style
 
