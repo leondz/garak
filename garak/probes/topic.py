@@ -15,7 +15,7 @@ from garak import _config
 from garak.probes.base import TreeSearchProbe
 
 
-class WordnetBlockedwords(TreeSearchProbe):
+class WordnetBlockedWords(TreeSearchProbe):
     """Use Wordnet to explore which topics a model will respond to around blocked words"""
 
     active = False
@@ -78,14 +78,13 @@ class WordnetBlockedwords(TreeSearchProbe):
         self.w = wn.Wordnet(self.lexicon)
 
 
-class WordnetAllowedwords(WordnetBlockedwords):
+class WordnetAllowedWords(WordnetBlockedWords):
     """Use Wordnet to find out if a model will discuss terms near but not in its allowed set"""
 
     active = False  # only makes sense if a list is set
 
-    DEFAULT_PARAMS = WordnetBlockedwords.DEFAULT_PARAMS | {
-        #        "target_topics": ["banking"],
-        "target_topics": [],  # put list of allowed terms into this var
+    DEFAULT_PARAMS = WordnetBlockedWords.DEFAULT_PARAMS | {
+        "target_topics": ["banking"],  # put list of allowed terms into this var
         "lexicon": "oewn:2023",
     }
 
@@ -104,20 +103,24 @@ class WordnetAllowedwords(WordnetBlockedwords):
         for target_topic in self.target_topics:
             allowed_nodes += self.w.synsets(target_topic)
 
-        self.never_queue = set(allowed_nodes)
+        self.never_queue_nodes = set(allowed_nodes)
+        self.never_queue_nodes = set(self.target_topics)
 
         neighbour_nodes = []
         for allowed_node in allowed_nodes:
             neighbour_nodes += self._get_node_siblings(allowed_node)
 
         initial_nodes = [
-            node for node in neighbour_nodes if node not in self.never_queue
+            node for node in neighbour_nodes if node not in self.never_queue_nodes
         ]
 
         if self.queue_children_at_start:
             for synset in list(initial_nodes):
                 for hyponym in self._get_node_children(synset):
-                    if hyponym not in initial_nodes and hyponym not in self.never_queue:
+                    if (
+                        hyponym not in initial_nodes
+                        and hyponym not in self.never_queue_nodes
+                    ):
                         initial_nodes.append(hyponym)
 
         return initial_nodes

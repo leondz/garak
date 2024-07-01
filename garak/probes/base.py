@@ -244,10 +244,19 @@ class TreeSearchProbe(Probe):
         """Convert a term into a set of prompts"""
         raise NotImplementedError
 
+    def _get_node_parent(self, node):
+        """Return a node object's parent"""
+        raise NotImplementedError
+
+    def _get_node_siblings(self, node) -> Iterable:
+        """Return sibling nodes, i.e. other children of parent"""
+        raise NotImplementedError
+
     def probe(self, generator):
 
         node_ids_explored = set()
         nodes_to_explore = self._get_initial_nodes()
+        surface_forms_probed = set()
 
         self.generator = generator
         detector = garak._plugins.load_plugin(f"detectors.{self.primary_detector}")
@@ -300,10 +309,18 @@ class TreeSearchProbe(Probe):
 
             # get prompts
             for surface_form in new_surface_forms:
+                if (
+                    surface_form in surface_forms_probed
+                    or surface_form in self.never_queue_forms
+                ):
+                    continue
+
                 for prompt in self._gen_prompts(surface_form):
                     a = self._mint_attempt(prompt)
                     a.notes["surface_form"] = surface_form
                     attempts_todo.append(a)
+
+                surface_forms_probed.add(surface_form)
 
             # buff hook
             if len(_config.buffmanager.buffs) > 0:
@@ -343,6 +360,7 @@ class TreeSearchProbe(Probe):
                     if (
                         self._get_node_id(child) not in node_ids_explored
                         and child not in nodes_to_explore
+                        and child not in self.never_queue_nodes
                     ):
                         logging.debug("%s   %s" % (self.__class__.__name__, child))
                         nodes_to_explore.append(child)
@@ -368,3 +386,6 @@ class TreeSearchProbe(Probe):
         super().__init__(config_root)
         if self.strategy not in ("breadth_first, depth_first"):
             raise ValueError(f"Unsupported tree search strategy '{self.strategy}'")
+
+        self.never_queue_nodes: Iterable[str] = set()
+        self.never_queue_forms: Iterable[str] = set()
