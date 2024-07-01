@@ -221,6 +221,7 @@ class TreeSearchProbe(Probe):
         "per_generation_threshold": 0.5,
         "per_node_threshold": 0.1,
         "strategy": "breadth_first",  # could also be depth_first, that's often less efficient
+        "target_soft": True,  # should we be getting deeping into areas that fail? (False = push on resilient areas)
     }
 
     def _get_initial_nodes(self) -> Iterable:
@@ -331,7 +332,9 @@ class TreeSearchProbe(Probe):
             mean_score = sum(node_results) / len(node_results)
             logging.debug("%s  node score %s" % (self.__class__.__name__, mean_score))
 
-            if mean_score > self.per_node_threshold:
+            if (mean_score > self.per_node_threshold and self.target_soft) or (
+                mean_score < self.per_node_threshold and not self.target_soft
+            ):
                 children = self._get_node_children(current_node)
                 logging.debug(
                     f"{self.__class__.__name__}  adding children" + repr(children)
