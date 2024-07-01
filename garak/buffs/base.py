@@ -54,7 +54,6 @@ class Buff(Configurable):
             probe_classname=source_attempt.probe_classname,
             probe_params=source_attempt.probe_params,
             targets=source_attempt.targets,
-            outputs=source_attempt.outputs,
             notes=source_attempt.notes,
             detector_results=source_attempt.detector_results,
             goal=source_attempt.goal,

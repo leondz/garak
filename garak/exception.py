@@ -18,3 +18,9 @@ class ModelNameMissingError(GarakException):
     """A generator requires model_name to be set, but it wasn't"""
 
     pass
+
+
+class GarakBackoffTrigger(GarakException):
+    """Thrown when backoff should be triggered"""
+
+    pass

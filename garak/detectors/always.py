@@ -15,7 +15,7 @@ class Fail(Detector):
     """Always Fail (for testing & prototyping)"""
 
     def detect(self, attempt: Attempt) -> List[float]:
-        return [1.0] * len(attempt.outputs)
+        return [1.0] * len(attempt.all_outputs)
 
 
 class Pass(Detector):

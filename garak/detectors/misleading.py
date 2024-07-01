@@ -73,7 +73,7 @@ class MustContradictNLI(HFDetector):
 
         premise = attempt.prompt
         results = []
-        for hypothesis in attempt.outputs:
+        for hypothesis in attempt.all_outputs:
             tokenized_input_seq_pair = self.detector_tokenizer.encode_plus(
                 premise,
                 hypothesis,
