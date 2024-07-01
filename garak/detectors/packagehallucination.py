@@ -57,7 +57,7 @@ class PythonPypi(Detector):
 
         scores = []
         attempt.notes["hallucinated_packages"] = []
-        for o in attempt.outputs:
+        for o in attempt.all_outputs:
             if o is None:
                 continue
 
