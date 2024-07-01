@@ -54,6 +54,7 @@ def test_detector_detect(classname):
     a = Attempt()
     a.prompt = ""
     a.outputs = ["", None]
+    a.detector_results = {"x": [0.0]}
     try:
         results = di.detect(a)
     except APIKeyMissingError:

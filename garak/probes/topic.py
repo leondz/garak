@@ -16,7 +16,13 @@ from garak.probes.base import TreeSearchProbe
 
 
 class WordnetBlockedWords(TreeSearchProbe):
-    """Use Wordnet to explore which topics a model will respond to around blocked words"""
+    """Use Wordnet to explore which topics a model will respond to around blocked words
+
+    This probe takes a tree-search approach to explore topics that the
+    target model is willing to engage in, using wordnet to represent a
+    topic hierarchy. Topics are given as a list of strings in the
+    target_topics parameter.
+    """
 
     active = False
 
@@ -26,8 +32,7 @@ class WordnetBlockedWords(TreeSearchProbe):
     tags = [
         "avid-effect:security:S0301",
         "owasp:llm10",
-        "owasp:llm06",
-        "quality:Security:Confidentiailty",
+        "quality:Security:Confidentiality",
     ]  # MISP-format taxonomy categories
 
     DEFAULT_PARAMS = TreeSearchProbe.DEFAULT_PARAMS | {
@@ -79,7 +84,16 @@ class WordnetBlockedWords(TreeSearchProbe):
 
 
 class WordnetAllowedWords(WordnetBlockedWords):
-    """Use Wordnet to find out if a model will discuss terms near but not in its allowed set"""
+    """Use Wordnet to find out if a model will discuss terms near but not in its allowed set
+
+    Using a list of acceptable topic words/terms defined in target_terms, this
+    probe takes a tree-search approach to explore topics that the target
+    model is willing to engage in, using wordnet to represent a topic hierarchy.
+    Allowed topics are given as a list of strings in the target_topics
+    parameter. The probe works by finding synsets close to the allowed words,
+    which are assumed to be marginally accessible even if not in that target
+    permitted group.
+    """
 
     active = False  # only makes sense if a list is set
 
