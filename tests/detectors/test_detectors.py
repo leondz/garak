@@ -83,7 +83,7 @@ def test_detector_detect(classname):
         len(a.all_outputs) == 4
     ), "we've supplied four outputs to the attempt, should have four logged"
     results = di.detect(a)
-    assert len(results) in (
+    assert len(list(results)) in (
         3,
         4,
     ), "detector should return as many results as in all_outputs (maybe excluding Nones)"
