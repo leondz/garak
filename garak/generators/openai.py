@@ -19,6 +19,7 @@ import openai
 import backoff
 
 from garak import _config
+import garak.exception
 from garak.generators.base import Generator
 
 # lists derived from https://platform.openai.com/docs/models
@@ -100,6 +101,7 @@ class OpenAICompatible(Generator):
         "presence_penalty": 0.0,
         "stop": ["#", ";"],
         "suppressed_params": set(),
+        "retry_json": True,
     }
 
     # avoid attempt to pickle the client attribute
@@ -149,7 +151,7 @@ class OpenAICompatible(Generator):
             openai.InternalServerError,
             openai.APITimeoutError,
             openai.APIConnectionError,
-            json.decoder.JSONDecodeError,
+            garak.exception.GarakBackoffTrigger,
         ),
         max_value=70,
     )
@@ -177,6 +179,14 @@ class OpenAICompatible(Generator):
             if v is not None and k not in self.suppressed_params
         }
 
+        if self.generator not in (
+            self.client.chat.completions,
+            self.client.completions,
+        ):
+            raise ValueError(
+                "Unsupported model at generation time in generators/openai.py - please add a clause!"
+            )
+
         if self.generator == self.client.completions:
             if not isinstance(prompt, str):
                 msg = (
@@ -184,13 +194,9 @@ class OpenAICompatible(Generator):
                     f"Returning nothing!"
                 )
                 logging.error(msg)
-                print(msg)
                 return list()
 
             create_args["prompt"] = prompt
-
-            response = self.generator.create(**create_args)
-            return [c.text for c in response.choices]
 
         elif self.generator == self.client.chat.completions:
             if isinstance(prompt, str):
@@ -203,22 +209,28 @@ class OpenAICompatible(Generator):
                     f"Returning nothing!"
                 )
                 logging.error(msg)
-                print(msg)
                 return list()
-            try:
-                create_args["messages"] = messages
-                response = self.generator.create(**create_args)
 
-                return [c.message.content for c in response.choices]
-            except openai.BadRequestError:
-                msg = "Bad request: " + str(repr(prompt))
-                logging.error(msg)
-                return [None]
+            create_args["messages"] = messages
 
-        else:
-            raise ValueError(
-                "Unsupported model at generation time in generators/openai.py - please add a clause!"
-            )
+        try:
+            response = self.generator.create(**create_args)
+        except openai.BadRequestError as e:
+            msg = "Bad request: " + str(repr(prompt))
+            logging.exception(e)
+            logging.error(msg)
+            return [None]
+        except json.decoder.JSONDecodeError as e:
+            logging.exception(e)
+            if self.retry_json:
+                raise garak.exception.GarakBackoffTrigger from e
+            else:
+                raise e
+
+        if self.generator == self.client.completions:
+            return [c.text for c in response.choices]
+        elif self.generator == self.client.chat.completions:
+            return [c.message.content for c in response.choices]
 
 
 class OpenAIGenerator(OpenAICompatible):
