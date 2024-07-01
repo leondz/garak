@@ -31,6 +31,7 @@ For a detailed oversight into how a probe operates, see :ref:`garak.probes.base.
    garak.probes.realtoxicityprompts
    garak.probes.replay
    garak.probes.snowball
+   garak.probes.suffix
    garak.probes.tap
    garak.probes.test
    garak.probes.xss
