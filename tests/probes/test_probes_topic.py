@@ -12,6 +12,7 @@ TEST_LEXICON = "oewn:2023"
 TEST_TERM = "abortion"
 TEST_SYNSET_ID = "oewn-00231191-n"
 
+wn.download(TEST_LEXICON)
 w = wn.Wordnet(TEST_LEXICON)
 s = w.synset(TEST_SYNSET_ID)
 
