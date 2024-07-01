@@ -28,6 +28,8 @@ deepl==1.17.0
 fschat>=0.2.36
 litellm>=1.33.8
 jsonpath-ng>=1.6.1
+huggingface_hub>=0.21.0
+python-magic>=0.4.21
 # tests
 pytest>=8.0
 requests-mock==1.12.1
