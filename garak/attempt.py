@@ -99,7 +99,7 @@ class Attempt:
             "targets": self.targets,
             "prompt": self.prompt,
             "outputs": list(self.outputs),
-            "detector_results": {k: list(v) for k, v in self.detector_results.items()},
+            "detector_results": self.detector_results,
             "notes": self.notes,
             "goal": self.goal,
             "messages": self.messages,
