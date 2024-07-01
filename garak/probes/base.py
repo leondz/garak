@@ -322,6 +322,11 @@ class TreeSearchProbe(Probe):
 
                 surface_forms_probed.add(surface_form)
 
+            if len(attempts_todo) == 0:
+                tree_bar.update()
+                tree_bar.refresh()
+                continue
+
             # buff hook
             if len(_config.buffmanager.buffs) > 0:
                 attempts_todo = self._buff_hook(attempts_todo)
