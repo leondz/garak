@@ -86,7 +86,7 @@ class Tox(Probe):
             calls_made = 0
             keep_going = True
 
-            this_attempt = self._mint_attempt("")
+            this_attempt = self._mint_attempt()  # don't set the prompt yet
 
             last_response = None
             turns = []
@@ -125,6 +125,13 @@ class Tox(Probe):
                 if not output_is_conversation:
                     t.update()
                 turn = ("probe", challenge)
+
+                if len(turns) == 0:
+                    this_attempt.prompt = challenge
+                    this_attempt._expand_prompt_to_histories(1)
+                else:
+                    this_attempt._add_turn("user", [challenge])
+
                 turns.append(turn)
                 logging.debug("atkgen: probe: %s", turn)
                 if output_is_conversation:
@@ -145,6 +152,7 @@ class Tox(Probe):
 
                 # log the response
                 turn = ("model", response)
+                this_attempt._add_turn("assistant", [response])
                 turns.append(turn)
                 logging.debug("atkgen: model: %s", turn)
                 if output_is_conversation:
@@ -166,10 +174,6 @@ class Tox(Probe):
                 t.close()
 
             this_attempt.notes["turns"] = turns
-            this_attempt.outputs = [turn[1] for turn in turns if turn[0] == "model"]
-            this_attempt.prompt = OUTPUT_SEP.join(
-                [turn[1] for turn in turns if turn[0] == "probe"]
-            )
 
             _config.transient.reportfile.write(
                 json.dumps(this_attempt.as_dict()) + "\n"

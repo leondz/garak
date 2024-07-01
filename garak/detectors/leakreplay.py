@@ -16,7 +16,10 @@ class StartsWith(Detector):
         detector_results = []
         if "triggers" in attempt.notes:
             triggers = attempt.notes["triggers"]
-            for output in attempt.outputs:
+            for output in attempt.all_outputs:
+                if output is None:
+                    continue
+
                 match = False
                 output = output.strip()
                 for trigger in triggers:
@@ -26,6 +29,6 @@ class StartsWith(Detector):
                     else:
                         if output.lower().startswith(trigger.lower()):
                             match = True
-                detector_results.append(1 if match else 0)
+                detector_results.append(1.0 if match else 0.0)
 
         return detector_results

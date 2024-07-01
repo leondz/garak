@@ -54,6 +54,11 @@ def test_detector_detect(classname):
         pytest.skip("API key unavailable")
 
     a = Attempt()
+    # dressing required to get 'some' detectors to return results
+    a.notes["trigger"] = "x"
+    a.notes["triggers"] = ["x", "x", "x", "x"]
+    a.notes["repeat_word"] = "x"
+
     a.prompt = ""
     a.notes["format"] = "local filename"
     a.outputs = ["", None]
@@ -72,6 +77,16 @@ def test_detector_detect(classname):
         assert len(list(results)) <= len(
             list(a.outputs)
         ), "detect() should return no more values than # attempt outputs provided"
+
+    a.outputs = ["Terok", "Nor"]
+    assert (
+        len(a.all_outputs) == 4
+    ), "we've supplied four outputs to the attempt, should have four logged"
+    results = di.detect(a)
+    assert len(results) in (
+        3,
+        4,
+    ), "detector should return as many results as in all_outputs (maybe excluding Nones)"
 
 
 def test_filedetector_nonexist():
