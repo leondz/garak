@@ -220,6 +220,7 @@ class TreeSearchProbe(Probe):
         "queue_children_at_start": True,
         "per_generation_threshold": 0.5,
         "per_node_threshold": 0.1,
+        "strategy": "breadth_first",  # could also be depth_first, that's often less efficient
     }
 
     def _get_initial_nodes(self) -> Iterable:
@@ -268,11 +269,17 @@ class TreeSearchProbe(Probe):
             logging.debug(
                 "%s Queue: %s" % (self.__class__.__name__, repr(nodes_to_explore))
             )
-            current_node = nodes_to_explore.pop()
+            if self.strategy == "breadth_first":
+                current_node = nodes_to_explore.pop(0)
+            elif self.strategy == "depth_first":
+                current_node = nodes_to_explore.pop()
 
             # update progress bar
             progress_nodes_previous = len(node_ids_explored)
             progress_nodes_todo = int(1 + len(nodes_to_explore) * 2.5)
+            # print("seen", node_ids_explored, progress_nodes_previous)
+            # print("curr", current_node)
+            # print("todo", nodes_to_explore, progress_nodes_todo)
 
             tree_bar.total = progress_nodes_previous + progress_nodes_todo
             tree_bar.refresh()
@@ -330,7 +337,10 @@ class TreeSearchProbe(Probe):
                     f"{self.__class__.__name__}  adding children" + repr(children)
                 )
                 for child in children:
-                    if self._get_node_id(child) not in node_ids_explored:
+                    if (
+                        self._get_node_id(child) not in node_ids_explored
+                        and child not in nodes_to_explore
+                    ):
                         logging.debug("%s   %s" % (self.__class__.__name__, child))
                         nodes_to_explore.append(child)
                     else:
@@ -350,3 +360,8 @@ class TreeSearchProbe(Probe):
         self.primary_detector = "always.Passthru"
 
         return all_completed_attempts
+
+    def __init__(self, config_root=_config):
+        super().__init__(config_root)
+        if self.strategy not in ("breadth_first, depth_first"):
+            raise ValueError(f"Unsupported tree search strategy '{self.strategy}'")
