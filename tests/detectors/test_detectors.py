@@ -97,4 +97,6 @@ def test_filedetector_nonexist():
     a = garak.attempt.Attempt(prompt="")
     a.outputs = [None, "", "/non/existing/file"]
     a.notes["format"] = d.valid_format
-    assert list(d.detect(a)) == []
+    assert (
+        len(list(d.detect(a))) == 0
+    ), "FileDetector should skip filenames for non-existing files"
