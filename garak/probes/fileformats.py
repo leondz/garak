@@ -14,7 +14,7 @@ import tqdm
 from garak.configurable import Configurable
 from garak.probes.base import Probe
 import garak.attempt
-
+import garak.resources.theme
 
 class HF_Files(Probe, Configurable):
     """Get a manifest of files associated with a Hugging Face generator
@@ -50,7 +50,7 @@ class HF_Files(Probe, Configurable):
             return []
         if generator.__class__.__name__ not in self.supported_generators:
             return []
-        attempt = self._mint_attempt(None)
+        attempt = self._mint_attempt(generator.name)
 
         repo_filenames = huggingface_hub.list_repo_files(generator.name)
         local_filenames = []
@@ -58,7 +58,7 @@ class HF_Files(Probe, Configurable):
             repo_filenames,
             leave=False,
             desc=f"Gathering files in {generator.name}",
-            colour="#e5a70e",  # probe theme colour
+            colour=f"#{garak.resources.theme.PROBE_RGB}",
         ):
             local_filename = huggingface_hub.hf_hub_download(
                 generator.name, repo_filename, force_download=False
