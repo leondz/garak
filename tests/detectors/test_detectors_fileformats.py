@@ -128,4 +128,4 @@ def test_fileisexectuable_exec():
     assert list(results) == [1.0] * len(exec_filenames)
 
     for binfilename in exec_filenames:
-        Path.unlink(binfilename)
+        Path(binfilename).unlink()
