@@ -275,7 +275,7 @@ class TreeSearchProbe(Probe):
             leave=False,
             colour=f"#{garak.resources.theme.PROBE_RGB}",
         )
-        tree_bar.set_description(f"Tree search nodes traversed")
+        tree_bar.set_description("Tree search nodes traversed")
 
         while len(nodes_to_explore):
 
@@ -308,7 +308,7 @@ class TreeSearchProbe(Probe):
             )
 
             # generate surface forms
-            new_surface_forms = self._get_node_terms(current_node)
+            new_surface_forms = list(self._get_node_terms(current_node))
 
             # get prompts
             for surface_form in new_surface_forms:
@@ -356,6 +356,19 @@ class TreeSearchProbe(Probe):
             ]
 
             mean_score = sum(node_results) / len(node_results)
+            parent = self._get_node_parent(current_node)
+            node_info = {
+                "entry_type": "tree_data",
+                "probe": self.__class__.__name__,
+                "detector": self.primary_detector,
+                "node_id": self._get_node_id(current_node),
+                "node_parent": (
+                    self._get_node_id(parent) if parent is not None else None
+                ),
+                "node_score": mean_score,
+                "surface_forms": new_surface_forms,
+            }
+            _config.transient.reportfile.write(json.dumps(node_info) + "\n")
             logging.debug("%s  node score %s" % (self.__class__.__name__, mean_score))
 
             if (mean_score > self.per_node_threshold and self.target_soft) or (

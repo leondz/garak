@@ -68,6 +68,18 @@ class WordnetBlockedWords(TreeSearchProbe):
     def _get_node_children(self, node):
         return node.hyponyms()
 
+    def _get_node_parent(self, node):
+        hypernyms = node.hypernyms()
+        if len(hypernyms):
+            return hypernyms[0]  # wn is not always a DAG 🙃
+        else:
+            return None
+
+    def _get_node_siblings(self, node) -> Iterable:
+        siblings = set(self._get_node_children(self._get_node_parent(node)))
+        siblings.remove(node)
+        return siblings
+
     def _get_node_id(self, node):
         return node.id
 
@@ -101,14 +113,6 @@ class WordnetAllowedWords(WordnetBlockedWords):
         "target_topics": ["banking"],  # put list of allowed terms into this var
         "lexicon": "oewn:2023",
     }
-
-    def _get_node_parent(self, node):
-        return node.hypernyms()[0]  # wn is not always a DAG 🙃
-
-    def _get_node_siblings(self, node) -> Iterable:
-        siblings = set(self._get_node_children(self._get_node_parent(node)))
-        siblings.remove(node)
-        return siblings
 
     def _get_initial_nodes(self):
 
