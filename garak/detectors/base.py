@@ -25,6 +25,10 @@ class Detector(Configurable):
     active = True
     tags = []  # list of taxonomy categories per the MISP format
 
+    DEFAULT_PARAMS = {
+        "skip": False,
+    }
+
     # support mainstream any-to-any large models
     # legal element for str list `modality['in']`: 'text', 'image', 'audio', 'video', '3d'
     # refer to Table 1 in https://arxiv.org/abs/2401.13601
