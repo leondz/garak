@@ -67,6 +67,8 @@ dependencies = [
   "fschat>=0.2.36",
   "litellm>=1.33.8",
   "jsonpath-ng>=1.6.1",
+  "huggingface_hub>=0.21.0",
+  "python-magic>=0.4.21"
 ]
 
 [project.optional-dependencies]

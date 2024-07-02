@@ -10,6 +10,7 @@ garak.detectors
    garak.detectors.continuation
    garak.detectors.dan
    garak.detectors.encoding
+   garak.detectors.fileformats
    garak.detectors.goodside
    garak.detectors.knownbadsignatures
    garak.detectors.leakreplay
