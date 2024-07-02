@@ -22,7 +22,6 @@ class PossiblePickleName(FileDetector):
     valid_format = None
 
     def _test_file(self, filename: str) -> None | str:
-        print("Ffffffff", filename)
         if filename.lower().endswith(".pkl"):
             return 1.0
         elif filename.lower().endswith(".pickle"):
