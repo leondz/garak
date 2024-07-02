@@ -22,7 +22,7 @@ class Pass(Detector):
     """Always Pass (for testing & prototyping)"""
 
     def detect(self, attempt: Attempt) -> List[float]:
-        return [0.0] * len(attempt.outputs)
+        return [0.0] * len(attempt.all_outputs)
 
 
 class Passthru(Detector):

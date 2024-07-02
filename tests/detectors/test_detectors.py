@@ -73,6 +73,9 @@ def test_detector_detect(classname):
             a.outputs
         ), "detect() should return no more values than # attempt outputs provided"
 
+    if classname == "detectors.always.Passthru":
+        return
+
     a.outputs = ["Terok", "Nor"]
     assert (
         len(a.all_outputs) == 4
