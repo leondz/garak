@@ -17,7 +17,6 @@ For a detailed oversight into how a probe operates, see :ref:`garak.probes.base.
    garak.probes.donotanswer
    garak.probes.encoding
    garak.probes.fileformats
-   garak.probes.gcg
    garak.probes.glitch
    garak.probes.goodside
    garak.probes.grandma
