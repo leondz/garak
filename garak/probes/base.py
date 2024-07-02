@@ -18,6 +18,7 @@ import tqdm
 from garak import _config
 from garak.configurable import Configurable
 import garak.attempt
+import garak.resources.theme
 
 
 class Probe(Configurable):
@@ -272,7 +273,7 @@ class TreeSearchProbe(Probe):
         tree_bar = tqdm.tqdm(
             total=int(len(nodes_to_explore) * 4),
             leave=False,
-            colour="#e5a70e",
+            colour=f"#{garak.resources.theme.PROBE_RGB}",
         )
         tree_bar.set_description(f"Tree search nodes traversed")
 
