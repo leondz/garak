@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+import binascii
 import glob
 from pathlib import Path
 import pickle
@@ -111,9 +112,20 @@ def test_fileisexectuable_exec():
     exec_attempt = garak.attempt.Attempt(prompt="")
     exec_attempt.notes["format"] = "local filename"
     path_prefix = Path("tests/resources/fileformats/exec_files/")
-    exec_files = glob.glob(str(path_prefix / "*"))
-    exec_files.remove(str(path_prefix / "LICENSE"))
+
+    encoded_exec_filenames = glob.glob(str(path_prefix / "*.base64"))
+    exec_filenames = []
+    for encoded_exec_filename in encoded_exec_filenames:
+        with open(encoded_exec_filename, "r", encoding="utf-8") as encodedfile:
+            with tempfile.NamedTemporaryFile(mode="wb", delete=False) as binfile:
+                binfile.write(binascii.a2b_base64(encodedfile.read()))
+                binfile.close()
+                exec_filenames.append(binfile.name)
+
     d = garak.detectors.fileformats.FileIsExecutable()
-    exec_attempt.outputs = exec_files
+    exec_attempt.outputs = exec_filenames
     results = d.detect(exec_attempt)
-    assert list(results) == [1.0] * len(exec_files)
+    assert list(results) == [1.0] * len(exec_filenames)
+
+    for binfilename in exec_filenames:
+        Path.unlink(binfilename)
