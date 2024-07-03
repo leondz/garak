@@ -90,7 +90,7 @@ def _set_settings(config_obj, settings_obj: dict):
 def _combine_into(d: dict, combined: dict) -> None:
     for k, v in d.items():
         if isinstance(v, dict):
-            _combine_into(v, combined.setdefault(k, nested_dict))
+            _combine_into(v, combined.setdefault(k, nested_dict()))
         else:
             combined[k] = v
     return combined
