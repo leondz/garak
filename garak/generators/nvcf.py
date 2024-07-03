@@ -12,7 +12,7 @@ import backoff
 import requests
 
 from garak import _config
-from garak.exception import ModelNameMissingError
+from garak.exception import ModelNameMissingError, BadGeneratorException
 from garak.generators.base import Generator
 
 
@@ -28,6 +28,7 @@ class NvcfChat(Generator):
         "extra_nvcf_logging": False,
         "timeout": 60,
         "version_id": None,  # string
+        "stop_on_404": True,
         "extra_params": {  # extra params for the payload, e.g. "n":1 or "model":"google/gemma2b"
             "stream": False
         },
@@ -130,6 +131,12 @@ class NvcfChat(Generator):
             if response.status_code == 400 and prompt == "":
                 # error messages for refusing a blank prompt are fragile and include multi-level wrapped JSON, so this catch is a little broad
                 return [None]
+            if response.status_code == 404 and self.stop_on_404:
+                msg = "nvcf : got 404, endpoint unavailable, stopping"
+                logging.critical(msg)
+                print("\n\n" + msg)
+                print("nvcf :", response.content)
+                raise BadGeneratorException()
             if response.status_code >= 500:
                 if response.status_code == 500 and json.loads(response.content)[
                     "detail"
