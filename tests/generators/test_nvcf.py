@@ -15,6 +15,7 @@ PLUGINS = ("NvcfChat", "NvcfCompletion")
 
 @pytest.mark.parametrize("klassname", PLUGINS)
 def test_instantiate(klassname):
+    print(_config.plugins.generators)
     _config.plugins.generators["nvcf"][klassname]["name"] = "placeholder name"
     _config.plugins.generators["nvcf"][klassname]["api_key"] = "placeholder key"
     g = _plugins.load_plugin(f"generators.nvcf.{klassname}")
