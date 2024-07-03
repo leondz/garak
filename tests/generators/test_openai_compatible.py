@@ -9,7 +9,6 @@ import importlib
 import inspect
 
 from collections.abc import Iterable
-from garak import _plugins
 from garak.generators.openai import OpenAICompatible
 
 
