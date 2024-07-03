@@ -73,7 +73,7 @@ class NvcfChat(Generator):
             "stream": False,
         }
 
-        for k, v in self.extra_params:
+        for k, v in self.extra_params.items():
             payload[k] = v
 
         return payload
@@ -89,7 +89,7 @@ class NvcfChat(Generator):
             requests.exceptions.HTTPError,
             requests.exceptions.ConnectionError,
         ),
-        max_value=self.timeout + 10,
+        max_value=70,
     )
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
@@ -160,6 +160,9 @@ class NvcfCompletion(NvcfChat):
             "max_tokens": self.max_tokens,
             "stream": False,
         }
+
+        for k, v in self.extra_params.items():
+            payload[k] = v
 
         return payload
 
