@@ -7,6 +7,7 @@
 
 # logging should be set up before config is loaded
 
+from collections import defaultdict
 from dataclasses import dataclass
 import importlib
 import logging
@@ -60,11 +61,13 @@ system = GarakSubConfig()
 run = GarakSubConfig()
 plugins = GarakSubConfig()
 reporting = GarakSubConfig()
-plugins.probes = {}
-plugins.generators = {}
-plugins.detectors = {}
-plugins.buffs = {}
-plugins.harnesses = {}
+
+nested_dict = lambda: defaultdict(nested_dict)
+plugins.probes = nested_dict()
+plugins.generators = nested_dict()
+plugins.detectors = nested_dict()
+plugins.buffs = nested_dict()
+plugins.harnesses = nested_dict()
 reporting.taxonomy = None  # set here to enable report_digest to be called directly
 
 buffmanager = BuffManager()
