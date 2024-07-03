@@ -15,8 +15,6 @@ PLUGINS = ("NvcfChat", "NvcfCompletion")
 
 @pytest.mark.parametrize("klassname", PLUGINS)
 def test_instantiate(klassname):
-    _config.plugins.generators["nvcf"] = {}
-    _config.plugins.generators["nvcf"][klassname] = {}
     _config.plugins.generators["nvcf"][klassname]["name"] = "placeholder name"
     _config.plugins.generators["nvcf"][klassname]["api_key"] = "placeholder key"
     g = _plugins.load_plugin(f"generators.nvcf.{klassname}")
@@ -27,8 +25,6 @@ def test_instantiate(klassname):
 def test_version_endpoint(klassname):
     name = "feedfacedeadbeef"
     version = "cafebabe"
-    _config.plugins.generators["nvcf"] = {}
-    _config.plugins.generators["nvcf"][klassname] = {}
     _config.plugins.generators["nvcf"][klassname]["name"] = name
     _config.plugins.generators["nvcf"][klassname]["api_key"] = "placeholder key"
     _config.plugins.generators["nvcf"][klassname]["version_id"] = version
@@ -40,8 +36,6 @@ def test_version_endpoint(klassname):
 def test_custom_keys(klassname):
     name = "feedfacedeadbeef"
     params = {"n": 1, "model": "secret/model_1.8t"}
-    _config.plugins.generators["nvcf"] = {}
-    _config.plugins.generators["nvcf"][klassname] = {}
     _config.plugins.generators["nvcf"][klassname]["name"] = name
     _config.plugins.generators["nvcf"][klassname]["api_key"] = "placeholder key"
     _config.plugins.generators["nvcf"][klassname]["extra_params"] = params
