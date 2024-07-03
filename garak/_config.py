@@ -87,7 +87,7 @@ def _set_settings(config_obj, settings_obj: dict):
 def _combine_into(d: dict, combined: dict) -> None:
     for k, v in d.items():
         if isinstance(v, dict):
-            _combine_into(v, combined.setdefault(k, nested_dict()))
+            _combine_into(v, combined.setdefault(k, {}))
         else:
             combined[k] = v
     return combined
@@ -96,7 +96,7 @@ def _combine_into(d: dict, combined: dict) -> None:
 def _load_yaml_config(settings_filenames) -> dict:
     global config_files
     config_files += settings_filenames
-    config = nested_dict()
+    config = {}
     for settings_filename in settings_filenames:
         with open(settings_filename, encoding="utf-8") as settings_file:
             settings = yaml.safe_load(settings_file)
