@@ -49,6 +49,8 @@ class Probe(Configurable):
     # we focus on LLM input for probe
     modality: dict = {"in": {"text"}}
 
+    DEFAULT_PARAMS = {}
+
     def __init__(self, config_root=_config):
         """Sets up a probe. This constructor:
         1. populates self.probename based on the class name,
