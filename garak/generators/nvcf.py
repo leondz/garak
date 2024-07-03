@@ -27,6 +27,10 @@ class NvcfChat(Generator):
         "invoke_url_base": "https://api.nvcf.nvidia.com/v2/nvcf/pexec/functions/",
         "extra_nvcf_logging": False,
         "timeout": 60,
+        "version_id": None,  # string
+        "extra_params": {  # extra params for the payload, e.g. "n":1 or "model":"google/gemma2b"
+            "stream": False
+        },
     }
 
     supports_multiple_generations = False
@@ -47,6 +51,9 @@ class NvcfChat(Generator):
 
         self.invoke_url = self.invoke_url_base + self.name
 
+        if self.version_id is not None:
+            self.invoke_url += f"/versions/{self.version_id}"
+
         super().__init__(
             self.name, generations=self.generations, config_root=config_root
         )
@@ -66,6 +73,9 @@ class NvcfChat(Generator):
             "stream": False,
         }
 
+        for k, v in self.extra_params:
+            payload[k] = v
+
         return payload
 
     def _extract_text_output(self, response) -> str:
@@ -79,7 +89,7 @@ class NvcfChat(Generator):
             requests.exceptions.HTTPError,
             requests.exceptions.ConnectionError,
         ),
-        max_value=70,
+        max_value=self.timeout + 10,
     )
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
