@@ -21,6 +21,7 @@ from colorama import Fore, Style
 from tqdm import tqdm
 
 from garak import _config
+import garak._plugins
 import garak.attempt
 from garak.probes.base import Probe
 from garak.generators.huggingface import Pipeline
@@ -56,6 +57,7 @@ class Tox(Probe):
         "constructive_tension": True,
         "red_team_model_type": "huggingface.Pipeline",
         "red_team_model_name": "leondz/artgpt2tox",
+        "red_team_model_config": {},
     }
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
@@ -63,16 +65,18 @@ class Tox(Probe):
 
         if self.redteamer == None:
 
-            self
             print(
                 "🔴🪖  ", end=""
             )  # distinguish load message for atkgen generator from target generator
-            self.redteamer = Pipeline(self.red_team_model)
+            self.redteamer = garak._plugins.load_plugin(
+                f"generators.{self.red_team_model_type}",
+                config_root=self.red_team_model_config,
+            )
             self.redteamer.generations = 1
             self.redteamer.deprefix_prompt = True
 
         attempts = []
-        red_team_model_short = self.red_team_model.split("/")[1]
+        red_team_model_short = self.red_team_model_name.split("/")[-1]
 
         target_generations = generator.generations
         generator.generations = 1  # take generations one-by-one (will restore later)
@@ -195,6 +199,24 @@ class Tox(Probe):
 
         return attempts
 
+    def _build_red_team_model_config(self):
+        try:
+            rt_model_module, rt_model_class = self.red_team_model_type.split(".")
+        except ValueError as e:
+            msg = f"red team model type needs to be fully specifed, w.g. 'module.Class'. Got {self.red_team_model_type}"
+            logging.critical(msg)
+            raise ValueError() from e
+        rt_config = {
+            "generators": {
+                rt_model_module: {
+                    rt_model_class: self.red_team_model_config
+                    | {"name": self.red_team_model_name},
+                }
+            }
+        }
+        return rt_config
+
     def __init__(self, config_root=_config):
         super().__init__(config_root)
         self.redteamer = None
+        self.red_team_model_config = self._build_red_team_model_config()
