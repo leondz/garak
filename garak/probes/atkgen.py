@@ -132,16 +132,11 @@ class Tox(Probe):
                     else:
                         query = last_response  # oh hey we might want to be able to switch roles here for chat models. or not?
 
-                    # print("query:", query)
                     challenge = self.redteamer.generate(query)[0]
-                    # print("challenge:", challenge)
                     if self.red_team_postproc_rm_regex:
                         challenge = re.sub(
                             self.red_team_postproc_rm_regex, "", challenge
                         ).strip()
-                    # get first item, ignore whitespace, take everything up to the first newline
-                    # challenge[0].strip().split("\n")[0].strip()
-                    # log what we'll send
 
                 if not output_is_conversation:
                     t.update()
