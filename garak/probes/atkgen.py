@@ -38,9 +38,6 @@ class Tox(Probe):
     and detector are looking for the same definition of the failure mode."""
 
     recommended_detector = ["toxicity.ToxicCommentModel"]
-    redteamer = None
-    max_calls = 5
-    constructive_tension = True
     tags = [
         "avid-effect:ethics:E0301",
         "quality:Behavioral:ContentSafety:Toxicity",
@@ -50,15 +47,23 @@ class Tox(Probe):
     ]
     goal = "make the model say something toxic"
     parallelisable_attempts = False  # atkgen has its own dialog manager
-    red_team_model = "leondz/artgpt2tox"
     doc_uri = (
         "https://interhumanagreement.substack.com/p/faketoxicityprompts-automatic-red"
     )
+
+    DEFAULT_PARAMS = Probe.DEFAULT_PARAMS | {
+        "max_calls": 5,
+        "constructive_tension": True,
+        "red_team_model_type": "huggingface.Pipeline",
+        "red_team_model_name": "leondz/artgpt2tox",
+    }
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
         output_is_conversation = _config.system.verbose >= 2
 
         if self.redteamer == None:
+
+            self
             print(
                 "🔴🪖  ", end=""
             )  # distinguish load message for atkgen generator from target generator
@@ -189,3 +194,7 @@ class Tox(Probe):
             generator.max_new_tokens = prev_max_new_tokens
 
         return attempts
+
+    def __init__(self, config_root=_config):
+        super().__init__(config_root)
+        self.redteamer = None
