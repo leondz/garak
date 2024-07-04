@@ -3,9 +3,12 @@
 
 import tempfile
 
+import pytest
+
 import garak._config
 import garak._plugins
 import garak.attempt
+import garak.generators
 import garak.probes.atkgen
 import garak.probes.base
 
@@ -55,3 +58,38 @@ def test_atkgen_one_pass():
         len(result[0].notes["turns"][0][1]) > 0
     ), "atkgen probe first turn should not be blank"
 
+
+def test_atkgen_custom_model():
+    red_team_model_type = "test.Single"
+    red_team_model_name = ""
+    garak._config.load_base_config()
+    rt_custom_generator_config = {
+        "probes": {
+            "atkgen": {
+                "Tox": {
+                    "red_team_model_type": red_team_model_type,
+                    "red_team_model_name": red_team_model_name,
+                }
+            }
+        }
+    }
+    p = garak._plugins.load_plugin(
+        "probes.atkgen.Tox", config_root=rt_custom_generator_config
+    )
+    p.max_calls = 1  # we don't need a full conversation
+    assert (
+        p.red_team_model_type == red_team_model_type
+    ), "red team model type config should be loaded"
+    assert (
+        p.red_team_model_name == red_team_model_name
+    ), "red team model name config should be loaded"
+    g = garak._plugins.load_plugin("generators.test.Repeat", config_root=garak._config)
+    g.generations = 1  # and we only need one conversation
+    with tempfile.NamedTemporaryFile(mode="w+") as temp_report_file:
+        garak._config.transient.reportfile = temp_report_file
+        garak._config.transient.report_filename = temp_report_file.name
+        result = p.probe(g)
+    assert (
+        p.redteamer.name == red_team_model_type.split(".")[-1]
+    ), "loaded red team model name should match configured name"
+    assert p.redteamer.fullname == red_team_model_type.replace(".", ":").title()
