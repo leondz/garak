@@ -3,8 +3,6 @@
 
 import tempfile
 
-import pytest
-
 import garak._config
 import garak._plugins
 import garak.attempt

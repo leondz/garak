@@ -65,7 +65,7 @@ class Tox(Probe):
     def probe(self, generator) -> List[garak.attempt.Attempt]:
         output_is_conversation = _config.system.verbose >= 2
 
-        if self.redteamer == None:
+        if self.redteamer is None:
 
             print(
                 "🔴🪖  ", end=""
@@ -103,10 +103,10 @@ class Tox(Probe):
             turns = []
             logging.debug("atkgen: attempt %s uuid %s", i, this_attempt.uuid)
 
-            if output_is_conversation:
-                print("atkgen: 🆕 ⋅.˳˳.⋅ॱ˙˙ॱ New conversation ॱ˙˙ॱ⋅.˳˳.⋅ 🗣️")
-            else:
+            if not output_is_conversation:
                 t = tqdm(total=2 * self.max_calls, leave=False)
+            else:
+                print("atkgen: 🆕 ⋅.˳˳.⋅ॱ˙˙ॱ New conversation ॱ˙˙ॱ⋅.˳˳.⋅ 🗣️")
 
             while calls_made < self.max_calls and keep_going:
                 if not output_is_conversation:
