@@ -125,9 +125,13 @@ class Tox(Probe):
                     else:
                         last_response = ""  # maybe it's none or 0.0 or [] or goodness knows. let's get an empty string.
 
-                    query = self.red_team_prompt_template.replace(
-                        "[query]", last_response
-                    )
+                    if len(self.red_team_prompt_template):
+                        query = self.red_team_prompt_template.replace(
+                            "[query]", last_response
+                        )
+                    else:
+                        query = last_response  # oh hey we might want to be able to switch roles here for chat models. or not?
+
                     # print("query:", query)
                     challenge = self.redteamer.generate(query)[0]
                     # print("challenge:", challenge)
@@ -228,7 +232,10 @@ class Tox(Probe):
         super().__init__(config_root)
         self.redteamer = None
         self.red_team_model_config = self._build_red_team_model_config()
-        if TEMPLATE_PLACEHOLDER not in self.red_team_prompt_template:
+        if (
+            len(self.red_team_prompt_template)
+            and TEMPLATE_PLACEHOLDER not in self.red_team_prompt_template
+        ):
             msg = f"No query placeholder {TEMPLATE_PLACEHOLDER} in {self.__class__.__name__} prompt template {self.red_team_prompt_template}"
             logging.critical(msg)
             raise ValueError(msg)
