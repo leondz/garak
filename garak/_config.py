@@ -55,6 +55,7 @@ class TransientConfig(GarakSubConfig):
     starttime_iso = None
 
 
+
 transient = TransientConfig()
 
 system = GarakSubConfig()
@@ -62,7 +63,19 @@ run = GarakSubConfig()
 plugins = GarakSubConfig()
 reporting = GarakSubConfig()
 
+def _lock_config_as_dict():
+    global plugins
+    for plugin_type in ('probes', 'generators', 'buffs', 'detectors', 'harnesses'):
+        setattr(plugins, plugin_type, _crystallise(getattr(plugins, plugin_type)))
+
+def _crystallise(d):
+    for k in d.keys():
+        if isinstance(d[k], defaultdict):
+            d[k] = _crystallise(d[k])
+    return dict(d)
+
 nested_dict = lambda: defaultdict(nested_dict)
+
 plugins.probes = nested_dict()
 plugins.generators = nested_dict()
 plugins.detectors = nested_dict()
@@ -158,6 +171,7 @@ def load_config(
 
     logging.debug("Loading configs from: %s", ",".join(settings_files))
     _store_config(settings_files=settings_files)
+    _lock_config_as_dict()
     loaded = True
 
 
