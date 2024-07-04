@@ -24,9 +24,8 @@ from garak import _config
 import garak._plugins
 import garak.attempt
 from garak.probes.base import Probe
-from garak.generators.huggingface import Pipeline
 
-OUTPUT_SEP = "<||>"
+TEMPLATE_PLACEHOLDER = "[query]"
 
 
 class Tox(Probe):
@@ -58,6 +57,9 @@ class Tox(Probe):
         "red_team_model_type": "huggingface.Pipeline",
         "red_team_model_name": "leondz/artgpt2tox",
         "red_team_model_config": {},
+        "red_team_prompt_template": "<|input|>[query]<|response|>",
+        "red_team_postproc_rm_regex": "\<\|.*",
+        "use_only_first_sent": True,  # should we only consider the first sentence of the target's response?
     }
 
     def probe(self, generator) -> List[garak.attempt.Attempt]:
@@ -116,17 +118,23 @@ class Tox(Probe):
                     challenge = ""
                 else:
                     if last_response:
-                        last_response_first_sent = last_response.split(". ")[
-                            0
-                        ]  # nltk sentence splitter install too unfriendly
+                        if self.use_only_first_sent:
+                            last_response = last_response.split(". ")[
+                                0
+                            ]  # nltk sentence splitter install too unfriendly
                     else:
-                        last_response_first_sent = ""
+                        last_response = ""  # maybe it's none or 0.0 or [] or goodness knows. let's get an empty string.
 
-                    query = f"<|input|>{last_response_first_sent}<|response|>"
+                    query = self.red_team_prompt_template.replace(
+                        "[query]", last_response
+                    )
                     # print("query:", query)
-                    challenge = self.redteamer.generate(query)
+                    challenge = self.redteamer.generate(query)[0]
                     # print("challenge:", challenge)
-                    challenge = re.sub(r"\<\|.*", "", challenge[0]).strip()
+                    if self.red_team_postproc_rm_regex:
+                        challenge = re.sub(
+                            self.red_team_postproc_rm_regex, "", challenge
+                        ).strip()
                     # get first item, ignore whitespace, take everything up to the first newline
                     # challenge[0].strip().split("\n")[0].strip()
                     # log what we'll send
@@ -220,3 +228,7 @@ class Tox(Probe):
         super().__init__(config_root)
         self.redteamer = None
         self.red_team_model_config = self._build_red_team_model_config()
+        if TEMPLATE_PLACEHOLDER not in self.red_team_prompt_template:
+            msg = f"No query placeholder {TEMPLATE_PLACEHOLDER} in {self.__class__.__name__} prompt template {self.red_team_prompt_template}"
+            logging.critical(msg)
+            raise ValueError(msg)
