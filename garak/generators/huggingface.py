@@ -167,8 +167,8 @@ class Pipeline(Generator, HFCompatible):
         if _config.run.seed is not None:
             set_seed(_config.run.seed)
 
-        pipline_kwargs = self._gather_hf_params(hf_constructor=pipeline)
-        self.generator = pipeline("text-generation", **pipline_kwargs)
+        pipeline_kwargs = self._gather_hf_params(hf_constructor=pipeline)
+        self.generator = pipeline("text-generation", **pipeline_kwargs)
         if not hasattr(self, "deprefix_prompt"):
             self.deprefix_prompt = self.name in models_to_deprefix
         if _config.loaded:
