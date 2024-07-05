@@ -111,6 +111,7 @@ class NvcfChat(Generator):
             payload["seed"] = self.seed
 
         request_time = time.time()
+        logging.debug("nvcf : payload %s", repr(payload))
         response = session.post(self.invoke_url, headers=self.headers, json=payload)
 
         while response.status_code == 202:
@@ -126,7 +127,6 @@ class NvcfChat(Generator):
 
         if 400 <= response.status_code < 600:
             logging.warning("nvcf : returned error code %s", response.status_code)
-            logging.warning("nvcf : payload %s", repr(payload))
             logging.warning("nvcf : returned error body %s", response.content)
             if response.status_code == 400 and prompt == "":
                 # error messages for refusing a blank prompt are fragile and include multi-level wrapped JSON, so this catch is a little broad
