@@ -16,14 +16,8 @@ import jsonpath_ng
 from jsonpath_ng.exceptions import JsonPathParserError
 
 from garak import _config
-from garak.exception import APIKeyMissingError
+from garak.exception import APIKeyMissingError, RateLimitHit
 from garak.generators.base import Generator
-
-
-class RESTRateLimitError(Exception):
-    """Raised when a rate limiting response is returned"""
-
-    pass
 
 
 class RestGenerator(Generator):
@@ -247,7 +241,7 @@ class RestGenerator(Generator):
         return output.replace("$INPUT", self.escape_function(text))
 
     # we'll overload IOError as the rate limit exception
-    @backoff.on_exception(backoff.fibo, RESTRateLimitError, max_value=70)
+    @backoff.on_exception(backoff.fibo, RateLimitHit, max_value=70)
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
@@ -274,9 +268,7 @@ class RestGenerator(Generator):
         }
         resp = self.http_function(self.uri, **req_kArgs)
         if resp.status_code in self.ratelimit_codes:
-            raise RESTRateLimitError(
-                f"Rate limited: {resp.status_code} - {resp.reason}"
-            )
+            raise RateLimitHit(f"Rate limited: {resp.status_code} - {resp.reason}")
 
         elif str(resp.status_code)[0] == "3":
             raise NotImplementedError(
