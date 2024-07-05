@@ -15,6 +15,8 @@ import jinja2
 
 from garak import _config
 
+SHOW_100_PERCENT_MODULES = True
+
 templateLoader = jinja2.FileSystemLoader(
     searchpath=_config.transient.basedir / "analyze" / "templates"
 )
@@ -174,7 +176,7 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
             }
         )
 
-        if top_score < 100.0:
+        if SHOW_100_PERCENT_MODULES or top_score < 100.0:
             res = cursor.execute(
                 f"select probe_module, probe_class, avg(score)*100 as s from results where probe_group='{probe_group}' group by probe_class order by s asc, probe_class asc;"
             )
@@ -231,4 +233,4 @@ if __name__ == "__main__":
     if len(sys.argv) == 3:
         taxonomy = sys.argv[2]
     digest_content = compile_digest(report_path, taxonomy=taxonomy)
-    print(digest_content.encode("utf-8"))
+    print(digest_content)
