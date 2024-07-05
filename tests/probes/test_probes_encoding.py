@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import garak.probes.encoding
 
 
@@ -24,3 +27,16 @@ def test_InjectBase64_triggers_not_in_prompts():
     num_encoders = len(p.encoding_funcs)
     for i in range(len(p.triggers)):
         assert p.triggers[i] not in p.prompts[i]
+
+
+def test_encoding_payload_library_size_count():
+    garak.probes.encoding._load_payloads()
+    payload_count = len(garak.probes.encoding.payloads)
+    p = garak.probes.encoding.InjectBase2048()
+    assert len(garak.probes.encoding.payloads) == payload_count
+    p = garak.probes.encoding.InjectZalgo()
+    assert len(garak.probes.encoding.payloads) == payload_count
+    p = garak.probes.encoding.InjectBase64()
+    assert len(garak.probes.encoding.payloads) == payload_count
+    garak.probes.encoding._load_payloads()
+    assert len(garak.probes.encoding.payloads) == payload_count
