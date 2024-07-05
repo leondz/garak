@@ -10,17 +10,16 @@ import pytest
 import garak._config
 import garak._plugins
 import garak.attempt
+import garak.evaluators.base
 import garak.generators.test
 
 # probes should be able to return a generator of attempts
 # -> probes.base.Probe._execute_all (1) should be able to consume a generator of attempts
 # generators should be able to return a generator of outputs
 # -> attempts (2) should be able to consume a generator of outputs
-# -> detectors (3) should be able to consume a generator of outputs
 # detectors should be able to return generators of results
-# -> evaluators (4) should be able to consume generators of results
-# -> attempts (5) should be able to consume generators of detector results
-# -> attempt.as_dict (6) should be able to relay a generator of detector results
+# -> evaluators (3) should be able to consume generators of results --> enforced in harness; cast to list, multiple consumption
+
 
 
 @pytest.fixture(autouse=True)
@@ -52,3 +51,13 @@ def test_generator_consume_attempt_generator():
     assert (
         result_len == count
     ), "there should be the same number of attempts in the passed generator as results returned in _execute_all"
+
+def test_attempt_outputs_can_consume_generator():
+    a = garak.attempt.Attempt(prompt="fish")
+    count = 5
+    str_iter = ("abc" for _ in range(count))
+    a.outputs = str_iter
+    outputs_list = list(a.outputs)
+    assert len(outputs_list) == count, "attempt.outputs should have same cardinality as generator used to populate it"
+    assert len(list(a.outputs)) == len(outputs_list), "attempt.outputs should have the same cardinality every time"
+
