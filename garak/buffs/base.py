@@ -33,6 +33,8 @@ class Buff(Configurable):
     bcp47 = None  # set of languages this buff should be constrained to
     active = True
 
+    DEFAULT_PARAMS = {}
+
     def __init__(self, config_root=_config) -> None:
         self._load_config(config_root)
         module = self.__class__.__module__.replace("garak.buffs.", "")
@@ -54,7 +56,6 @@ class Buff(Configurable):
             probe_classname=source_attempt.probe_classname,
             probe_params=source_attempt.probe_params,
             targets=source_attempt.targets,
-            outputs=source_attempt.outputs,
             notes=source_attempt.notes,
             detector_results=source_attempt.detector_results,
             goal=source_attempt.goal,

@@ -11,6 +11,7 @@ import tqdm
 
 from garak import _config
 from garak.configurable import Configurable
+import garak.resources.theme
 
 
 class Generator(Configurable):
@@ -107,11 +108,12 @@ class Generator(Configurable):
         if generations_this_call == 1:
             outputs = self._call_model(prompt, 1)
 
-        if self.supports_multiple_generations:
+        elif self.supports_multiple_generations:
             outputs = self._call_model(prompt, generations_this_call)
 
         else:
             outputs = []
+
             if (
                 hasattr(_config.system, "parallel_requests")
                 and _config.system.parallel_requests
@@ -120,19 +122,25 @@ class Generator(Configurable):
             ):
                 from multiprocessing import Pool
 
-                bar = tqdm.tqdm(total=generations_this_call, leave=False)
-                bar.set_description(self.fullname[:55])
+                multi_generator_bar = tqdm.tqdm(
+                    total=generations_this_call,
+                    leave=False,
+                    colour=f"#{garak.resources.theme.GENERATOR_RGB}",
+                )
+                multi_generator_bar.set_description(self.fullname[:55])
 
                 with Pool(_config.system.parallel_requests) as pool:
                     for result in pool.imap_unordered(
                         self._call_model, [prompt] * generations_this_call
                     ):
                         outputs.append(result)
-                        bar.update(1)
+                        multi_generator_bar.update(1)
 
             else:
                 generation_iterator = tqdm.tqdm(
-                    list(range(generations_this_call)), leave=False
+                    list(range(generations_this_call)),
+                    leave=False,
+                    colour=f"#{garak.resources.theme.GENERATOR_RGB}",
                 )
                 generation_iterator.set_description(self.fullname[:55])
                 for i in generation_iterator:
