@@ -107,7 +107,7 @@ class Generator(Configurable):
         if generations_this_call == 1:
             outputs = self._call_model(prompt, 1)
 
-        if self.supports_multiple_generations:
+        elif self.supports_multiple_generations:
             outputs = self._call_model(prompt, generations_this_call)
 
         else:
