@@ -625,5 +625,7 @@ def test_report_prefix_with_hitlog_no_explode():
 
 
 def test_nested():
+    importlib.reload(_config)
+
     _config.plugins.generators["a"]["b"]["c"]["d"] = "e"
     assert _config.plugins.generators["a"]["b"]["c"]["d"] == "e"
