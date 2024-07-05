@@ -29,6 +29,8 @@ class Harness(Configurable):
 
     active = True
 
+    DEFAULT_PARAMS = {}
+
     def __init__(self, config_root=_config):
         self._load_config(config_root)
         logging.info("harness init: %s", self)

@@ -33,6 +33,8 @@ class Buff(Configurable):
     bcp47 = None  # set of languages this buff should be constrained to
     active = True
 
+    DEFAULT_PARAMS = {}
+
     def __init__(self, config_root=_config) -> None:
         self._load_config(config_root)
         module = self.__class__.__module__.replace("garak.buffs.", "")
