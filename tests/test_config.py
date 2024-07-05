@@ -434,7 +434,6 @@ def test_cli_generator_options_overrides_yaml_probe_options():
             str(cli_generations_count),
             "--list_config",
         ]  # add list_config as the action so we don't actually run
-        print(args)
         garak.cli.main(args)
         os.remove(generator_yaml_file.name)
     # check it was loaded
