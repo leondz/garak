@@ -24,3 +24,15 @@ class GarakBackoffTrigger(GarakException):
     """Thrown when backoff should be triggered"""
 
     pass
+
+
+class BadGeneratorException(GarakException):
+    """Generator config/description is not usable"""
+
+    pass
+
+
+class RateLimitHit(Exception):
+    """Raised when a rate limiting response is returned"""
+
+    pass

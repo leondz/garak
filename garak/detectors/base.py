@@ -35,6 +35,8 @@ class Detector(Configurable):
     # we focus on LLM output for detectors
     modality: dict = {"out": {"text"}}
 
+    DEFAULT_PARAMS = {}
+
     def _set_description(self):
         if "description" not in dir(self):
             try:
