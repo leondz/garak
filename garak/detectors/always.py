@@ -3,10 +3,8 @@
 These always return a certain result, used mostly in testing
 or to indicate where a class' child should override something."""
 
-import logging
 from typing import List
 
-from garak import _config
 from garak.attempt import Attempt
 from garak.detectors.base import Detector
 
