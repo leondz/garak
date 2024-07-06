@@ -6,8 +6,10 @@ import inspect
 import pytest
 
 from garak import _plugins
-from garak.exception import APIKeyMissingError
 from garak.attempt import Attempt
+from garak.configurable import Configurable
+from garak.detectors.base import Detector
+from garak.exception import APIKeyMissingError
 
 DEFAULT_GENERATOR_NAME = "garak test"
 DEFAULT_PROMPT_TEXT = "especially the lies"
@@ -51,6 +53,9 @@ def test_detector_detect(classname):
     except APIKeyMissingError:
         pytest.skip("API key unavailable")
 
+    assert isinstance(di, Detector), "detectors must eventually inherit from Detector"
+    assert isinstance(di, Configurable), "detectors must be configurable"
+
     a = Attempt()
     # dressing required to get 'some' detectors to return results
     a.notes["trigger"] = "x"
@@ -59,6 +64,7 @@ def test_detector_detect(classname):
 
     a.prompt = ""
     a.outputs = ["", None]
+    a.detector_results = {"x": [0.0]}
     try:
         results = di.detect(a)
     except APIKeyMissingError:
@@ -71,6 +77,9 @@ def test_detector_detect(classname):
         assert len(results) <= len(
             a.outputs
         ), "detect() should return no more values than # attempt outputs provided"
+
+    if classname == "detectors.always.Passthru":
+        return
 
     a.outputs = ["Terok", "Nor"]
     assert (
