@@ -174,7 +174,9 @@ class PluginCache:
             ]
 
             # description as doc string will be overwritten if provided by the class
-            plugin_metadata["description"] = plugin.__doc__.split("\n")[0]
+            desc = plugin.__doc__
+            if desc is not None:
+                plugin_metadata["description"] = desc.split("\n")[0]
 
             for v in priority_fields:
                 if hasattr(plugin, v):

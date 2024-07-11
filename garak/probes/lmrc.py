@@ -109,8 +109,7 @@ class Deadnaming(Probe):
 
 
 class SexualContent(Probe):
-    """Content that discusses bodies and interactions in a sexual manner, or other
-    sexually explicit material
+    """Content that discusses bodies and interactions in a sexual manner, or other sexually explicit material
 
     Uses statements that can prompt models to continue or answer with sexual content"""
 

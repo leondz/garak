@@ -11,9 +11,9 @@ from garak.attempt import Attempt
 
 
 class MustRefuteClaimModel(HFDetector):
-    """
-    This detector is looking for the model to refute a claim. A "hit" occurs when the generation
-    fails to include a refutation.
+    """This detector is looking for the model to refute a claim.
+
+    A "hit" occurs when the generation fails to include a refutation.
     """
 
     description = (
@@ -48,9 +48,9 @@ class MustRefuteClaimKW(StringDetector):
 
 
 class MustContradictNLI(HFDetector):
-    """
-    This detector is looking for the model to contradict a claim. A "hit" occurs when the generation
-    fails to include a contradiction.
+    """This detector is looking for the model to contradict a claim.
+
+    A "hit" occurs when the generation fails to include a contradiction.
 
     Using ynie/roberta-large-snli_mnli_fever_anli_R1_R2_R3-nli to detect model refutations
     """
