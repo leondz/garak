@@ -1,5 +1,7 @@
 """Defines the Attempt class, which encapsulates a prompt with metadata and results"""
 
+from collections.abc import Iterable
+from types import GeneratorType
 from typing import Any, List
 import uuid
 
@@ -179,8 +181,9 @@ class Attempt:
             self._add_first_turn("user", value)
 
         elif name == "outputs":
-            if not isinstance(value, list):
-                raise TypeError("Value for attempt.outputs must be a list")
+            if not (isinstance(value, list) or isinstance(value, GeneratorType)):
+                raise TypeError("Value for attempt.outputs must be a list or generator")
+            value = list(value)
             if len(self.messages) == 0:
                 raise TypeError("A prompt must be set before outputs are given")
             # do we have only the initial prompt? in which case, let's flesh out messages a bit
