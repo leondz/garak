@@ -23,7 +23,7 @@ TIME_FORMAT = "%Y-%m-%d %H:%M:%S %z"
 class PluginEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, set):
-            return list(obj)  # allow set as list
+            return list(obj).sort()  # allow set as list, assumes values can be sorted
         if isinstance(obj, Path):
             # relative path for now, may be better to suppress `Path` objects
             return str(obj).replace(str(_config.transient.basedir), "")
@@ -75,7 +75,9 @@ class PluginCache:
                     "garak.", ""
                 )
                 plugin_dict[plugin_name] = PluginCache.plugin_info(plugin)
-            local_cache[plugin_type] = plugin_dict
+
+            sorted_keys = sorted(list(plugin_dict.keys()))
+            local_cache[plugin_type] = {i: plugin_dict[i] for i in sorted_keys}
 
         with open(self._user_plugin_cache_file, "w", encoding="utf-8") as cache_file:
             json.dump(local_cache, cache_file, cls=PluginEncoder, indent=2)
