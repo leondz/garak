@@ -186,7 +186,7 @@ def plugin_info(plugin_name):
             if k in info:
                 print(f"{k:>35}:", info[k])
         for k, v in info.items():
-            if v in priority_fields:
+            if k in priority_fields:
                 continue
             print(f"{k:>35}:", v)
     else:

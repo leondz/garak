@@ -170,7 +170,11 @@ class PluginCache:
             skip_fields = [
                 "prompts",
                 "triggers",
+                "post_buff_hook",
             ]
+
+            # description as doc string will be overwritten if provided by the class
+            plugin_metadata["description"] = plugin.__doc__.split("\n")[0]
 
             for v in priority_fields:
                 if hasattr(plugin, v):
