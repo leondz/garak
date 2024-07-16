@@ -17,8 +17,7 @@ from garak.generators.base import Generator
 
 
 class FigStep(Probe):
-    """
-    Using another modal - image to assist jailbreak
+    """Using another modal - image to assist jailbreak
 
     Title: FigStep: Jailbreaking Large Vision-language Models via Typographic Visual Prompts
     Link: https://arxiv.org/pdf/2311.05608.pdf

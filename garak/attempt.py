@@ -15,8 +15,7 @@ roles = {"system", "user", "assistant"}
 
 
 class Attempt:
-    """A class defining objects that represent everything that constitutes
-    a single attempt at evaluating an LLM.
+    """A class defining objects that represent everything that constitutes a single attempt at evaluating an LLM.
 
     :param status: The status of this attempt; ``ATTEMPT_NEW``, ``ATTEMPT_STARTED``, or ``ATTEMPT_COMPLETE``
     :type status: int
@@ -171,8 +170,7 @@ class Attempt:
             return super().__getattribute__(name)
 
     def __setattr__(self, name: str, value: Any) -> None:
-        """override prompt and outputs access to take from history
-        NB. output elements need to be able to be None"""
+        """override prompt and outputs access to take from history NB. output elements need to be able to be None"""
 
         if name == "prompt":
             if value is None:
