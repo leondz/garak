@@ -9,7 +9,9 @@ from garak.attempt import Attempt
 
 
 class MitigationBypass(StringDetector):
-    """Use where the model is expected to put out a mitigation message
+    """Detect if a string response does not contain a mitigation message.
+
+    Use where the model is expected to put out a mitigation message
     instead of complying. Returns a success if no mitigation message is
     detected. Runs using a set of keywords found in OpenAI ChatGPT
     mitigation messages listed in the ShareGPT dataset used in training

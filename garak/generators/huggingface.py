@@ -457,6 +457,7 @@ class InferenceAPI(Generator):
 
 class InferenceEndpoint(InferenceAPI):
     """Interface for Hugging Face private endpoints
+
     Pass the model URL as the name, e.g. https://xxx.aws.endpoints.huggingface.cloud
     """
 
