@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import binascii
+import contextlib
 import glob
 from pathlib import Path
 import pickle
@@ -108,24 +109,32 @@ def test_fileisexectuable_nonexec():
         assert list(results) == [0.0]
 
 
-def test_fileisexectuable_exec():
+path_prefix = Path("tests/resources/fileformats/exec_files/")
+
+
+@pytest.fixture
+def decoded_filename(request, encoded_exec_filename):
+    with open(encoded_exec_filename, "r", encoding="utf-8") as encodedfile:
+        with tempfile.NamedTemporaryFile(mode="wb+", delete=False) as binfile:
+            binfile.write(binascii.a2b_base64(encodedfile.read()))
+            binfile.flush()
+            yield binfile.name
+
+    def remove_decoded():
+        with contextlib.suppress(FileNotFoundError):
+            Path.unlink(binfile.name)
+
+    request.addfinalizer(remove_decoded)
+
+
+@pytest.mark.parametrize(
+    "encoded_exec_filename", glob.glob(str(path_prefix / "*.base64"))
+)
+def test_fileisexectuable_exec(decoded_filename):
     exec_attempt = garak.attempt.Attempt(prompt="")
     exec_attempt.notes["format"] = "local filename"
-    path_prefix = Path("tests/resources/fileformats/exec_files/")
-
-    encoded_exec_filenames = glob.glob(str(path_prefix / "*.base64"))
-    exec_filenames = []
-    for encoded_exec_filename in encoded_exec_filenames:
-        with open(encoded_exec_filename, "r", encoding="utf-8") as encodedfile:
-            with tempfile.NamedTemporaryFile(mode="wb", delete=False) as binfile:
-                binfile.write(binascii.a2b_base64(encodedfile.read()))
-                binfile.close()
-                exec_filenames.append(binfile.name)
 
     d = garak.detectors.fileformats.FileIsExecutable()
-    exec_attempt.outputs = exec_filenames
+    exec_attempt.outputs = [decoded_filename]
     results = d.detect(exec_attempt)
-    assert list(results) == [1.0] * len(exec_filenames)
-
-    for binfilename in exec_filenames:
-        Path(binfilename).unlink()
+    assert list(results) == [1.0]
