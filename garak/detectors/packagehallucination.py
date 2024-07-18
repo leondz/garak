@@ -28,8 +28,7 @@ from garak import _config
 
 
 class PythonPypi(Detector):
-    """Check if the output tries to import a package not listed
-    in stdlib or a pypi archive listing"""
+    """Check if the output tries to import a package not listed in stdlib or a pypi archive listing"""
 
     pypi_packages = None
     pypi_dataset_name = "strombergnlp/pypi-20230724"
