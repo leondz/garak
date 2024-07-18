@@ -5,7 +5,7 @@ These describe evaluators for assessing detector results.
 
 import json
 import logging
-from typing import List
+from typing import Iterable
 
 from colorama import Fore, Style
 
@@ -33,18 +33,22 @@ class Evaluator:
         """
         return False  # fail everything by default
 
-    def evaluate(self, attempts: List[garak.attempt.Attempt]) -> None:
+    def evaluate(self, attempts: Iterable[garak.attempt.Attempt]) -> None:
         """
         evaluate feedback from detectors
         expects a list of attempts that correspond to one probe
         outputs results once per detector
         """
 
-        if len(attempts) == 0:
+        if isinstance(attempts, list) and len(attempts) == 0:
             logging.debug(
                 "evaluators.base.Evaluator.evaluate called with 0 attempts, expected 1+"
             )
             return
+
+        attempts = list(
+            attempts
+        )  # disprefer this but getting detector_names from first one for the loop below is a pain
 
         self.probename = attempts[0].probe_classname
         detector_names = attempts[0].detector_results.keys()

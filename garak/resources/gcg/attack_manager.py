@@ -141,9 +141,7 @@ def get_conv_name(model_name: str) -> str:
 
 
 class AttackPrompt(object):
-    """
-    A class used to generate an attack prompt.
-    """
+    """A class used to generate an attack prompt."""
 
     def __init__(
         self,
