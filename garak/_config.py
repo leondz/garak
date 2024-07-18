@@ -15,6 +15,11 @@ import os
 import pathlib
 from typing import List
 import yaml
+from xdg_base_dirs import (
+    xdg_cache_home,
+    xdg_config_home,
+    xdg_data_home,
+)
 
 DICT_CONFIG_AFTER_LOAD = False
 
@@ -26,6 +31,7 @@ system_params = (
 run_params = "seed deprefix eval_threshold generations probe_tags interactive".split()
 plugins_params = "model_type model_name extended_detectors".split()
 reporting_params = "taxonomy report_prefix".split()
+project_dir = "garak"
 
 
 loaded = False
@@ -53,8 +59,16 @@ class TransientConfig(GarakSubConfig):
     args = None  # only access this when determining what was passed on CLI
     run_id = None
     basedir = pathlib.Path(__file__).parents[0]
+    config_dir = xdg_config_home() / project_dir
+    data_dir = xdg_data_home() / project_dir
+    cache_dir = xdg_cache_home() / project_dir
     starttime = None
     starttime_iso = None
+
+    # initialize the user home and cache paths if they do not exist
+    config_dir.mkdir(mode=0o740, parents=True, exist_ok=True)
+    data_dir.mkdir(mode=0o740, parents=True, exist_ok=True)
+    cache_dir.mkdir(mode=0o740, parents=True, exist_ok=True)
 
 
 transient = TransientConfig()
@@ -151,7 +165,7 @@ def load_config(
 
     settings_files = [str(transient.basedir / "resources" / "garak.core.yaml")]
 
-    fq_site_config_filename = str(transient.basedir / site_config_filename)
+    fq_site_config_filename = str(transient.config_dir / site_config_filename)
     if os.path.isfile(fq_site_config_filename):
         settings_files.append(fq_site_config_filename)
     else:

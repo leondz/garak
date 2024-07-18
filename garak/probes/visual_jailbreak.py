@@ -49,7 +49,7 @@ class FigStep(Probe):
 
     def _load_SafeBench(self):
         safebench_data_dir = (
-            _config.transient.basedir / "resources" / "visual_jailbreak" / "SafeBench"
+            _config.transient.cache_dir / "resources" / "visual_jailbreak" / "SafeBench"
         )
         if not os.path.exists(safebench_data_dir):
             # make the dir
@@ -94,7 +94,7 @@ class FigStep(Probe):
         self.prompts = [
             {
                 "text": prompt["text"],
-                "image": str(_config.transient.basedir / prompt["image"]),
+                "image": str(_config.transient.cache_dir / prompt["image"]),
             }
             for prompt in self.prompts
         ]
@@ -125,7 +125,7 @@ class FigStepTiny(FigStep, Probe):
         self.prompts = [
             {
                 "text": prompt["text"],
-                "image": str(_config.transient.basedir / prompt["image"]),
+                "image": str(_config.transient.cache_dir / prompt["image"]),
             }
             for prompt in self.prompts
         ]

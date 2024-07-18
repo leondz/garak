@@ -36,7 +36,9 @@ class PluginEncoder(json.JSONEncoder):
 
 class PluginCache:
     _plugin_cache_file = _config.transient.basedir / "resources" / "plugin_cache.json"
-    _user_plugin_cache_file = _plugin_cache_file
+    _user_plugin_cache_file = (
+        _config.transient.cache_dir / "resources" / "plugin_cache.json"
+    )
     _plugin_cache_dict = None
 
     def __init__(self) -> None:
@@ -55,6 +57,9 @@ class PluginCache:
         if not os.path.exists(self._plugin_cache_file):
             self._build_plugin_cache()
         if not os.path.exists(self._user_plugin_cache_file):
+            self._user_plugin_cache_file.parent.mkdir(
+                mode=0o740, parents=True, exist_ok=True
+            )
             shutil.copy2(self._plugin_cache_file, self._user_plugin_cache_file)
         with open(self._user_plugin_cache_file, "r", encoding="utf-8") as cache_file:
             local_cache = json.load(cache_file)
