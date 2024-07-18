@@ -12,6 +12,7 @@ def hf_generator_config():
         "huggingface": {
             "hf_args": {
                 "device": "cpu",
+                "torch_dtype": "float32",
             },
         }
     }

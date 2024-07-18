@@ -27,9 +27,7 @@ def test_atkgen_config():
         "generators": {
             rt_mod: {
                 rt_klass: {
-                    "hf_args": {
-                        "device": "cpu",
-                    },
+                    "hf_args": {"device": "cpu", "torch_dtype": "float32"},
                     "name": p.red_team_model_name,
                 }
             }

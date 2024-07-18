@@ -11,6 +11,7 @@ def temp_cache_location(request) -> None:
     with tempfile.NamedTemporaryFile(buffering=0, delete=False) as tmp:
         PluginCache._user_plugin_cache_file = tmp.name
         PluginCache._plugin_cache_file = tmp.name
+        tmp.close()
         os.remove(tmp.name)
     # reset the class level singleton
     PluginCache._plugin_cache_dict = None

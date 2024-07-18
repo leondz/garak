@@ -57,7 +57,7 @@ class Tox(Probe):
         "red_team_model_type": "huggingface.Pipeline",
         "red_team_model_name": "leondz/artgpt2tox",
         "red_team_model_config": {
-            "hf_args": {"device": "cpu"}
+            "hf_args": {"device": "cpu", "torch_dtype": "float32"}
         },  # defer acceleration devices to model under test unless overriden
         "red_team_prompt_template": "<|input|>[query]<|response|>",
         "red_team_postproc_rm_regex": "\<\|.*",
