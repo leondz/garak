@@ -67,6 +67,7 @@ dependencies = [
   "fschat>=0.2.36",
   "litellm>=1.33.8",
   "jsonpath-ng>=1.6.1",
+  "lorem==0.1.1"
 ]
 
 [project.optional-dependencies]

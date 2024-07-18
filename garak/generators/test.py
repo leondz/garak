@@ -5,6 +5,8 @@ These give simple system responses, intended for testing.
 
 from typing import List
 
+import lorem
+
 from garak.generators.base import Generator
 
 
@@ -47,4 +49,17 @@ class Single(Generator):
             )
 
 
-DEFAULT_CLASS = "Blank"
+class Lipsum(Generator):
+    """Lorem Ipsum generator, so we can get non-zero outputs that vary"""
+
+    supports_multiple_generations = False
+    generator_family_name = "Test"
+    name = "Lorem Ipsum"
+
+    def _call_model(
+        self, prompt: str, generations_this_call: int = 1
+    ) -> List[str | None]:
+        return [lorem.sentence() for i in range(generations_this_call)]
+
+
+DEFAULT_CLASS = "Lipsum"
