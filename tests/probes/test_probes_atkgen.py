@@ -24,7 +24,16 @@ def test_atkgen_config():
     p = garak._plugins.load_plugin("probes.atkgen.Tox")
     rt_mod, rt_klass = p.red_team_model_type.split(".")
     assert p.red_team_model_config == {
-        "generators": {rt_mod: {rt_klass: {"name": p.red_team_model_name}}}
+        "generators": {
+            rt_mod: {
+                rt_klass: {
+                    "hf_args": {
+                        "device": "cpu",
+                    },
+                    "name": p.red_team_model_name,
+                }
+            }
+        }
     }
 
 
