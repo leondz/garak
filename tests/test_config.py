@@ -622,3 +622,10 @@ def test_report_prefix_with_hitlog_no_explode():
     assert os.path.isfile("kjsfhgkjahpsfdg.report.jsonl")
     assert os.path.isfile("kjsfhgkjahpsfdg.report.html")
     assert os.path.isfile("kjsfhgkjahpsfdg.hitlog.jsonl")
+
+
+def test_nested():
+    importlib.reload(_config)
+
+    _config.plugins.generators["a"]["b"]["c"]["d"] = "e"
+    assert _config.plugins.generators["a"]["b"]["c"]["d"] == "e"

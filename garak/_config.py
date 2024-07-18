@@ -7,6 +7,7 @@
 
 # logging should be set up before config is loaded
 
+from collections import defaultdict
 from dataclasses import dataclass
 import importlib
 import logging
@@ -14,6 +15,8 @@ import os
 import pathlib
 from typing import List
 import yaml
+
+DICT_CONFIG_AFTER_LOAD = False
 
 version = -1  # eh why this is here? hm. who references it
 
@@ -60,11 +63,28 @@ system = GarakSubConfig()
 run = GarakSubConfig()
 plugins = GarakSubConfig()
 reporting = GarakSubConfig()
-plugins.probes = {}
-plugins.generators = {}
-plugins.detectors = {}
-plugins.buffs = {}
-plugins.harnesses = {}
+
+
+def _lock_config_as_dict():
+    global plugins
+    for plugin_type in ("probes", "generators", "buffs", "detectors", "harnesses"):
+        setattr(plugins, plugin_type, _crystallise(getattr(plugins, plugin_type)))
+
+
+def _crystallise(d):
+    for k in d.keys():
+        if isinstance(d[k], defaultdict):
+            d[k] = _crystallise(d[k])
+    return dict(d)
+
+
+nested_dict = lambda: defaultdict(nested_dict)
+
+plugins.probes = nested_dict()
+plugins.generators = nested_dict()
+plugins.detectors = nested_dict()
+plugins.buffs = nested_dict()
+plugins.harnesses = nested_dict()
 reporting.taxonomy = None  # set here to enable report_digest to be called directly
 
 buffmanager = BuffManager()
@@ -87,7 +107,7 @@ def _set_settings(config_obj, settings_obj: dict):
 def _combine_into(d: dict, combined: dict) -> None:
     for k, v in d.items():
         if isinstance(v, dict):
-            _combine_into(v, combined.setdefault(k, {}))
+            _combine_into(v, combined.setdefault(k, nested_dict()))
         else:
             combined[k] = v
     return combined
@@ -96,7 +116,7 @@ def _combine_into(d: dict, combined: dict) -> None:
 def _load_yaml_config(settings_filenames) -> dict:
     global config_files
     config_files += settings_filenames
-    config = {}
+    config = nested_dict()
     for settings_filename in settings_filenames:
         with open(settings_filename, encoding="utf-8") as settings_file:
             settings = yaml.safe_load(settings_file)
@@ -155,6 +175,8 @@ def load_config(
 
     logging.debug("Loading configs from: %s", ",".join(settings_files))
     _store_config(settings_files=settings_files)
+    if DICT_CONFIG_AFTER_LOAD:
+        _lock_config_as_dict()
     loaded = True
 
 
