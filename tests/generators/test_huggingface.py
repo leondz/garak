@@ -6,21 +6,23 @@ from garak._config import GarakSubConfig
 DEFAULT_GENERATIONS_QTY = 10
 
 
-def test_pipeline():
+@pytest.fixture
+def hf_generator_config():
     gen_config = {
         "huggingface": {
-            "Pipeline": {
-                "name": "gpt2",
-                "hf_args": {
-                    "device": "cpu",
-                },
-            }
+            "hf_args": {
+                "device": "cpu",
+                "torch_dtype": "float32",
+            },
         }
     }
     config_root = GarakSubConfig()
     setattr(config_root, "generators", gen_config)
+    return config_root
 
-    g = garak.generators.huggingface.Pipeline("gpt2", config_root=config_root)
+
+def test_pipeline(hf_generator_config):
+    g = garak.generators.huggingface.Pipeline("gpt2", config_root=hf_generator_config)
     assert g.name == "gpt2"
     assert g.generations == DEFAULT_GENERATIONS_QTY
     assert isinstance(g.generator, transformers.pipelines.text_generation.Pipeline)
@@ -53,8 +55,8 @@ def test_inference():
         assert isinstance(item, str)
 
 
-def test_model():
-    g = garak.generators.huggingface.Model("gpt2")
+def test_model(hf_generator_config):
+    g = garak.generators.huggingface.Model("gpt2", config_root=hf_generator_config)
     assert g.name == "gpt2"
     assert g.generations == DEFAULT_GENERATIONS_QTY
     assert isinstance(g, garak.generators.huggingface.Model)
