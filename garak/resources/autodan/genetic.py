@@ -594,7 +594,7 @@ def get_score_autodan(
     losses = []
     input_ids_list = []
     target_slices = []
-    device = generator.device if generator.device >= 0 else "cpu"
+    device = generator.device
     for item in test_controls:
         prefix_manager = AutoDanPrefixManager(
             generator=generator,
