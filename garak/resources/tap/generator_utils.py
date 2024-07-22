@@ -56,7 +56,6 @@ def load_generator(
 
     if model_name.lower() in hf_dict.keys():
         config["name"] = hf_dict[model_name]
-        config["hf_args"] = {"device": device}
 
     if model_name in supported_openai:
         config_root = {
@@ -68,6 +67,7 @@ def load_generator(
         }
         generator = OpenAIGenerator(config_root=config_root)
     elif model_name in supported_huggingface:
+        config["hf_args"] = {"device": device}
         config_root = {
             "generators": {Model.__module__.split(".")[-1]: {Model.__name__: config}}
         }
