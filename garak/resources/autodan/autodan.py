@@ -9,7 +9,8 @@ import numpy as np
 
 import gc
 
-from garak.generators import Generator, load_generator
+from garak._plugins import load_plugin
+from garak.generators import Generator
 from garak.generators.huggingface import Model
 import garak._config
 from garak.resources.autodan.genetic import (
@@ -133,10 +134,12 @@ def autodan_generate(
     crit = nn.CrossEntropyLoss(reduction="mean")
 
     config_root = {
-        {mutation_generator_type: {"name": mutation_generator_name, "generations": 1}}
+        "generators": {
+            mutation_generator_type: {"name": mutation_generator_name, "generations": 1}
+        }
     }
-    mutation_generator = load_generator(
-        model_type=mutation_generator_type, config=config_root
+    mutation_generator = load_plugin(
+        "generators." + mutation_generator_type, config_root=config_root
     )
 
     # Feel like this could just be text instead of storing it as tensors.

@@ -1,4 +1,4 @@
-name: Garak pytest
+name: Garak pytest - Linux
 
 on:
   push:

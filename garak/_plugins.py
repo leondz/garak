@@ -23,7 +23,7 @@ TIME_FORMAT = "%Y-%m-%d %H:%M:%S %z"
 class PluginEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, set):
-            return list(obj).sort()  # allow set as list, assumes values can be sorted
+            return sorted(list(obj))  # allow set as list, assumes values can be sorted
         if isinstance(obj, Path):
             # relative path for now, may be better to suppress `Path` objects
             return str(obj).replace(str(_config.transient.basedir), "")
