@@ -77,9 +77,7 @@ unsupported_multiple_gen_providers = (
 
 
 class LiteLLMGenerator(Generator):
-    """Generator wrapper using LiteLLM to allow access to different
-    providers using the OpenAI API format.
-    """
+    """Generator wrapper using LiteLLM to allow access to different providers using the OpenAI API format."""
 
     ENV_VAR = "OPENAI_API_KEY"
     DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {

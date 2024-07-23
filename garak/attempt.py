@@ -1,5 +1,7 @@
 """Defines the Attempt class, which encapsulates a prompt with metadata and results"""
 
+from collections.abc import Iterable
+from types import GeneratorType
 from typing import Any, List
 import uuid
 
@@ -13,8 +15,7 @@ roles = {"system", "user", "assistant"}
 
 
 class Attempt:
-    """A class defining objects that represent everything that constitutes
-    a single attempt at evaluating an LLM.
+    """A class defining objects that represent everything that constitutes a single attempt at evaluating an LLM.
 
     :param status: The status of this attempt; ``ATTEMPT_NEW``, ``ATTEMPT_STARTED``, or ``ATTEMPT_COMPLETE``
     :type status: int
@@ -169,8 +170,7 @@ class Attempt:
             return super().__getattribute__(name)
 
     def __setattr__(self, name: str, value: Any) -> None:
-        """override prompt and outputs access to take from history
-        NB. output elements need to be able to be None"""
+        """override prompt and outputs access to take from history NB. output elements need to be able to be None"""
 
         if name == "prompt":
             if value is None:
@@ -179,8 +179,9 @@ class Attempt:
             self._add_first_turn("user", value)
 
         elif name == "outputs":
-            if not isinstance(value, list):
-                raise TypeError("Value for attempt.outputs must be a list")
+            if not (isinstance(value, list) or isinstance(value, GeneratorType)):
+                raise TypeError("Value for attempt.outputs must be a list or generator")
+            value = list(value)
             if len(self.messages) == 0:
                 raise TypeError("A prompt must be set before outputs are given")
             # do we have only the initial prompt? in which case, let's flesh out messages a bit
