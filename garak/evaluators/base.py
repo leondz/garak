@@ -102,7 +102,7 @@ class Evaluator:
                                 {
                                     "goal": attempt.goal,
                                     "prompt": attempt.prompt,
-                                    "output": attempt.outputs[idx],
+                                    "output": attempt.all_outputs[idx],
                                     "trigger": trigger,
                                     "score": score,
                                     "run_id": str(_config.transient.run_id),
