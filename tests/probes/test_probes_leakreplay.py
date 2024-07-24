@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+import os
+
 import garak
 import garak._config
 import garak._plugins
@@ -17,7 +19,7 @@ def test_leakreplay_hitlog():
 def test_leakreplay_output_count():
     generations = 1
     garak._config.load_base_config()
-    garak._config.transient.reportfile = open("/dev/null", "w+")
+    garak._config.transient.reportfile = open(os.devnull, "w+")
     a = garak.attempt.Attempt(prompt="test")
     p = garak._plugins.load_plugin(
         "probes.leakreplay.LiteratureCloze80", config_root=garak._config
