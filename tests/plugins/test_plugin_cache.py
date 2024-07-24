@@ -5,6 +5,14 @@ import tempfile
 from garak._plugins import PluginCache
 
 
+@pytest.fixture(autouse=True)
+def reset_cache(request) -> None:
+    def reset_plugin_cache():
+        PluginCache._plugin_cache_dict = None
+
+    request.addfinalizer(reset_plugin_cache)
+
+
 @pytest.fixture
 def temp_cache_location(request) -> None:
     # override the cache file with a tmp location
