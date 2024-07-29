@@ -29,7 +29,7 @@ from garak.resources.common import REJECTION_STRINGS
 logger = getLogger(__name__)
 
 autodan_resource_data = (
-    garak._config.transient.basedir / "resources" / "autodan" / "data"
+    garak._config.transient.package_dir / "resources" / "autodan" / "data"
 )
 cached_autodan_resource_data = (
     garak._config.transient.cache_dir / "resources" / "autodan" / "data"

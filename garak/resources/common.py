@@ -44,7 +44,7 @@ REJECTION_STRINGS = [
 
 def load_advbench(size: int = 0) -> pd.DataFrame:
     advbench_base_path = (
-        garak._config.transient.basedir
+        garak._config.transient.package_dir
         / "resources"
         / "advbench"
         / "harmful_behaviors.csv"

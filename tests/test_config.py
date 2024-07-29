@@ -168,9 +168,9 @@ def test_xdg_support(override_xdg_env):
 
     importlib.reload(_config)
 
-    assert _config.transient.cache_dir == test_path / _config.project_dir
-    assert _config.transient.config_dir == test_path / _config.project_dir
-    assert _config.transient.data_dir == test_path / _config.project_dir
+    assert _config.transient.cache_dir == test_path / _config.project_dir_name
+    assert _config.transient.config_dir == test_path / _config.project_dir_name
+    assert _config.transient.data_dir == test_path / _config.project_dir_name
 
 
 @pytest.mark.usefixtures("clear_xdg_env")
@@ -183,11 +183,15 @@ def test_xdg_defaults():
 
     importlib.reload(_config)
 
-    assert _config.transient.cache_dir == test_path / ".cache" / _config.project_dir
-    assert _config.transient.config_dir == test_path / ".config" / _config.project_dir
+    assert (
+        _config.transient.cache_dir == test_path / ".cache" / _config.project_dir_name
+    )
+    assert (
+        _config.transient.config_dir == test_path / ".config" / _config.project_dir_name
+    )
     assert (
         _config.transient.data_dir
-        == test_path / ".local" / "share" / _config.project_dir
+        == test_path / ".local" / "share" / _config.project_dir_name
     )
 
 

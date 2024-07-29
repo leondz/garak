@@ -44,7 +44,6 @@ def start_run():
             "⚠️ The current/default config is optimised for speed rather than thoroughness. Try e.g. --config full for a stronger test, or specify some probes."
         )
     _config.transient.run_id = str(uuid.uuid4())  # uuid1 is safe but leaks host info
-    # why is report prefix a condition of placing file in the report_dir?
     report_path = Path(_config.reporting.report_dir)
     if not report_path.is_absolute():
         logging.debug("relative report dir provided")

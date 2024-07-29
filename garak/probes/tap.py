@@ -69,7 +69,7 @@ class TAPCached(Probe):
 
     def __init__(
         self,
-        prompts_location: Path = _config.transient.basedir
+        prompts_location: Path = _config.transient.package_dir
         / "resources"
         / "tap"
         / "data"

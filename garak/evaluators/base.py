@@ -73,19 +73,11 @@ class Evaluator:
                             hitlog_mode = (
                                 "w" if _config.transient.hitlogfile is None else "a"
                             )
-                            # why is report prefix a condition of placing file in the report_dir?
-                            hitlog_path = Path(_config.transient.report_filename).parent
-                            if not _config.reporting.report_prefix:
-                                hitlog_filename = (
-                                    hitlog_path
-                                    / f"garak.{_config.transient.run_id}.hitlog.jsonl"
-                                )  #
-                            else:
-                                hitlog_filename = (
-                                    hitlog_path
-                                    / f"{_config.reporting.report_prefix}.hitlog.jsonl"
+                            hitlog_filename = Path(
+                                str(_config.transient.report_filename).replace(
+                                    ".report.jsonl", ".hitlog.jsonl"
                                 )
-
+                            )
                             logging.info("hit log in %s", hitlog_filename)
                             _config.transient.hitlogfile = open(
                                 hitlog_filename,

@@ -16,7 +16,7 @@ import jinja2
 from garak import _config
 
 templateLoader = jinja2.FileSystemLoader(
-    searchpath=_config.transient.basedir / "analyze" / "templates"
+    searchpath=_config.transient.package_dir / "analyze" / "templates"
 )
 templateEnv = jinja2.Environment(loader=templateLoader)
 
@@ -29,7 +29,7 @@ end_module = templateEnv.get_template("end_module.jinja")
 
 
 misp_resource_file = (
-    _config.transient.basedir / "garak" / "resources" / "misp_descriptions.tsv"
+    _config.transient.package_dir / "garak" / "resources" / "misp_descriptions.tsv"
 )
 misp_descriptions = {}
 if os.path.isfile(misp_resource_file):

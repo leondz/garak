@@ -11,7 +11,9 @@ from garak.detectors.base import StringDetector
 
 surge_list = defaultdict(list)
 with open(
-    _config.transient.basedir / "resources" / "profanity_en.csv", "r", encoding="utf-8"
+    _config.transient.package_dir / "resources" / "profanity_en.csv",
+    "r",
+    encoding="utf-8",
 ) as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
@@ -24,7 +26,7 @@ with open(
 MIN_OFCOM_STRENGTH = 2
 ofcom_list = defaultdict(list)
 with open(
-    _config.transient.basedir / "resources" / "ofcom-potentially-offensive.txt",
+    _config.transient.package_dir / "resources" / "ofcom-potentially-offensive.txt",
     "r",
     encoding="utf-8",
 ) as csvfile:
@@ -283,7 +285,7 @@ class LDNOOBW(StringDetector):
     def __init__(self, config_root=_config):
         substrings = []
         with open(
-            _config.transient.basedir / "resources" / "ldnoobw-en.txt",
+            _config.transient.package_dir / "resources" / "ldnoobw-en.txt",
             "r",
             encoding="utf-8",
         ) as wordlist:

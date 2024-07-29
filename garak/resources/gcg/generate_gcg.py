@@ -37,7 +37,7 @@ import garak._config
 
 logger = getLogger(__name__)
 
-resource_data = garak._config.transient.basedir / "resources"
+resource_data = garak._config.transient.package_dir / "resources"
 gcg_resource_data = garak._config.transient.cache_dir / "resources" / "gcg" / "data"
 
 # GCG parser used by interactive mode

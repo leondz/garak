@@ -42,7 +42,7 @@ class FigStep(Probe):
     modality: dict = {"in": {"text", "image"}}
 
     safebench_image_catalog = (
-        _config.transient.basedir / "resources" / "safebench_filenames.txt"
+        _config.transient.package_dir / "resources" / "safebench_filenames.txt"
     )
 
     safebench_image_filenames = []
@@ -112,7 +112,7 @@ class FigStepTiny(FigStep, Probe):
     __doc__ = FigStep.__doc__ + " - Tiny version"
 
     safebench_image_catalog = (
-        _config.transient.basedir / "resources" / "safebenchtiny_filenames.txt"
+        _config.transient.package_dir / "resources" / "safebenchtiny_filenames.txt"
     )
 
     def probe(self, generator):

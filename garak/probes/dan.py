@@ -537,7 +537,7 @@ class AutoDANCached(Probe):
 
     def __init__(
         self,
-        autodan_prompt_location: str = _config.transient.basedir
+        autodan_prompt_location: str = _config.transient.package_dir
         / "resources"
         / "autodan"
         / "data"
@@ -645,7 +645,7 @@ class DanInTheWild(Probe):
         super().__init__(config_root=config_root)
 
         inthewild_path = str(
-            _config.transient.basedir / "resources" / "inthewild_jailbreak_llms.txt"
+            _config.transient.package_dir / "resources" / "inthewild_jailbreak_llms.txt"
         )
 
         with open(inthewild_path, "r", encoding="utf-8") as f:

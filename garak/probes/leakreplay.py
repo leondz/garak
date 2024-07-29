@@ -10,7 +10,7 @@ from garak.attempt import Attempt
 from garak import _config
 from garak.probes.base import Probe
 
-resources_path = _config.transient.basedir / "resources"
+resources_path = _config.transient.package_dir / "resources"
 
 
 class LiteratureCloze(Probe):

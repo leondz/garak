@@ -17,8 +17,8 @@ def reset_cache(request) -> None:
 def temp_cache_location(request) -> None:
     # override the cache file with a tmp location
     with tempfile.NamedTemporaryFile(buffering=0, delete=False) as tmp:
-        PluginCache._user_plugin_cache_file = tmp.name
-        PluginCache._plugin_cache_file = tmp.name
+        PluginCache._user_plugin_cache_filename = tmp.name
+        PluginCache._plugin_cache_filename = tmp.name
         tmp.close()
         os.remove(tmp.name)
     # reset the class level singleton
