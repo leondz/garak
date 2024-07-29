@@ -229,6 +229,7 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
 
 
 if __name__ == "__main__":
+    sys.stdout.reconfigure(encoding="utf-8")
     report_path = sys.argv[1]
     taxonomy = None
     if len(sys.argv) == 3:
