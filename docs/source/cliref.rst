@@ -3,12 +3,13 @@ CLI reference for garak
 
 ::
 
-  garak LLM vulnerability scanner v0.9.0.13 ( https://github.com/leondz/garak ) at 2024-05-10T15:18:18.123569
+  garak LLM vulnerability scanner v0.9.0.14 ( https://github.com/leondz/garak ) at 2024-07-29T15:04:47.649692
   usage: python -m garak [-h] [--verbose] [--report_prefix REPORT_PREFIX]
                          [--narrow_output]
                          [--parallel_requests PARALLEL_REQUESTS]
-                         [--parallel_attempts PARALLEL_ATTEMPTS] [--seed SEED]
-                         [--deprefix] [--eval_threshold EVAL_THRESHOLD]
+                         [--parallel_attempts PARALLEL_ATTEMPTS]
+                         [--skip_unknown] [--seed SEED] [--deprefix]
+                         [--eval_threshold EVAL_THRESHOLD]
                          [--generations GENERATIONS] [--config CONFIG]
                          [--model_type MODEL_TYPE] [--model_name MODEL_NAME]
                          [--generator_option_file GENERATOR_OPTION_FILE | --generator_options GENERATOR_OPTIONS]
@@ -36,6 +37,7 @@ CLI reference for garak
                           multiple generations per call.
     --parallel_attempts PARALLEL_ATTEMPTS
                           How many probe attempts to launch in parallel.
+    --skip_unknown        allow skip of unknown probes, detectors, or buffs
     --seed SEED, -s SEED  random seed
     --deprefix            remove the prompt from the front of generator output
     --eval_threshold EVAL_THRESHOLD
