@@ -65,7 +65,7 @@ gcg_parser.add_argument(
 gcg_parser.add_argument(
     "--outfile",
     type=str,
-    default=resource_data / "gcg_prompts.txt",
+    default=gcg_resource_data / "gcg_prompts.txt",
     help="Location to write GCG attack output",
 )
 gcg_parser.add_argument(
