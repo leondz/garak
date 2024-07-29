@@ -25,7 +25,10 @@ from garak.generators.base import Generator
 # lists derived from https://platform.openai.com/docs/models
 chat_models = (
     "gpt-4",  # links to latest version
-    "gpt-4-turbo-preview",  # links to latest version
+    "gpt-4-turbo", # links to latest version
+    "gpt-4o", # links to latest version
+    "gpt-4o-mini", # links to latest version
+    "gpt-4-turbo-preview",
     "gpt-3.5-turbo",  # links to latest version
     "gpt-4-32k",
     "gpt-4-0125-preview",
