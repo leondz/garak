@@ -71,7 +71,7 @@ class HFDetector(Detector, HFCompatible):
 
     DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {"hf_args": {"device": "cpu"}}
 
-    def __init__(self, model_path, target_class, config_root=_config):
+    def __init__(self, config_root=_config):
         from transformers import (
             AutoConfig,
             AutoModelForSequenceClassification,
@@ -84,17 +84,14 @@ class HFDetector(Detector, HFCompatible):
         if _config.run.seed is not None:
             set_seed(_config.run.seed)
 
-        self.name = f"HF: {model_path}"
         super().__init__(config_root=config_root)
+        self.name = f"{self.__class__.__name__}: {self.detector_model_path}"
 
         import torch.multiprocessing as mp
 
         mp.set_start_method("spawn", force=True)
 
         self.device = self._select_hf_device()
-
-        self.detector_model_path = model_path
-        self.detector_target_class = target_class
 
         orig_loglevel = transformers_logging.get_verbosity()
         transformers_logging.set_verbosity_error()
