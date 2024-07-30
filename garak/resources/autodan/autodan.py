@@ -29,7 +29,10 @@ from garak.resources.common import REJECTION_STRINGS
 logger = getLogger(__name__)
 
 autodan_resource_data = (
-    garak._config.transient.basedir / "resources" / "autodan" / "data"
+    garak._config.transient.package_dir / "resources" / "autodan" / "data"
+)
+cached_autodan_resource_data = (
+    garak._config.transient.cache_dir / "resources" / "autodan" / "data"
 )
 autodan_parser = argparse.ArgumentParser(description="AutoDAN config")
 autodan_parser.add_argument(
@@ -88,9 +91,9 @@ def autodan_generate(
     mutation_generator_name: str = "gpt-3.5-turbo",
     mutation_generator_type: str = "openai",
     hierarchical: bool = False,
-    out_path: str = str(autodan_resource_data / "autodan_prompts.txt"),
-    init_prompt_path: str = str(autodan_resource_data / "autodan_init.txt"),
-    reference_path: str = str(autodan_resource_data / "prompt_group.pth"),
+    out_path: Path = cached_autodan_resource_data / "autodan_prompts.txt",
+    init_prompt_path: Path = autodan_resource_data / "autodan_init.txt",
+    reference_path: Path = autodan_resource_data / "prompt_group.pth",
     low_memory: bool = False,
     random_seed: int = None,
 ):
@@ -109,9 +112,9 @@ def autodan_generate(
         mutation_generator_name (str): Name of model to use as the mutation generator
         mutation_generator_type (str): Type of model to use as the mutation generator
         hierarchical (bool): Whether ot use hierarchical GA
-        out_path (str): Path to write generated AutoDAN string
-        init_prompt_path (str): Path to initial prompts
-        reference_path (str): Path to reference prompt tensors
+        out_path (Path): Path to write generated AutoDAN string
+        init_prompt_path (Path): Path to initial prompts
+        reference_path (Path): Path to reference prompt tensors
         low_memory (bool): Whether to use low memory
         random_seed (int): Random seed, if used.
 

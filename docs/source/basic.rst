@@ -17,7 +17,7 @@ Config values are loaded in the following priority (lowest-first):
 
 * Plugin defaults in the code
 * Core config: from ``garak/resources/garak.core.yaml``; not to be overridden
-* Site config: from ``garak/garak.site.yaml``
+* Site config: from ``$HOME/.config/garak/garak.site.yaml``
 * Runtime config: from an optional config file specified manually, via e.g. CLI parameter
 * Command-line options
 

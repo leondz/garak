@@ -7,15 +7,19 @@ import os
 import pytest
 
 import garak.attempt
-import garak.cli
+from garak import cli, _config
+
+PREFIX = "_garak_test_attempt_sticky_params"
 
 
 def test_attempt_sticky_params(capsys):
-    garak.cli.main(
-        "-m test.Blank -g 1 -p atkgen,dan.Dan_6_0 --report_prefix _garak_test_attempt_sticky_params".split()
+
+    cli.main(
+        f"-m test.Blank -g 1 -p atkgen,dan.Dan_6_0 --report_prefix {PREFIX}".split()
     )
+    report_path = _config.transient.data_dir / _config.reporting.report_dir
     reportlines = (
-        open("_garak_test_attempt_sticky_params.report.jsonl", "r", encoding="utf-8")
+        open(report_path / f"{PREFIX}.report.jsonl", "r", encoding="utf-8")
         .read()
         .split("\n")
     )

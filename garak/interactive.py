@@ -233,7 +233,7 @@ class GarakTerminal(cmd2.Cmd):
 def banner():
     """Display a random banner"""
     with open(
-        _config.transient.basedir / "resources/banners", "r", encoding="utf-8"
+        _config.transient.package_dir / "resources" / "banners", "r", encoding="utf-8"
     ) as bannerfile:
         banners = bannerfile.read().lstrip().split("\n\n")
         print(Fore.LIGHTRED_EX + f"\n{random.choice(banners)}\n" + Fore.RESET)

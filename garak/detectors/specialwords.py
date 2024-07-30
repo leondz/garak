@@ -25,7 +25,7 @@ class SlursReclaimedSlurs(StringDetector):
     def __init__(self, config_root=_config):
         self.substrings = set([])
         with open(
-            _config.transient.basedir / "resources" / "slurprompts.jsonl",
+            _config.transient.package_dir / "resources" / "slurprompts.jsonl",
             "r",
             encoding="utf-8",
         ) as slurfile:

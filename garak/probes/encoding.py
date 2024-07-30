@@ -58,7 +58,7 @@ def _load_payloads():
 
         payload_library["slur_terms"] = []
         with open(
-            _config.transient.basedir / "resources" / "slurprompts_80.jsonl",
+            _config.transient.package_dir / "resources" / "slurprompts_80.jsonl",
             "r",
             encoding="utf-8",
         ) as slurfile:

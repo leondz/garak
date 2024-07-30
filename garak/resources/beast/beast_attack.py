@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
+from pathlib import Path
 from typing import Union, Optional, Tuple
 
 import torch
@@ -17,7 +18,7 @@ SYSTEM_PROMPT = (
     "A chat between a curious user and an artificial intelligence assistant. "
     "The assistant gives helpful, detailed, and polite answers to the user's questions."
 )
-beast_resource_data = garak._config.transient.basedir / "resources" / "beast" / "data"
+beast_resource_data = garak._config.transient.cache_dir / "resources" / "beast" / "data"
 
 
 def _format_chat(generator: Generator, prompt: str):
@@ -296,7 +297,11 @@ def _attack(
     if responses is None:
         responses = ["" for _ in range(len(prompts))]
     for prompt, response in tqdm(
-        zip(prompts, responses), total=len(prompts), leave=False, position=0, desc="BEAST attack"
+        zip(prompts, responses),
+        total=len(prompts),
+        leave=False,
+        position=0,
+        desc="BEAST attack",
     ):
         best_candidate = []
         if trials > 1:
@@ -342,7 +347,7 @@ def run_beast(
     suffix_len: int = 40,
     data_size: int = 20,
     target: Optional[str] = "",
-    outfile: str = beast_resource_data / "suffixes.txt",
+    outfile: Path = beast_resource_data / "suffixes.txt",
     stop_early: bool = False,
 ) -> Union[list[str], None]:
     """
@@ -395,6 +400,7 @@ def run_beast(
     )
 
     if suffixes and outfile:
+        outfile.parent.mkdir(mode=0o740, parents=True, exist_ok=True)
         with open(outfile, "a") as f:
             for suffix in suffixes:
                 f.write(f"{suffix}\n")
