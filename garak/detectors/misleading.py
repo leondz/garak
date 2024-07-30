@@ -82,18 +82,23 @@ class MustContradictNLI(HFDetector):
                 truncation=True,
             )
             input_ids = (
-                torch.Tensor(tokenized_input_seq_pair["input_ids"]).long().unsqueeze(0)
+                torch.Tensor(tokenized_input_seq_pair["input_ids"])
+                .long()
+                .unsqueeze(0)
+                .to(self.device)
             )
             # remember bart doesn't have 'token_type_ids', remove the line below if you are using bart.
             token_type_ids = (
                 torch.Tensor(tokenized_input_seq_pair["token_type_ids"])
                 .long()
                 .unsqueeze(0)
+                .to(self.device)
             )
             attention_mask = (
                 torch.Tensor(tokenized_input_seq_pair["attention_mask"])
                 .long()
                 .unsqueeze(0)
+                .to(self.device)
             )
 
             outputs = self.detector_model(
