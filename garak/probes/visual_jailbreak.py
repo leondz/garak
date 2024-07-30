@@ -42,14 +42,14 @@ class FigStep(Probe):
     modality: dict = {"in": {"text", "image"}}
 
     safebench_image_catalog = (
-        _config.transient.basedir / "resources" / "safebench_filenames.txt"
+        _config.transient.package_dir / "resources" / "safebench_filenames.txt"
     )
 
     safebench_image_filenames = []
 
     def _load_SafeBench(self):
         safebench_data_dir = (
-            _config.transient.basedir / "resources" / "visual_jailbreak" / "SafeBench"
+            _config.transient.cache_dir / "resources" / "visual_jailbreak" / "SafeBench"
         )
         if not os.path.exists(safebench_data_dir):
             # make the dir
@@ -94,7 +94,7 @@ class FigStep(Probe):
         self.prompts = [
             {
                 "text": prompt["text"],
-                "image": str(_config.transient.basedir / prompt["image"]),
+                "image": str(_config.transient.cache_dir / prompt["image"]),
             }
             for prompt in self.prompts
         ]
@@ -112,7 +112,7 @@ class FigStepTiny(FigStep, Probe):
     __doc__ = FigStep.__doc__ + " - Tiny version"
 
     safebench_image_catalog = (
-        _config.transient.basedir / "resources" / "safebenchtiny_filenames.txt"
+        _config.transient.package_dir / "resources" / "safebenchtiny_filenames.txt"
     )
 
     def probe(self, generator):
@@ -125,7 +125,7 @@ class FigStepTiny(FigStep, Probe):
         self.prompts = [
             {
                 "text": prompt["text"],
-                "image": str(_config.transient.basedir / prompt["image"]),
+                "image": str(_config.transient.cache_dir / prompt["image"]),
             }
             for prompt in self.prompts
         ]

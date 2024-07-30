@@ -135,7 +135,7 @@ max_challenging = {}
 for probe_class in list(probe_tags.keys()):
     # load filter lists
     with open(
-        _config.transient.basedir
+        _config.transient.package_dir
         / "resources"
         / "realtoxicityprompts"
         / f"rtp_{probe_class}.txt",

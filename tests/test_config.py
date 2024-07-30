@@ -6,10 +6,12 @@ import json
 import os
 import re
 import shutil
+import sys
 import tempfile
 
 import pytest
 
+from pathlib import Path
 from garak import _config
 import garak.cli
 
@@ -56,6 +58,7 @@ plugins:
 )
 
 ANSI_ESCAPE = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
+XDG_VARS = ("XDG_DATA_HOME", "XDG_CONFIG_HOME", "XDG_CACHE_HOME")
 
 OPTIONS_SOLO = [
     #    "verbose", # not sure hot to test argparse action="count"
@@ -95,18 +98,101 @@ for p in _config.reporting_params:
 def allow_site_config(request):
     site_cfg_moved = False
     try:
-        shutil.move("garak/garak.site.yaml", SITE_YAML_FILENAME)
+        shutil.move(
+            _config.transient.config_dir / "garak.site.yaml", SITE_YAML_FILENAME
+        )
         site_cfg_moved = True
     except FileNotFoundError:
         site_cfg_moved = False
 
     def restore_site_config():
         if site_cfg_moved:
-            shutil.move(SITE_YAML_FILENAME, "garak/garak.site.yaml")
-        elif os.path.exists("garak/garak.site.yaml"):
-            os.remove("garak/garak.site.yaml")
+            shutil.move(
+                SITE_YAML_FILENAME, _config.transient.config_dir / "garak.site.yaml"
+            )
+        elif os.path.exists(_config.transient.config_dir / "garak.site.yaml"):
+            os.remove(_config.transient.config_dir / "garak.site.yaml")
 
     request.addfinalizer(restore_site_config)
+
+
+@pytest.fixture
+def override_xdg_env(request):
+    restore_vars = {}
+    with tempfile.TemporaryDirectory() as tmpdir:
+        for env_var in XDG_VARS:
+            current_val = os.getenv(env_var, None)
+            if current_val is not None:
+                restore_vars[env_var] = current_val
+            os.environ[env_var] = tmpdir
+
+    def restore_xdg_env():
+        for env_var in XDG_VARS:
+            restored = restore_vars.get(env_var)
+            if restored is not None:
+                os.environ[env_var] = restored
+            else:
+                del os.environ[env_var]
+
+    request.addfinalizer(restore_xdg_env)
+
+    return tmpdir
+
+
+@pytest.fixture
+def clear_xdg_env(request):
+    restore_vars = {}
+    for env_var in XDG_VARS:
+        current_val = os.getenv(env_var, None)
+        if current_val is not None:
+            restore_vars[env_var] = current_val
+            del os.environ[env_var]
+
+    def restore_xdg_env():
+        for env_var in XDG_VARS:
+            restored = restore_vars.get(env_var)
+            if restored is not None:
+                os.environ[env_var] = restored
+            else:
+                try:
+                    del os.environ[env_var]
+                except KeyError as e:
+                    pass
+
+    request.addfinalizer(restore_xdg_env)
+
+
+# environment variables adjust transient values
+def test_xdg_support(override_xdg_env):
+    test_path = Path(override_xdg_env)
+
+    importlib.reload(_config)
+
+    assert _config.transient.cache_dir == test_path / _config.project_dir_name
+    assert _config.transient.config_dir == test_path / _config.project_dir_name
+    assert _config.transient.data_dir == test_path / _config.project_dir_name
+
+
+@pytest.mark.usefixtures("clear_xdg_env")
+def test_xdg_defaults():
+    if "HOME" in os.environ:
+        test_path = Path(os.environ["HOME"])
+    elif sys.platform == "win32" and "USERPROFILE" in os.environ:
+        # the xdg lib returns values prefixed with "USERPROFILE" on windows
+        test_path = Path(os.environ["USERPROFILE"])
+
+    importlib.reload(_config)
+
+    assert (
+        _config.transient.cache_dir == test_path / ".cache" / _config.project_dir_name
+    )
+    assert (
+        _config.transient.config_dir == test_path / ".config" / _config.project_dir_name
+    )
+    assert (
+        _config.transient.data_dir
+        == test_path / ".local" / "share" / _config.project_dir_name
+    )
 
 
 # test CLI assertions of each var
@@ -188,7 +274,9 @@ def test_yaml_param_settings(param):
 def test_site_yaml_overrides_core_yaml():
     importlib.reload(_config)
 
-    with open("garak/garak.site.yaml", "w", encoding="utf-8") as f:
+    with open(
+        _config.transient.config_dir / "garak.site.yaml", "w", encoding="utf-8"
+    ) as f:
         f.write("---\nrun:\n  eval_threshold: 0.777\n")
         f.flush()
         garak.cli.main(["--list_config"])
@@ -201,7 +289,9 @@ def test_site_yaml_overrides_core_yaml():
 def test_run_yaml_overrides_site_yaml():
     importlib.reload(_config)
 
-    with open("garak/garak.site.yaml", "w", encoding="utf-8") as f:
+    with open(
+        _config.transient.config_dir / "garak.site.yaml", "w", encoding="utf-8"
+    ) as f:
         file_data = [
             "---",
             "run:",
@@ -613,15 +703,46 @@ def test_tag_filter():
     assert "probes.lmrc.SexualContent" in found
 
 
+# when provided an absolute path as `reporting.report_dir` do not used `user_data_dir`
+def test_report_dir_full_path():
+    importlib.reload(_config)
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+
+        report_path = Path(tmpdir).absolute()
+        with tempfile.NamedTemporaryFile(buffering=0, delete=False) as tmp:
+            tmp.write(
+                "\n".join(
+                    [
+                        f"---",
+                        f"reporting:",
+                        f"  report_dir: {report_path}",
+                    ]
+                ).encode("utf-8")
+            )
+            tmp.close()
+            garak.cli.main(
+                f"-m test.Blank --report_prefix abs_path_test -p test.Blank -d always.Fail --config {tmp.name}".split()
+            )
+            os.remove(tmp.name)
+            assert os.path.isfile(report_path / "abs_path_test.report.jsonl")
+            assert os.path.isfile(report_path / "abs_path_test.report.html")
+            assert os.path.isfile(report_path / "abs_path_test.hitlog.jsonl")
+
+
+# report prefix is used only for filename, report_dir is placed in user_data_dir
 def test_report_prefix_with_hitlog_no_explode():
     importlib.reload(_config)
 
     garak.cli.main(
         "-m test.Blank --report_prefix kjsfhgkjahpsfdg -p test.Blank -d always.Fail".split()
     )
-    assert os.path.isfile("kjsfhgkjahpsfdg.report.jsonl")
-    assert os.path.isfile("kjsfhgkjahpsfdg.report.html")
-    assert os.path.isfile("kjsfhgkjahpsfdg.hitlog.jsonl")
+    report_path = Path(_config.transient.report_filename).parent
+    assert _config.reporting.report_dir in str(report_path)
+    assert str(_config.transient.data_dir) in str(report_path)
+    assert os.path.isfile(report_path / "kjsfhgkjahpsfdg.report.jsonl")
+    assert os.path.isfile(report_path / "kjsfhgkjahpsfdg.report.html")
+    assert os.path.isfile(report_path / "kjsfhgkjahpsfdg.hitlog.jsonl")
 
 
 def test_nested():

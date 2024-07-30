@@ -1,13 +1,12 @@
 # SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-import os
 import subprocess
 import sys
 
 import pytest
 
-from garak import cli
+from garak import cli, _config
 
 TEMP_PREFIX = "_garak_internal_test_temp"
 
@@ -23,7 +22,11 @@ def test_analyze_log_runs():
             sys.executable,
             "-m",
             "garak.analyze.analyze_log",
-            TEMP_PREFIX + ".report.jsonl",
+            str(
+                _config.transient.data_dir
+                / _config.reporting.report_dir
+                / f"{TEMP_PREFIX}.report.jsonl"
+            ),
         ],
         check=True,
     )
@@ -36,7 +39,11 @@ def test_report_digest_runs():
             sys.executable,
             "-m",
             "garak.analyze.report_digest",
-            TEMP_PREFIX + ".report.jsonl",
+            str(
+                _config.transient.data_dir
+                / _config.reporting.report_dir
+                / f"{TEMP_PREFIX}.report.jsonl"
+            ),
         ],
         check=True,
     )
