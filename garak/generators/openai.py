@@ -135,6 +135,7 @@ class OpenAICompatible(Generator):
         self._load_config(config_root)
         self.fullname = f"{self.generator_family_name} {self.name}"
         self.key_env_var = self.ENV_VAR
+        self.seed = config_root.run.seed
 
         self._load_client()
 
@@ -183,10 +184,8 @@ class OpenAICompatible(Generator):
             "frequency_penalty": self.frequency_penalty,
             "presence_penalty": self.presence_penalty,
             "stop": self.stop,
+            "seed": self.seed,
         }
-
-        if _config.run.seed is not None:
-            create_args["seed"] = _config.run.seed
 
         create_args = {
             k: v

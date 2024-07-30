@@ -73,7 +73,7 @@ class NVOpenAIChat(OpenAICompatible):
         ), "generations_per_call / n > 1 is not supported"
 
         if self.vary_seed_each_call:
-            _config.run.seed = random.randint(0, 65535)
+            self.seed = random.randint(0, 65535)
 
         if self.vary_temp_each_call:
             self.temperature = random.random()
