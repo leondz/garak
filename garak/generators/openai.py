@@ -135,7 +135,8 @@ class OpenAICompatible(Generator):
         self._load_config(config_root)
         self.fullname = f"{self.generator_family_name} {self.name}"
         self.key_env_var = self.ENV_VAR
-        self.seed = config_root.run.seed
+        if "seed" not in dir(self):
+            self.seed = None
 
         self._load_client()
 
