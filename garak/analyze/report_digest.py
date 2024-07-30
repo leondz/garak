@@ -15,6 +15,9 @@ import jinja2
 
 from garak import _config
 
+if not _config.loaded:
+    _config.load_config()
+
 templateLoader = jinja2.FileSystemLoader(
     searchpath=_config.transient.package_dir / "analyze" / "templates"
 )
@@ -174,7 +177,7 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
             }
         )
 
-        if top_score < 100.0:
+        if top_score < 100.0 or _config.reporting.show_100_pass_modules:
             res = cursor.execute(
                 f"select probe_module, probe_class, avg(score)*100 as s from results where probe_group='{probe_group}' group by probe_class order by s asc, probe_class asc;"
             )
@@ -226,9 +229,10 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
 
 
 if __name__ == "__main__":
+    sys.stdout.reconfigure(encoding="utf-8")
     report_path = sys.argv[1]
     taxonomy = None
     if len(sys.argv) == 3:
         taxonomy = sys.argv[2]
     digest_content = compile_digest(report_path, taxonomy=taxonomy)
-    print(digest_content.encode("utf-8"))
+    print(digest_content)
