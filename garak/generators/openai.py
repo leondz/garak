@@ -102,6 +102,7 @@ class OpenAICompatible(Generator):
         "top_p": 1.0,
         "frequency_penalty": 0.0,
         "presence_penalty": 0.0,
+        "seed": None,
         "stop": ["#", ";"],
         "suppressed_params": set(),
         "retry_json": True,
@@ -135,8 +136,6 @@ class OpenAICompatible(Generator):
         self._load_config(config_root)
         self.fullname = f"{self.generator_family_name} {self.name}"
         self.key_env_var = self.ENV_VAR
-        if not hasattr(self, "seed"):
-            self.seed = None
 
         self._load_client()
 
