@@ -8,7 +8,6 @@ from typing import List, Union
 
 import openai
 
-from garak import _config
 from garak.generators.openai import OpenAICompatible
 
 
