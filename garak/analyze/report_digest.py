@@ -31,7 +31,9 @@ detector_template = templateEnv.get_template("digest_detector.jinja")
 end_module = templateEnv.get_template("end_module.jinja")
 
 
-misp_resource_file = _config.transient.basedir / "resources" / "misp_descriptions.tsv"
+misp_resource_file = (
+    _config.transient.package_dir / "resources" / "misp_descriptions.tsv"
+)
 misp_descriptions = {}
 if os.path.isfile(misp_resource_file):
     with open(misp_resource_file, "r", encoding="utf-8") as f:
@@ -41,7 +43,7 @@ if os.path.isfile(misp_resource_file):
 
 
 calibration_filename = (
-    _config.transient.basedir / "resources" / "calibration" / "calibration.json"
+    _config.transient.package_dir / "resources" / "calibration" / "calibration.json"
 )
 calibration_data = {}
 if os.path.isfile(calibration_filename):
