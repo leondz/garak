@@ -33,8 +33,6 @@ def main(arguments=None) -> None:
         f"garak {__description__} v{_config.version} ( https://github.com/leondz/garak ) at {_config.transient.starttime_iso}"
     )
 
-    print(f"📜 logging to {log_filename}")
-
     import argparse
 
     parser = argparse.ArgumentParser(
@@ -423,6 +421,9 @@ def main(arguments=None) -> None:
 
         # model is specified, we're doing something
         elif _config.plugins.model_type:
+
+            print(f"📜 logging to {log_filename}")
+
             conf_root = _config.plugins.generators
             for part in _config.plugins.model_type.split("."):
                 if not part in conf_root:
