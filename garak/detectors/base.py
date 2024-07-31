@@ -74,6 +74,7 @@ class HFDetector(Detector):
             AutoTokenizer,
             TextClassificationPipeline,
             set_seed,
+            logging as transformers_logging,
         )
 
         if _config.run.seed is not None:
@@ -85,6 +86,9 @@ class HFDetector(Detector):
         self.detector_model_path = model_path
         self.detector_target_class = target_class
 
+        orig_loglevel = transformers_logging.get_verbosity()
+        transformers_logging.set_verbosity_error()
+
         self.detector_model = AutoModelForSequenceClassification.from_pretrained(
             self.detector_model_path
         )
@@ -94,6 +98,8 @@ class HFDetector(Detector):
         self.detector = TextClassificationPipeline(
             model=self.detector_model, tokenizer=self.detector_tokenizer
         )
+
+        transformers_logging.set_verbosity(orig_loglevel)
 
         self.graceful_fail = False
 

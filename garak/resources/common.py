@@ -1,4 +1,5 @@
 import logging
+import shutil
 import urllib.error
 from pathlib import Path
 import pandas as pd
@@ -42,12 +43,21 @@ REJECTION_STRINGS = [
 
 
 def load_advbench(size: int = 0) -> pd.DataFrame:
-    advbench_path = (
-        garak._config.transient.basedir
+    advbench_base_path = (
+        garak._config.transient.package_dir
         / "resources"
         / "advbench"
         / "harmful_behaviors.csv"
     )
+    advbench_path = (
+        garak._config.transient.cache_dir
+        / "resources"
+        / "advbench"
+        / "harmful_behaviors.csv"
+    )
+    if advbench_base_path.is_file() and not advbench_path.is_file():
+        shutil.copy2(advbench_base_path, advbench_path)
+
     if not advbench_path.is_file():
         try:
             hb = "https://raw.githubusercontent.com/llm-attacks/llm-attacks/main/data/advbench/harmful_behaviors.csv"

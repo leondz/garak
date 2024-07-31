@@ -16,10 +16,12 @@ import uuid
 
 import pytest
 
-import garak
-import garak.cli
+from garak import cli, _config
 
 PREFIX = "test_buff_single" + str(uuid.uuid4())
+
+_config.load_config()
+REPORT_PATH = _config.transient.data_dir / _config.reporting.report_dir
 
 
 def test_include_original_prompt():
@@ -34,13 +36,15 @@ plugins:
             )
         )
         tmp.close()
-        garak.cli.main(
+        cli.main(
             f"-m test -p test.Test -b lowercase.Lowercase --config {tmp.name} --report_prefix {PREFIX}".split()
         )
         os.remove(tmp.name)
 
     prompts = []
-    with open(f"{PREFIX}.report.jsonl", "r", encoding="utf-8") as reportfile:
+    with open(
+        REPORT_PATH / f"{PREFIX}.report.jsonl", "r", encoding="utf-8"
+    ) as reportfile:
         for line in reportfile:
             r = json.loads(line)
             if r["entry_type"] == "attempt" and r["status"] == 1:
@@ -68,13 +72,15 @@ plugins:
             )
         )
         tmp.close()
-        garak.cli.main(
+        cli.main(
             f"-m test -p test.Test -b lowercase.Lowercase --config {tmp.name} --report_prefix {PREFIX}".split()
         )
         os.remove(tmp.name)
 
     prompts = []
-    with open(f"{PREFIX}.report.jsonl", "r", encoding="utf-8") as reportfile:
+    with open(
+        REPORT_PATH / f"{PREFIX}.report.jsonl", "r", encoding="utf-8"
+    ) as reportfile:
         for line in reportfile:
             r = json.loads(line)
             if r["entry_type"] == "attempt" and r["status"] == 1:
@@ -89,9 +95,9 @@ def cleanup(request):
 
     def remove_buff_reports():
         files = [
-            f"{PREFIX}.report.jsonl",
-            f"{PREFIX}.report.html",
-            f"{PREFIX}.hitlog.jsonl",
+            REPORT_PATH / f"{PREFIX}.report.jsonl",
+            REPORT_PATH / f"{PREFIX}.report.html",
+            REPORT_PATH / f"{PREFIX}.hitlog.jsonl",
         ]
         for file in files:
             if os.path.exists(file):

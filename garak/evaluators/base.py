@@ -5,6 +5,7 @@ These describe evaluators for assessing detector results.
 
 import json
 import logging
+from pathlib import Path
 from typing import Iterable
 
 from colorama import Fore, Style
@@ -72,12 +73,11 @@ class Evaluator:
                             hitlog_mode = (
                                 "w" if _config.transient.hitlogfile is None else "a"
                             )
-                            if not _config.reporting.report_prefix:
-                                hitlog_filename = f"{_config.reporting.report_dir}/garak.{_config.transient.run_id}.hitlog.jsonl"
-                            else:
-                                hitlog_filename = (
-                                    _config.reporting.report_prefix + ".hitlog.jsonl"
+                            hitlog_filename = Path(
+                                str(_config.transient.report_filename).replace(
+                                    ".report.jsonl", ".hitlog.jsonl"
                                 )
+                            )
                             logging.info("hit log in %s", hitlog_filename)
                             _config.transient.hitlogfile = open(
                                 hitlog_filename,

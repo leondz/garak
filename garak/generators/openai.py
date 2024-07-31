@@ -25,9 +25,9 @@ from garak.generators.base import Generator
 # lists derived from https://platform.openai.com/docs/models
 chat_models = (
     "gpt-4",  # links to latest version
-    "gpt-4-turbo", # links to latest version
-    "gpt-4o", # links to latest version
-    "gpt-4o-mini", # links to latest version
+    "gpt-4-turbo",  # links to latest version
+    "gpt-4o",  # links to latest version
+    "gpt-4o-mini",  # links to latest version
     "gpt-4-turbo-preview",
     "gpt-3.5-turbo",  # links to latest version
     "gpt-4-32k",
@@ -102,6 +102,7 @@ class OpenAICompatible(Generator):
         "top_p": 1.0,
         "frequency_penalty": 0.0,
         "presence_penalty": 0.0,
+        "seed": None,
         "stop": ["#", ";"],
         "suppressed_params": set(),
         "retry_json": True,
@@ -183,6 +184,7 @@ class OpenAICompatible(Generator):
             "frequency_penalty": self.frequency_penalty,
             "presence_penalty": self.presence_penalty,
             "stop": self.stop,
+            "seed": self.seed,
         }
 
         create_args = {
