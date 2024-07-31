@@ -26,12 +26,14 @@ def main(arguments=None) -> None:
     import re
     from colorama import Fore, Style
 
-    command.start_logging()
+    log_filename = command.start_logging()
     _config.load_base_config()
 
     print(
         f"garak {__description__} v{_config.version} ( https://github.com/leondz/garak ) at {_config.transient.starttime_iso}"
     )
+
+    print(f"📜 logging to {log_filename}")
 
     import argparse
 
