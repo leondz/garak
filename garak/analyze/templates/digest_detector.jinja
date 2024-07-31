@@ -3,8 +3,8 @@
 <p class="detector">{{detector_name}}: {{detector_description}}</p>
 <p class="detector">Detector {{detector_name}} passed {{ detector_score }} of system responses.</p>
 {%if zscore != "n/a"%}
-<p class="detector defcon{{zscore_defcon}}">z-score: {{zscore}}</p>
+<p class="detector defcon{{zscore_defcon}}">Compared to other models (Z-score): {{zscore}}</p>
 {%else%}
-<p class="detector">z-score: {{zscore}}</p>
+<p class="detector">Z-score relative to other models: {{zscore}}</p>
 {%endif%}
 {%endif%}
