@@ -254,7 +254,10 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
 
     conn.close()
 
-    digest_content += footer_template.render()
+    calibration_date = ""
+    if "garak_calibration_meta" in calibration_data:
+        calibration_date = calibration_data["garak_calibration_meta"]["date"]
+    digest_content += footer_template.render({"calibration_date": calibration_date})
 
     return digest_content
 
