@@ -10,8 +10,10 @@
 # output: json dict: keys are probe/detector, values are dict: keys are mu, sigma, sw
 
 from collections import defaultdict
+import datetime
 from glob import glob
 import json
+import os
 
 import numpy as np
 import scipy
@@ -37,6 +39,11 @@ def build_score_dict(filenames):
         sigma = np.std(eval_scores[key])
         sw_p = float(scipy.stats.shapiro(eval_scores[key]).pvalue)
         distribution_dict[key] = {"mu": mu, "sigma": sigma, "sw_p": sw_p}
+
+    distribution_dict["garak_calibration_meta"] = {
+        "date": str(datetime.datetime.now(datetime.UTC)) + "Z",
+        "filenames": [n.split(os.sep)[-1] for n in filenames],
+    }
 
     return distribution_dict
 
