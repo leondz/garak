@@ -5,9 +5,17 @@
 
 These detectors examine file formats, based on name or content."""
 
+import logging
 import pickletools
 
-import magic
+try:
+    import magic
+except ImportError as e:
+    logging.info(
+        "detectors.fileformats: couldn't import python-magic, try installing libmagic, e.g. `brew install libmagic`",
+        e,
+    )
+    magic == None
 
 from garak.detectors.base import FileDetector
 
@@ -83,6 +91,9 @@ class FileIsExecutable(FileDetector):
     }
 
     def _test_file(self, filename):
+        if magic is None:
+
+            return None
         with open(filename, "rb") as f:
             m = magic.Magic(mime=True)
             header = f.read(2048)
