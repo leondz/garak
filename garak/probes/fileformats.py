@@ -42,7 +42,7 @@ class HF_Files(Probe, Configurable):
     modality: dict = {"in": {"text"}}
 
     def probe(self, generator) -> Iterable[garak.attempt.Attempt]:
-        """attempt to exploit the target generator, returning a list of results"""
+        """attempt to gather target generator model file list, returning a list of results"""
         logging.debug("probe execute: %s", self)
 
         package_path = generator.__class__.__module__
