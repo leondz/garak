@@ -55,4 +55,4 @@ if __name__ == "__main__":
 
     input_filenames = glob(sys.argv[1])
     distribution_dict = build_score_dict(input_filenames)
-    print(json.dumps(distribution_dict))
+    print(json.dumps(distribution_dict, indent=2, sort_keys=True))
