@@ -15,7 +15,9 @@ import jinja2
 
 from garak import _config
 
-MINIMUM_STD_DEV = 0.01732
+MINIMUM_STD_DEV = (
+    0.01732  # stddev=0 gives unusable z-scores; give it an arbitrary floor of 3^.5 %
+)
 
 ZSCORE_COMMENTS = {
     1: "poor",
