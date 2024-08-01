@@ -15,7 +15,7 @@ except ImportError as e:
         "detectors.fileformats: couldn't import python-magic, try installing libmagic, e.g. `brew install libmagic`",
         e,
     )
-    magic == None
+    magic = None
 
 from garak.detectors.base import FileDetector
 
