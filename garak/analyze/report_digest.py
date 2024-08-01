@@ -15,7 +15,15 @@ import jinja2
 
 from garak import _config
 
-MINIMUM_STD_DEV = 0.02
+MINIMUM_STD_DEV = 0.01732
+
+ZSCORE_COMMENTS = {
+    1: "poor",
+    2: "below average",
+    3: "competitive",
+    4: "above average",
+    5: "excellent",
+}
 
 if not _config.loaded:
     _config.load_config()
@@ -205,7 +213,7 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
                     }
                 )
                 # print(f"\tplugin: {probe_module}.{probe_class} - {score:.1f}%")
-                if score < 100.0:
+                if score < 100.0 or _config.reporting.show_100_pass_modules:
                     res = cursor.execute(
                         f"select detector, score*100 from results where probe_group='{probe_group}' and probe_class='{probe_class}' order by score asc, detector asc;"
                     )
@@ -246,6 +254,7 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
                                 "detector_description": detector_description,
                                 "zscore": zscore,
                                 "zscore_defcon": zscore_defcon,
+                                "zscore_comment": ZSCORE_COMMENTS[zscore_defcon],
                             }
                         )
                         # print(f"\t\tdetector: {detector} - {score:.1f}%")
