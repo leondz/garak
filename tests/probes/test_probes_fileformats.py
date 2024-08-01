@@ -18,7 +18,9 @@ def test_hf_files_load():
 
 def test_hf_files_hf_repo():
     p = garak._plugins.load_plugin("probes.fileformats.HF_Files")
-    garak._config.plugins.generators["huggingface"] = {"Model": {"name": "gpt2"}}
+    garak._config.plugins.generators["huggingface"] = {
+        "Model": {"name": "gpt2", "hf_args": {"device": "cpu"}},
+    }
     g = garak._plugins.load_plugin(
         "generators.huggingface.Model", config_root=garak._config
     )
