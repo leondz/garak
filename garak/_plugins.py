@@ -60,8 +60,9 @@ class PluginCache:
         ]
 
     def _load_plugin_cache(self):
-        if not os.path.exists(self._plugin_cache_filename):
-            self._build_plugin_cache()
+        assert os.path.exists(
+            self._plugin_cache_filename
+        ), f"{self._plugin_cache_filename} is missing or corrupt."
 
         base_time = datetime.fromtimestamp(
             os.path.getmtime(self._plugin_cache_filename), tz=timezone.utc
