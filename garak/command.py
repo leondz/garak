@@ -8,8 +8,10 @@ import json
 
 
 def start_logging():
+    from garak import _config
+
     logging.basicConfig(
-        filename="garak.log",
+        filename=_config.transient.data_dir / "garak.log",
         level=logging.DEBUG,
         format="%(asctime)s  %(levelname)s  %(message)s",
     )
@@ -32,6 +34,7 @@ def start_run():
     import os
     import uuid
 
+    from pathlib import Path
     from garak import _config
 
     logging.info("started at %s", _config.transient.starttime_iso)
@@ -41,19 +44,24 @@ def start_run():
             "⚠️ The current/default config is optimised for speed rather than thoroughness. Try e.g. --config full for a stronger test, or specify some probes."
         )
     _config.transient.run_id = str(uuid.uuid4())  # uuid1 is safe but leaks host info
+    report_path = Path(_config.reporting.report_dir)
+    if not report_path.is_absolute():
+        logging.debug("relative report dir provided")
+        report_path = _config.transient.data_dir / _config.reporting.report_dir
+    if not os.path.isdir(report_path):
+        try:
+            report_path.mkdir(mode=0o740, parents=True, exist_ok=True)
+        except PermissionError as e:
+            raise PermissionError(
+                f"Can't create logging directory {report_path}, quitting"
+            ) from e
+
+    filename = f"garak.{_config.transient.run_id}.report.jsonl"
     if not _config.reporting.report_prefix:
-        if not os.path.isdir(_config.reporting.report_dir):
-            try:
-                os.mkdir(_config.reporting.report_dir)
-            except PermissionError as e:
-                raise PermissionError(
-                    f"Can't create logging directory {_config.reporting.report_dir}, quitting"
-                ) from e
-        _config.transient.report_filename = f"{_config.reporting.report_dir}/garak.{_config.transient.run_id}.report.jsonl"
+        filename = f"garak.{_config.transient.run_id}.report.jsonl"
     else:
-        _config.transient.report_filename = (
-            _config.reporting.report_prefix + ".report.jsonl"
-        )
+        filename = _config.reporting.report_prefix + ".report.jsonl"
+    _config.transient.report_filename = str(report_path / filename)
     _config.transient.reportfile = open(
         _config.transient.report_filename, "w", buffering=1, encoding="utf-8"
     )

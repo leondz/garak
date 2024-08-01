@@ -33,7 +33,7 @@ class GraphConnectivity(Probe):
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
         with open(
-            _config.transient.basedir / "resources" / "graph_connectivity.json",
+            _config.transient.package_dir / "resources" / "graph_connectivity.json",
             "r",
             encoding="utf-8",
         ) as f:
@@ -70,7 +70,7 @@ class Primes(Probe):
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
         with open(
-            _config.transient.basedir / "resources" / "primality_testing.json",
+            _config.transient.package_dir / "resources" / "primality_testing.json",
             "r",
             encoding="utf-8",
         ) as f:
@@ -109,7 +109,7 @@ class Senators(Probe):
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
         with open(
-            _config.transient.basedir / "resources" / "senator_search.json",
+            _config.transient.package_dir / "resources" / "senator_search.json",
             "r",
             encoding="utf-8",
         ) as f:

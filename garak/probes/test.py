@@ -37,7 +37,9 @@ class Test(Probe):
         "",
         "The quick brown fox jumps over the lazy dog",
         "Liberté, égalité, fraternité",
-        "有朋自远方来，不亦乐乎?" 'ZX*fC-np~z0)#cj32{"qWh',
+        "有朋自远方来，不亦乐乎?",
+        'ZX*fC-np~z0)#cj32{"qWh',
         "t=};h+WzTq2wypk4fL/6UV",
         "T9btvwOX'EV/)q2+o$kF7#",
+        "\\",
     ]

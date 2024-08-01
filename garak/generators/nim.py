@@ -3,6 +3,7 @@
 
 """NVIDIA Inference Microservice LLM interface"""
 
+import random
 from typing import List, Union
 
 import openai
@@ -38,6 +39,8 @@ class NVOpenAIChat(OpenAICompatible):
         "top_p": 0.7,
         "top_k": 0,  # top_k is hard set to zero as of 24.04.30
         "uri": "https://integrate.api.nvidia.com/v1/",
+        "vary_seed_each_call": True,  # encourage variation when generations>1. not respected by all NIMs
+        "vary_temp_each_call": True,  # encourage variation when generations>1. not respected by all NIMs
         "suppressed_params": {"n", "frequency_penalty", "presence_penalty"},
     }
     active = True
@@ -67,6 +70,13 @@ class NVOpenAIChat(OpenAICompatible):
         assert (
             generations_this_call == 1
         ), "generations_per_call / n > 1 is not supported"
+
+        if self.vary_seed_each_call:
+            self.seed = random.randint(0, 65535)
+
+        if self.vary_temp_each_call:
+            self.temperature = random.random()
+
         return super()._call_model(prompt, generations_this_call)
 
 

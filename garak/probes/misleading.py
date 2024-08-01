@@ -42,7 +42,7 @@ class FalseAssertion50(Probe):
 
         for prefix in prefixes:
             with open(
-                _config.transient.basedir
+                _config.transient.package_dir
                 / "resources"
                 / "truefalse_falseclaims_50.txt",
                 "r",

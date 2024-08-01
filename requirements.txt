@@ -1,5 +1,5 @@
 base2048>=0.1.3
-transformers>=4.40.0
+transformers>=4.43.0
 datasets>=2.14.6,<2.17
 colorama>=0.4.3
 tqdm>=4.64.0
@@ -31,6 +31,7 @@ jsonpath-ng>=1.6.1
 huggingface_hub>=0.21.0
 python-magic>=0.4.21
 lorem==0.1.1
+xdg-base-dirs>=6.0.1
 # tests
 pytest>=8.0
 requests-mock==1.12.1

@@ -10,7 +10,7 @@ from garak import _plugins, _config
 PROBES = [classname for (classname, active) in _plugins.enumerate_plugins("probes")]
 
 with open(
-    _config.transient.basedir / "resources" / "misp_descriptions.tsv",
+    _config.transient.package_dir / "resources" / "misp_descriptions.tsv",
     "r",
     encoding="utf-8",
 ) as misp_data:

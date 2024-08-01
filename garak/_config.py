@@ -15,6 +15,11 @@ import os
 import pathlib
 from typing import List
 import yaml
+from xdg_base_dirs import (
+    xdg_cache_home,
+    xdg_config_home,
+    xdg_data_home,
+)
 
 DICT_CONFIG_AFTER_LOAD = False
 
@@ -26,6 +31,7 @@ system_params = (
 run_params = "seed deprefix eval_threshold generations probe_tags interactive".split()
 plugins_params = "model_type model_name extended_detectors".split()
 reporting_params = "taxonomy report_prefix".split()
+project_dir_name = "garak"
 
 
 loaded = False
@@ -52,9 +58,17 @@ class TransientConfig(GarakSubConfig):
     hitlogfile = None
     args = None  # only access this when determining what was passed on CLI
     run_id = None
-    basedir = pathlib.Path(__file__).parents[0]
+    package_dir = pathlib.Path(__file__).parents[0]
+    config_dir = xdg_config_home() / project_dir_name
+    data_dir = xdg_data_home() / project_dir_name
+    cache_dir = xdg_cache_home() / project_dir_name
     starttime = None
     starttime_iso = None
+
+    # initialize the user home and cache paths if they do not exist
+    config_dir.mkdir(mode=0o740, parents=True, exist_ok=True)
+    data_dir.mkdir(mode=0o740, parents=True, exist_ok=True)
+    cache_dir.mkdir(mode=0o740, parents=True, exist_ok=True)
 
 
 transient = TransientConfig()
@@ -136,7 +150,7 @@ def _store_config(settings_files) -> None:
 
 def load_base_config() -> None:
     global loaded
-    settings_files = [str(transient.basedir / "resources" / "garak.core.yaml")]
+    settings_files = [str(transient.package_dir / "resources" / "garak.core.yaml")]
     logging.debug("Loading configs from: %s", ",".join(settings_files))
     _store_config(settings_files=settings_files)
     loaded = True
@@ -149,9 +163,9 @@ def load_config(
     # and then not have cli be upset when these are not given as cli params
     global loaded
 
-    settings_files = [str(transient.basedir / "resources" / "garak.core.yaml")]
+    settings_files = [str(transient.package_dir / "resources" / "garak.core.yaml")]
 
-    fq_site_config_filename = str(transient.basedir / site_config_filename)
+    fq_site_config_filename = str(transient.config_dir / site_config_filename)
     if os.path.isfile(fq_site_config_filename):
         settings_files.append(fq_site_config_filename)
     else:
@@ -163,10 +177,10 @@ def load_config(
         if os.path.isfile(run_config_filename):
             settings_files.append(run_config_filename)
         elif os.path.isfile(
-            str(transient.basedir / "configs" / (run_config_filename + ".yaml"))
+            str(transient.package_dir / "configs" / (run_config_filename + ".yaml"))
         ):
             settings_files.append(
-                str(transient.basedir / "configs" / (run_config_filename + ".yaml"))
+                str(transient.package_dir / "configs" / (run_config_filename + ".yaml"))
             )
         else:
             message = f"run config not found: {run_config_filename}"

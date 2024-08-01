@@ -12,6 +12,7 @@ from colorama import Fore, Style
 
 from garak import _config
 from garak.configurable import Configurable
+from garak.generators.huggingface import HFCompatible
 import garak.attempt
 
 
@@ -66,35 +67,57 @@ class Detector(Configurable):
         return [0.5] * len(attempt.all_outputs)
 
 
-class HFDetector(Detector):
+class HFDetector(Detector, HFCompatible):
     """Detector using a Hugging Face model"""
 
-    def __init__(self, model_path, target_class, config_root=_config):
+    DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {"hf_args": {"device": "cpu"}}
+
+    def __init__(self, config_root=_config):
         from transformers import (
+            AutoConfig,
             AutoModelForSequenceClassification,
             AutoTokenizer,
             TextClassificationPipeline,
             set_seed,
+            logging as transformers_logging,
         )
 
         if _config.run.seed is not None:
             set_seed(_config.run.seed)
 
-        self.name = f"HF: {model_path}"
         super().__init__(config_root=config_root)
+        self.name = f"{self.__class__.__name__}: {self.detector_model_path}"
 
-        self.detector_model_path = model_path
-        self.detector_target_class = target_class
+        import torch.multiprocessing as mp
+
+        mp.set_start_method("spawn", force=True)
+
+        self.device = self._select_hf_device()
+
+        orig_loglevel = transformers_logging.get_verbosity()
+        transformers_logging.set_verbosity_error()
+
+        model_kwargs = self._gather_hf_params(
+            hf_constructor=AutoConfig.from_pretrained
+        )  # will defer to device_map if device map was `auto` may not match self.device
+
+        self.config = AutoConfig.from_pretrained(
+            self.detector_model_path, **model_kwargs
+        )
+
+        self.config.init_device = self.device
 
         self.detector_model = AutoModelForSequenceClassification.from_pretrained(
-            self.detector_model_path
-        )
+            self.detector_model_path, config=self.config
+        ).to(self.device)
         self.detector_tokenizer = AutoTokenizer.from_pretrained(
             self.detector_model_path
         )
         self.detector = TextClassificationPipeline(
             model=self.detector_model, tokenizer=self.detector_tokenizer
         )
+
+        transformers_logging.set_verbosity(orig_loglevel)
 
         self.graceful_fail = False
 

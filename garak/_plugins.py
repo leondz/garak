@@ -26,7 +26,7 @@ class PluginEncoder(json.JSONEncoder):
             return sorted(list(obj))  # allow set as list, assumes values can be sorted
         if isinstance(obj, Path):
             # relative path for now, may be better to suppress `Path` objects
-            return str(obj).replace(str(_config.transient.basedir), "")
+            return str(obj).replace(str(_config.transient.package_dir), "")
         try:
             return json.JSONEncoder.default(self, obj)
         except TypeError as e:
@@ -35,8 +35,12 @@ class PluginEncoder(json.JSONEncoder):
 
 
 class PluginCache:
-    _plugin_cache_file = _config.transient.basedir / "resources" / "plugin_cache.json"
-    _user_plugin_cache_file = _plugin_cache_file
+    _plugin_cache_filename = (
+        _config.transient.package_dir / "resources" / "plugin_cache.json"
+    )
+    _user_plugin_cache_filename = (
+        _config.transient.cache_dir / "resources" / "plugin_cache.json"
+    )
     _plugin_cache_dict = None
 
     def __init__(self) -> None:
@@ -52,11 +56,16 @@ class PluginCache:
         ]
 
     def _load_plugin_cache(self):
-        if not os.path.exists(self._plugin_cache_file):
+        if not os.path.exists(self._plugin_cache_filename):
             self._build_plugin_cache()
-        if not os.path.exists(self._user_plugin_cache_file):
-            shutil.copy2(self._plugin_cache_file, self._user_plugin_cache_file)
-        with open(self._user_plugin_cache_file, "r", encoding="utf-8") as cache_file:
+        if not os.path.exists(self._user_plugin_cache_filename):
+            self._user_plugin_cache_filename.parent.mkdir(
+                mode=0o740, parents=True, exist_ok=True
+            )
+            shutil.copy2(self._plugin_cache_filename, self._user_plugin_cache_filename)
+        with open(
+            self._user_plugin_cache_filename, "r", encoding="utf-8"
+        ) as cache_file:
             local_cache = json.load(cache_file)
             return local_cache
 
@@ -79,7 +88,9 @@ class PluginCache:
             sorted_keys = sorted(list(plugin_dict.keys()))
             local_cache[plugin_type] = {i: plugin_dict[i] for i in sorted_keys}
 
-        with open(self._user_plugin_cache_file, "w", encoding="utf-8") as cache_file:
+        with open(
+            self._user_plugin_cache_filename, "w", encoding="utf-8"
+        ) as cache_file:
             json.dump(local_cache, cache_file, cls=PluginEncoder, indent=2)
 
     def _enumerate_plugin_klasses(self, category: str) -> List[Callable]:
@@ -93,7 +104,9 @@ class PluginCache:
 
         module_plugin_names = set()
 
-        for module_filename in sorted(os.listdir(_config.transient.basedir / category)):
+        for module_filename in sorted(
+            os.listdir(_config.transient.package_dir / category)
+        ):
             if not module_filename.endswith(".py"):
                 continue
             if module_filename.startswith("__"):

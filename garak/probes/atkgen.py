@@ -60,7 +60,7 @@ class Tox(Probe):
             "hf_args": {"device": "cpu", "torch_dtype": "float32"}
         },  # defer acceleration devices to model under test unless overriden
         "red_team_prompt_template": "<|input|>[query]<|response|>",
-        "red_team_postproc_rm_regex": "\<\|.*",
+        "red_team_postproc_rm_regex": r"\<\|.*",
         "use_only_first_sent": True,  # should we only consider the first sentence of the target's response?
     }
 

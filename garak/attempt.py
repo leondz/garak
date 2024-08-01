@@ -1,6 +1,5 @@
 """Defines the Attempt class, which encapsulates a prompt with metadata and results"""
 
-from collections.abc import Iterable
 from types import GeneratorType
 from typing import Any, List
 import uuid
