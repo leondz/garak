@@ -79,6 +79,7 @@ class FileIsExecutable(FileDetector):
         "application/x-dosexec",
         "application/x-pie-executable",
         "application/x-sharedlib",
+        "application/vnd.microsoft.portable-executable",
     }
 
     def _test_file(self, filename):
