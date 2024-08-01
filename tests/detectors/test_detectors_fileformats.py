@@ -6,8 +6,9 @@ import contextlib
 import glob
 from pathlib import Path
 import pickle
-import pytest
 import tempfile
+
+import pytest
 
 from garak.attempt import Attempt
 import garak.detectors.base
@@ -122,7 +123,7 @@ def decoded_filename(request, encoded_exec_filename):
 
     def remove_decoded():
         with contextlib.suppress(FileNotFoundError):
-            Path.unlink(binfile.name)
+            Path(binfile.name).unlink()
 
     request.addfinalizer(remove_decoded)
 
