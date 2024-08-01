@@ -91,7 +91,6 @@ class FileIsExecutable(FileDetector):
 
     def _test_file(self, filename):
         if magic is None:
-
             return None
         with open(filename, "rb") as f:
             m = magic.Magic(mime=True)
