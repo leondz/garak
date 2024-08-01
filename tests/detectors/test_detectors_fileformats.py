@@ -128,6 +128,13 @@ def decoded_filename(request, encoded_exec_filename):
     request.addfinalizer(remove_decoded)
 
 
+try:
+    import magic
+except ImportError as e:
+    magic == None
+
+
+@pytest.mark.skipif(magic is None, reason="libmagic not available")
 @pytest.mark.parametrize(
     "encoded_exec_filename", glob.glob(str(path_prefix / "*.base64"))
 )
