@@ -57,7 +57,8 @@ calibration_filename = (
 )
 calibration_data = {}
 if os.path.isfile(calibration_filename):
-    calibration_data = json.load(open(calibration_filename, "r", encoding="utf-8"))
+    with open(calibration_filename, "r", encoding="utf-8") as calibration_file:
+        calibration_data = json.load(calibration_file)
 
 
 def map_score(score):
@@ -229,7 +230,7 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
 
                         calibration_key = f"{probe_module}.{probe_class}/{detector_module}.{detector_class}"
                         zscore = "n/a"
-                        zscore_defcon = None
+                        zscore_defcon, zscore_comment = None, None
                         if calibration_key in calibration_data:
                             distr = calibration_data[calibration_key]
                             distr["sigma"] = max(distr["sigma"], MINIMUM_STD_DEV)
@@ -246,6 +247,8 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
                                 zscore_defcon = 5
                             zscore = f"{zscore:+.1f}"
 
+                            zscore_comment = ZSCORE_COMMENTS[zscore_defcon]
+
                         digest_content += detector_template.render(
                             {
                                 "detector_name": detector,
@@ -254,7 +257,7 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
                                 "detector_description": detector_description,
                                 "zscore": zscore,
                                 "zscore_defcon": zscore_defcon,
-                                "zscore_comment": ZSCORE_COMMENTS[zscore_defcon],
+                                "zscore_comment": zscore_comment,
                             }
                         )
                         # print(f"\t\tdetector: {detector} - {score:.1f}%")
