@@ -22,17 +22,17 @@ The first benchmark is in summer 2024. We think something between twice-yearly a
 ## Summer 2024: bag contents
 
 | 10^n category |  provider  |               model name              | params (B) |
-|:-------------:|:----------:|:-------------------------------------:|:-----------|
-|       1       | 01-ai      | 01-ai/yi-large                        |         34 |
-|       2       | databricks | databricks/dbrx-instruct              |        132 |
-|       0       | google     | google/gemma-2-27b-it                 |         27 |
-|       0       | google     | google/recurrentgemma-2b              |          2 |
-|       0       | mediatek   | mediatek/breeze-7b-instruct           |          7 |
-|       0       | meta       | meta/llama-3_1-8b-instruct            |          8 |
-|       1       | meta       | meta/llama3-70b                       |         70 |
-|       0       | microsoft  | microsoft/phi-3-mini-128k-instruct    |        3.8 |
-|       1       | microsoft  | microsoft/phi-3-medium-4k-instruct    |         14 |
-|       1       | mistral    | mistralai/mistral-8x7b-instruct-v0.1  |         45 |
-|       2       | mistral    | mistralai/mixtral-8x22b-instruct-v0.1 |        141 |
-|       2       | nvidia     | nvidia/nemotron-4-340b-instruct       |        340 |
-|       1       | upstage    | upstage/solar-10.7b-instruct          |       10.7 |
+|:-------------:|:-----------|:--------------------------------------|-----------:|
+|       1       | 01-ai      | yi-large                              |         34 |
+|       2       | databricks | dbrx-instruct                         |        132 |
+|       0       | google     | gemma-2-27b-it                        |         27 |
+|       0       | google     | gemma-2b                              |          2 |
+|       0       | mediatek   | breeze-7b-instruct                    |          7 |
+|       0       | meta       | llama-3.1-8b-instruct                 |          8 |
+|       1       | meta       | llama3-70b                            |         70 |
+|       0       | microsoft  | phi-3-mini-128k-instruct              |        3.8 |
+|       1       | microsoft  | phi-3-medium-4k-instruct              |         14 |
+|       1       | mistral    | mistral-nemo-12b-instruct             |         12 |
+|       2       | mistral    | mixtral-8x22b-instruct-v0.1           |        141 |
+|       2       | nvidia     | nemotron-4-340b-instruct              |        340 |
+|       1       | upstage    | solar-10.7b-instruct                  |       10.7 |
