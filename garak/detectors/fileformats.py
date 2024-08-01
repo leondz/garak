@@ -60,7 +60,6 @@ class FileIsPickled(FileDetector):
             # A valid pickle file will have a last opcode with the name STOP
             if opcode_name == "STOP":
                 return 1.0
-
             else:
                 return 0.0
 
