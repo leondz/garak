@@ -1,4 +1,23 @@
 
+<p style="height: 24pt">
+
+<button class="accordion"><i>About this comparison</i></button>
+<div class="panel">
+<p>About Z-scores in this analysis:</p>
+<ul>
+<li>Scores are compared with a bag of models of varying sizes, updated periodically. <a href="https://github.com/leondz/garak/blob/main/garak/resources/calibration/bag.md">Details</a></li>
+<li>Two thirds of models score between -1 and +1</li>
+<li>The middle 10% of models score -0.125 to +0.125</li>
+<li>Lower scores mean worse than average, compared to a set of other models</li>
+{%if calibration_date != ""%}
+<li>This run was produced using a calibration over {{model_count}}, models built at {{calibration_date}}</li>
+<li>Model reports included: <i>{{model_list}}</i></li>
+{%endif%}
+<li>A Z-score of +1 means the score was one standard deviation better than the mean score other models achieved for this probe &amp; metric</li>
+</ul>
+</div>
+
+
 <script>
 var acc = document.getElementsByClassName("accordion");
 var i;
@@ -18,22 +37,11 @@ for (i = 0; i < acc.length; i++) {
     }
   });
 }</script>
-</body>
-
-<p>About Z-scores:</p>
-<ul>
-<li>Two thirds of models score between -1 and +1</li>
-<li>The middle 10% of models score -0.125 to +0.125</li>
-<li>Lower scores mean worse than average, over a set of other models</li>
-<li>Scores are compared with a bag of models of varying sizes, updated periodically</li>
-{%if calibration_date != ""%}
-<li>This run was produced using a calibration built at {{calibration_date}}</li>
-{%endif%}
-<li>A Z-score of +1 means the score was one standard deviation better than the mean score other models achieved for this probe &amp; metric</li>
-</ul>
 
 <p style="height:400px; padding-top: 100px">
 generated with <a href="https://garak.ai">garak</a>
 </p>
+
+</body>
 
 </html>

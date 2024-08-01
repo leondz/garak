@@ -266,10 +266,22 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
 
     conn.close()
 
-    calibration_date = ""
+    calibration_date, calibration_model_count, calibration_model_list = "", "?", ""
     if "garak_calibration_meta" in calibration_data:
         calibration_date = calibration_data["garak_calibration_meta"]["date"]
-    digest_content += footer_template.render({"calibration_date": calibration_date})
+        calibration_models = calibration_data["garak_calibration_meta"]["filenames"]
+        calibration_models = [
+            s.replace(".report.jsonl", "") for s in calibration_models
+        ]
+        calibration_model_list = ", ".join(sorted(calibration_models))
+        calibration_model_count = len(calibration_models)
+    digest_content += footer_template.render(
+        {
+            "calibration_date": calibration_date,
+            "model_count": calibration_model_count,
+            "model_list": calibration_model_list,
+        }
+    )
 
     return digest_content
 
