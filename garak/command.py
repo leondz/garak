@@ -10,12 +10,13 @@ import json
 def start_logging():
     from garak import _config
 
+    log_filename = _config.transient.data_dir / "garak.log"
+
     logging.basicConfig(
-        filename=_config.transient.data_dir / "garak.log",
+        filename=log_filename,
         level=logging.DEBUG,
         format="%(asctime)s  %(levelname)s  %(message)s",
     )
-
     # garaklogger = logging.FileHandler("garak.log", encoding="utf-8")
     # garakformatter = logging.Formatter("%(asctime)s  %(levelname)s  %(message)s")
     # garaklogger.setFormatter(garakformatter)
@@ -27,6 +28,8 @@ def start_logging():
     # rootlogger.addHandler(garaklogger)
     # logging.root = rootlogger
     logging.info("invoked")
+
+    return log_filename
 
 
 def start_run():
@@ -53,7 +56,7 @@ def start_run():
             report_path.mkdir(mode=0o740, parents=True, exist_ok=True)
         except PermissionError as e:
             raise PermissionError(
-                f"Can't create logging directory {report_path}, quitting"
+                f"Can't create reporting directory {report_path}, quitting"
             ) from e
 
     filename = f"garak.{_config.transient.run_id}.report.jsonl"
