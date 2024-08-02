@@ -11,9 +11,9 @@ inherit from.
 """
 
 
-from collections import defaultdict
 import json
 import logging
+import types
 from typing import List
 
 import tqdm
@@ -106,10 +106,10 @@ class Harness(Configurable):
                 continue
 
             attempt_results = probe.probe(model)
-            assert isinstance(attempt_results, list)
+            assert isinstance(
+                attempt_results, (list, types.GeneratorType)
+            ), "probing should always return an ordered iterable"
 
-            eval_outputs, eval_results = [], defaultdict(list)
-            first_detector = True
             for d in detectors:
                 logging.debug("harness: run detector %s", d.detectorname)
                 attempt_iterator = tqdm.tqdm(attempt_results, leave=False)
@@ -119,13 +119,6 @@ class Harness(Configurable):
                     attempt.detector_results[detector_probe_name] = list(
                         d.detect(attempt)
                     )
-
-                    if first_detector:
-                        eval_outputs += attempt.outputs
-                    eval_results[detector_probe_name] += attempt.detector_results[
-                        detector_probe_name
-                    ]
-                first_detector = False
 
             for attempt in attempt_results:
                 attempt.status = garak.attempt.ATTEMPT_COMPLETE

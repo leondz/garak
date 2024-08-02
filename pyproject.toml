@@ -67,6 +67,9 @@ dependencies = [
   "fschat>=0.2.36",
   "litellm>=1.33.8",
   "jsonpath-ng>=1.6.1",
+  "huggingface_hub>=0.21.0",
+  'python-magic-bin>=0.4.14; sys_platform == "win32"',
+  'python-magic>=0.4.21; sys_platform != "win32"',
   "lorem==0.1.1",
   "xdg-base-dirs>=6.0.1",
 ]
