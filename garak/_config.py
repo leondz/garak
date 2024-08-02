@@ -7,6 +7,7 @@
 
 # logging should be set up before config is loaded
 
+from collections import defaultdict
 from dataclasses import dataclass
 import importlib
 import logging
@@ -14,6 +15,13 @@ import os
 import pathlib
 from typing import List
 import yaml
+from xdg_base_dirs import (
+    xdg_cache_home,
+    xdg_config_home,
+    xdg_data_home,
+)
+
+DICT_CONFIG_AFTER_LOAD = False
 
 version = -1  # eh why this is here? hm. who references it
 
@@ -23,6 +31,7 @@ system_params = (
 run_params = "seed deprefix eval_threshold generations probe_tags interactive".split()
 plugins_params = "model_type model_name extended_detectors".split()
 reporting_params = "taxonomy report_prefix".split()
+project_dir_name = "garak"
 
 
 loaded = False
@@ -49,9 +58,17 @@ class TransientConfig(GarakSubConfig):
     hitlogfile = None
     args = None  # only access this when determining what was passed on CLI
     run_id = None
-    basedir = pathlib.Path(__file__).parents[0]
+    package_dir = pathlib.Path(__file__).parents[0]
+    config_dir = xdg_config_home() / project_dir_name
+    data_dir = xdg_data_home() / project_dir_name
+    cache_dir = xdg_cache_home() / project_dir_name
     starttime = None
     starttime_iso = None
+
+    # initialize the user home and cache paths if they do not exist
+    config_dir.mkdir(mode=0o740, parents=True, exist_ok=True)
+    data_dir.mkdir(mode=0o740, parents=True, exist_ok=True)
+    cache_dir.mkdir(mode=0o740, parents=True, exist_ok=True)
 
 
 transient = TransientConfig()
@@ -60,11 +77,28 @@ system = GarakSubConfig()
 run = GarakSubConfig()
 plugins = GarakSubConfig()
 reporting = GarakSubConfig()
-plugins.probes = {}
-plugins.generators = {}
-plugins.detectors = {}
-plugins.buffs = {}
-plugins.harnesses = {}
+
+
+def _lock_config_as_dict():
+    global plugins
+    for plugin_type in ("probes", "generators", "buffs", "detectors", "harnesses"):
+        setattr(plugins, plugin_type, _crystallise(getattr(plugins, plugin_type)))
+
+
+def _crystallise(d):
+    for k in d.keys():
+        if isinstance(d[k], defaultdict):
+            d[k] = _crystallise(d[k])
+    return dict(d)
+
+
+nested_dict = lambda: defaultdict(nested_dict)
+
+plugins.probes = nested_dict()
+plugins.generators = nested_dict()
+plugins.detectors = nested_dict()
+plugins.buffs = nested_dict()
+plugins.harnesses = nested_dict()
 reporting.taxonomy = None  # set here to enable report_digest to be called directly
 
 buffmanager = BuffManager()
@@ -87,7 +121,7 @@ def _set_settings(config_obj, settings_obj: dict):
 def _combine_into(d: dict, combined: dict) -> None:
     for k, v in d.items():
         if isinstance(v, dict):
-            _combine_into(v, combined.setdefault(k, {}))
+            _combine_into(v, combined.setdefault(k, nested_dict()))
         else:
             combined[k] = v
     return combined
@@ -96,7 +130,7 @@ def _combine_into(d: dict, combined: dict) -> None:
 def _load_yaml_config(settings_filenames) -> dict:
     global config_files
     config_files += settings_filenames
-    config = {}
+    config = nested_dict()
     for settings_filename in settings_filenames:
         with open(settings_filename, encoding="utf-8") as settings_file:
             settings = yaml.safe_load(settings_file)
@@ -116,7 +150,7 @@ def _store_config(settings_files) -> None:
 
 def load_base_config() -> None:
     global loaded
-    settings_files = [str(transient.basedir / "resources" / "garak.core.yaml")]
+    settings_files = [str(transient.package_dir / "resources" / "garak.core.yaml")]
     logging.debug("Loading configs from: %s", ",".join(settings_files))
     _store_config(settings_files=settings_files)
     loaded = True
@@ -129,9 +163,9 @@ def load_config(
     # and then not have cli be upset when these are not given as cli params
     global loaded
 
-    settings_files = [str(transient.basedir / "resources" / "garak.core.yaml")]
+    settings_files = [str(transient.package_dir / "resources" / "garak.core.yaml")]
 
-    fq_site_config_filename = str(transient.basedir / site_config_filename)
+    fq_site_config_filename = str(transient.config_dir / site_config_filename)
     if os.path.isfile(fq_site_config_filename):
         settings_files.append(fq_site_config_filename)
     else:
@@ -143,10 +177,10 @@ def load_config(
         if os.path.isfile(run_config_filename):
             settings_files.append(run_config_filename)
         elif os.path.isfile(
-            str(transient.basedir / "configs" / (run_config_filename + ".yaml"))
+            str(transient.package_dir / "configs" / (run_config_filename + ".yaml"))
         ):
             settings_files.append(
-                str(transient.basedir / "configs" / (run_config_filename + ".yaml"))
+                str(transient.package_dir / "configs" / (run_config_filename + ".yaml"))
             )
         else:
             message = f"run config not found: {run_config_filename}"
@@ -155,6 +189,8 @@ def load_config(
 
     logging.debug("Loading configs from: %s", ",".join(settings_files))
     _store_config(settings_files=settings_files)
+    if DICT_CONFIG_AFTER_LOAD:
+        _lock_config_as_dict()
     loaded = True
 
 

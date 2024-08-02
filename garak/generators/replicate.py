@@ -21,8 +21,8 @@ from garak.generators.base import Generator
 
 
 class ReplicateGenerator(Generator):
-    """
-    Interface for public endpoints of models hosted in Replicate (replicate.com).
+    """Interface for public endpoints of models hosted in Replicate (replicate.com).
+
     Expects API key in REPLICATE_API_TOKEN environment variable.
     """
 
@@ -69,8 +69,8 @@ class ReplicateGenerator(Generator):
 
 
 class InferenceEndpoint(ReplicateGenerator):
-    """
-    Interface for private Replicate endpoints.
+    """Interface for private Replicate endpoints.
+
     Expects `name` in the format of `username/deployed-model-name`.
     """
 

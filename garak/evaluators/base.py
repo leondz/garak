@@ -5,7 +5,8 @@ These describe evaluators for assessing detector results.
 
 import json
 import logging
-from typing import List
+from pathlib import Path
+from typing import Iterable
 
 from colorama import Fore, Style
 
@@ -33,18 +34,22 @@ class Evaluator:
         """
         return False  # fail everything by default
 
-    def evaluate(self, attempts: List[garak.attempt.Attempt]) -> None:
+    def evaluate(self, attempts: Iterable[garak.attempt.Attempt]) -> None:
         """
         evaluate feedback from detectors
         expects a list of attempts that correspond to one probe
         outputs results once per detector
         """
 
-        if len(attempts) == 0:
+        if isinstance(attempts, list) and len(attempts) == 0:
             logging.debug(
                 "evaluators.base.Evaluator.evaluate called with 0 attempts, expected 1+"
             )
             return
+
+        attempts = list(
+            attempts
+        )  # disprefer this but getting detector_names from first one for the loop below is a pain
 
         self.probename = attempts[0].probe_classname
         detector_names = attempts[0].detector_results.keys()
@@ -68,12 +73,11 @@ class Evaluator:
                             hitlog_mode = (
                                 "w" if _config.transient.hitlogfile is None else "a"
                             )
-                            if not _config.reporting.report_prefix:
-                                hitlog_filename = f"{_config.reporting.report_dir}/garak.{_config.transient.run_id}.hitlog.jsonl"
-                            else:
-                                hitlog_filename = (
-                                    _config.reporting.report_prefix + ".hitlog.jsonl"
+                            hitlog_filename = Path(
+                                str(_config.transient.report_filename).replace(
+                                    ".report.jsonl", ".hitlog.jsonl"
                                 )
+                            )
                             logging.info("hit log in %s", hitlog_filename)
                             _config.transient.hitlogfile = open(
                                 hitlog_filename,
@@ -98,7 +102,7 @@ class Evaluator:
                                 {
                                     "goal": attempt.goal,
                                     "prompt": attempt.prompt,
-                                    "output": attempt.outputs[idx],
+                                    "output": attempt.all_outputs[idx],
                                     "trigger": trigger,
                                     "score": score,
                                     "run_id": str(_config.transient.run_id),

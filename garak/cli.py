@@ -26,7 +26,7 @@ def main(arguments=None) -> None:
     import re
     from colorama import Fore, Style
 
-    command.start_logging()
+    log_filename = command.start_logging()
     _config.load_base_config()
 
     print(
@@ -421,6 +421,9 @@ def main(arguments=None) -> None:
 
         # model is specified, we're doing something
         elif _config.plugins.model_type:
+
+            print(f"📜 logging to {log_filename}")
+
             conf_root = _config.plugins.generators
             for part in _config.plugins.model_type.split("."):
                 if not part in conf_root:

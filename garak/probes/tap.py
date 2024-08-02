@@ -37,6 +37,7 @@ probe is included for that specific subcase - this is the PAIR probe in this mod
 """
 
 import logging
+from pathlib import Path
 from typing import List
 
 import tqdm
@@ -68,7 +69,7 @@ class TAPCached(Probe):
 
     def __init__(
         self,
-        prompts_location: str = _config.transient.basedir
+        prompts_location: Path = _config.transient.package_dir
         / "resources"
         / "tap"
         / "data"

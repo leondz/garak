@@ -10,7 +10,7 @@ from garak.attempt import Attempt
 from garak import _config
 from garak.probes.base import Probe
 
-resources_path = _config.transient.basedir / "resources"
+resources_path = _config.transient.package_dir / "resources"
 
 
 class LiteratureCloze(Probe):
@@ -64,7 +64,10 @@ class LiteratureCloze(Probe):
         return attempt
 
     def _postprocess_hook(self, attempt: Attempt) -> Attempt:
-        attempt.outputs = [re.sub("</?name>", "", o) for o in attempt.outputs]
+        for idx, thread in enumerate(attempt.messages):
+            attempt.messages[idx][-1]["content"] = re.sub(
+                "</?name>", "", thread[-1]["content"]
+            )
         return attempt
 
 
