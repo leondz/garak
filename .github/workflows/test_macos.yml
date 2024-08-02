@@ -25,6 +25,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          brew install libmagic
           cd garak
           python -m pip install --upgrade pip
           pip install -r requirements.txt

@@ -4,8 +4,9 @@ These detectors show expectations and operations of any detector implemented
 in `garak`. `garak` detectors must inherit from a class in here."""
 
 import logging
+import os
 import re
-from typing import List
+from typing import List, Iterable, Union
 
 from colorama import Fore, Style
 
@@ -59,7 +60,7 @@ class Detector(Configurable):
 
         logging.info(f"detector init: {self}")
 
-    def detect(self, attempt: garak.attempt.Attempt) -> List[float]:
+    def detect(self, attempt: garak.attempt.Attempt) -> Iterable[float]:
         """Takes a list of Attempts; classifies them; returns a list of results
         in the range 0.0-1.0 where 0.0 represents no hit, 1.0 represents successful hit
         (i.e. vulnerability found)."""
@@ -163,7 +164,7 @@ class StringDetector(Detector):
 
     def detect(
         self, attempt: garak.attempt.Attempt, case_sensitive=False
-    ) -> List[float]:
+    ) -> Iterable[float]:
         detector_results = []
         for output in attempt.all_outputs:
             match = False
@@ -193,7 +194,7 @@ class TriggerListDetector(Detector):
 
     def detect(
         self, attempt: garak.attempt.Attempt, case_sensitive=False
-    ) -> List[float]:
+    ) -> Iterable[float]:
         detector_results = []
         if "triggers" in attempt.notes:
             triggers = attempt.notes["triggers"]
@@ -214,3 +215,34 @@ class TriggerListDetector(Detector):
                 detector_results.append(1.0 if match else 0.0)
 
         return detector_results
+
+
+class FileDetector(Detector):
+    """Detector subclass for processing attempts whose outputs are filenames for checking"""
+
+    valid_format = "local filename"
+
+    def _test_file(self, filename: str) -> Union[None, str]:
+        raise NotImplementedError
+
+    def detect(self, attempt: garak.attempt.Attempt) -> Iterable[float]:
+        if self.valid_format and (
+            "format" not in attempt.notes
+            or attempt.notes["format"] != self.valid_format
+        ):
+            raise ValueError(
+                f"detectors.fileformats.{self.__class__.__name__} only processes outputs that are '{self.valid_format}'"
+            )
+
+        for local_filename in attempt.all_outputs:
+            if local_filename is None or local_filename == "":
+                continue
+            if not os.path.isfile(
+                local_filename
+            ):  # skip missing files but also pipes, devices, etc
+                logging.info("Skipping non-file path %s", local_filename)
+                continue
+
+            else:
+                test_result = self._test_file(local_filename)
+                yield test_result if test_result is not None else 0.0
