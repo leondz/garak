@@ -73,68 +73,68 @@ quality:Security:Integrity	Integrity	Detection of tainted training data etc.
 quality:Security:Availability	Availability	Availability (Model DoS)
 quality:Security:Adversarial	Adversarial Robustness	Adversarial Robustness
 quality:Behavioral:DeliberativeMisinformation	Deliberative Misinformation​	Content that perpetuates or accelerates disinformation activities
-risk-cards:lmrc:aggression_user
-risk-cards:lmrc:anthropomorphisation
-risk-cards:lmrc:astroturfing
-risk-cards:lmrc:bad_medical_advice
-risk-cards:lmrc:bad_social_advice
-risk-cards:lmrc:bullying
-risk-cards:lmrc:calls_for_conversion
-risk-cards:lmrc:challenge_presuppositions
-risk-cards:lmrc:conspiracy_theories
-risk-cards:lmrc:csam
-risk-cards:lmrc:cyber_weapon_instructions
-risk-cards:lmrc:deadnaming
-risk-cards:lmrc:deceptive_anthropomorphism
-risk-cards:lmrc:demands_for_personal_information
-risk-cards:lmrc:discrediting
-risk-cards:lmrc:dos
-risk-cards:lmrc:downplaying_credible_threats
-risk-cards:lmrc:doxxing
-risk-cards:lmrc:eating_disorder_promotion
-risk-cards:lmrc:essentialising
-risk-cards:lmrc:expressions_of_dominance
-risk-cards:lmrc:fear_of_violence
-risk-cards:lmrc:grooming_minors
-risk-cards:lmrc:harmful_instructions
-risk-cards:lmrc:hate_speech
-risk-cards:lmrc:hegemonising_worldview
-risk-cards:lmrc:holocaust_denial
-risk-cards:lmrc:identify_attacks
-risk-cards:lmrc:identity_misrepresentation
-risk-cards:lmrc:idolisation
-risk-cards:lmrc:impersonation
-risk-cards:lmrc:inciting_animal_abuse
-risk-cards:lmrc:inciting_self-harm
-risk-cards:lmrc:inciting_violence
-risk-cards:lmrc:manipulation
-risk-cards:lmrc:misquoting
-risk-cards:lmrc:mocking_people
-risk-cards:lmrc:neosexism
-risk-cards:lmrc:news_encyclopedia_hallucination
-risk-cards:lmrc:nonrepresentativity
-risk-cards:lmrc:objectification
-risk-cards:lmrc:outdated_false_info
-risk-cards:lmrc:person_group_undesirable
-risk-cards:lmrc:positive_reflections_death
-risk-cards:lmrc:profanity
-risk-cards:lmrc:prompt_extraction
-risk-cards:lmrc:providing_illegal_info
-risk-cards:lmrc:quack_medicine
-risk-cards:lmrc:radicalisation
-risk-cards:lmrc:reacting_to_self-harm
-risk-cards:lmrc:sexual_content
-risk-cards:lmrc:sexualisation
-risk-cards:lmrc:slur_usage
-risk-cards:lmrc:speculation
-risk-cards:lmrc:stereotypes
-risk-cards:lmrc:suicide_instructions
-risk-cards:lmrc:support_hate
-risk-cards:lmrc:supporting_medication_changes
-risk-cards:lmrc:support_scam
-risk-cards:lmrc:suppression_of_rights
-risk-cards:lmrc:threats
-risk-cards:lmrc:unproven_claims
-risk-cards:lmrc:violation_of_privacy
-risk-cards:lmrc:weapon_instructions
-risk-cards:lmrc:wrong_tone
+risk-cards:lmrc:aggression_user	Aggression User	Aggression User
+risk-cards:lmrc:anthropomorphisation	Anthropomorphisation	Anthropomorphisation
+risk-cards:lmrc:astroturfing	Astroturfing	Astroturfing
+risk-cards:lmrc:bad_medical_advice	Bad Medical Advice	Bad Medical Advice
+risk-cards:lmrc:bad_social_advice	Bad Social Advice	Bad Social Advice
+risk-cards:lmrc:bullying	Bullying	Bullying
+risk-cards:lmrc:calls_for_conversion	Calls For Conversion	Calls For Conversion
+risk-cards:lmrc:challenge_presuppositions	Challenge Presuppositions	Challenge Presuppositions
+risk-cards:lmrc:conspiracy_theories	Conspiracy Theories	Conspiracy Theories
+risk-cards:lmrc:csam	Csam	Csam
+risk-cards:lmrc:cyber_weapon_instructions	Cyber Weapon Instructions	Cyber Weapon Instructions
+risk-cards:lmrc:deadnaming	Deadnaming	Deadnaming
+risk-cards:lmrc:deceptive_anthropomorphism	Deceptive Anthropomorphism	Deceptive Anthropomorphism
+risk-cards:lmrc:demands_for_personal_information	Demands For Personal Information	Demands For Personal Information
+risk-cards:lmrc:discrediting	Discrediting	Discrediting
+risk-cards:lmrc:dos	Dos	Dos
+risk-cards:lmrc:downplaying_credible_threats	Downplaying Credible Threats	Downplaying Credible Threats
+risk-cards:lmrc:doxxing	Doxxing	Doxxing
+risk-cards:lmrc:eating_disorder_promotion	Eating Disorder Promotion	Eating Disorder Promotion
+risk-cards:lmrc:essentialising	Essentialising	Essentialising
+risk-cards:lmrc:expressions_of_dominance	Expressions Of Dominance	Expressions Of Dominance
+risk-cards:lmrc:fear_of_violence	Fear Of Violence	Fear Of Violence
+risk-cards:lmrc:grooming_minors	Grooming Minors	Grooming Minors
+risk-cards:lmrc:harmful_instructions	Harmful Instructions	Harmful Instructions
+risk-cards:lmrc:hate_speech	Hate Speech	Hate Speech
+risk-cards:lmrc:hegemonising_worldview	Hegemonising Worldview	Hegemonising Worldview
+risk-cards:lmrc:holocaust_denial	Holocaust Denial	Holocaust Denial
+risk-cards:lmrc:identify_attacks	Identify Attacks	Identify Attacks
+risk-cards:lmrc:identity_misrepresentation	Identity Misrepresentation	Identity Misrepresentation
+risk-cards:lmrc:idolisation	Idolisation	Idolisation
+risk-cards:lmrc:impersonation	Impersonation	Impersonation
+risk-cards:lmrc:inciting_animal_abuse	Inciting Animal Abuse	Inciting Animal Abuse
+risk-cards:lmrc:inciting_self-harm	Inciting Self-Harm	Inciting Self-Harm
+risk-cards:lmrc:inciting_violence	Inciting Violence	Inciting Violence
+risk-cards:lmrc:manipulation	Manipulation	Manipulation
+risk-cards:lmrc:misquoting	Misquoting	Misquoting
+risk-cards:lmrc:mocking_people	Mocking People	Mocking People
+risk-cards:lmrc:neosexism	Neosexism	Neosexism
+risk-cards:lmrc:news_encyclopedia_hallucination	News Encyclopedia Hallucination	News Encyclopedia Hallucination
+risk-cards:lmrc:nonrepresentativity	Nonrepresentativity	Nonrepresentativity
+risk-cards:lmrc:objectification	Objectification	Objectification
+risk-cards:lmrc:outdated_false_info	Outdated False Info	Outdated False Info
+risk-cards:lmrc:person_group_undesirable	Person Group Undesirable	Person Group Undesirable
+risk-cards:lmrc:positive_reflections_death	Positive Reflections Death	Positive Reflections Death
+risk-cards:lmrc:profanity	Profanity	Profanity
+risk-cards:lmrc:prompt_extraction	Prompt Extraction	Prompt Extraction
+risk-cards:lmrc:providing_illegal_info	Providing Illegal Info	Providing Illegal Info
+risk-cards:lmrc:quack_medicine	Quack Medicine	Quack Medicine
+risk-cards:lmrc:radicalisation	Radicalisation	Radicalisation
+risk-cards:lmrc:reacting_to_self-harm	Reacting To Self-Harm	Reacting To Self-Harm
+risk-cards:lmrc:sexual_content	Sexual Content	Sexual Content
+risk-cards:lmrc:sexualisation	Sexualisation	Sexualisation
+risk-cards:lmrc:slur_usage	Slur Usage	Slur Usage
+risk-cards:lmrc:speculation	Speculation	Speculation
+risk-cards:lmrc:stereotypes	Stereotypes	Stereotypes
+risk-cards:lmrc:suicide_instructions	Suicide Instructions	Suicide Instructions
+risk-cards:lmrc:support_hate	Support Hate	Support Hate
+risk-cards:lmrc:supporting_medication_changes	Supporting Medication Changes	Supporting Medication Changes
+risk-cards:lmrc:support_scam	Support Scam	Support Scam
+risk-cards:lmrc:suppression_of_rights	Suppression Of Rights	Suppression Of Rights
+risk-cards:lmrc:threats	Threats	Threats
+risk-cards:lmrc:unproven_claims	Unproven Claims	Unproven Claims
+risk-cards:lmrc:violation_of_privacy	Violation Of Privacy	Violation Of Privacy
+risk-cards:lmrc:weapon_instructions	Weapon Instructions	Weapon Instructions
+risk-cards:lmrc:wrong_tone	Wrong Tone	Wrong Tone
