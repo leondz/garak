@@ -1,28 +1,33 @@
 import os
 import pytest
 
-import garak.cli
-from garak.generators.azure import AzureOpenAIChat
+from garak.generators.azure import AzureOpenAIGenerator
 
 DEFAULT_GENERATIONS_QTY = 10
 
-@pytest.mark.skipif(
-    os.getenv("AZURE_DEPLOYMENT_NAME", None) is None,
-    reason=f"AZURE_DEPLOYMENT_NAME env variable is not set",
-)
+
+def test_azureopenai_invalid_model_names():
+    with pytest.raises(ValueError) as e_info:
+        generator = AzureOpenAIGenerator(name="")
+    assert "name is required for" in str(e_info.value)
+    with pytest.raises(ValueError) as e_info:
+        generator = AzureOpenAIGenerator(name="this is not a real model name")
+    assert "please add one!" in str(e_info.value)
 
 @pytest.mark.skipif(
-    os.getenv("AZURE_ENDPOINT", None) is None,
-    reason=f"AZURE_ENDPOINT env variable is not set",
+    os.getenv(AzureOpenAIGenerator.ENV_VAR, None) is None,
+    reason=f"OpenAI API key is not set in {AzureOpenAIGenerator.ENV_VAR}",
 )
-
 @pytest.mark.skipif(
-    os.getenv(AzureOpenAIChat.ENV_VAR, None) is None,
-    reason=f"Azure OpenAI API key is not set in {AzureOpenAIChat.ENV_VAR}",
+    os.getenv(AzureOpenAIGenerator.DEPLOYMENT_NAME_ENV_VAR, None) is None,
+    reason=f"Deployment name is not set in {AzureOpenAIGenerator.DEPLOYMENT_NAME_ENV_VAR}",
 )
-
-def test_openai_chat():
-    generator = AzureOpenAIChat(name="gpt-4o")
+@pytest.mark.skipif(
+    os.getenv(AzureOpenAIGenerator.ENDPOINT_ENV_VAR, None) is None,
+    reason=f"Azure endpoint is not set in {AzureOpenAIGenerator.ENDPOINT_ENV_VAR}",
+)
+def test_azureopenai_chat():
+    generator = AzureOpenAIGenerator(name="gpt-4o")
     assert generator.name == "gpt-4o"
     assert generator.name_backup == "gpt-4o" 
     assert generator.generations == DEFAULT_GENERATIONS_QTY
