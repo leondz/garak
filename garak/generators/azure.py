@@ -43,10 +43,12 @@ class AzureOpenAIGenerator(OpenAICompatible):
 
     active = True
     generator_family_name = "Azure"
-    api_key = None
-    deployment_name = None
-    endpoint = None
-    name_backup = ""
+    
+    DEFAULT_PARAMS = OpenAICompatible.DEFAULT_PARAMS | {
+        "deployment_name": None,
+        "endpoint": None,
+        "name_backup": None,
+    }
 
     def _validate_env_var(self):
         if self.deployment_name is None:
@@ -80,13 +82,8 @@ class AzureOpenAIGenerator(OpenAICompatible):
         self.client = openai.AzureOpenAI(azure_endpoint=self.endpoint, api_key=self.api_key)
 
         if self.name == "":
-            openai_model_list = sorted([m.id for m in self.client.models.list().data])
             raise ValueError(
-                f"Model name is required for {self.generator_family_name}, use --model_name\n"
-                + "  API returns following available models: ▶️   "
-                + "  ".join(openai_model_list)
-                + "\n"
-                + "  ⚠️  Not all these are text generation models"
+                f"Model name is required for {self.generator_family_name}, use --model_name"
             )
 
         if self.name in completion_models:
