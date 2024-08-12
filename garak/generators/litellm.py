@@ -125,11 +125,7 @@ class LiteLLMGenerator(Generator):
             self.name, generations=self.generations, config_root=config_root
         )
 
-        if self.provider is None:
-            raise ValueError(
-                "litellm generator needs to have a provider value configured - see docs"
-            )
-        elif (
+        if (
             self.api_key is None
         ):  # TODO: special case where api_key is not always required
             if self.provider == "openai":
