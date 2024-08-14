@@ -4783,7 +4783,8 @@
     "generators.function.Multiple": {
       "description": "pass a module#function to be called as generator, with format function(prompt:str, generations:int, **kwargs)->List[Union(str, None)]",
       "DEFAULT_PARAMS": {
-        "generations": 10
+        "generations": 10,
+        "kwargs": {}
       },
       "active": true,
       "generator_family_name": "function",
@@ -4797,12 +4798,13 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2024-06-06 01:44:58 +0000"
+      "mod_time": "2024-08-14 22:22:12 +0000"
     },
     "generators.function.Single": {
       "description": "pass a module#function to be called as generator, with format function(prompt:str, **kwargs)->List[Union(str, None)] the parameter name `generations` is reserved",
       "DEFAULT_PARAMS": {
-        "generations": 10
+        "generations": 10,
+        "kwargs": {}
       },
       "active": true,
       "generator_family_name": "function",
@@ -4816,7 +4818,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-06-06 01:44:58 +0000"
+      "mod_time": "2024-08-14 22:22:12 +0000"
     },
     "generators.ggml.GgmlGenerator": {
       "description": "Generator interface for ggml models in gguf format.",
