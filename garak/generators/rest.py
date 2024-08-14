@@ -59,7 +59,7 @@ class RestGenerator(Generator):
     and response value are both under the ``text`` key, we'd define the service
     using something like: ::
 
-    .. code-block:: json
+    .. code-block:: JSON
       :linenos:
 
         {
