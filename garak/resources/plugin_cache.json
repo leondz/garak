@@ -60,7 +60,7 @@
         "always.Fail"
       ],
       "tags": [],
-      "mod_time": "2024-07-03 12:58:33 +0000"
+      "mod_time": "2024-07-03 05:58:33 +0000"
     },
     "probes.continuation.ContinueSlursReclaimedSlurs": {
       "description": "Continue partial word with slur or reclaimed slur.",
@@ -89,7 +89,7 @@
         "quality:Behavioral:ContentSafety:HateHarassment",
         "payload:unwanted:hatespeech"
       ],
-      "mod_time": "2024-08-02 06:41:21 +0000"
+      "mod_time": "2024-08-01 23:41:21 +0000"
     },
     "probes.continuation.ContinueSlursReclaimedSlursMini": {
       "description": "Continue partial word with slur or reclaimed slur.",
@@ -118,7 +118,7 @@
         "quality:Behavioral:ContentSafety:HateHarassment",
         "payload:unwanted:hatespeech"
       ],
-      "mod_time": "2024-08-02 06:41:21 +0000"
+      "mod_time": "2024-08-01 23:41:21 +0000"
     },
     "probes.dan.Ablation_Dan_11_0": {
       "description": "Ablation experiements over the DAN 11.0 prompt",
@@ -782,7 +782,7 @@
         "quality:Security:PromptStability",
         "payload:generic"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-06 09:34:04 +0000"
     },
     "probes.encoding.InjectBase16": {
       "description": "Probe for susceptibility to base16 encoded injections\"",
@@ -810,7 +810,7 @@
         "quality:Security:PromptStability",
         "payload:generic"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-06 09:34:04 +0000"
     },
     "probes.encoding.InjectBase2048": {
       "description": "Probe for susceptibility to Base2048 encoding injections",
@@ -838,7 +838,7 @@
         "quality:Security:PromptStability",
         "payload:generic"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-06 09:34:04 +0000"
     },
     "probes.encoding.InjectBase32": {
       "description": "Probe for susceptibility to base32 encoded injections",
@@ -866,7 +866,7 @@
         "quality:Security:PromptStability",
         "payload:generic"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-06 09:34:04 +0000"
     },
     "probes.encoding.InjectBase64": {
       "description": "Probe for susceptibility to base64 encoded injections",
@@ -894,7 +894,7 @@
         "quality:Security:PromptStability",
         "payload:generic"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-06 09:34:04 +0000"
     },
     "probes.encoding.InjectBraille": {
       "description": "Probe for susceptibility to Braille encoding injections. Credit Wally#3422",
@@ -922,7 +922,7 @@
         "quality:Security:PromptStability",
         "payload:generic"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-06 09:34:04 +0000"
     },
     "probes.encoding.InjectEcoji": {
       "description": "Probe for susceptibility to Ecoji encoding.",
@@ -950,7 +950,7 @@
         "quality:Security:PromptStability",
         "payload:generic"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-06 09:34:04 +0000"
     },
     "probes.encoding.InjectHex": {
       "description": "Probe for susceptibility to hex encoded injections",
@@ -978,7 +978,7 @@
         "quality:Security:PromptStability",
         "payload:generic"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-06 09:34:04 +0000"
     },
     "probes.encoding.InjectMime": {
       "description": "Probe for susceptibility to MIME encoding injections",
@@ -1006,7 +1006,7 @@
         "quality:Security:PromptStability",
         "payload:generic"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-06 09:34:04 +0000"
     },
     "probes.encoding.InjectMorse": {
       "description": "Probe for susceptibility to Morse encoding. Credit Wally#3422",
@@ -1034,7 +1034,7 @@
         "quality:Security:PromptStability",
         "payload:generic"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-06 09:34:04 +0000"
     },
     "probes.encoding.InjectNato": {
       "description": "Probe for susceptibility to Nato phonetic alphabet encoding.",
@@ -1062,7 +1062,7 @@
         "quality:Security:PromptStability",
         "payload:generic"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-06 09:34:04 +0000"
     },
     "probes.encoding.InjectQP": {
       "description": "Probe for susceptibility to QP encoded injections",
@@ -1090,7 +1090,7 @@
         "quality:Security:PromptStability",
         "payload:generic"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-06 09:34:04 +0000"
     },
     "probes.encoding.InjectROT13": {
       "description": "Probe for susceptibility to ROT13 encoding injections",
@@ -1118,7 +1118,7 @@
         "quality:Security:PromptStability",
         "payload:generic"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-06 09:34:04 +0000"
     },
     "probes.encoding.InjectUU": {
       "description": "Probe for susceptibility to UU encoded injections",
@@ -1146,7 +1146,7 @@
         "quality:Security:PromptStability",
         "payload:generic"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-06 09:34:04 +0000"
     },
     "probes.encoding.InjectZalgo": {
       "description": "Probe for susceptibility to Zalgo encoding.",
@@ -1174,7 +1174,7 @@
         "quality:Security:PromptStability",
         "payload:generic"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-06 09:34:04 +0000"
     },
     "probes.fileformats.HF_Files": {
       "description": "Get a manifest of files associated with a Hugging Face generator",
@@ -1200,7 +1200,7 @@
       "tags": [
         "owasp:llm05"
       ],
-      "mod_time": "2024-08-02 12:42:32 +0000"
+      "mod_time": "2024-08-02 05:42:32 +0000"
     },
     "probes.glitch.Glitch": {
       "description": "Probe model for glitch tokens that provoke unusual behavior",
@@ -1281,7 +1281,7 @@
         "quality:Security:PromptStability",
         "payload:generic"
       ],
-      "mod_time": "2024-06-12 17:04:47 +0000"
+      "mod_time": "2024-06-12 10:04:47 +0000"
     },
     "probes.goodside.Tag": {
       "description": "Exploit UTF tag page encoding for user-invisible prompt injection",
@@ -1307,7 +1307,7 @@
         "quality:Security:Adversarial",
         "quality:Security:PromptStability"
       ],
-      "mod_time": "2024-06-12 17:04:47 +0000"
+      "mod_time": "2024-06-12 10:04:47 +0000"
     },
     "probes.goodside.ThreatenJSON": {
       "description": "Will model strip preamble and give JSON?",
@@ -1333,7 +1333,7 @@
         "avid-effect:performance:P0204",
         "payload:generic"
       ],
-      "mod_time": "2024-06-12 17:04:47 +0000"
+      "mod_time": "2024-06-12 10:04:47 +0000"
     },
     "probes.goodside.WhoIsRiley": {
       "description": "Probe for misinfo about Riley Goodside",
@@ -1360,7 +1360,7 @@
         "quality:Robustness:GenerativeMisinformation",
         "payload:hallucination"
       ],
-      "mod_time": "2024-06-12 17:04:47 +0000"
+      "mod_time": "2024-06-12 10:04:47 +0000"
     },
     "probes.grandma.Slurs": {
       "description": "Use the grandma attack to get ethnic slurs.",
@@ -1392,7 +1392,7 @@
       "tags": [
         "avid-effect:security:S0300"
       ],
-      "mod_time": "2024-07-01 11:16:40 +0000"
+      "mod_time": "2024-07-01 04:16:40 +0000"
     },
     "probes.grandma.Substances": {
       "description": "Use the grandma attack to get instructios for harmful items.",
@@ -1424,7 +1424,7 @@
         "risk-cards:lmrc:providing_illegal_info",
         "quality:Behavioral:ContentSafety:LegalGoodsServices"
       ],
-      "mod_time": "2024-07-01 11:16:40 +0000"
+      "mod_time": "2024-07-01 04:16:40 +0000"
     },
     "probes.grandma.Win10": {
       "description": "Will the model yield a Windows 10 product key if we beg it to?",
@@ -1452,7 +1452,7 @@
         "risk-cards:lmrc:providing_illegal_info",
         "quality:Behavioral:ContentSafety:LegalGoodsServices"
       ],
-      "mod_time": "2024-07-01 11:16:40 +0000"
+      "mod_time": "2024-07-01 04:16:40 +0000"
     },
     "probes.grandma.Win11": {
       "description": "Will the model yield a Windows 11 product key if we beg it to?",
@@ -1480,7 +1480,7 @@
         "risk-cards:lmrc:providing_illegal_info",
         "quality:Behavioral:ContentSafety:LegalGoodsServices"
       ],
-      "mod_time": "2024-07-01 11:16:40 +0000"
+      "mod_time": "2024-07-01 04:16:40 +0000"
     },
     "probes.knownbadsignatures.EICAR": {
       "description": "Does the model check its output for viruses? Try to send the EICAR code through",
@@ -2083,7 +2083,7 @@
         "payload:malicious:badcode",
         "quality:Behavioral:ContentSafety:LegalGoodsServices"
       ],
-      "mod_time": "2024-06-12 17:04:47 +0000"
+      "mod_time": "2024-06-12 10:04:47 +0000"
     },
     "probes.malwaregen.Payload": {
       "description": "Will the model help write code for malware payloads?",
@@ -2107,7 +2107,7 @@
         "avid-effect:security:S0403",
         "quality:Behavioral:ContentSafety:LegalGoodsServices"
       ],
-      "mod_time": "2024-06-12 17:04:47 +0000"
+      "mod_time": "2024-06-12 10:04:47 +0000"
     },
     "probes.malwaregen.SubFunctions": {
       "description": "Will the system write code helpful in malware?",
@@ -2132,7 +2132,7 @@
         "payload:malicious:badcode",
         "quality:Behavioral:ContentSafety:LegalGoodsServices"
       ],
-      "mod_time": "2024-06-12 17:04:47 +0000"
+      "mod_time": "2024-06-12 10:04:47 +0000"
     },
     "probes.malwaregen.TopLevel": {
       "description": "Will the system return code when asked to write malware?",
@@ -2157,7 +2157,7 @@
         "payload:malicious:badcode",
         "quality:Behavioral:ContentSafety:LegalGoodsServices"
       ],
-      "mod_time": "2024-06-12 17:04:47 +0000"
+      "mod_time": "2024-06-12 10:04:47 +0000"
     },
     "probes.misleading.FalseAssertion50": {
       "description": "Does the model reject [questions based on] false claims?",
@@ -2994,7 +2994,7 @@
         "always.Pass"
       ],
       "tags": [],
-      "mod_time": "2024-07-24 03:50:05 +0000"
+      "mod_time": "2024-07-23 20:50:05 +0000"
     },
     "probes.test.Test": {
       "description": "Test probe",
@@ -3015,7 +3015,7 @@
         "always.Pass"
       ],
       "tags": [],
-      "mod_time": "2024-07-24 03:50:05 +0000"
+      "mod_time": "2024-07-23 20:50:05 +0000"
     },
     "probes.visual_jailbreak.FigStep": {
       "description": "Using another modal - image to assist jailbreak",
@@ -3117,7 +3117,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.always.Pass": {
       "description": "Always Pass (for testing & prototyping)",
@@ -3134,7 +3134,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.base.Detector": {
       "description": "Base class for objects that define a way of detecting a probe hit / LLM failure",
@@ -3151,7 +3151,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-02 12:42:32 +0000"
+      "mod_time": "2024-08-02 05:42:32 +0000"
     },
     "detectors.base.FileDetector": {
       "description": "Detector subclass for processing attempts whose outputs are filenames for checking",
@@ -3169,7 +3169,7 @@
       "recall": 0.0,
       "tags": [],
       "valid_format": "local filename",
-      "mod_time": "2024-08-02 12:42:32 +0000"
+      "mod_time": "2024-08-02 05:42:32 +0000"
     },
     "detectors.base.HFDetector": {
       "description": "Detector using a Hugging Face model",
@@ -3190,7 +3190,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-02 12:42:32 +0000"
+      "mod_time": "2024-08-02 05:42:32 +0000"
     },
     "detectors.base.StringDetector": {
       "description": "Subclass of Detector using list of substrings as detection triggers",
@@ -3207,7 +3207,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-02 12:42:32 +0000"
+      "mod_time": "2024-08-02 05:42:32 +0000"
     },
     "detectors.base.TriggerListDetector": {
       "description": "Subclass of Detector using attempt's notes[triggers] as list of strings to match",
@@ -3224,7 +3224,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-02 12:42:32 +0000"
+      "mod_time": "2024-08-02 05:42:32 +0000"
     },
     "detectors.continuation.Continuation": {
       "description": "Detect if model intiates / continues a trigger word",
@@ -3241,7 +3241,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.dan.AntiDAN": {
       "description": "Do we get an ANTI-DAN positive?",
@@ -3391,7 +3391,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.encoding.DecodeMatch": {
       "description": "Is there a direct hash decoding?",
@@ -3408,7 +3408,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.fileformats.FileIsExecutable": {
       "description": "",
@@ -3426,7 +3426,7 @@
       "recall": 0.0,
       "tags": [],
       "valid_format": "local filename",
-      "mod_time": "2024-08-02 12:42:32 +0000"
+      "mod_time": "2024-08-02 05:42:32 +0000"
     },
     "detectors.fileformats.FileIsPickled": {
       "description": "",
@@ -3444,7 +3444,7 @@
       "recall": 0.0,
       "tags": [],
       "valid_format": "local filename",
-      "mod_time": "2024-08-02 12:42:32 +0000"
+      "mod_time": "2024-08-02 05:42:32 +0000"
     },
     "detectors.fileformats.PossiblePickleName": {
       "description": "Guess if filenames look like pickles",
@@ -3462,7 +3462,7 @@
       "recall": 0.0,
       "tags": [],
       "valid_format": null,
-      "mod_time": "2024-08-02 12:42:32 +0000"
+      "mod_time": "2024-08-02 05:42:32 +0000"
     },
     "detectors.goodside.Glitch": {
       "description": "Inverse trigger list detector - hit if trigger absent",
@@ -3479,7 +3479,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.goodside.PlainJSON": {
       "description": "Is the output valid JSON with no preamble?",
@@ -3496,7 +3496,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.goodside.RileyIsnt": {
       "description": "Look for mentions of being Canadian, female pronouns, being a singer",
@@ -3513,7 +3513,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.knownbadsignatures.EICAR": {
       "description": "Is the EICAR test string present?",
@@ -3587,7 +3587,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.lmrc.Anthro": {
       "description": "Looking for first person pronoun uses",
@@ -3643,7 +3643,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.misleading.MustContradictNLI": {
       "description": "This detector is looking for the model to contradict a claim.",
@@ -3726,7 +3726,7 @@
         "avid-effect:security:S0403",
         "avid-effect:performance:P0204"
       ],
-      "mod_time": "2024-07-25 22:08:38 +0000"
+      "mod_time": "2024-07-25 15:08:38 +0000"
     },
     "detectors.packagehallucination.PythonPypi": {
       "description": "Check if the output tries to import a package not listed in stdlib or a pypi archive listing",
@@ -3763,7 +3763,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.perspective.Attack_On_Commenter": {
       "description": "Targets: Attack on fellow commenter.",
@@ -3783,7 +3783,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.perspective.Flirtation": {
       "description": "Targets: Pickup lines, complimenting appearance, subtle sexual innuendos, etc.",
@@ -3804,7 +3804,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.perspective.Identity_Attack": {
       "description": "Targets: Negative or hateful comments targeting someone because of their identity.",
@@ -3826,7 +3826,7 @@
         "avid-effect:ethics:E0302",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.perspective.Identity_Attack_Experimental": {
       "description": "Targets: Negative or hateful comments targeting someone because of their identity.",
@@ -3848,7 +3848,7 @@
         "avid-effect:ethics:E0302",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.perspective.Incoherent": {
       "description": "Targets: Difficult to understand, nonsensical.",
@@ -3867,7 +3867,7 @@
       "tags": [
         "avid-effect:performance:P0204"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.perspective.Inflammatory": {
       "description": "Targets: Intending to provoke or inflame.",
@@ -3888,7 +3888,7 @@
         "avid-effect:ethics:E0302",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.perspective.Insult": {
       "description": "Targets: Insulting, inflammatory, or negative comment towards a person or a group of people.",
@@ -3909,7 +3909,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.perspective.Insult_Experimental": {
       "description": "Targets: Insulting, inflammatory, or negative comment towards a person or a group of people.",
@@ -3929,7 +3929,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.perspective.Likely_To_Reject": {
       "description": "Targets: Overall measure of the likelihood for the comment to be rejected according to the NYT's moderation.",
@@ -3946,7 +3946,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.perspective.Obscene": {
       "description": "Targets: Obscene or vulgar language such as cursing.",
@@ -3966,7 +3966,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.perspective.Profanity": {
       "description": "Targets: Swear words, curse words, or other obscene or profane language.",
@@ -3986,7 +3986,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.perspective.Profanity_Experimental": {
       "description": "Targets: Swear words, curse words, or other obscene or profane language.",
@@ -4006,7 +4006,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.perspective.Severe_Toxicity": {
       "description": "Targets: A very hateful, aggressive, disrespectful comment or otherwise very likely to make a user leave a discussion or give up on sharing their perspective. This attribute is much less sensitive to more mild forms of toxicity, such as comments that include positive uses of curse words.",
@@ -4025,7 +4025,7 @@
       "tags": [
         "avid-effect:ethics:E0301"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.perspective.Severe_Toxicity_Experimental": {
       "description": "Targets: A very hateful, aggressive, disrespectful comment or otherwise very likely to make a user leave a discussion or give up on sharing their perspective. This attribute is much less sensitive to more mild forms of toxicity, such as comments that include positive uses of curse words.",
@@ -4046,7 +4046,7 @@
         "avid-effect:ethics:E0302",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.perspective.Sexually_Explicit": {
       "description": "Targets: Contains references to sexual acts, body parts, or other lewd content.",
@@ -4065,7 +4065,7 @@
       "tags": [
         "avid-effect:ethics:E0301"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.perspective.Spam": {
       "description": "Targets: Irrelevant and unsolicited commercial content.",
@@ -4084,7 +4084,7 @@
       "tags": [
         "avid-effect:performance:P0204"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.perspective.Threat": {
       "description": "Targets: Describes an intention to inflict pain, injury, or violence against an individual or group.",
@@ -4105,7 +4105,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0400"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.perspective.Threat_Experimental": {
       "description": "Targets: Describes an intention to inflict pain, injury, or violence against an individual or group.",
@@ -4125,7 +4125,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.perspective.Toxicity": {
       "description": "Targets: A rude, disrespectful, or unreasonable comment that is likely to make people leave a discussion.",
@@ -4144,7 +4144,7 @@
       "tags": [
         "avid-effect:ethics:E0301"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.perspective.Toxicity_Experimental": {
       "description": "Targets: A rude, disrespectful, or unreasonable comment that is likely to make people leave a discussion.",
@@ -4164,7 +4164,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.perspective.Unsubstantial": {
       "description": "Targets: Trivial or short comments",
@@ -4183,7 +4183,7 @@
       "tags": [
         "avid-effect:performance:P0204"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.productkey.Win5x5": {
       "description": "Do we see a product key in the form of five groups of five characters?",
@@ -4200,7 +4200,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.promptinject.AttackRogueString": {
       "description": "Detect if model emits trigger string",
@@ -4217,7 +4217,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.replay.RepeatDiverges": {
       "description": "Subclass of Detector using attempt's notes[triggers] as list of strings to match",
@@ -4234,7 +4234,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.riskywords.LDNOOBW": {
       "description": "List of Dirty, Naughty, Obscene, and Otherwise Bad Words (English)",
@@ -4601,7 +4601,7 @@
       "tags": [
         "avid:performance:P0204"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.snowball.DontStartYes": {
       "description": "Response should start yes, or contain an affirmation, to pass",
@@ -4620,7 +4620,7 @@
       "tags": [
         "avid:performance:P0204"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.specialwords.SlursReclaimedSlurs": {
       "description": "Slurs and reclaimed slurs. Detects presence of any of the items from an ethnic slur list, regardless of context.",
@@ -4686,7 +4686,7 @@
       "tags": [
         "avid-effect:security:S0403"
       ],
-      "mod_time": "2024-06-12 17:04:47 +0000"
+      "mod_time": "2024-06-12 10:04:47 +0000"
     },
     "detectors.xss.MarkdownExfilBasic": {
       "description": "Detect markdown images with fqdn, absolute path, and populated q= parameter",
@@ -4705,7 +4705,7 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     },
     "detectors.xss.MarkdownExfilContent": {
       "description": "As the basic detector, MarkdownExfilBasic, but did we exfiltrate anything?",
@@ -4724,7 +4724,7 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2024-07-02 00:51:48 +0000"
+      "mod_time": "2024-07-01 17:51:48 +0000"
     }
   },
   "generators": {
@@ -4749,7 +4749,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-07-05 20:03:44 +0000"
+      "mod_time": "2024-07-05 13:03:44 +0000"
     },
     "generators.cohere.CohereGenerator": {
       "description": "Interface to Cohere's python library for their text2text model.",
@@ -4897,7 +4897,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2024-07-18 13:25:07 +0000"
+      "mod_time": "2024-07-18 06:25:07 +0000"
     },
     "generators.huggingface.InferenceAPI": {
       "description": "Get text generations from Hugging Face Inference API",
@@ -4923,7 +4923,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2024-07-18 13:25:07 +0000"
+      "mod_time": "2024-07-18 06:25:07 +0000"
     },
     "generators.huggingface.InferenceEndpoint": {
       "description": "Interface for Hugging Face private endpoints",
@@ -4949,7 +4949,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-07-18 13:25:07 +0000"
+      "mod_time": "2024-07-18 06:25:07 +0000"
     },
     "generators.huggingface.LLaVA": {
       "description": "Get LLaVA ([ text + image ] -> text) generations",
@@ -4978,7 +4978,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": false,
-      "mod_time": "2024-07-18 13:25:07 +0000"
+      "mod_time": "2024-07-18 06:25:07 +0000"
     },
     "generators.huggingface.Model": {
       "description": "Get text generations from a locally-run Hugging Face model",
@@ -5006,7 +5006,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2024-07-18 13:25:07 +0000"
+      "mod_time": "2024-07-18 06:25:07 +0000"
     },
     "generators.huggingface.OptimumPipeline": {
       "description": "Get text generations from a locally-run Hugging Face pipeline using NVIDIA Optimum",
@@ -5034,7 +5034,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2024-07-18 13:25:07 +0000"
+      "mod_time": "2024-07-18 06:25:07 +0000"
     },
     "generators.huggingface.Pipeline": {
       "description": "Get text generations from a locally-run Hugging Face pipeline",
@@ -5062,7 +5062,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2024-07-18 13:25:07 +0000"
+      "mod_time": "2024-07-18 06:25:07 +0000"
     },
     "generators.langchain.LangChainLLMGenerator": {
       "description": "Class supporting LangChain LLM interfaces",
@@ -5215,7 +5215,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-07-31 02:37:55 +0000"
+      "mod_time": "2024-07-30 19:37:55 +0000"
     },
     "generators.nim.NVOpenAICompletion": {
       "description": "Wrapper for NVIDIA-hosted NIMs. Expects NIM_API_KEY environment variable.",
@@ -5255,7 +5255,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-07-31 02:37:55 +0000"
+      "mod_time": "2024-07-30 19:37:55 +0000"
     },
     "generators.nvcf.NvcfChat": {
       "description": "Wrapper for NVIDIA Cloud Functions Chat models via NGC. Expects NVCF_API_KEY environment variable.",
@@ -5288,7 +5288,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-07-05 16:48:50 +0000"
+      "mod_time": "2024-07-05 09:48:50 +0000"
     },
     "generators.nvcf.NvcfCompletion": {
       "description": "Wrapper for NVIDIA Cloud Functions Completion models via NGC. Expects NVCF_API_KEY environment variables.",
@@ -5321,7 +5321,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-07-05 16:48:50 +0000"
+      "mod_time": "2024-07-05 09:48:50 +0000"
     },
     "generators.octo.InferenceEndpoint": {
       "description": "Interface for OctoAI private endpoints",
@@ -5346,7 +5346,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-06-12 17:04:47 +0000"
+      "mod_time": "2024-06-12 10:04:47 +0000"
     },
     "generators.octo.OctoGenerator": {
       "description": "Interface for OctoAI public endpoints",
@@ -5371,7 +5371,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-06-12 17:04:47 +0000"
+      "mod_time": "2024-06-12 10:04:47 +0000"
     },
     "generators.openai.OpenAICompatible": {
       "description": "Generator base class for OpenAI compatible text2text restful API. Implements shared initialization and execution methods.",
@@ -5404,7 +5404,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2024-07-31 02:37:55 +0000"
+      "mod_time": "2024-07-30 19:37:55 +0000"
     },
     "generators.openai.OpenAIGenerator": {
       "description": "Generator wrapper for OpenAI text2text models. Expects API key in the OPENAI_API_KEY environment variable",
@@ -5437,7 +5437,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2024-07-31 02:37:55 +0000"
+      "mod_time": "2024-07-30 19:37:55 +0000"
     },
     "generators.rasa.RasaRestGenerator": {
       "description": "API interface for RASA models",
@@ -5554,7 +5554,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-07-05 22:31:40 +0000"
+      "mod_time": "2024-08-14 08:02:27 +0000"
     },
     "generators.test.Blank": {
       "description": "This generator always returns the empty string.",
@@ -5577,7 +5577,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2024-07-18 13:04:25 +0000"
+      "mod_time": "2024-07-18 06:04:25 +0000"
     },
     "generators.test.Lipsum": {
       "description": "Lorem Ipsum generator, so we can get non-zero outputs that vary",
@@ -5600,7 +5600,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-07-18 13:04:25 +0000"
+      "mod_time": "2024-07-18 06:04:25 +0000"
     },
     "generators.test.Repeat": {
       "description": "This generator returns the input that was posed to it.",
@@ -5623,7 +5623,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2024-07-18 13:04:25 +0000"
+      "mod_time": "2024-07-18 06:04:25 +0000"
     },
     "generators.test.Single": {
       "description": "This generator returns the a fixed string and does not support multiple generations.",
@@ -5646,7 +5646,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-07-18 13:04:25 +0000"
+      "mod_time": "2024-07-18 06:04:25 +0000"
     }
   },
   "harnesses": {
@@ -5654,17 +5654,17 @@
       "description": "Class to manage the whole process of probing, detecting and evaluating",
       "DEFAULT_PARAMS": {},
       "active": true,
-      "mod_time": "2024-08-02 12:42:32 +0000"
+      "mod_time": "2024-08-02 05:42:32 +0000"
     },
     "harnesses.probewise.ProbewiseHarness": {
       "DEFAULT_PARAMS": {},
       "active": true,
-      "mod_time": "2024-06-12 17:04:47 +0000"
+      "mod_time": "2024-06-12 10:04:47 +0000"
     },
     "harnesses.pxd.PxD": {
       "DEFAULT_PARAMS": {},
       "active": true,
-      "mod_time": "2024-06-12 17:04:47 +0000"
+      "mod_time": "2024-06-12 10:04:47 +0000"
     }
   },
   "buffs": {
@@ -5674,7 +5674,7 @@
       "active": true,
       "bcp47": null,
       "doc_uri": "",
-      "mod_time": "2024-07-03 12:58:33 +0000"
+      "mod_time": "2024-07-03 05:58:33 +0000"
     },
     "buffs.encoding.Base64": {
       "description": "Base64 buff",
@@ -5698,7 +5698,7 @@
       "active": true,
       "bcp47": null,
       "doc_uri": "https://arxiv.org/abs/2310.02446",
-      "mod_time": "2024-06-12 17:04:47 +0000"
+      "mod_time": "2024-06-12 10:04:47 +0000"
     },
     "buffs.lowercase.Lowercase": {
       "description": "Lowercasing buff",
