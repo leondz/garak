@@ -55,7 +55,7 @@ Gated models simply require login and in some case acceptance of model provider 
 
 ## Is it safe to build garak into toolchains? Who's supporting this?
 
-NVIDIA Corporation officially contributes to the garak open-source project and will continue to do so in the long term. Get in touch if you'd like to talk more about this.
+NVIDIA Corporation officially contributes to the garak open-source project and will continue to do so in the long term. Garak will continue to be licensed with Apache 2.0. Get in touch if you'd like to talk more about this.
 
 <!-- ## Why the name?
 
