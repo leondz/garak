@@ -33,7 +33,7 @@ plugins:
         - default
 
 reporting:
-  report_prefix: 
+  report_prefix:
   taxonomy:
   report_dir: garak_runs
   show_100_pass_modules: true
