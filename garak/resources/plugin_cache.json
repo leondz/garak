@@ -5147,7 +5147,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2024-07-16 16:38:45 +0000"
+      "mod_time": "2024-08-15 14:41:13 +0000"
     },
     "generators.nemo.NeMoGenerator": {
       "description": "Wrapper for the NVIDIA NeMo models via NGC. Expects NGC_API_KEY and ORG_ID environment variables.",
