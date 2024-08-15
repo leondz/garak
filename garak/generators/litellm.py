@@ -41,6 +41,7 @@ import backoff
 import litellm
 
 from garak import _config
+from garak.exception import BadGeneratorException
 from garak.generators.base import Generator
 
 # Fix issue with Ollama which does not support `presence_penalty`
@@ -136,7 +137,7 @@ class LiteLLMGenerator(Generator):
                         " or in the configuration file"
                     )
 
-    @backoff.on_exception(backoff.fibo, Exception, max_value=70)
+    @backoff.on_exception(backoff.fibo, litellm.exceptions.APIError, max_value=70)
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
@@ -153,20 +154,23 @@ class LiteLLMGenerator(Generator):
             print(msg)
             return []
 
-        response = litellm.completion(
-            model=self.name,
-            messages=prompt,
-            temperature=self.temperature,
-            top_p=self.top_p,
-            n=generations_this_call,
-            stop=self.stop,
-            max_tokens=self.max_tokens,
-            frequency_penalty=self.frequency_penalty,
-            presence_penalty=self.presence_penalty,
-            api_base=self.api_base,
-            custom_llm_provider=self.provider,
-            api_key=self.api_key,
-        )
+        try:
+            response = litellm.completion(
+                model=self.name,
+                messages=prompt,
+                temperature=self.temperature,
+                top_p=self.top_p,
+                n=generations_this_call,
+                stop=self.stop,
+                max_tokens=self.max_tokens,
+                frequency_penalty=self.frequency_penalty,
+                presence_penalty=self.presence_penalty,
+                api_base=self.api_base,
+                custom_llm_provider=self.provider,
+                api_key=self.api_key,
+            )
+        except litellm.exceptions.BadRequestError as e:
+            raise BadGeneratorException() from e
 
         if self.supports_multiple_generations:
             return [c.message.content for c in response.choices]
