@@ -3,7 +3,7 @@
 
 """Flow for invoking garak from the command line"""
 
-command_options = "list_detectors list_probes list_generators list_buffs list_config plugin_info interactive report version".split()
+command_options = "list_detectors list_probes list_generators list_buffs list_config plugin_info interactive report version detector_only".split()
 
 
 def main(arguments=None) -> None:
@@ -106,6 +106,12 @@ def main(arguments=None) -> None:
     )
     parser.add_argument(
         "--config", type=str, default=None, help="YAML config file for this run"
+    )
+    parser.add_argument(
+        "--probed_report_path",
+        type=str,
+        default=None,
+        help="Path to jsonl report that stores the generators responses"
     )
 
     ## PLUGINS
@@ -246,6 +252,11 @@ def main(arguments=None) -> None:
         "--interactive.py",
         action="store_true",
         help="Launch garak in interactive.py mode",
+    )
+    parser.add_argument(
+        "--detector_only",
+        action="store_true",
+        help="run detector on jsonl report"
     )
 
     logging.debug("args - raw argument string received: %s", arguments)
@@ -512,6 +523,30 @@ def main(arguments=None) -> None:
                 )
 
             command.end_run()
+        
+        elif args.detector_only:
+            # Run detector only detection
+            if not _config.plugins.detector_spec:
+                logging.error("Detector(s) not specified. Use --detectors")
+                raise ValueError("use --detectors to specify some detectors")
+            
+            if not _config.run.probed_report_path:
+                logging.error("report path not specified")
+                raise ValueError("Specify jsonl report path using --probed_report_path")
+
+            evaluator = garak.evaluators.ThresholdEvaluator(_config.run.eval_threshold)
+            print(_config.plugins.detector_spec.split(","))
+
+            detector_names, detector_rejected = _config.parse_plugin_spec(
+                getattr(_config.plugins, "detector_spec", ""),
+                "detectors",
+                getattr(_config.run, "detector_tags", "")
+                )
+
+            command.start_run()
+            command.detector_only_run(_config.run.probed_report_path, detector_names, evaluator)
+            command.end_run()
+
         else:
             print("nothing to do 🤷  try --help")
             if _config.plugins.model_name and not _config.plugins.model_type:

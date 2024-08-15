@@ -105,6 +105,24 @@ class Attempt:
             "messages": self.messages,
         }
 
+    @classmethod
+    def from_dict(cls, dicti):
+        """Initializes an attempt object from dictionary"""
+        attempt_obj = cls()
+        attempt_obj.uuid = dicti['uuid']
+        attempt_obj.seq = dicti['seq']
+        attempt_obj.status = dicti['status']
+        attempt_obj.probe_classname = dicti['probe_classname']
+        attempt_obj.probe_params = dicti['probe_params']
+        attempt_obj.targets = dicti['targets']
+        attempt_obj.prompt = dicti['prompt']
+        attempt_obj.outputs = dicti['outputs']
+        attempt_obj.detector_results = dicti['detector_results']
+        attempt_obj.notes = dicti['notes']
+        attempt_obj.goal = dicti['goal']
+        attempt_obj.messages = dicti['messages']
+        return attempt_obj
+
     def __getattribute__(self, name: str) -> Any:
         """override prompt and outputs access to take from history"""
         if name == "prompt":
@@ -260,3 +278,12 @@ class Attempt:
             "Conversation turn role must be one of '%s', got '%s'"
             % ("'/'".join(roles), role)
         )
+
+if __name__ == "__main__":
+    import json
+    with open('test/test.report.jsonl') as f:
+        data = [json.loads(line) for line in f]
+    
+    data = [d for d in data if d["entry_type"] == "attempt" and d["status"] == 1]
+    attempt_object = Attempt.from_dict(data[0])
+    print(attempt_object.as_dict())

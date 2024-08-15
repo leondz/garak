@@ -12,6 +12,7 @@ run:
   eval_threshold: 0.5
   generations: 10
   probe_tags:
+  probed_report_path:
 
 plugins:
   model_type:
@@ -32,7 +33,7 @@ plugins:
         - default
 
 reporting:
-  report_prefix:
+  report_prefix: test
   taxonomy:
-  report_dir: garak_runs
+  report_dir: /Users/vidushi/desktop/garak/test
   show_100_pass_modules: true
