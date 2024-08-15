@@ -278,12 +278,3 @@ class Attempt:
             "Conversation turn role must be one of '%s', got '%s'"
             % ("'/'".join(roles), role)
         )
-
-if __name__ == "__main__":
-    import json
-    with open('test/test.report.jsonl') as f:
-        data = [json.loads(line) for line in f]
-    
-    data = [d for d in data if d["entry_type"] == "attempt" and d["status"] == 1]
-    attempt_object = Attempt.from_dict(data[0])
-    print(attempt_object.as_dict())
