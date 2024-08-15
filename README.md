@@ -62,7 +62,7 @@ conda create --name garak "python>=3.10,<=3.12"
 conda activate garak
 gh repo clone leondz/garak
 cd garak
-python -m pip install -r requirements.txt
+python -m pip install -e .
 ```
 
 OK, if that went fine, you're probably good to go!
@@ -71,11 +71,11 @@ OK, if that went fine, you're probably good to go!
 
 The general syntax is:
 
-`python3 -m garak <options>`
+`garak <options>`
 
 `garak` needs to know what model to scan, and by default, it'll try all the probes it knows on that model, using the vulnerability detectors recommended by each probe. You can see a list of probes using:
 
-`python3 -m garak --list_probes`
+`garak --list_probes`
 
 To specify a generator, use the `--model_type` and, optionally, the `--model_name` options. Model type specifies a model family/interface; model name specifies the exact model to be used. The "Intro to generators" section below describes some of the generators supported. A straightforward generator family is Hugging Face models; to load one of these, set `--model_type` to `huggingface` and `--model_name` to the model's name on Hub (e.g. `"RWKV/rwkv-4-169m-pile"`). Some generators might need an API key to be set as an environment variable, and they'll let you know if they need that.
 
@@ -119,11 +119,15 @@ Send PRs & open issues. Happy hunting!
 
 ### Hugging Face
 
+Using the Pipeline API:
 * `--model_type huggingface` (for transformers models to run locally)
 * `--model_name` - use the model name from Hub. Only generative models will work. If it fails and shouldn't, please open an issue and paste in the command you tried + the exception!
 
+Using the Inference API:
 * `--model_type huggingface.InferenceAPI` (for API-based model access)
 * `--model_name` - the model name from Hub, e.g. `"mosaicml/mpt-7b-instruct"`
+
+Using private endpoints:
 * `--model_type huggingface.InferenceEndpoint` (for private endpoints)
 * `--model_name` - the endpoint URL, e.g. `https://xxx.us-east-1.aws.endpoints.huggingface.cloud`
 
@@ -139,11 +143,15 @@ Recognised model types are whitelisted, because the plugin needs to know which s
 
 ### Replicate
 
+* set the `REPLICATE_API_TOKEN` environment variable to your Replicate API token, e.g. "r8-123XXXXXXXXXXXX"; see https://replicate.com/account/api-tokens when logged in
+
+Public Replicate models:
 * `--model_type replicate`
 * `--model_name` - the Replicate model name and hash, e.g. `"stability-ai/stablelm-tuned-alpha-7b:c49dae36"`
+
+Private Replicate endpoints:
 * `--model_type replicate.InferenceEndpoint` (for private endpoints)
 * `--model_name` - username/model-name slug from the deployed endpoint, e.g. `elim/elims-llama2-7b`
-* set the `REPLICATE_API_TOKEN` environment variable to your Replicate API token, e.g. "r8-123XXXXXXXXXXXX"; see https://replicate.com/account/api-tokens when logged in
 
 ### Cohere
 
@@ -157,13 +165,35 @@ Recognised model types are whitelisted, because the plugin needs to know which s
 * `--model_name` - The path to the ggml model you'd like to load, e.g. `/home/leon/llama.cpp/models/7B/ggml-model-q4_0.bin`
 * set the `GGML_MAIN_PATH` environment variable to the path to your ggml `main` executable
 
+### REST
+
+`rest.RestGenerator` is highly flexible and can connect to any REST endpoint that returns plaintext or JSON. It does need some brief config, which will typically result a short YAML file describing your endpoint. See https://reference.garak.ai/en/latest/garak.generators.rest.html for examples.
+
+### NIM
+
+Use models from https://build.nvidia.com/ or other NIM endpoints.
+* set the `NIM_API_KEY` environment variable to your authentication API token, or specify it in the config YAML
+
+For chat models:
+* `--model_type nim`
+* `--model_name` - the NIM `model` name, e.g. `meta/llama-3.1-8b-instruct`
+
+For completion models:
+* `--model_type nim.NVOpenAICompletion`
+* `--model_name` - the NIM `model` name, e.g. `bigcode/starcoder2-15b`
+
+
 ### OctoAI
 
+* set the `OCTO_API_TOKEN` environment variable to your Replicate API token, e.g. "r8-123XXXXXXXXXXXX"; see https://replicate.com/account/api-tokens when logged in
+
+Octo public endpoint:
 * `--model_type octo`
 * `--model_name` - the OctoAI public endpoint for the model, e.g. `mistral-7b-instruct-fp16`
+
+Octo private endpoint:
 * `--model_type octo.InferenceEndpoint` (for private endpoints)
 * `--model_name` - the deployed endpoint URL, e.g. `https://llama-2-70b-chat-xxx.octoai.run/v1/chat/completions`
-* set the `OCTO_API_TOKEN` environment variable to your Replicate API token, e.g. "r8-123XXXXXXXXXXXX"; see https://replicate.com/account/api-tokens when logged in
 
 ### Test
 
@@ -186,6 +216,7 @@ For testing. This generator repeats back the prompt it received.
 | encoding | Prompt injection through text encoding |
 | gcg | Disrupt a system prompt by appending an adversarial suffix. |
 | glitch | Probe model for glitch tokens that provoke unusual behavior. |
+| grandma | Appeal to be reminded of one's grandmother. | 
 | goodside | Implementations of Riley Goodside attacks. |
 | knownbadsignatures | Probes that attempt to make the model output malicious content signatures |
 | leakerplay | Evaluate if a model will replay training data. |

@@ -6,8 +6,12 @@ Attempt to get a model to engage on a number of contentious topics
 """
 
 from collections.abc import Iterable
+import logging
+from pathlib import Path
 from typing import Iterable
-import wn
+
+import nltk
+from nltk.corpus import wordnet
 
 from garak import _config
 from garak.probes.base import TreeSearchProbe
@@ -35,7 +39,6 @@ class WordnetBlockedWords(TreeSearchProbe):
 
     DEFAULT_PARAMS = TreeSearchProbe.DEFAULT_PARAMS | {
         "target_topics": ["abortion"],
-        "lexicon": "oewn:2023",
     }
 
     TEMPLATES = [
@@ -86,11 +89,32 @@ class WordnetBlockedWords(TreeSearchProbe):
             prompt = template.replace("[term]", term)
             yield prompt
 
+
+    def _nltk_data(self):
+        """Set nltk_data location, if an existing default is found utilize it, otherwise add to project's cache location."""
+        from nltk.downloader import Downloader
+
+        default_path = Path(Downloader().default_download_dir())
+        if not default_path.exists():
+            # if path not found then place in the user cache
+            # get env var for NLTK_DATA, fallback to create in cachedir / nltk_data
+            logging.debug("nltk_data location not found using project cache location")
+            self._nltk_data_path.mkdir(mode=0o740, parents=True, exist_ok=True)
+            self.default_path = self._nltk_data_path
+        return default_path
+
+
     def __init__(self, config_root=_config):
         super().__init__(config_root)
 
-        wn.download(self.lexicon)
-        self.w = wn.Wordnet(self.lexicon)
+        self._nltk_data_path = _config.transient.cache_dir / "nltk_data"
+        nltk.data.path.append(str(self._nltk_data_path))
+        
+        try: 
+            _ = wordnet.synsets("test")
+        except LookupError as e:
+            nltk.download("wordnet")
+            self.w = wordnet
 
 
 class WordnetAllowedWords(WordnetBlockedWords):

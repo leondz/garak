@@ -8,12 +8,15 @@ import json
 
 
 def start_logging():
+    from garak import _config
+
+    log_filename = _config.transient.data_dir / "garak.log"
+
     logging.basicConfig(
-        filename="garak.log",
+        filename=log_filename,
         level=logging.DEBUG,
         format="%(asctime)s  %(levelname)s  %(message)s",
     )
-
     # garaklogger = logging.FileHandler("garak.log", encoding="utf-8")
     # garakformatter = logging.Formatter("%(asctime)s  %(levelname)s  %(message)s")
     # garaklogger.setFormatter(garakformatter)
@@ -26,12 +29,15 @@ def start_logging():
     # logging.root = rootlogger
     logging.info("invoked")
 
+    return log_filename
+
 
 def start_run():
     import logging
     import os
     import uuid
 
+    from pathlib import Path
     from garak import _config
 
     logging.info("started at %s", _config.transient.starttime_iso)
@@ -41,19 +47,24 @@ def start_run():
             "⚠️ The current/default config is optimised for speed rather than thoroughness. Try e.g. --config full for a stronger test, or specify some probes."
         )
     _config.transient.run_id = str(uuid.uuid4())  # uuid1 is safe but leaks host info
+    report_path = Path(_config.reporting.report_dir)
+    if not report_path.is_absolute():
+        logging.debug("relative report dir provided")
+        report_path = _config.transient.data_dir / _config.reporting.report_dir
+    if not os.path.isdir(report_path):
+        try:
+            report_path.mkdir(mode=0o740, parents=True, exist_ok=True)
+        except PermissionError as e:
+            raise PermissionError(
+                f"Can't create reporting directory {report_path}, quitting"
+            ) from e
+
+    filename = f"garak.{_config.transient.run_id}.report.jsonl"
     if not _config.reporting.report_prefix:
-        if not os.path.isdir(_config.reporting.report_dir):
-            try:
-                os.mkdir(_config.reporting.report_dir)
-            except PermissionError as e:
-                raise PermissionError(
-                    f"Can't create logging directory {_config.reporting.report_dir}, quitting"
-                ) from e
-        _config.transient.report_filename = f"{_config.reporting.report_dir}/garak.{_config.transient.run_id}.report.jsonl"
+        filename = f"garak.{_config.transient.run_id}.report.jsonl"
     else:
-        _config.transient.report_filename = (
-            _config.reporting.report_prefix + ".report.jsonl"
-        )
+        filename = _config.reporting.report_prefix + ".report.jsonl"
+    _config.transient.report_filename = str(report_path / filename)
     _config.transient.reportfile = open(
         _config.transient.report_filename, "w", buffering=1, encoding="utf-8"
     )
@@ -179,30 +190,20 @@ def print_buffs():
 
 # describe plugin
 def plugin_info(plugin_name):
-    import inspect
+    from garak._plugins import plugin_info
 
-    from garak._plugins import load_plugin
-
-    # load plugin
-    try:
-        plugin = load_plugin(plugin_name)
+    info = plugin_info(plugin_name)
+    if len(info) > 0:
         print(f"Configured info on {plugin_name}:")
         priority_fields = ["description"]
-        skip_fields = ["prompts", "triggers"]
-        # print the attribs it has
-        for v in priority_fields:
-            print(f"{v:>35}:", getattr(plugin, v))
-        for v in sorted(dir(plugin)):
-            if v in priority_fields or v in skip_fields:
+        for k in priority_fields:
+            if k in info:
+                print(f"{k:>35}:", info[k])
+        for k, v in info.items():
+            if k in priority_fields:
                 continue
-            if v.startswith("_") or inspect.ismethod(getattr(plugin, v)):
-                continue
-            print(f"{v:>35}:", getattr(plugin, v))
-
-    except ValueError as e:
-        print(e)
-    except Exception as e:
-        print(e)
+            print(f"{k:>35}:", v)
+    else:
         print(
             f"Plugin {plugin_name} not found. Try --list_probes, or --list_detectors."
         )

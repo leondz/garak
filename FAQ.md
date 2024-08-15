@@ -43,6 +43,20 @@ Perhaps - please [open an issue](https://github.com/leondz/garak/issues/new), in
 
 Would love to! Please [open an issue](https://github.com/leondz/garak/issues/new), tagging it "new plugin" and "generators".
 
+## How much disk space do I need to run garak?
+
+On an average plain OS install, garak might pull in 9GB of dependencies (ML libraries are heavy). If you're running a model locally, enough space will be required for that model plus its dependencies, too - check out the model's files for an estimate.  Hugging Face gpt2 is about 5GB (https://huggingface.co/google/gemma-2-2b-it/tree/main), whereas Hugging Face Llama-3.1-405B is around half a terabyte (https://huggingface.co/meta-llama/Meta-Llama-3.1-405B/tree/main). Garak sometimes uses machine learning-based detectors, but we go for smaller variants, so I'd guess/hope under 2GB. Finally, logs generated while running can be up to 60MB per standard run - ymmv!
+
+Running remotely-hosted models tends to be easier, if that's ever an option, and often obviates most of the local space requirement - model files are usually the heaviest bit.
+
+## Are there instructions for Hugging Face gated models?
+
+Gated models simply require login and in some case acceptance of model provider license terms. [Here](https://huggingface.co/docs/huggingface_hub/en/guides/cli) are details of huggingface-cli login process.
+
+## Is it safe to build garak into toolchains? Who's supporting this?
+
+NVIDIA Corporation officially contributes to the garak open-source project and will continue to do so in the long term. Garak will continue to be licensed with Apache 2.0. Get in touch if you'd like to talk more about this.
+
 <!-- ## Why the name?
 
 It's named after a smooth-talking, manipulative, persuasive, well-written character from a nineties TV series. Because we need tools like that to dissect LLM behavior. -->

@@ -19,7 +19,7 @@ this = sys.modules[__name__]
 def load_local_data(self):
     # prompts
     with open(
-        _config.transient.basedir
+        _config.transient.package_dir
         / "resources"
         / "donotanswer"
         / f"{self.dna_category}.txt",

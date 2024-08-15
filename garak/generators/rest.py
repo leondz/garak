@@ -59,23 +59,26 @@ class RestGenerator(Generator):
     and response value are both under the ``text`` key, we'd define the service
     using something like: ::
 
-    {
-        "rest": {
-            "RestGenerator": {
-                "name": "example service",
-                "uri": "https://example.ai/llm",
-                "method": "post",
-                "headers": {
-                    "X-Authorization": "$KEY",
-                },
-                "req_template_json_object": {
-                    "text": "$INPUT"
-                },
-                "response_json": true,
-                "response_json_field": "text"
+    .. code-block:: JSON
+      :linenos:
+
+        {
+            "rest": {
+                "RestGenerator": {
+                    "name": "example service",
+                    "uri": "https://example.ai/llm",
+                    "method": "post",
+                    "headers": {
+                        "X-Authorization": "$KEY",
+                    },
+                    "req_template_json_object": {
+                        "text": "$INPUT"
+                    },
+                    "response_json": true,
+                    "response_json_field": "text"
+                }
             }
         }
-    }
 
     NB. ``response_json_field`` can also be a JSONPath, for JSON responses where
     the target text is not in a top level field. It is treated as a JSONPath

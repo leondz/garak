@@ -4,13 +4,15 @@ These detectors show expectations and operations of any detector implemented
 in `garak`. `garak` detectors must inherit from a class in here."""
 
 import logging
+import os
 import re
-from typing import List
+from typing import List, Iterable, Union
 
 from colorama import Fore, Style
 
 from garak import _config
 from garak.configurable import Configurable
+from garak.generators.huggingface import HFCompatible
 import garak.attempt
 
 
@@ -60,42 +62,64 @@ class Detector(Configurable):
 
         logging.info(f"detector init: {self}")
 
-    def detect(self, attempt: garak.attempt.Attempt) -> List[float]:
+    def detect(self, attempt: garak.attempt.Attempt) -> Iterable[float]:
         """Takes a list of Attempts; classifies them; returns a list of results
         in the range 0.0-1.0 where 0.0 represents no hit, 1.0 represents successful hit
         (i.e. vulnerability found)."""
         return [0.5] * len(attempt.all_outputs)
 
 
-class HFDetector(Detector):
+class HFDetector(Detector, HFCompatible):
     """Detector using a Hugging Face model"""
 
-    def __init__(self, model_path, target_class, config_root=_config):
+    DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {"hf_args": {"device": "cpu"}}
+
+    def __init__(self, config_root=_config):
         from transformers import (
+            AutoConfig,
             AutoModelForSequenceClassification,
             AutoTokenizer,
             TextClassificationPipeline,
             set_seed,
+            logging as transformers_logging,
         )
 
         if _config.run.seed is not None:
             set_seed(_config.run.seed)
 
-        self.name = f"HF: {model_path}"
         super().__init__(config_root=config_root)
+        self.name = f"{self.__class__.__name__}: {self.detector_model_path}"
 
-        self.detector_model_path = model_path
-        self.detector_target_class = target_class
+        import torch.multiprocessing as mp
+
+        mp.set_start_method("spawn", force=True)
+
+        self.device = self._select_hf_device()
+
+        orig_loglevel = transformers_logging.get_verbosity()
+        transformers_logging.set_verbosity_error()
+
+        model_kwargs = self._gather_hf_params(
+            hf_constructor=AutoConfig.from_pretrained
+        )  # will defer to device_map if device map was `auto` may not match self.device
+
+        self.config = AutoConfig.from_pretrained(
+            self.detector_model_path, **model_kwargs
+        )
+
+        self.config.init_device = self.device
 
         self.detector_model = AutoModelForSequenceClassification.from_pretrained(
-            self.detector_model_path
-        )
+            self.detector_model_path, config=self.config
+        ).to(self.device)
         self.detector_tokenizer = AutoTokenizer.from_pretrained(
             self.detector_model_path
         )
         self.detector = TextClassificationPipeline(
             model=self.detector_model, tokenizer=self.detector_tokenizer
         )
+
+        transformers_logging.set_verbosity(orig_loglevel)
 
         self.graceful_fail = False
 
@@ -142,7 +166,7 @@ class StringDetector(Detector):
 
     def detect(
         self, attempt: garak.attempt.Attempt, case_sensitive=False
-    ) -> List[float]:
+    ) -> Iterable[float]:
         detector_results = []
         for output in attempt.all_outputs:
             match = False
@@ -172,7 +196,7 @@ class TriggerListDetector(Detector):
 
     def detect(
         self, attempt: garak.attempt.Attempt, case_sensitive=False
-    ) -> List[float]:
+    ) -> Iterable[float]:
         detector_results = []
         if "triggers" in attempt.notes:
             triggers = attempt.notes["triggers"]
@@ -193,3 +217,34 @@ class TriggerListDetector(Detector):
                 detector_results.append(1.0 if match else 0.0)
 
         return detector_results
+
+
+class FileDetector(Detector):
+    """Detector subclass for processing attempts whose outputs are filenames for checking"""
+
+    valid_format = "local filename"
+
+    def _test_file(self, filename: str) -> Union[None, str]:
+        raise NotImplementedError
+
+    def detect(self, attempt: garak.attempt.Attempt) -> Iterable[float]:
+        if self.valid_format and (
+            "format" not in attempt.notes
+            or attempt.notes["format"] != self.valid_format
+        ):
+            raise ValueError(
+                f"detectors.fileformats.{self.__class__.__name__} only processes outputs that are '{self.valid_format}'"
+            )
+
+        for local_filename in attempt.all_outputs:
+            if local_filename is None or local_filename == "":
+                continue
+            if not os.path.isfile(
+                local_filename
+            ):  # skip missing files but also pipes, devices, etc
+                logging.info("Skipping non-file path %s", local_filename)
+                continue
+
+            else:
+                test_result = self._test_file(local_filename)
+                yield test_result if test_result is not None else 0.0
