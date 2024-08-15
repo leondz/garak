@@ -12,6 +12,7 @@ run:
   eval_threshold: 0.5
   generations: 10
   probe_tags:
+  probed_report_path:
 
 plugins:
   model_type:

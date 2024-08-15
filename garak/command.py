@@ -6,7 +6,6 @@
 import logging
 import json
 
-
 def start_logging():
     from garak import _config
 
@@ -255,3 +254,16 @@ def write_report_digest(report_filename, digest_filename):
     digest = report_digest.compile_digest(report_filename)
     with open(digest_filename, "w", encoding="utf-8") as f:
         f.write(digest)
+
+def detector_only_run(report_filename, detectors, evaluator):
+    import garak.harnesses.detectoronly
+    import garak.attempt
+
+    with open(report_filename) as f:
+        data = [json.loads(line) for line in f]
+    
+    data = [d for d in data if d["entry_type"] == "attempt" and d["status"] == 1]
+    attempts = [garak.attempt.Attempt.from_dict(d) for d in data]
+
+    detector_only_h = garak.harnesses.detectoronly.DetectorOnly()
+    detector_only_h.run(attempts, detectors, evaluator)
