@@ -89,6 +89,9 @@ class WordnetBlockedWords(TreeSearchProbe):
     def __init__(self, config_root=_config):
         super().__init__(config_root)
 
+        wn.config.data_directory = _config.transient.cache_dir / "wn"
+        wn.util.ProgressBar.FMT = "\rtopic.Wordnet: {message}\t{bar}{counter}{status}"
+
         wn.download(self.lexicon)
         self.w = wn.Wordnet(self.lexicon)
 
