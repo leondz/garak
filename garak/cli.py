@@ -155,7 +155,7 @@ def main(arguments=None) -> None:
         type=str,
         help="options to pass to probes, formatted as a JSON dict",
     )
-    probe_args.add_argument(
+    parser.add_argument(
         "--probe_tags",
         default=_config.run.probe_tags,
         type=str,
