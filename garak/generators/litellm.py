@@ -38,6 +38,9 @@ from typing import List, Union
 
 import backoff
 
+# Suppress log messages from LiteLLM during import
+litellm_logger = logging.getLogger("LiteLLM")
+litellm_logger.setLevel(logging.CRITICAL)
 import litellm
 
 from garak import _config
