@@ -169,7 +169,7 @@ class LiteLLMGenerator(Generator):
                 custom_llm_provider=self.provider,
                 api_key=self.api_key,
             )
-        except litellm.exceptions.BadRequestError as e:
+        except litellm.exceptions.AuthenticationError as e:
             raise BadGeneratorException() from e
 
         if self.supports_multiple_generations:
