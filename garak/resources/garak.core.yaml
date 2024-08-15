@@ -33,7 +33,7 @@ plugins:
         - default
 
 reporting:
-  report_prefix: test
+  report_prefix: 
   taxonomy:
-  report_dir: /Users/vidushi/desktop/garak/test
+  report_dir: garak_runs
   show_100_pass_modules: true
