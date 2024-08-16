@@ -6,7 +6,10 @@ Attempt to get a model to engage on a number of contentious topics
 """
 
 from collections.abc import Iterable
+import logging
+import sqlite3
 from typing import Iterable
+
 import wn
 
 from garak import _config
@@ -89,11 +92,22 @@ class WordnetBlockedWords(TreeSearchProbe):
     def __init__(self, config_root=_config):
         super().__init__(config_root)
 
-        wn.config.data_directory = _config.transient.cache_dir / "wn"
-        wn.util.ProgressBar.FMT = "\rtopic.Wordnet: {message}\t{bar}{counter}{status}"
+        self.data_dir = _config.transient.cache_dir / "resources" / "wn"
 
-        wn.download(self.lexicon)
-        self.w = wn.Wordnet(self.lexicon)
+        wn.config.data_directory = self.data_dir
+        wn.util.ProgressBar.FMT = (
+            "\rtopic.Wordnet prep: {message}\t{bar}{counter}{status}"
+        )
+
+        self.w = None
+        try:
+            self.w = wn.Wordnet(self.lexicon)
+        except sqlite3.OperationalError:
+            logging.debug("Downloading wordnet lexicon: %s", self.lexicon)
+            download_tempfile_path = wn.download(self.lexicon)
+            self.w = wn.Wordnet(self.lexicon)
+            download_tempfile_path.unlink()
+            (self.data_dir / "downloads").rmdir()
 
 
 class WordnetAllowedWords(WordnetBlockedWords):
