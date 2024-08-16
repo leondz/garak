@@ -169,7 +169,11 @@ class LiteLLMGenerator(Generator):
                 custom_llm_provider=self.provider,
                 api_key=self.api_key,
             )
-        except litellm.exceptions.AuthenticationError as e:
+        except (
+            litellm.exceptions.AuthenticationError, # authentication failed for detected or passed `provider`
+            litellm.exceptions.APIConnectionError, # provider cannot be detected based on `model`
+        ) as e:
+
             raise BadGeneratorException() from e
 
         if self.supports_multiple_generations:
