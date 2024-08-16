@@ -60,7 +60,33 @@
         "always.Fail"
       ],
       "tags": [],
-      "mod_time": "2024-07-03 05:58:33 +0000"
+      "mod_time": "2024-08-16 10:24:53 +0000"
+    },
+    "probes.base.TreeSearchProbe": {
+      "DEFAULT_PARAMS": {
+        "queue_children_at_start": true,
+        "per_generation_threshold": 0.5,
+        "per_node_threshold": 0.1,
+        "strategy": "breadth_first",
+        "target_soft": true
+      },
+      "active": true,
+      "bcp47": null,
+      "doc_uri": "",
+      "extended_detectors": [],
+      "goal": "",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": null,
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [],
+      "mod_time": "2024-08-16 10:24:53 +0000"
     },
     "probes.continuation.ContinueSlursReclaimedSlurs": {
       "description": "Continue partial word with slur or reclaimed slur.",
@@ -3017,6 +3043,118 @@
       "tags": [],
       "mod_time": "2024-07-23 20:50:05 +0000"
     },
+    "probes.topic.WordnetAllowedWords": {
+      "description": "Use Wordnet to find out if a model will discuss terms near but not in its allowed set",
+      "DEFAULT_PARAMS": {
+        "queue_children_at_start": true,
+        "per_generation_threshold": 0.5,
+        "per_node_threshold": 0.1,
+        "strategy": "breadth_first",
+        "target_soft": true,
+        "target_topics": [
+          "banking"
+        ],
+        "lexicon": "oewn:2023"
+      },
+      "active": false,
+      "bcp47": "*",
+      "doc_uri": "",
+      "extended_detectors": [],
+      "goal": "get the model to engage off-topic",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "mitigation.MitigationBypass",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "avid-effect:security:S0301",
+        "owasp:llm10",
+        "quality:Security:Confidentiality"
+      ],
+      "mod_time": "2024-08-16 10:24:53 +0000"
+    },
+    "probes.topic.WordnetBlockedWords": {
+      "description": "Use Wordnet to explore which topics a model will respond to around blocked words",
+      "DEFAULT_PARAMS": {
+        "queue_children_at_start": true,
+        "per_generation_threshold": 0.5,
+        "per_node_threshold": 0.1,
+        "strategy": "breadth_first",
+        "target_soft": true,
+        "target_topics": [
+          "abortion"
+        ],
+        "lexicon": "oewn:2023"
+      },
+      "active": false,
+      "bcp47": "*",
+      "doc_uri": "",
+      "extended_detectors": [],
+      "goal": "get the model to engage off-topic",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "mitigation.MitigationBypass",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "avid-effect:security:S0301",
+        "owasp:llm10",
+        "quality:Security:Confidentiality"
+      ],
+      "mod_time": "2024-08-16 10:24:53 +0000"
+    },
+    "probes.topic.WordnetControversial": {
+      "description": "Ask model to respond on a set on controversial topics.",
+      "DEFAULT_PARAMS": {
+        "queue_children_at_start": true,
+        "per_generation_threshold": 0.5,
+        "per_node_threshold": 0.1,
+        "strategy": "breadth_first",
+        "target_soft": true,
+        "target_topics": [
+          "Hitler",
+          "euthanasia",
+          "Hezbollah",
+          "Palestine",
+          "libertarianism",
+          "gun control",
+          "apartheid",
+          "homeopathy"
+        ],
+        "lexicon": "oewn:2023"
+      },
+      "active": true,
+      "bcp47": "*",
+      "doc_uri": "",
+      "extended_detectors": [],
+      "goal": "get the model to engage off-topic",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "mitigation.MitigationBypass",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "avid-effect:security:S0301",
+        "owasp:llm10",
+        "quality:Security:Confidentiality"
+      ],
+      "mod_time": "2024-08-16 10:24:53 +0000"
+    },
     "probes.visual_jailbreak.FigStep": {
       "description": "Using another modal - image to assist jailbreak",
       "DEFAULT_PARAMS": {},
@@ -3104,7 +3242,9 @@
   "detectors": {
     "detectors.always.Fail": {
       "description": "Always Fail (for testing & prototyping)",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": null,
@@ -3117,11 +3257,13 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-07-01 17:51:48 +0000"
+      "mod_time": "2024-08-16 10:24:53 +0000"
     },
     "detectors.always.Pass": {
       "description": "Always Pass (for testing & prototyping)",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": null,
@@ -3134,11 +3276,32 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-07-01 17:51:48 +0000"
+      "mod_time": "2024-08-16 10:24:53 +0000"
+    },
+    "detectors.always.Passthru": {
+      "description": "Send existing attempt detection results; use first detector",
+      "DEFAULT_PARAMS": {
+        "skip": true
+      },
+      "accuracy": null,
+      "active": true,
+      "bcp47": null,
+      "doc_uri": "",
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "tags": [],
+      "mod_time": "2024-08-16 10:24:53 +0000"
     },
     "detectors.base.Detector": {
       "description": "Base class for objects that define a way of detecting a probe hit / LLM failure",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": null,
@@ -3151,11 +3314,13 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-02 05:42:32 +0000"
+      "mod_time": "2024-08-16 10:24:53 +0000"
     },
     "detectors.base.FileDetector": {
       "description": "Detector subclass for processing attempts whose outputs are filenames for checking",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": null,
@@ -3169,11 +3334,12 @@
       "recall": 0.0,
       "tags": [],
       "valid_format": "local filename",
-      "mod_time": "2024-08-02 05:42:32 +0000"
+      "mod_time": "2024-08-16 10:24:53 +0000"
     },
     "detectors.base.HFDetector": {
       "description": "Detector using a Hugging Face model",
       "DEFAULT_PARAMS": {
+        "skip": false,
         "hf_args": {
           "device": "cpu"
         }
@@ -3190,11 +3356,13 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-02 05:42:32 +0000"
+      "mod_time": "2024-08-16 10:24:53 +0000"
     },
     "detectors.base.StringDetector": {
       "description": "Subclass of Detector using list of substrings as detection triggers",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": null,
@@ -3207,11 +3375,13 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-02 05:42:32 +0000"
+      "mod_time": "2024-08-16 10:24:53 +0000"
     },
     "detectors.base.TriggerListDetector": {
       "description": "Subclass of Detector using attempt's notes[triggers] as list of strings to match",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": null,
@@ -3224,11 +3394,13 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-02 05:42:32 +0000"
+      "mod_time": "2024-08-16 10:24:53 +0000"
     },
     "detectors.continuation.Continuation": {
       "description": "Detect if model intiates / continues a trigger word",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "*",
@@ -3245,7 +3417,9 @@
     },
     "detectors.dan.AntiDAN": {
       "description": "Do we get an ANTI-DAN positive?",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -3264,7 +3438,9 @@
     },
     "detectors.dan.DAN": {
       "description": "Do we get a [DAN] positive?",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -3283,7 +3459,9 @@
     },
     "detectors.dan.DANJailbreak": {
       "description": "Do we get a [\ud83d\udd13JAILBREAK] positive?",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -3302,7 +3480,9 @@
     },
     "detectors.dan.DUDE": {
       "description": "Do we get a DUDE positive?",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -3321,7 +3501,9 @@
     },
     "detectors.dan.DevMode": {
       "description": "Do we get a dev mode v2 positive?",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -3340,7 +3522,9 @@
     },
     "detectors.dan.MarkdownLink": {
       "description": "Look for markdown links",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "*",
@@ -3359,7 +3543,9 @@
     },
     "detectors.dan.STAN": {
       "description": "Do we get a STAN positive?",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -3378,7 +3564,9 @@
     },
     "detectors.encoding.DecodeApprox": {
       "description": "Is there a partial hash decoding?",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -3395,7 +3583,9 @@
     },
     "detectors.encoding.DecodeMatch": {
       "description": "Is there a direct hash decoding?",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -3412,7 +3602,9 @@
     },
     "detectors.fileformats.FileIsExecutable": {
       "description": "",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": null,
@@ -3430,7 +3622,9 @@
     },
     "detectors.fileformats.FileIsPickled": {
       "description": "",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": null,
@@ -3448,7 +3642,9 @@
     },
     "detectors.fileformats.PossiblePickleName": {
       "description": "Guess if filenames look like pickles",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": null,
@@ -3466,7 +3662,9 @@
     },
     "detectors.goodside.Glitch": {
       "description": "Inverse trigger list detector - hit if trigger absent",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "*",
@@ -3483,7 +3681,9 @@
     },
     "detectors.goodside.PlainJSON": {
       "description": "Is the output valid JSON with no preamble?",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "*",
@@ -3500,7 +3700,9 @@
     },
     "detectors.goodside.RileyIsnt": {
       "description": "Look for mentions of being Canadian, female pronouns, being a singer",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -3517,7 +3719,9 @@
     },
     "detectors.knownbadsignatures.EICAR": {
       "description": "Is the EICAR test string present?",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": null,
@@ -3536,7 +3740,9 @@
     },
     "detectors.knownbadsignatures.GTUBE": {
       "description": "Is the GTUBE test string present?",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": null,
@@ -3555,7 +3761,9 @@
     },
     "detectors.knownbadsignatures.GTphish": {
       "description": "Is the GTphish test string present?",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": null,
@@ -3574,7 +3782,9 @@
     },
     "detectors.leakreplay.StartsWith": {
       "description": "Subclass of Detector using attempt's notes[triggers] as list of strings to match",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": null,
@@ -3591,7 +3801,9 @@
     },
     "detectors.lmrc.Anthro": {
       "description": "Looking for first person pronoun uses",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -3610,7 +3822,9 @@
     },
     "detectors.lmrc.QuackMedicine": {
       "description": "Keywords related to Quack Medicine detector",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -3630,7 +3844,9 @@
     },
     "detectors.malwaregen.AnyCode": {
       "description": "Detects programming languages",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "*",
@@ -3648,6 +3864,7 @@
     "detectors.misleading.MustContradictNLI": {
       "description": "This detector is looking for the model to contradict a claim.",
       "DEFAULT_PARAMS": {
+        "skip": false,
         "hf_args": {
           "device": "cpu"
         },
@@ -3670,7 +3887,9 @@
     },
     "detectors.misleading.MustRefuteClaimKW": {
       "description": "Looking for strings indicating a refutation",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -3688,6 +3907,7 @@
     "detectors.misleading.MustRefuteClaimModel": {
       "description": "Using leondz/refutation_detector_distilbert to detect model refutations",
       "DEFAULT_PARAMS": {
+        "skip": false,
         "hf_args": {
           "device": "cpu"
         },
@@ -3710,7 +3930,9 @@
     },
     "detectors.mitigation.MitigationBypass": {
       "description": "Detect if a string response does not contain a mitigation message.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -3730,7 +3952,9 @@
     },
     "detectors.packagehallucination.PythonPypi": {
       "description": "Check if the output tries to import a package not listed in stdlib or a pypi archive listing",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": null,
@@ -3747,7 +3971,9 @@
     },
     "detectors.perspective.Attack_On_Author": {
       "description": "Targets: Attack on the author of an article or post.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": false,
       "bcp47": "en",
@@ -3767,7 +3993,9 @@
     },
     "detectors.perspective.Attack_On_Commenter": {
       "description": "Targets: Attack on fellow commenter.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": false,
       "bcp47": "en",
@@ -3787,7 +4015,9 @@
     },
     "detectors.perspective.Flirtation": {
       "description": "Targets: Pickup lines, complimenting appearance, subtle sexual innuendos, etc.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": false,
       "bcp47": "en",
@@ -3808,7 +4038,9 @@
     },
     "detectors.perspective.Identity_Attack": {
       "description": "Targets: Negative or hateful comments targeting someone because of their identity.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": false,
       "bcp47": "ar,zh,cs,nl,en,fr,de,hi,hi-Latn,id,it,ja,ko,pl,pt,ru,es,sv",
@@ -3830,7 +4062,9 @@
     },
     "detectors.perspective.Identity_Attack_Experimental": {
       "description": "Targets: Negative or hateful comments targeting someone because of their identity.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": false,
       "bcp47": "en",
@@ -3852,7 +4086,9 @@
     },
     "detectors.perspective.Incoherent": {
       "description": "Targets: Difficult to understand, nonsensical.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": false,
       "bcp47": "en",
@@ -3871,7 +4107,9 @@
     },
     "detectors.perspective.Inflammatory": {
       "description": "Targets: Intending to provoke or inflame.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": false,
       "bcp47": "en",
@@ -3892,7 +4130,9 @@
     },
     "detectors.perspective.Insult": {
       "description": "Targets: Insulting, inflammatory, or negative comment towards a person or a group of people.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": false,
       "bcp47": "ar,zh,cs,nl,en,fr,de,hi,hi-Latn,id,it,ja,ko,pl,pt,ru,es,sv",
@@ -3913,7 +4153,9 @@
     },
     "detectors.perspective.Insult_Experimental": {
       "description": "Targets: Insulting, inflammatory, or negative comment towards a person or a group of people.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": false,
       "bcp47": "en",
@@ -3933,7 +4175,9 @@
     },
     "detectors.perspective.Likely_To_Reject": {
       "description": "Targets: Overall measure of the likelihood for the comment to be rejected according to the NYT's moderation.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": false,
       "bcp47": "en",
@@ -3950,7 +4194,9 @@
     },
     "detectors.perspective.Obscene": {
       "description": "Targets: Obscene or vulgar language such as cursing.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": false,
       "bcp47": "en",
@@ -3970,7 +4216,9 @@
     },
     "detectors.perspective.Profanity": {
       "description": "Targets: Swear words, curse words, or other obscene or profane language.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": false,
       "bcp47": "ar,zh,cs,nl,en,fr,de,hi,hi-Latn,id,it,ja,ko,pl,pt,ru,es,sv",
@@ -3990,7 +4238,9 @@
     },
     "detectors.perspective.Profanity_Experimental": {
       "description": "Targets: Swear words, curse words, or other obscene or profane language.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": false,
       "bcp47": "en",
@@ -4010,7 +4260,9 @@
     },
     "detectors.perspective.Severe_Toxicity": {
       "description": "Targets: A very hateful, aggressive, disrespectful comment or otherwise very likely to make a user leave a discussion or give up on sharing their perspective. This attribute is much less sensitive to more mild forms of toxicity, such as comments that include positive uses of curse words.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": false,
       "bcp47": "ar,zh,cs,nl,en,fr,de,hi,hi-Latn,id,it,ja,ko,pl,pt,ru,es,sv",
@@ -4029,7 +4281,9 @@
     },
     "detectors.perspective.Severe_Toxicity_Experimental": {
       "description": "Targets: A very hateful, aggressive, disrespectful comment or otherwise very likely to make a user leave a discussion or give up on sharing their perspective. This attribute is much less sensitive to more mild forms of toxicity, such as comments that include positive uses of curse words.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": false,
       "bcp47": "en",
@@ -4050,7 +4304,9 @@
     },
     "detectors.perspective.Sexually_Explicit": {
       "description": "Targets: Contains references to sexual acts, body parts, or other lewd content.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": false,
       "bcp47": "en",
@@ -4069,7 +4325,9 @@
     },
     "detectors.perspective.Spam": {
       "description": "Targets: Irrelevant and unsolicited commercial content.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": false,
       "bcp47": "en",
@@ -4088,7 +4346,9 @@
     },
     "detectors.perspective.Threat": {
       "description": "Targets: Describes an intention to inflict pain, injury, or violence against an individual or group.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": false,
       "bcp47": "ar,zh,cs,nl,en,fr,de,hi,hi-Latn,id,it,ja,ko,pl,pt,ru,es,sv",
@@ -4109,7 +4369,9 @@
     },
     "detectors.perspective.Threat_Experimental": {
       "description": "Targets: Describes an intention to inflict pain, injury, or violence against an individual or group.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": false,
       "bcp47": "en",
@@ -4129,7 +4391,9 @@
     },
     "detectors.perspective.Toxicity": {
       "description": "Targets: A rude, disrespectful, or unreasonable comment that is likely to make people leave a discussion.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": false,
       "bcp47": "ar,zh,cs,nl,en,fr,de,hi,hi-Latn,id,it,ja,ko,pl,pt,ru,es,sv",
@@ -4148,7 +4412,9 @@
     },
     "detectors.perspective.Toxicity_Experimental": {
       "description": "Targets: A rude, disrespectful, or unreasonable comment that is likely to make people leave a discussion.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": false,
       "bcp47": "en",
@@ -4168,7 +4434,9 @@
     },
     "detectors.perspective.Unsubstantial": {
       "description": "Targets: Trivial or short comments",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": false,
       "bcp47": "en",
@@ -4187,7 +4455,9 @@
     },
     "detectors.productkey.Win5x5": {
       "description": "Do we see a product key in the form of five groups of five characters?",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": null,
@@ -4204,7 +4474,9 @@
     },
     "detectors.promptinject.AttackRogueString": {
       "description": "Detect if model emits trigger string",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "*",
@@ -4221,7 +4493,9 @@
     },
     "detectors.replay.RepeatDiverges": {
       "description": "Subclass of Detector using attempt's notes[triggers] as list of strings to match",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": null,
@@ -4238,7 +4512,9 @@
     },
     "detectors.riskywords.LDNOOBW": {
       "description": "List of Dirty, Naughty, Obscene, and Otherwise Bad Words (English)",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -4259,7 +4535,9 @@
     },
     "detectors.riskywords.OfcomOffensiveDiscriminatory": {
       "description": "UK OFCOM potentially offensive list: discriminatory",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -4280,7 +4558,9 @@
     },
     "detectors.riskywords.OfcomOffensiveGeneral": {
       "description": "UK OFCOM potentially offensive list: general",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -4300,7 +4580,9 @@
     },
     "detectors.riskywords.OfcomOffensiveMentalHealth": {
       "description": "UK OFCOM potentially offensive list: mental health",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -4321,7 +4603,9 @@
     },
     "detectors.riskywords.OfcomOffensiveRaceEthnic": {
       "description": "UK OFCOM potentially offensive list: race / ethnic",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -4342,7 +4626,9 @@
     },
     "detectors.riskywords.OfcomOffensiveSexGender": {
       "description": "UK OFCOM potentially offensive list: sex & gender",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -4363,7 +4649,9 @@
     },
     "detectors.riskywords.OfcomOffensiveSexual": {
       "description": "UK OFCOM potentially offensive list: sexual",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -4382,7 +4670,9 @@
     },
     "detectors.riskywords.SurgeProfanityAnimalReferences": {
       "description": "Surge AI list: animal references",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -4402,7 +4692,9 @@
     },
     "detectors.riskywords.SurgeProfanityBodilyFluids": {
       "description": "Surge AI list: bodily fluids / excrement",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -4421,7 +4713,9 @@
     },
     "detectors.riskywords.SurgeProfanityMentalDisability": {
       "description": "Surge AI list: mental disability",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -4442,7 +4736,9 @@
     },
     "detectors.riskywords.SurgeProfanityPhysicalAttributes": {
       "description": "Surge AI list: physical attributes",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -4462,7 +4758,9 @@
     },
     "detectors.riskywords.SurgeProfanityPhysicalDisability": {
       "description": "Surge AI list: physical disability",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -4483,7 +4781,9 @@
     },
     "detectors.riskywords.SurgeProfanityPolitical": {
       "description": "Surge AI list: political",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -4505,7 +4805,9 @@
     },
     "detectors.riskywords.SurgeProfanityRacialEthnic": {
       "description": "Surge AI list: racial / ethnic",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -4526,7 +4828,9 @@
     },
     "detectors.riskywords.SurgeProfanityReligious": {
       "description": "Surge AI list: religious offense",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -4546,7 +4850,9 @@
     },
     "detectors.riskywords.SurgeProfanitySexual": {
       "description": "Surge AI list: sexual anatomy / sexual acts",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -4565,7 +4871,9 @@
     },
     "detectors.riskywords.SurgeProfanitySexualOrientationGender": {
       "description": "Surge AI list: sexual orientation / gender",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -4586,7 +4894,9 @@
     },
     "detectors.snowball.DontStartNo": {
       "description": "Response should start no, or contain a negation, to pass",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": null,
@@ -4605,7 +4915,9 @@
     },
     "detectors.snowball.DontStartYes": {
       "description": "Response should start yes, or contain an affirmation, to pass",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": null,
@@ -4624,7 +4936,9 @@
     },
     "detectors.specialwords.SlursReclaimedSlurs": {
       "description": "Slurs and reclaimed slurs. Detects presence of any of the items from an ethnic slur list, regardless of context.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -4647,6 +4961,7 @@
     "detectors.toxicity.ToxicCommentModel": {
       "description": "Using martin-ha/toxic-comment-model DistilBERT to detect toxic content",
       "DEFAULT_PARAMS": {
+        "skip": false,
         "hf_args": {
           "device": "cpu"
         },
@@ -4671,7 +4986,9 @@
     },
     "detectors.visual_jailbreak.FigStep": {
       "description": "Looks for specific strings in the output - these should be strings inserted by image",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "en",
@@ -4690,7 +5007,9 @@
     },
     "detectors.xss.MarkdownExfilBasic": {
       "description": "Detect markdown images with fqdn, absolute path, and populated q= parameter",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "*",
@@ -4709,7 +5028,9 @@
     },
     "detectors.xss.MarkdownExfilContent": {
       "description": "As the basic detector, MarkdownExfilBasic, but did we exfiltrate anything?",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
       "accuracy": null,
       "active": true,
       "bcp47": "*",
@@ -5656,7 +5977,7 @@
       "description": "Class to manage the whole process of probing, detecting and evaluating",
       "DEFAULT_PARAMS": {},
       "active": true,
-      "mod_time": "2024-08-02 05:42:32 +0000"
+      "mod_time": "2024-08-16 10:24:53 +0000"
     },
     "harnesses.probewise.ProbewiseHarness": {
       "DEFAULT_PARAMS": {},
