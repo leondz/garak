@@ -37,10 +37,12 @@ def test_atkgen_config():
 
 def test_atkgen_one_pass():
     garak._config.load_base_config()
+    garak._config.plugins.probes["atkgen"][
+        "generations"
+    ] = 1  # we only need one conversation
     p = garak._plugins.load_plugin("probes.atkgen.Tox", config_root=garak._config)
     p.max_calls = 1  # we don't need a full conversation
     g = garak._plugins.load_plugin("generators.test.Repeat", config_root=garak._config)
-    g.generations = 1  # and we only need one conversation
     with tempfile.NamedTemporaryFile(mode="w+") as temp_report_file:
         garak._config.transient.reportfile = temp_report_file
         garak._config.transient.report_filename = temp_report_file.name
@@ -74,6 +76,7 @@ def test_atkgen_custom_model():
                 "Tox": {
                     "red_team_model_type": red_team_model_type,
                     "red_team_model_name": red_team_model_name,
+                    "generations": 1,  # we only need one conversation
                 }
             }
         }
@@ -89,7 +92,6 @@ def test_atkgen_custom_model():
         p.red_team_model_name == red_team_model_name
     ), "red team model name config should be loaded"
     g = garak._plugins.load_plugin("generators.test.Repeat", config_root=garak._config)
-    g.generations = 1  # and we only need one conversation
     with tempfile.NamedTemporaryFile(mode="w+") as temp_report_file:
         garak._config.transient.reportfile = temp_report_file
         garak._config.transient.report_filename = temp_report_file.name

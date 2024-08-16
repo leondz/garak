@@ -147,7 +147,9 @@ class Probe(Configurable):
     def _execute_attempt(self, this_attempt):
         """handles sending an attempt to the generator, postprocessing, and logging"""
         self._generator_precall_hook(self.generator, this_attempt)
-        this_attempt.outputs = self.generator.generate(this_attempt.prompt)
+        this_attempt.outputs += self.generator.generate(
+            this_attempt.prompt, generations_this_call=self.generations
+        )
         if self.post_buff_hook:
             this_attempt = self._postprocess_buff(this_attempt)
         this_attempt = self._postprocess_hook(this_attempt)

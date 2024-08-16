@@ -44,10 +44,6 @@ class Generator(Configurable):
             self.description = self.__doc__.split("\n")[0]
         if name:
             self.name = name
-        if (
-            not hasattr(self, "generations")
-            or getattr(self, "generations", None) == self.DEFAULT_PARAMS["generations"]
-        ):
         if "fullname" not in dir(self):
             if self.generator_family_name is not None:
                 self.fullname = f"{self.generator_family_name}:{self.name}"

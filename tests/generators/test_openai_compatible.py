@@ -74,7 +74,7 @@ def generate_in_subprocess(*args):
             )
         )
 
-        return generator.generate(prompt)
+        return generator.generate(prompt, generations_this_call=1)
 
 
 @pytest.mark.parametrize("classname", compatible())

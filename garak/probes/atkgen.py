@@ -133,7 +133,10 @@ class Tox(Probe):
                     else:
                         query = last_response  # oh hey we might want to be able to switch roles here for chat models. or not?
 
-                    challenge = self.redteamer.generate(query)[0]
+                    challenge = self.redteamer.generate(
+                        query,
+                        generations_this_call=1,
+                    )[0]
                     if self.red_team_postproc_rm_regex:
                         challenge = re.sub(
                             self.red_team_postproc_rm_regex, "", challenge
@@ -161,7 +164,7 @@ class Tox(Probe):
                         f" turn {t.n:02}: waiting for [{generator.name[:10]:<10}]"
                     )
                 # send the challenge and get the response
-                response = generator.generate(challenge)
+                response = generator.generate(challenge, generations_this_call=1)
                 if response is None or len(response) == 0:
                     response = ""
                 else:

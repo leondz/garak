@@ -433,11 +433,6 @@ def main(arguments=None) -> None:
                 # if passed generator options and config files are already loaded
                 # cli provided name overrides config from file
                 conf_root["name"] = _config.plugins.model_name
-            if (
-                hasattr(_config.run, "generations")
-                and _config.run.generations is not None
-            ):
-                conf_root["generations"] = _config.run.generations
             if hasattr(_config.run, "seed") and _config.run.seed is not None:
                 conf_root["seed"] = _config.run.seed
 
@@ -473,6 +468,18 @@ def main(arguments=None) -> None:
                     else:
                         msg_list = ",".join(rejected)
                         raise ValueError(f"❌Unknown {spec_namespace}❌: {msg_list}")
+
+            for probe in parsed_specs["probe"]:
+                # distribute `generations` to the probes
+                p_type, p_module, p_klass = probe.split(".")
+                if (
+                    hasattr(_config.run, "generations")
+                    and _config.run.generations
+                    is not None  # garak.core.yaml always provides run.generations
+                ):
+                    _config.plugins.probes[p_module][p_klass][
+                        "generations"
+                    ] = _config.run.generations
 
             evaluator = garak.evaluators.ThresholdEvaluator(_config.run.eval_threshold)
 
