@@ -143,6 +143,12 @@ def main(arguments=None) -> None:
         default=_config.plugins.probe_spec,
         help="list of probe names to use, or 'all' for all (default).",
     )
+    parser.add_argument(
+        "--probe_tags",
+        default=_config.run.probe_tags,
+        type=str,
+        help="only include probes with a tag that starts with this value (e.g. owasp:llm01)",
+    )
     probe_args = parser.add_mutually_exclusive_group()
     probe_args.add_argument(
         "--probe_option_file",
@@ -154,12 +160,6 @@ def main(arguments=None) -> None:
         "--probe_options",
         type=str,
         help="options to pass to probes, formatted as a JSON dict",
-    )
-    probe_args.add_argument(
-        "--probe_tags",
-        default=_config.run.probe_tags,
-        type=str,
-        help="only include probes with a tag that starts with this value (e.g. owasp:llm01)",
     )
     # detectors
     parser.add_argument(
