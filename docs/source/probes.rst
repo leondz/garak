@@ -33,5 +33,6 @@ For a detailed oversight into how a probe operates, see :ref:`garak.probes.base.
    garak.probes.suffix
    garak.probes.tap
    garak.probes.test
+   garak.probes.topic
    garak.probes.xss
    garak.probes.visual_jailbreak
