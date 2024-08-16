@@ -116,7 +116,6 @@ class LiteLLMGenerator(Generator):
         self.api_key = None
         self.provider = None
         self.key_env_var = self.ENV_VAR
-        self.generations = generations
         self._load_config(config_root)
         self.fullname = f"LiteLLM {self.name}"
         self.supports_multiple_generations = not any(
@@ -124,9 +123,7 @@ class LiteLLMGenerator(Generator):
             for provider in unsupported_multiple_gen_providers
         )
 
-        super().__init__(
-            self.name, generations=self.generations, config_root=config_root
-        )
+        super().__init__(self.name, config_root=config_root)
 
         if self.provider is None:
             raise ValueError(

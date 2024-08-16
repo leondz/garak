@@ -72,8 +72,8 @@ So, in the constructor, we first call the parent constructor using ``super().__i
 
 .. code-block:: python
 
-        def __init__(self, name, generations=10):
-            super().__init__(name, generations=generations)
+        def __init__(self, name):
+            super().__init__(name)
 
             if os.getenv("REPLICATE_API_TOKEN", default=None) is None:
                 raise ValueError(

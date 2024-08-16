@@ -341,12 +341,9 @@ class InferenceAPI(Generator):
         "wait_for_model": False,
     }
 
-    def __init__(self, name="", generations=10, config_root=_config):
+    def __init__(self, name="", config_root=_config):
         self.name = name
-        self.generations = generations
-        super().__init__(
-            self.name, generations=self.generations, config_root=config_root
-        )
+        super().__init__(self.name, config_root=config_root)
 
         self.uri = self.URI + name
 
@@ -466,8 +463,8 @@ class InferenceEndpoint(InferenceAPI):
 
     timeout = 120
 
-    def __init__(self, name="", generations=10, config_root=_config):
-        super().__init__(name, generations=generations, config_root=config_root)
+    def __init__(self, name="", config_root=_config):
+        super().__init__(name, config_root=config_root)
         self.uri = name
 
     @backoff.on_exception(
@@ -638,8 +635,8 @@ class LLaVA(Generator, HFCompatible):
         "llava-hf/llava-v1.6-mistral-7b-hf",
     ]
 
-    def __init__(self, name="", generations=10, config_root=_config):
-        super().__init__(name, generations=generations, config_root=config_root)
+    def __init__(self, name="", config_root=_config):
+        super().__init__(name, config_root=config_root)
         if self.name not in self.supported_models:
             raise ModelNameMissingError(
                 f"Invalid model name {self.name}, current support: {self.supported_models}."

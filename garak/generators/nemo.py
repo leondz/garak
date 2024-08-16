@@ -38,16 +38,14 @@ class NeMoGenerator(Generator):
     supports_multiple_generations = False
     generator_family_name = "NeMo"
 
-    def __init__(self, name=None, generations=10, config_root=_config):
+    def __init__(self, name=None, config_root=_config):
         self.name = name
         self.org_id = None
         self._load_config(config_root)
         self.fullname = f"NeMo {self.name}"
         self.seed = _config.run.seed
 
-        super().__init__(
-            self.name, generations=self.generations, config_root=config_root
-        )
+        super().__init__(self.name, config_root=config_root)
 
         self.nemo = nemollm.api.NemoLLM(
             api_host=self.api_host, api_key=self.api_key, org_id=self.org_id

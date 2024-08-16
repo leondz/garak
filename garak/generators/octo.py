@@ -31,7 +31,7 @@ class OctoGenerator(Generator):
     generator_family_name = "OctoAI"
     supports_multiple_generations = False
 
-    def __init__(self, name="", generations=10, config_root=_config):
+    def __init__(self, name="", config_root=_config):
         from octoai.client import Client
 
         self.name = name
@@ -41,9 +41,7 @@ class OctoGenerator(Generator):
         if hasattr(_config.run, "seed"):
             self.seed = _config.run.seed
 
-        super().__init__(
-            self.name, generations=self.generations, config_root=config_root
-        )
+        super().__init__(self.name, config_root=config_root)
 
         self.client = Client(token=self.api_key)
 
@@ -79,8 +77,8 @@ class InferenceEndpoint(OctoGenerator):
     If garak guesses wrong, please please open a ticket.
     """
 
-    def __init__(self, name="", generations=10, config_root=_config):
-        super().__init__(name, generations=generations, config_root=config_root)
+    def __init__(self, name="", config_root=_config):
+        super().__init__(name, config_root=config_root)
         self.octo_model = "-".join(
             self.name.replace("-demo", "").replace("https://", "").split("-")[:-1]
         )

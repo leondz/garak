@@ -37,7 +37,7 @@ class NvcfChat(Generator):
     supports_multiple_generations = False
     generator_family_name = "NVCF"
 
-    def __init__(self, name=None, generations=10, config_root=_config):
+    def __init__(self, name=None, config_root=_config):
         self.name = name
         self._load_config(config_root)
         self.fullname = (
@@ -55,9 +55,7 @@ class NvcfChat(Generator):
         if self.version_id is not None:
             self.invoke_url += f"/versions/{self.version_id}"
 
-        super().__init__(
-            self.name, generations=self.generations, config_root=config_root
-        )
+        super().__init__(self.name, config_root=config_root)
 
         self.headers = {
             "Authorization": f"Bearer {self.api_key}",
