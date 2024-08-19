@@ -109,7 +109,7 @@ class Harness(Configurable):
             assert isinstance(
                 attempt_results, (list, types.GeneratorType)
             ), "probing should always return an ordered iterable"
-            self.run_detectors(detectors, attempt_results, probe, evaluator)
+            self.run_detectors(detectors, attempt_results, evaluator, probe)
 
         logging.debug("harness: probe list iteration completed")
     

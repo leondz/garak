@@ -1,3 +1,11 @@
+# SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""Detector only harness
+
+Runs specified detectors on already existing prompt-response pairs from parsing a report.jsonl file.
+"""
+
 import logging
 
 from garak import _config, _plugins
