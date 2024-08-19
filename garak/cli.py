@@ -3,7 +3,7 @@
 
 """Flow for invoking garak from the command line"""
 
-command_options = "list_detectors list_probes list_generators list_buffs list_config plugin_info interactive report version detector_only".split()
+command_options = "list_detectors list_probes list_generators list_buffs list_config plugin_info interactive report version".split()
 
 
 def main(arguments=None) -> None:
@@ -107,12 +107,6 @@ def main(arguments=None) -> None:
     parser.add_argument(
         "--config", type=str, default=None, help="YAML config file for this run"
     )
-    parser.add_argument(
-        "--probed_report_path",
-        type=str,
-        default=None,
-        help="Path to jsonl report that stores the generators responses"
-    )
 
     ## PLUGINS
     # generator
@@ -180,6 +174,21 @@ def main(arguments=None) -> None:
         action="store_true",
         help="If detectors aren't specified on the command line, should we run all detectors? (default is just the primary detector, if given, else everything)",
     )
+
+    # harness
+    parser.add_argument(
+        "--harness_options",
+        type=str,
+        help="Type of harness to use. Default is probewise."
+    )
+
+    parser.add_argument(
+        "--harness_option_file",
+        "-H",
+        type=str,
+        help="path to JSON file containing information about harnesses"
+    )
+
     # buffs
     parser.add_argument(
         "--buffs",
@@ -252,11 +261,6 @@ def main(arguments=None) -> None:
         "--interactive.py",
         action="store_true",
         help="Launch garak in interactive.py mode",
-    )
-    parser.add_argument(
-        "--detector_only",
-        action="store_true",
-        help="run detector on jsonl report"
     )
 
     logging.debug("args - raw argument string received: %s", arguments)
@@ -348,7 +352,7 @@ def main(arguments=None) -> None:
     import garak.evaluators
 
     try:
-        plugin_types = ["probe", "generator"]
+        plugin_types = ["probe", "generator", "harness"]
         # do a special thing for CLI probe options, generator options
         for plugin_type in plugin_types:
             opts_arg = f"{plugin_type}_options"
@@ -379,7 +383,10 @@ def main(arguments=None) -> None:
                         )
                         raise e
 
-                config_plugin_type = getattr(_config.plugins, f"{plugin_type}s")
+                if plugin_type.endswith('s'):
+                    config_plugin_type = getattr(_config.plugins, f"{plugin_type}es")    
+                else:
+                    config_plugin_type = getattr(_config.plugins, f"{plugin_type}s")
 
                 config_plugin_type = _config._combine_into(
                     opts_cli_config, config_plugin_type
@@ -508,43 +515,31 @@ def main(arguments=None) -> None:
 
             command.start_run()  # start the run now that all config validation is complete
             print(f"📜 reporting to {_config.transient.report_filename}")
-
-            if parsed_specs["detector"] == []:
+            
+            if "Probewise" in _config.plugins.harnesses:
                 command.probewise_run(
                     generator, parsed_specs["probe"], evaluator, parsed_specs["buff"]
                 )
-            else:
+            
+            if "Pxd" in _config.plugins.harnesses:
                 command.pxd_run(
                     generator,
                     parsed_specs["probe"],
                     parsed_specs["detector"],
                     evaluator,
-                    parsed_specs["buff"],
+                    parsed_specs["buff"]
                 )
 
             command.end_run()
-        
-        elif args.detector_only:
-            # Run detector only detection
-            if not _config.plugins.detector_spec:
-                logging.error("Detector(s) not specified. Use --detectors")
-                raise ValueError("use --detectors to specify some detectors")
-            
-            if not _config.run.probed_report_path:
+
+        elif "DetectorOnly" in _config.plugins.harnesses:
+
+            if "report_path" not in _config.plugins.harnesses.DetectorOnly:
                 logging.error("report path not specified")
-                raise ValueError("Specify jsonl report path using --probed_report_path")
-
-            evaluator = garak.evaluators.ThresholdEvaluator(_config.run.eval_threshold)
-            print(_config.plugins.detector_spec.split(","))
-
-            detector_names, detector_rejected = _config.parse_plugin_spec(
-                getattr(_config.plugins, "detector_spec", ""),
-                "detectors",
-                getattr(_config.run, "detector_tags", "")
-                )
+                raise ValueError("Specify jsonl report path using report_path")
 
             command.start_run()
-            command.detector_only_run(_config.run.probed_report_path, detector_names, evaluator)
+            command.detector_only_run()
             command.end_run()
 
         else:
