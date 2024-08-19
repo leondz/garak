@@ -6,17 +6,13 @@ Depending on the model name provider, LiteLLM automatically
 reads API keys from the respective environment variables.
 (e.g. OPENAI_API_KEY for OpenAI models)
 
-API key can also be directly set in the supplied generator json config.
-This also enables support for any custom provider that follows the OAI format.
-
 e.g Supply a JSON like this for Ollama's OAI api:
 ```json
 {
     "litellm": {
         "LiteLLMGenerator" : {
             "api_base" : "http://localhost:11434/v1",
-            "provider" : "openai",
-            "api_key" : "test"
+            "provider" : "openai"
         }
     }
 }
@@ -80,7 +76,6 @@ unsupported_multiple_gen_providers = (
 class LiteLLMGenerator(Generator):
     """Generator wrapper using LiteLLM to allow access to different providers using the OpenAI API format."""
 
-    ENV_VAR = "OPENAI_API_KEY"
     DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
         "temperature": 0.7,
         "top_p": 1.0,
@@ -97,7 +92,6 @@ class LiteLLMGenerator(Generator):
         "generations",
         "context_len",
         "max_tokens",
-        "api_key",
         "provider",
         "api_base",
         "temperature",
@@ -111,9 +105,7 @@ class LiteLLMGenerator(Generator):
     def __init__(self, name: str = "", generations: int = 10, config_root=_config):
         self.name = name
         self.api_base = None
-        self.api_key = None
         self.provider = None
-        self.key_env_var = self.ENV_VAR
         self.generations = generations
         self._load_config(config_root)
         self.fullname = f"LiteLLM {self.name}"
@@ -125,17 +117,6 @@ class LiteLLMGenerator(Generator):
         super().__init__(
             self.name, generations=self.generations, config_root=config_root
         )
-
-        if (
-            self.api_key is None
-        ):  # TODO: special case where api_key is not always required
-            if self.provider == "openai":
-                self.api_key = getenv(self.key_env_var, None)
-                if self.api_key is None:
-                    raise APIKeyMissingError(
-                        f"Please supply an OpenAI API key in the {self.key_env_var} environment variable"
-                        " or in the configuration file"
-                    )
 
     @backoff.on_exception(backoff.fibo, litellm.exceptions.APIError, max_value=70)
     def _call_model(
@@ -167,7 +148,6 @@ class LiteLLMGenerator(Generator):
                 presence_penalty=self.presence_penalty,
                 api_base=self.api_base,
                 custom_llm_provider=self.provider,
-                api_key=self.api_key,
             )
         except (
             litellm.exceptions.AuthenticationError, # authentication failed for detected or passed `provider`
