@@ -46,9 +46,18 @@ def test_litellm_openrouter():
     print("test passed!")
 
 
-def test_litellm_model_non_existence():
+def test_litellm_model_detection():
+    custom_config = {
+        "generators": {
+            "litellm": {
+                "api_base": "https://garak.example.com/v1",
+            }
+        }
+    }
     model_name = "non-existent-model"
-    generator = LiteLLMGenerator(name=model_name)
+    generator = LiteLLMGenerator(name=model_name, config_root=custom_config)
     with pytest.raises(BadGeneratorException):
-        output = generator.generate("This should raise an exception")
-    assert "Exceptions on model non-existence raised by litellm should be bubbled up"
+        generator.generate("This should raise an exception")
+    generator = LiteLLMGenerator(name="openai/invalid-model", config_root=custom_config)
+    with pytest.raises(BadGeneratorException):
+        generator.generate("This should raise an exception")
