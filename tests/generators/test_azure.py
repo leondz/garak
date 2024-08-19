@@ -59,7 +59,7 @@ def test_azureopenai_chat(respx_mock, openai_compat_mocks):
     assert generator.max_tokens == 99
     generator.temperature = 0.5
     assert generator.temperature == 0.5
-    output = generator.generate("Hello OpenAI!")
-    assert len(output) == DEFAULT_GENERATIONS_QTY
+    output = generator.generate("Hello OpenAI!", 1)
+    assert len(output) == 1
     for item in output:
         assert isinstance(item, str)
