@@ -43,10 +43,11 @@ class AzureOpenAIGenerator(OpenAICompatible):
 
     active = True
     generator_family_name = "Azure"
+    api_version = "2024-06-01"
     
     DEFAULT_PARAMS = OpenAICompatible.DEFAULT_PARAMS | {
         "deployment_name": None,
-        "endpoint": None,
+        "uri": None,
         "name_backup": None,
     }
 
@@ -62,15 +63,15 @@ class AzureOpenAIGenerator(OpenAICompatible):
                     f'The {self.DEPLOYMENT_NAME_ENV_VAR} environment variable is required.\n'
                 )
                 
-        if self.endpoint is None:
+        if self.uri is None:
             if not hasattr(self, "endpoint_env_var"):
                 self.endpoint_env_var = self.ENDPOINT_ENV_VAR
                 
-            self.endpoint = os.getenv(self.endpoint_env_var, None)
+            self.uri = os.getenv(self.endpoint_env_var, None)
 
-            if self.endpoint is None:
+            if self.uri is None:
                 raise ValueError(
-                    f'The {self.API_KEY_ENV_VAR} environment variable is required.\n'
+                    f'The {self.ENDPOINT_ENV_VAR} environment variable is required.\n'
                 )
 
         return super()._validate_env_var()
@@ -79,7 +80,7 @@ class AzureOpenAIGenerator(OpenAICompatible):
         if self.name in openai_model_mapping:
             self.name = openai_model_mapping[self.name]
 
-        self.client = openai.AzureOpenAI(azure_endpoint=self.endpoint, api_key=self.api_key)
+        self.client = openai.AzureOpenAI(azure_endpoint=self.uri, api_key=self.api_key, api_version=self.api_version)
 
         if self.name == "":
             raise ValueError(

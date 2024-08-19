@@ -1,32 +1,55 @@
 import os
 import pytest
+import httpx
 
 from garak.generators.azure import AzureOpenAIGenerator
 
 DEFAULT_GENERATIONS_QTY = 10
 
+@pytest.fixture
+def set_fake_env(request) -> None:
+    stored_env = {
+        AzureOpenAIGenerator.ENV_VAR: os.getenv(AzureOpenAIGenerator.ENV_VAR, None),
+        AzureOpenAIGenerator.DEPLOYMENT_NAME_ENV_VAR: os.getenv(
+            AzureOpenAIGenerator.DEPLOYMENT_NAME_ENV_VAR, None
+        ),
+        AzureOpenAIGenerator.ENDPOINT_ENV_VAR: os.getenv(
+            AzureOpenAIGenerator.ENDPOINT_ENV_VAR, None
+        ),
+    }
+    def restore_env():
+        for k, v in stored_env.items():
+            if v is not None:
+                os.environ[k] = v
+            else:
+                del os.environ[k]
+    os.environ[AzureOpenAIGenerator.ENV_VAR] = "test_value"
+    os.environ[AzureOpenAIGenerator.DEPLOYMENT_NAME_ENV_VAR] = "testing-model-name"
+    os.environ[AzureOpenAIGenerator.ENDPOINT_ENV_VAR] = "https://garak.example.com/"
+    request.addfinalizer(restore_env)
 
+
+@pytest.mark.usefixtures("set_fake_env")
 def test_azureopenai_invalid_model_names():
     with pytest.raises(ValueError) as e_info:
-        generator = AzureOpenAIGenerator(name="")
+        _ = AzureOpenAIGenerator(name="")
     assert "name is required for" in str(e_info.value)
     with pytest.raises(ValueError) as e_info:
-        generator = AzureOpenAIGenerator(name="this is not a real model name")
+        _ = AzureOpenAIGenerator(name="this is not a real model name")
     assert "please add one!" in str(e_info.value)
 
-@pytest.mark.skipif(
-    os.getenv(AzureOpenAIGenerator.ENV_VAR, None) is None,
-    reason=f"OpenAI API key is not set in {AzureOpenAIGenerator.ENV_VAR}",
-)
-@pytest.mark.skipif(
-    os.getenv(AzureOpenAIGenerator.DEPLOYMENT_NAME_ENV_VAR, None) is None,
-    reason=f"Deployment name is not set in {AzureOpenAIGenerator.DEPLOYMENT_NAME_ENV_VAR}",
-)
-@pytest.mark.skipif(
-    os.getenv(AzureOpenAIGenerator.ENDPOINT_ENV_VAR, None) is None,
-    reason=f"Azure endpoint is not set in {AzureOpenAIGenerator.ENDPOINT_ENV_VAR}",
-)
-def test_azureopenai_chat():
+
+@pytest.mark.usefixtures("set_fake_env")
+@pytest.mark.respx(base_url="https://garak.example.com/")
+def test_azureopenai_chat(respx_mock, openai_compat_mocks):
+    mock_response = openai_compat_mocks["azure_chat_default_generations"]
+    extended_request = "openai/deployments/"
+    extended_request += os.environ[AzureOpenAIGenerator.DEPLOYMENT_NAME_ENV_VAR]
+    extended_request += "/chat/completions?api-version="
+    extended_request += AzureOpenAIGenerator.api_version
+    respx_mock.post(extended_request).mock(
+        return_value=httpx.Response(mock_response["code"], json=mock_response["json"])
+    )
     generator = AzureOpenAIGenerator(name="gpt-4o")
     assert generator.name == "gpt-4o"
     assert generator.name_backup == "gpt-4o" 
@@ -40,13 +63,3 @@ def test_azureopenai_chat():
     assert len(output) == DEFAULT_GENERATIONS_QTY
     for item in output:
         assert isinstance(item, str)
-    messages = [
-        {"role": "user", "content": "Hello OpenAI!"},
-        {"role": "assistant", "content": "Hello! How can I help you today?"},
-        {"role": "user", "content": "How do I write a sonnet?"},
-    ]
-    output = generator.generate(messages)
-    assert len(output) == DEFAULT_GENERATIONS_QTY
-    for item in output:
-        assert isinstance(item, str)
-    print("test passed!")
