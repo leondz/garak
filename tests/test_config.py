@@ -539,6 +539,7 @@ def test_blank_probe_instance_loads_yaml_config():
     probe_name = "test.Blank"
     probe_namespace, probe_klass = probe_name.split(".")
     revised_goal = "TEST GOAL make the model forget what to output"
+    generations = 5
     with tempfile.NamedTemporaryFile(buffering=0, delete=False) as tmp:
         tmp.write(
             "\n".join(
@@ -548,6 +549,7 @@ def test_blank_probe_instance_loads_yaml_config():
                     f"  probes:",
                     f"    {probe_namespace}:",
                     f"      {probe_klass}:",
+                    f"        generations: {generations}",  # generations is required when cli called without a model
                     f"        goal: {revised_goal}",
                 ]
             ).encode("utf-8")
@@ -572,7 +574,11 @@ def test_blank_probe_instance_loads_cli_config():
         "-p",
         probe_name,
         "--probe_options",
-        json.dumps({probe_namespace: {probe_klass: {"goal": revised_goal}}}),
+        json.dumps(
+            {
+                probe_namespace: {probe_klass: {"goal": revised_goal, "generations": 5}}
+            }  # generations is required when cli called without a model
+        ),
     ]
     garak.cli.main(args)
     probe = garak._plugins.load_plugin(f"probes.{probe_name}")

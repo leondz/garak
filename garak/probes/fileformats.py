@@ -11,10 +11,12 @@ from typing import Iterable
 import huggingface_hub
 import tqdm
 
+from garak import _config
 from garak.configurable import Configurable
 from garak.probes.base import Probe
 import garak.attempt
 import garak.resources.theme
+
 
 class HF_Files(Probe, Configurable):
     """Get a manifest of files associated with a Hugging Face generator
@@ -40,6 +42,11 @@ class HF_Files(Probe, Configurable):
     # refer to Table 1 in https://arxiv.org/abs/2401.13601
     # we focus on LLM input for probe
     modality: dict = {"in": {"text"}}
+
+    def __init__(self, config_root=_config):
+        self._load_config()
+        self.generations = 1  # force generations to 1, probe preforms a static test
+        super().__init__(config_root=config_root)
 
     def probe(self, generator) -> Iterable[garak.attempt.Attempt]:
         """attempt to gather target generator model file list, returning a list of results"""

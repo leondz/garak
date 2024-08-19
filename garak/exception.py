@@ -26,7 +26,13 @@ class GarakBackoffTrigger(GarakException):
     pass
 
 
-class BadGeneratorException(GarakException):
+class PluginException(GarakException):
+    """Plugin config/description is not usable"""
+
+    pass
+
+
+class BadGeneratorException(PluginException):
     """Generator config/description is not usable"""
 
     pass
