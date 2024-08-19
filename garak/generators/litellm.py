@@ -151,7 +151,7 @@ class LiteLLMGenerator(Generator):
             )
         except (
             litellm.exceptions.AuthenticationError, # authentication failed for detected or passed `provider`
-            litellm.exceptions.APIConnectionError, # provider cannot be detected based on `model`
+            litellm.exceptions.BadRequestError,
         ) as e:
 
             raise BadGeneratorException() from e
