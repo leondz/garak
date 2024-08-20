@@ -135,7 +135,6 @@ class Pipeline(Generator, HFCompatible):
     """Get text generations from a locally-run Hugging Face pipeline"""
 
     DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
-        "generations": 10,
         "hf_args": {
             "torch_dtype": "float16",
             "do_sample": True,

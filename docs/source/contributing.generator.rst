@@ -220,7 +220,7 @@ Excellent! Now let's try a test generation:
     >>> import garak.generators.replicate
     >>> g = garak.generators.replicate.ReplicateGenerator("meta/llama-2-70b-chat")
     🦜 loading generator: Replicate: meta/llama-2-70b-chat
-    >>> g.generate("test prompt", generations_this_call=1)
+    >>> g.generate("test prompt")
     [" Sure, I'm happy to help! Can you please provide an actual prompt or question you'd like me to assist with? I'll do my best to provide a helpful and informative response while adhering to the guidelines you've outlined."]
     >>>
 

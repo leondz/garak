@@ -76,7 +76,7 @@ class Generator(Configurable):
         pass
 
     def generate(
-        self, prompt: str, generations_this_call: int = -1
+        self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
         """Manages the process of getting generations out from a prompt
 

@@ -30,7 +30,7 @@ def test_pipeline(hf_generator_config):
     assert g.max_tokens == 99
     g.temperature = 0.1
     assert g.temperature == 0.1
-    output = g.generate("", generations_this_call=1)
+    output = g.generate("")
     assert len(output) == 1  # short term expect 1 generation by default
     for item in output:
         assert isinstance(item, str)
@@ -62,7 +62,7 @@ def test_model(hf_generator_config):
     assert g.max_tokens == 99
     g.temperature = 0.1
     assert g.temperature == 0.1
-    output = g.generate("", generations_this_call=1)
+    output = g.generate("")
     assert len(output) == 1  # short term expect 1 generation by default
     for item in output:
         assert item is None  # gpt2 is known raise exception returning `None`

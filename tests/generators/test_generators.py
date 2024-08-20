@@ -32,7 +32,7 @@ def test_generators_test_blank():
 
 def test_generators_test_repeat():
     g = Repeat(DEFAULT_GENERATOR_NAME)
-    output = g.generate(prompt=DEFAULT_PROMPT_TEXT, generations_this_call=1)
+    output = g.generate(prompt=DEFAULT_PROMPT_TEXT)
     assert output == [
         DEFAULT_PROMPT_TEXT
     ], "generators.test.Repeat should send back a list of the posed prompt string"
@@ -40,7 +40,7 @@ def test_generators_test_repeat():
 
 def test_generators_test_single_one():
     g = Single(DEFAULT_GENERATOR_NAME)
-    output = g.generate(prompt="test", generations_this_call=1)
+    output = g.generate(prompt="test")
     assert isinstance(
         output, list
     ), "Single generator .generate() should send back a list"
@@ -51,7 +51,7 @@ def test_generators_test_single_one():
         output[0], str
     ), "Single generator output list should contain strings"
 
-    output = g._call_model(prompt="test", generations_this_call=1)
+    output = g._call_model(prompt="test")
     assert isinstance(output, list), "Single generator _call_model should return a list"
     assert (
         len(output) == 1
@@ -87,7 +87,7 @@ def test_generators_test_single_too_many():
 
 def test_generators_test_blank_one():
     g = Blank(DEFAULT_GENERATOR_NAME)
-    output = g.generate(prompt="test", generations_this_call=1)
+    output = g.generate(prompt="test")
     assert isinstance(
         output, list
     ), "Blank generator .generate() should send back a list"
