@@ -515,6 +515,13 @@ def main(arguments=None) -> None:
 
             command.start_run()  # start the run now that all config validation is complete
             print(f"📜 reporting to {_config.transient.report_filename}")
+
+            if not _config.plugins.harnesses:
+                # Set the _config.plugins.harnesses
+                if parsed_specs["detector"] == []:
+                    _config.plugins.harnesses["Probewise"] = {}
+                else:
+                    _config.plugins.harnesses["Pxd"] = {}
             
             if "Probewise" in _config.plugins.harnesses:
                 command.probewise_run(
@@ -534,7 +541,7 @@ def main(arguments=None) -> None:
 
         elif "DetectorOnly" in _config.plugins.harnesses:
 
-            if "report_path" not in _config.plugins.harnesses.DetectorOnly:
+            if "report_path" not in _config.plugins.harnesses["DetectorOnly"]:
                 logging.error("report path not specified")
                 raise ValueError("Specify jsonl report path using report_path")
 

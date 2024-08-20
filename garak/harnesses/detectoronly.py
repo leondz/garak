@@ -18,7 +18,7 @@ class DetectorOnly(Harness):
 
     def _load_detector(self, detector_name: str) -> Detector:
         detector = _plugins.load_plugin(
-            detector_name, break_on_fail=False
+            "detectors." + detector_name, break_on_fail=False
         )
         if detector:
             return detector

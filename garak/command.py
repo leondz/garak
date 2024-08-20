@@ -256,18 +256,18 @@ def write_report_digest(report_filename, digest_filename):
     with open(digest_filename, "w", encoding="utf-8") as f:
         f.write(digest)
 
-def detector_only_run(detectors, evaluator):
+def detector_only_run():
     import garak.harnesses.detectoronly
     import garak.attempt
-    import _config
+    from garak import _config
 
-    config = _config.plugins.harnesses.DetectorOnly
+    config = _config.plugins.harnesses["DetectorOnly"]
 
-    with open(config.report_path) as f:
+    with open(config["report_path"]) as f:
         data = [json.loads(line) for line in f]
 
     ## Get detectors and evaluator from report if not specified by the user
-    if "detectors" not in config or 'eval_threshold' not in config:
+    if "detectors" not in config or "eval_threshold" not in config:
         try:
             for d in data:
                 if 'entry_type' in d and d['entry_type'] == 'start_run setup':
@@ -277,20 +277,26 @@ def detector_only_run(detectors, evaluator):
             raise ValueError("Unexpected start_run setup line in report.jsonl")
 
         if "detectors" not in config:
-            detectors = entry_line['plugins.detector_spec'].splut(',')
-            setattr(_config.plugins.harnesses.DetectorOnly, "detectors", detectors)
+            detectors = entry_line['plugins.detector_spec'].split(',')
+            # setattr(_config.plugins.harnesses.DetectorOnly, "detectors", detectors)
+            _config.plugins.harnesses["DetectorOnly"]["detectors"] = detectors
         
         if "eval_threshold" not in config:
             eval_threshold = _config.run.eval_threshold
             if "run.eval_threshold" in entry_line:
                 eval_threshold = entry_line["run.eval_threshold"]
-            setattr(_config.plugins.harnesses.DetectorOnly, "eval_threshold", eval_threshold)
+            _config.plugins.harnesses["DetectorOnly"]["eval_threshold"] = eval_threshold
     
     data = [d for d in data if d["entry_type"] == "attempt" and d["status"] == 1]
     attempts = [garak.attempt.Attempt.from_dict(d) for d in data]
 
-    detector_only_h = garak.harnesses.detectoronly.DetectorOnly()
-    config = _config.plugins.harnesses.DetectorOnly
-    evaluator = garak.evaluators.ThresholdEvaluator(config.eval_threshold)
+    if len(attempts) == 0:
+        raise ValueError("No attempts found in report.jsonl")
 
-    detector_only_h.run(attempts, config.detectors, evaluator)
+    detector_only_h = garak.harnesses.detectoronly.DetectorOnly()
+    config = _config.plugins.harnesses["DetectorOnly"]
+    evaluator = garak.evaluators.ThresholdEvaluator(config["eval_threshold"])
+
+    print(config["detectors"])
+
+    detector_only_h.run(attempts, config["detectors"], evaluator)
