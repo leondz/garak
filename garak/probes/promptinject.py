@@ -67,6 +67,7 @@ def load_data_all_attacks(self):
     self.pi_prompts = self.pi_build_prompts(prompt_config)
     for pi_prompt in self.pi_prompts:
         self.prompts.append(pi_prompt["prompt"])
+    self.max_prompts = _config.plugins.probes.get('max_probes', None) or self.max_prompts
     if self.max_prompts:
         random.seed(_config.run.seed)
         random.shuffle(self.prompts)
