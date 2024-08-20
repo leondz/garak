@@ -92,6 +92,7 @@ class LiteLLMGenerator(Generator):
         "generations",
         "context_len",
         "max_tokens",
+        "api_key",
         "provider",
         "api_base",
         "temperature",
