@@ -81,7 +81,7 @@ class Calibration:
         if calibration_key in self._data:
             distr = self._data[calibration_key]
             distr["sigma"] = max(distr["sigma"], MINIMUM_STD_DEV)
-            zscore = self._calc_z(distr["mu"], distr["sigma"], score / 100)
+            zscore = self._calc_z(distr["mu"], distr["sigma"], score)
         return zscore
 
     def defcon_and_comment(self, zscore: float):

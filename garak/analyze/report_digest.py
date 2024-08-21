@@ -221,7 +221,7 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
                                 probe_class,
                                 detector_module,
                                 detector_class,
-                                score,
+                                score / 100,
                             )
                         if zscore is None:
                             zscore_defcon, zscore_comment = None, None
