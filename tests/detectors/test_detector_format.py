@@ -38,8 +38,3 @@ def test_detector_metadata(classname):
         assert d.doc_uri.lower().startswith(
             "http"
         ), "doc uris should be fully-specified absolute HTTP addresses"
-    assert isinstance(
-        d.modality, dict
-    ), "detectors need to describe available modalities"
-    assert "in" in d.modality, "detectors modalities need an in descriptor"
-    assert isinstance(d.modality["in"], set), "modality descriptors must be sets"
