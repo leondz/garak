@@ -1,5 +1,6 @@
 import importlib
 import pytest
+import re
 
 from garak import _plugins
 
@@ -53,3 +54,17 @@ def test_probe_structure(classname):
                 if k not in c._supported_params:
                     unsupported_defaults.append(k)
     assert unsupported_defaults == []
+
+
+bcp_lenient_re = re.compile(r"[a-z]{2}([\-A-Za-z]*)")
+
+
+@pytest.mark.parametrize("classname", PROBES)
+def test_probe_metadata(classname):
+    p = _plugins.load_plugin(classname)
+    assert isinstance(p.goal, str)
+    assert len(p.goal) > 0, "probes must state their general goal"
+    assert isinstance(p.bcp47, str)
+    bcp47_parts = p.bcp47.split(",")
+    for bcp47_part in bcp47_parts:
+        assert bcp47_part == "*" or re.match(bcp_lenient_re, bcp47_part)
