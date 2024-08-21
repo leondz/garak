@@ -252,9 +252,9 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
 
     if calibration_used:
         calibration_date, calibration_model_count, calibration_model_list = "", "?", ""
-        if "garak_calibration_meta" in calibration.data:
-            calibration_date = calibration.data["garak_calibration_meta"]["date"]
-            calibration_models = calibration.data["garak_calibration_meta"]["filenames"]
+        if calibration.metadata is not None:
+            calibration_date = calibration.metadata["date"]
+            calibration_models = calibration.metadata["filenames"]
             calibration_models = [
                 s.replace(".report.jsonl", "") for s in calibration_models
             ]
