@@ -20,6 +20,7 @@ def hf_generator_config():
 
 
 def test_pipeline(hf_generator_config):
+    generations = 10
     g = garak.generators.huggingface.Pipeline("gpt2", config_root=hf_generator_config)
     assert g.name == "gpt2"
     assert isinstance(g.generator, transformers.pipelines.text_generation.Pipeline)
@@ -30,8 +31,8 @@ def test_pipeline(hf_generator_config):
     assert g.max_tokens == 99
     g.temperature = 0.1
     assert g.temperature == 0.1
-    output = g.generate("")
-    assert len(output) == 1  # short term expect 1 generation by default
+    output = g.generate("", generations_this_call=generations)
+    assert len(output) == generations  # verify generation count matched call
     for item in output:
         assert isinstance(item, str)
 
@@ -46,7 +47,7 @@ def test_inference():
     g.temperature = 0.1
     assert g.temperature == 0.1
     output = g.generate("")
-    assert len(output) == 1  # short term expect 1 generation by default
+    assert len(output) == 1  # 1 generation by default
     for item in output:
         assert isinstance(item, str)
 
