@@ -62,9 +62,23 @@ bcp_lenient_re = re.compile(r"[a-z]{2}([\-A-Za-z]*)")
 @pytest.mark.parametrize("classname", PROBES)
 def test_probe_metadata(classname):
     p = _plugins.load_plugin(classname)
-    assert isinstance(p.goal, str)
+    assert isinstance(p.goal, str), "probe goals should be a text string"
     assert len(p.goal) > 0, "probes must state their general goal"
-    assert isinstance(p.bcp47, str)
+    assert isinstance(
+        p.bcp47, str
+    ), "language codes should be described in a comma-separated string of bcp47 tags or *"
     bcp47_parts = p.bcp47.split(",")
     for bcp47_part in bcp47_parts:
-        assert bcp47_part == "*" or re.match(bcp_lenient_re, bcp47_part)
+        assert bcp47_part == "*" or re.match(
+            bcp_lenient_re, bcp47_part
+        ), "langs must be described with either * or a bcp47 code"
+    assert isinstance(
+        p.doc_uri, str
+    ), "probes must give a doc uri describing/citing the attack"
+    if len(p.doc_uri) > 1:
+        assert p.doc_uri.lower().startswith(
+            "http"
+        ), "doc uris should be fully-specified absolute HTTP addresses"
+    assert isinstance(p.modality, dict), "probes need to describe available modalities"
+    assert "in" in p.modality, "probe modalities need an in descriptor"
+    assert isinstance(p.modality["in"], set), "modality descriptors must be sets"
