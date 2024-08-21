@@ -74,7 +74,7 @@ def test_probe_metadata(classname):
         ), "langs must be described with either * or a bcp47 code"
     assert isinstance(
         p.doc_uri, str
-    ), "probes must give a doc uri describing/citing the attack"
+    ), "probes should give a doc uri describing/citing the attack"
     if len(p.doc_uri) > 1:
         assert p.doc_uri.lower().startswith(
             "http"
