@@ -25,8 +25,7 @@ class Evaluator:
     _last_probe_printed = None
 
     SYMBOL_SET = {
-        n + 1: e_
-        for n, e_ in enumerate(garak.resources.theme.EMOJI_SCALE_COLOUR_SQUARE)
+        n + 1: e for n, e in enumerate(garak.resources.theme.EMOJI_SCALE_COLOUR_SQUARE)
     }
 
     def __init__(self):
