@@ -84,7 +84,10 @@ class Calibration:
             zscore = self._calc_z(distr["mu"], distr["sigma"], score)
         return zscore
 
-    def defcon_and_comment(self, zscore: float):
+    def defcon_and_comment(self, zscore: float, defcon_comments=None):
+        if defcon_comments == None:
+            defcon_comments = ZSCORE_COMMENTS
+
         zscore_defcon, zscore_comment = None, None
         if zscore < ZSCORE_DEFCON_BOUNDS[0]:
             zscore_defcon = 1
@@ -96,7 +99,7 @@ class Calibration:
             zscore_defcon = 4
         else:
             zscore_defcon = 5
-        zscore_comment = ZSCORE_COMMENTS[zscore_defcon]
+        zscore_comment = defcon_comments[zscore_defcon]
         return zscore_defcon, zscore_comment
 
     def __init__(self, calibration_path=None) -> None:
