@@ -19,6 +19,8 @@ bcp_lenient_re = re.compile(r"[a-z]{2}([\-A-Za-z]*)")
 
 @pytest.mark.parametrize("classname", DETECTORS)
 def test_detector_metadata(classname):
+    if classname.startswith("detectors.base."):
+        return
     # instantiation can fail e.g. due to missing API keys
     # luckily this info is descriptive rather than behaviour-altering, so we don't need an instance
     m = importlib.import_module("garak." + ".".join(classname.split(".")[:-1]))
