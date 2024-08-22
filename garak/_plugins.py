@@ -379,7 +379,7 @@ def load_plugin(path, break_on_fail=True, config_root=_config) -> object:
     try:
         mod = importlib.import_module(module_path)
     except Exception as e:
-        logging.warning("Exception failed import of %s", module_path)
+        logging.warning("Exception failed import of %s", module_path, exc_info=e)
         if break_on_fail:
             raise ValueError("Didn't successfully import " + module_name) from e
         else:
@@ -389,12 +389,16 @@ def load_plugin(path, break_on_fail=True, config_root=_config) -> object:
         klass = getattr(mod, plugin_class_name)
         if "config_root" not in inspect.signature(klass.__init__).parameters:
             raise ConfigFailure(
-                'Incompatible function signature: "config_root" is incompatible with this plugin'
+                'Incompatible function signature: plugin must take a "config_root"'
             )
         plugin_instance = klass(config_root=config_root)
     except Exception as e:
         logging.warning(
-            "Exception instantiating %s.%s: %s", module_path, plugin_class_name, str(e)
+            "Exception instantiating %s.%s: %s",
+            module_path,
+            plugin_class_name,
+            str(e),
+            exc_info=e,
         )
         if break_on_fail:
             raise GarakException(e) from e
