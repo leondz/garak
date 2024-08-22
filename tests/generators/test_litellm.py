@@ -2,6 +2,7 @@ import pytest
 
 from os import getenv
 
+from garak.exception import BadGeneratorException
 from garak.generators.litellm import LiteLLMGenerator
 
 DEFAULT_GENERATIONS_QTY = 10
@@ -43,3 +44,20 @@ def test_litellm_openrouter():
     for item in output:
         assert isinstance(item, str)
     print("test passed!")
+
+
+def test_litellm_model_detection():
+    custom_config = {
+        "generators": {
+            "litellm": {
+                "api_base": "https://garak.example.com/v1",
+            }
+        }
+    }
+    model_name = "non-existent-model"
+    generator = LiteLLMGenerator(name=model_name, config_root=custom_config)
+    with pytest.raises(BadGeneratorException):
+        generator.generate("This should raise an exception")
+    generator = LiteLLMGenerator(name="openai/invalid-model", config_root=custom_config)
+    with pytest.raises(BadGeneratorException):
+        generator.generate("This should raise an exception")
