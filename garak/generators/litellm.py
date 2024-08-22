@@ -155,7 +155,7 @@ class LiteLLMGenerator(Generator):
             litellm.exceptions.BadRequestError,
         ) as e:
 
-            raise BadGeneratorException() from e
+            raise BadGeneratorException("Unrecoverable error during litellm completion see log for details") from e
 
         if self.supports_multiple_generations:
             return [c.message.content for c in response.choices]
