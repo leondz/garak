@@ -41,6 +41,87 @@
       ],
       "mod_time": "2024-07-31 05:21:39 +0000"
     },
+    "probes.av_spam_scanning.EICAR": {
+      "description": "Does the model check its output for viruses? Try to send the EICAR code through",
+      "DEFAULT_PARAMS": {},
+      "active": true,
+      "bcp47": "*",
+      "doc_uri": "https://en.wikipedia.org/wiki/EICAR_test_file",
+      "extended_detectors": [],
+      "goal": "output antivirus test codes",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": null,
+      "recommended_detector": [
+        "knownbadsignatures.EICAR"
+      ],
+      "tags": [
+        "avid-effect:security:S0301",
+        "avid-effect:security:S0403",
+        "owasp:llm02",
+        "payload:malicious:badcode:virus",
+        "quality:Security:Adversarial"
+      ],
+      "mod_time": "2024-08-22 16:42:10 +0000"
+    },
+    "probes.av_spam_scanning.GTUBE": {
+      "description": "Does the model check its output for spam? Try to send the GTUBE code through",
+      "DEFAULT_PARAMS": {},
+      "active": true,
+      "bcp47": "*",
+      "doc_uri": "https://en.wikipedia.org/wiki/GTUBE",
+      "extended_detectors": [],
+      "goal": "output email spam",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": null,
+      "recommended_detector": [
+        "knownbadsignatures.GTUBE"
+      ],
+      "tags": [
+        "avid-effect:security:S0301",
+        "avid-effect:security:S0403",
+        "owasp:llm02",
+        "payload:malicious:badcode:spam",
+        "quality:Security:Adversarial"
+      ],
+      "mod_time": "2024-08-22 16:42:10 +0000"
+    },
+    "probes.av_spam_scanning.GTphish": {
+      "description": "Does the model check its output for phishing? Try to send the GTphish code through",
+      "DEFAULT_PARAMS": {},
+      "active": true,
+      "bcp47": "*",
+      "doc_uri": "https://www.cisco.com/c/en/us/support/docs/security/email-security-appliance/213465-testing-outbreak-filter-url-rewriting.html",
+      "extended_detectors": [],
+      "goal": "output email phishing",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": null,
+      "recommended_detector": [
+        "knownbadsignatures.GTphish"
+      ],
+      "tags": [
+        "avid-effect:security:S0301",
+        "avid-effect:security:S0403",
+        "owasp:llm02",
+        "payload:malicious:badcode:phishing",
+        "quality:Security:Adversarial"
+      ],
+      "mod_time": "2024-08-22 16:42:10 +0000"
+    },
     "probes.base.Probe": {
       "description": "Base class for objects that define and execute LLM evaluations",
       "DEFAULT_PARAMS": {},
@@ -1507,87 +1588,6 @@
         "quality:Behavioral:ContentSafety:LegalGoodsServices"
       ],
       "mod_time": "2024-07-01 04:16:40 +0000"
-    },
-    "probes.knownbadsignatures.EICAR": {
-      "description": "Does the model check its output for viruses? Try to send the EICAR code through",
-      "DEFAULT_PARAMS": {},
-      "active": true,
-      "bcp47": "*",
-      "doc_uri": "https://en.wikipedia.org/wiki/EICAR_test_file",
-      "extended_detectors": [],
-      "goal": "output virus code",
-      "modality": {
-        "in": [
-          "text"
-        ]
-      },
-      "parallelisable_attempts": true,
-      "primary_detector": null,
-      "recommended_detector": [
-        "knownbadsignatures.EICAR"
-      ],
-      "tags": [
-        "avid-effect:security:S0301",
-        "avid-effect:security:S0403",
-        "owasp:llm02",
-        "payload:malicious:badcode:virus",
-        "quality:Security:Adversarial"
-      ],
-      "mod_time": "2024-06-06 01:44:58 +0000"
-    },
-    "probes.knownbadsignatures.GTUBE": {
-      "description": "Does the model check its output for spam? Try to send the GTUBE code through",
-      "DEFAULT_PARAMS": {},
-      "active": true,
-      "bcp47": "*",
-      "doc_uri": "https://en.wikipedia.org/wiki/GTUBE",
-      "extended_detectors": [],
-      "goal": "output email spam",
-      "modality": {
-        "in": [
-          "text"
-        ]
-      },
-      "parallelisable_attempts": true,
-      "primary_detector": null,
-      "recommended_detector": [
-        "knownbadsignatures.GTUBE"
-      ],
-      "tags": [
-        "avid-effect:security:S0301",
-        "avid-effect:security:S0403",
-        "owasp:llm02",
-        "payload:malicious:badcode:spam",
-        "quality:Security:Adversarial"
-      ],
-      "mod_time": "2024-06-06 01:44:58 +0000"
-    },
-    "probes.knownbadsignatures.GTphish": {
-      "description": "Does the model check its output for phishing? Try to send the GTphish code through",
-      "DEFAULT_PARAMS": {},
-      "active": true,
-      "bcp47": "*",
-      "doc_uri": "https://www.cisco.com/c/en/us/support/docs/security/email-security-appliance/213465-testing-outbreak-filter-url-rewriting.html",
-      "extended_detectors": [],
-      "goal": "output email phishing",
-      "modality": {
-        "in": [
-          "text"
-        ]
-      },
-      "parallelisable_attempts": true,
-      "primary_detector": null,
-      "recommended_detector": [
-        "knownbadsignatures.GTphish"
-      ],
-      "tags": [
-        "avid-effect:security:S0301",
-        "avid-effect:security:S0403",
-        "owasp:llm02",
-        "payload:malicious:badcode:phishing",
-        "quality:Security:Adversarial"
-      ],
-      "mod_time": "2024-06-06 01:44:58 +0000"
     },
     "probes.leakreplay.GuardianCloze": {
       "description": "Cloze data replay for literature. Uses passages that either GPT-4 or ChatGPT have been known to replay.",
@@ -3736,7 +3736,7 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2024-06-06 01:44:58 +0000"
+      "mod_time": "2024-08-22 16:42:10 +0000"
     },
     "detectors.knownbadsignatures.GTUBE": {
       "description": "Is the GTUBE test string present?",
@@ -3757,7 +3757,7 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2024-06-06 01:44:58 +0000"
+      "mod_time": "2024-08-22 16:42:10 +0000"
     },
     "detectors.knownbadsignatures.GTphish": {
       "description": "Is the GTphish test string present?",
@@ -3778,7 +3778,7 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2024-06-06 01:44:58 +0000"
+      "mod_time": "2024-08-22 16:42:10 +0000"
     },
     "detectors.leakreplay.StartsWith": {
       "description": "Subclass of Detector using attempt's notes[triggers] as list of strings to match",
