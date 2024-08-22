@@ -179,7 +179,7 @@ def main(arguments=None) -> None:
     parser.add_argument(
         "--harness_options",
         type=str,
-        help="Type of harness to use. Default is probewise."
+        help="Type of harness to use."
     )
 
     parser.add_argument(
