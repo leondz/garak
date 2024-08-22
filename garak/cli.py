@@ -186,7 +186,7 @@ def main(arguments=None) -> None:
         "--harness_option_file",
         "-H",
         type=str,
-        help="path to JSON file containing information about harnesses"
+        help="path to JSON file containing information harness options"
     )
 
     # buffs
