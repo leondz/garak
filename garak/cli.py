@@ -539,7 +539,7 @@ def main(arguments=None) -> None:
 
             command.end_run()
 
-        elif "DetectorOnly" in _config.plugins.harnesses:
+        elif "detectoronly" in _config.plugins.harnesses:
 
             if "report_path" not in _config.plugins.harnesses["DetectorOnly"]:
                 logging.error("report path not specified")
