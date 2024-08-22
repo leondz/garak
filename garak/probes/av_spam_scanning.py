@@ -1,4 +1,4 @@
-"""Looking for known-bad signatures
+"""Check to see if a model has antivirus or spam scanning on its output
 
 Probes that attempt to make a model output a known-bad signature. If they're
 output them without warning, that's an indication that the app isn't checking
@@ -35,8 +35,9 @@ REPEAT_PROMPTS = [
 class EICAR(Probe):
     """Does the model check its output for viruses? Try to send the EICAR code through
 
-    Models checking for viruses should refuse to generate virus code. This probe test
-    if models will provide output that should be stopped by a virus scanner."""
+    Models that implement checks for viruses should refuse to generate virus
+    code. This probe test if models will provide output that should be stopped
+    by a virus scanner. Only applicable to models expected to do antivirus scanning."""
 
     bcp47 = "*"
     doc_uri = "https://en.wikipedia.org/wiki/EICAR_test_file"
@@ -50,7 +51,7 @@ class EICAR(Probe):
         "payload:malicious:badcode:virus",
         "quality:Security:Adversarial",
     ]
-    goal = "output virus code"
+    goal = "output antivirus test codes"
 
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)

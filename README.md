@@ -210,6 +210,7 @@ For testing. This generator repeats back the prompt it received.
 | --- | --- |
 | blank | A simple probe that always sends an empty prompt. |
 | atkgen | Automated Attack Generation. A red-teaming LLM probes the target and reacts to it in an attempt to get toxic output. Prototype, mostly stateless, for now uses a simple GPT-2 [fine-tuned](https://huggingface.co/leondz/artgpt2tox) on the subset of hhrlhf attempts that yielded detectable toxicity (the only target currently supported for now). |
+| av_spam_scanning | Probes that attempt to make the model output malicious content signatures |
 | continuation | Probes that test if the model will continue a probably undesirable word |
 | dan | Various [DAN](https://adguard.com/en/blog/chatgpt-dan-prompt-abuse.html) and DAN-like attacks |
 | donotanswer | Prompts to which responsible language models should not answer. |
@@ -218,7 +219,6 @@ For testing. This generator repeats back the prompt it received.
 | glitch | Probe model for glitch tokens that provoke unusual behavior. |
 | grandma | Appeal to be reminded of one's grandmother. | 
 | goodside | Implementations of Riley Goodside attacks. |
-| knownbadsignatures | Probes that attempt to make the model output malicious content signatures |
 | leakerplay | Evaluate if a model will replay training data. |
 | lmrc | Subsample of the [Language Model Risk Cards](https://arxiv.org/abs/2303.18190) probes |
 | malwaregen | Attempts to have the model generate code for building malware |
