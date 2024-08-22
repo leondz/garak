@@ -1,11 +1,11 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+import importlib
 import pytest
 import re
 
 from garak import _plugins
-from garak.exception import APIKeyMissingError
 
 DETECTORS = [
     classname
@@ -19,10 +19,11 @@ bcp_lenient_re = re.compile(r"[a-z]{2}([\-A-Za-z]*)")
 
 @pytest.mark.parametrize("classname", DETECTORS)
 def test_detector_metadata(classname):
-    try:
-        d = _plugins.load_plugin(classname)
-    except APIKeyMissingError:
-        pytest.skip("API key unavailable")
+    # instantiation can fail e.g. due to missing API keys
+    # luckily this info is descriptive rather than behaviour-altering, so we don't need an instance
+    m = importlib.import_module("garak." + ".".join(classname.split(".")[:-1]))
+    dc = getattr(m, classname.split(".")[-1])
+    d = dc.__new__(dc)
     assert isinstance(
         d.bcp47, str
     ), "language codes should be described in a comma-separated string of bcp47 tags or *"
