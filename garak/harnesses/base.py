@@ -129,9 +129,9 @@ class Harness(Configurable):
             _config.transient.reportfile.write(json.dumps(attempt.as_dict()) + "\n")
 
         if len(attempt_results) == 0:
-            logging.warning(
-                "zero attempt results: probe %s",
-                probe.probename
-            )
+            msg = "zero attempt results: attempt %s" % attempt.uuid()
+            if probe is not None:
+                msg += ", probe %s" % probe.probename
+            logging.warning(msg)
         else:
             evaluator.evaluate(attempt_results)

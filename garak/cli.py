@@ -179,14 +179,14 @@ def main(arguments=None) -> None:
     parser.add_argument(
         "--harness_options",
         type=str,
-        help="Type of harness to use. Default is probewise."
+        help="Type of harness to use."
     )
 
     parser.add_argument(
         "--harness_option_file",
         "-H",
         type=str,
-        help="path to JSON file containing information about harnesses"
+        help="path to JSON file containing information harness options"
     )
 
     # buffs
@@ -539,7 +539,7 @@ def main(arguments=None) -> None:
 
             command.end_run()
 
-        elif "DetectorOnly" in _config.plugins.harnesses:
+        elif "detectoronly" in _config.plugins.harnesses:
 
             if "report_path" not in _config.plugins.harnesses["DetectorOnly"]:
                 logging.error("report path not specified")
