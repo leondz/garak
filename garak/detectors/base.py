@@ -20,7 +20,7 @@ class Detector(Configurable):
     """Base class for objects that define a way of detecting a probe hit / LLM failure"""
 
     doc_uri = ""  # reference
-    bcp47 = None  # language this is for. format: a comma-separated list of bcp7 tags, or "*"
+    bcp47 = None  # language this is for. format: a comma-separated list of bcp47 tags, or "*"
     precision = 0.0
     recall = 0.0
     accuracy = None
