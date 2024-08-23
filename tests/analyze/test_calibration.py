@@ -22,16 +22,20 @@ def test_instantiate():
 
 def test_load_default():
     c = garak.analyze.calibration.Calibration()
-    c.load_calibration()
+    load_result = c.load_calibration()
+    assert load_result > 0
     assert isinstance(c._data, dict)
 
 
 def test_load_constructor_explicit_absent():
     c = garak.analyze.calibration.Calibration("akshjdfiojavpoij")
-    c.load_calibration()
+    load_result = c.load_calibration()
+    assert load_result is None
     assert isinstance(c._data, dict)
+
     c = garak.analyze.calibration.Calibration("")
-    c.load_calibration()
+    load_result = c.load_calibration()
+    assert load_result is None
     assert isinstance(c._data, dict)
 
 
@@ -50,7 +54,8 @@ def test_data_before_load():
 
 def test_data_after_failed_load():
     c = garak.analyze.calibration.Calibration("alshdfohasdgih")
-    c.load_calibration()
+    load_result = c.load_calibration()
+    assert load_result is None
     assert c._data == {}
     assert c.metadata is None
 
