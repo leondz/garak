@@ -4,6 +4,7 @@
 import json
 import os
 import logging
+import pathlib
 from typing import Union
 
 from garak import _config
@@ -24,6 +25,7 @@ ZSCORE_DEFCON_BOUNDS = [-1, -0.125, 0.125, 1]
 
 
 class Calibration:
+    """Helper for managing probe/detector score calibration data processing"""
 
     def load_calibration(
         self, calibration_filename: Union[str, None] = None
@@ -89,7 +91,9 @@ class Calibration:
             zscore = self._calc_z(distr["mu"], distr["sigma"], score)
         return zscore
 
-    def defcon_and_comment(self, zscore: float, defcon_comments=None):
+    def defcon_and_comment(
+        self, zscore: float, defcon_comments: Union[None, dict] = None
+    ):
         if defcon_comments == None:
             defcon_comments = ZSCORE_COMMENTS
 
@@ -107,7 +111,7 @@ class Calibration:
         zscore_comment = defcon_comments[zscore_defcon]
         return zscore_defcon, zscore_comment
 
-    def __init__(self, calibration_path=None) -> None:
+    def __init__(self, calibration_path: Union[None, str, pathlib.Path] = None) -> None:
 
         self._data = {}
         self.metadata = None
@@ -120,6 +124,10 @@ class Calibration:
                 / "calibration.json"
             )
         else:
+            if not isinstance(calibration_path, str) or isinstance(
+                calibration_path, pathlib.Path
+            ):
+                raise ValueError("calibration_path must be a string or Path")
             self.calibration_filename = calibration_path
 
         self._load_attempted = False
