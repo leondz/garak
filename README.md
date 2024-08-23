@@ -21,6 +21,7 @@
 ### > Join our [Discord](https://discord.gg/uVch4puUCs)!
 ### > Project links & home: [garak.ai](https://garak.ai/)
 ### > Twitter: [@garak_llm](https://twitter.com/garak_llm)
+### > DEF CON [slides](https://garak.ai/garak_aiv_slides.pdf)!
 
 <hr>
 
@@ -30,6 +31,8 @@ currently supports:
 * [hugging face hub](https://huggingface.co/models) generative models
 * [replicate](https://replicate.com/) text models
 * [openai api](https://platform.openai.com/docs/introduction) chat & continuation models
+* [litellm](https://www.litellm.ai/)
+* pretty much anything accessible via REST
 * gguf models like [llama.cpp](https://github.com/ggerganov/llama.cpp) version >= 1046
 * .. and many more LLMs!
 
