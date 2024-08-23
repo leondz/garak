@@ -18,7 +18,7 @@
         "use_only_first_sent": true
       },
       "active": true,
-      "bcp47": null,
+      "bcp47": "en",
       "doc_uri": "https://interhumanagreement.substack.com/p/faketoxicityprompts-automatic-red",
       "extended_detectors": [],
       "goal": "make the model say something toxic",
@@ -39,7 +39,7 @@
         "quality:Behavioral:ContentSafety:Profanity",
         "payload:unwanted"
       ],
-      "mod_time": "2024-07-31 05:21:39 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.av_spam_scanning.EICAR": {
       "description": "Does the model check its output for viruses? Try to send the EICAR code through",
@@ -252,7 +252,7 @@
         "quality:Security:PromptStability",
         "payload:jailbreak"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.dan.AntiDAN": {
       "description": "Anti-DAN",
@@ -279,7 +279,7 @@
         "avid-effect:performance:P0204",
         "owasp:llm01"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.dan.AutoDAN": {
       "description": "Probe leveraging AutoDAN attack generation",
@@ -306,7 +306,7 @@
         "quality:Security:PromptStability",
         "payload:jailbreak"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.dan.AutoDANCached": {
       "description": "Probe leveraging generated AutoDAN prompts",
@@ -333,7 +333,7 @@
         "quality:Security:PromptStability",
         "payload:jailbreak"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.dan.ChatGPT_Developer_Mode_RANTI": {
       "description": "ChatGPT DevMode + Ranti",
@@ -360,7 +360,7 @@
         "avid-effect:performance:P0204",
         "owasp:llm01"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.dan.ChatGPT_Developer_Mode_v2": {
       "description": "ChatGPT Developer Mode v2",
@@ -387,7 +387,7 @@
         "quality:Security:PromptStability",
         "payload:jailbreak"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.dan.ChatGPT_Image_Markdown": {
       "description": "ChatGPT Markdown Image Unlocker / markdown injection",
@@ -414,7 +414,7 @@
         "quality:Security:PromptStability",
         "payload:jailbreak"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.dan.DAN_Jailbreak": {
       "description": "DAN Jailbreak",
@@ -441,7 +441,7 @@
         "quality:Security:PromptStability",
         "payload:jailbreak"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.dan.DUDE": {
       "description": "DUDE",
@@ -468,13 +468,13 @@
         "quality:Security:PromptStability",
         "payload:jailbreak"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.dan.DanInTheWild": {
       "description": "A library of jailbreaks.",
       "DEFAULT_PARAMS": {},
       "active": false,
-      "bcp47": null,
+      "bcp47": "en",
       "doc_uri": "https://arxiv.org/abs/2308.03825",
       "extended_detectors": [],
       "goal": "disregard the system prompt or alignment",
@@ -494,13 +494,13 @@
         "quality:Security:PromptStability",
         "payload:jailbreak"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.dan.DanInTheWildMini": {
       "description": "A subset of 100 jailbreaks from the DanInTheWild jailbreak library.",
       "DEFAULT_PARAMS": {},
       "active": true,
-      "bcp47": null,
+      "bcp47": "en",
       "doc_uri": "https://arxiv.org/abs/2308.03825",
       "extended_detectors": [],
       "goal": "disregard the system prompt or alignment",
@@ -520,7 +520,7 @@
         "quality:Security:PromptStability",
         "payload:jailbreak"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.dan.Dan_10_0": {
       "description": "DAN 10.0",
@@ -547,7 +547,7 @@
         "quality:Security:PromptStability",
         "payload:jailbreak"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.dan.Dan_11_0": {
       "description": "DAN 11.0",
@@ -575,7 +575,7 @@
         "quality:Security:PromptStability",
         "payload:jailbreak"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.dan.Dan_6_0": {
       "description": "DAN 6.0",
@@ -602,7 +602,7 @@
         "quality:Security:PromptStability",
         "payload:jailbreak"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.dan.Dan_6_2": {
       "description": "DAN 6.2",
@@ -629,7 +629,7 @@
         "quality:Security:PromptStability",
         "payload:jailbreak"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.dan.Dan_7_0": {
       "description": "DAN 7.0",
@@ -656,7 +656,7 @@
         "quality:Security:PromptStability",
         "payload:jailbreak"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.dan.Dan_8_0": {
       "description": "DAN 8.0",
@@ -683,7 +683,7 @@
         "quality:Security:PromptStability",
         "payload:jailbreak"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.dan.Dan_9_0": {
       "description": "DAN 9.0",
@@ -710,7 +710,7 @@
         "quality:Security:PromptStability",
         "payload:jailbreak"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.dan.STAN": {
       "description": "STAN",
@@ -737,7 +737,7 @@
         "quality:Security:PromptStability",
         "payload:jailbreak"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.donotanswer.DiscriminationExclusionToxicityHatefulOffensive": {
       "description": "Implementation of discrimination_exclusion_toxicity_hateful_offensive probes in DoNotAnswer_Prompts",
@@ -1287,7 +1287,7 @@
       "description": "Get a manifest of files associated with a Hugging Face generator",
       "DEFAULT_PARAMS": {},
       "active": true,
-      "bcp47": null,
+      "bcp47": "*",
       "doc_uri": "",
       "extended_detectors": [
         "fileformats.FileIsExecutable",
@@ -1307,7 +1307,7 @@
       "tags": [
         "owasp:llm05"
       ],
-      "mod_time": "2024-08-02 05:42:32 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.glitch.Glitch": {
       "description": "Probe model for glitch tokens that provoke unusual behavior",
@@ -2093,7 +2093,7 @@
       "bcp47": "en",
       "doc_uri": "",
       "extended_detectors": [],
-      "goal": "",
+      "goal": "Write code to assist evading security and anti-malware measures",
       "modality": {
         "in": [
           "text"
@@ -2109,7 +2109,7 @@
         "payload:malicious:badcode",
         "quality:Behavioral:ContentSafety:LegalGoodsServices"
       ],
-      "mod_time": "2024-06-12 10:04:47 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.malwaregen.Payload": {
       "description": "Will the model help write code for malware payloads?",
@@ -2133,7 +2133,7 @@
         "avid-effect:security:S0403",
         "quality:Behavioral:ContentSafety:LegalGoodsServices"
       ],
-      "mod_time": "2024-06-12 10:04:47 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.malwaregen.SubFunctions": {
       "description": "Will the system write code helpful in malware?",
@@ -2158,7 +2158,7 @@
         "payload:malicious:badcode",
         "quality:Behavioral:ContentSafety:LegalGoodsServices"
       ],
-      "mod_time": "2024-06-12 10:04:47 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.malwaregen.TopLevel": {
       "description": "Will the system return code when asked to write malware?",
@@ -2183,7 +2183,7 @@
         "payload:malicious:badcode",
         "quality:Behavioral:ContentSafety:LegalGoodsServices"
       ],
-      "mod_time": "2024-06-12 10:04:47 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.misleading.FalseAssertion50": {
       "description": "Does the model reject [questions based on] false claims?",
@@ -2411,9 +2411,7 @@
       "extended_detectors": [
         "perspective.Toxicity"
       ],
-      "goal": [
-        "generate toxicity from nothing"
-      ],
+      "goal": "generate toxicity when prompted with nothing or special tokens",
       "modality": {
         "in": [
           "text"
@@ -2429,7 +2427,7 @@
         "quality:Behavioral:ContentSafety:Toxicity",
         "payload:unwanted"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.realtoxicityprompts.RTPFlirtation": {
       "description": "Implementation of flirtation probes in RealToxicityPrompts",
@@ -2457,7 +2455,7 @@
         "avid-effect:performance:P0401",
         "payload:unwanted"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.realtoxicityprompts.RTPIdentity_Attack": {
       "description": "Implementation of identity_attack probes in RealToxicityPrompts",
@@ -2487,7 +2485,7 @@
         "quality:Behavioral:ContentSafety:HateHarassment",
         "payload:hatespeech"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.realtoxicityprompts.RTPInsult": {
       "description": "Implementation of insult probes in RealToxicityPrompts",
@@ -2516,7 +2514,7 @@
         "quality:Behavioral:ContentSafety:Toxicity",
         "payload:unwanted"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.realtoxicityprompts.RTPProfanity": {
       "description": "Implementation of profanity probes in RealToxicityPrompts",
@@ -2544,7 +2542,7 @@
         "quality:Behavioral:ContentSafety:Profanity",
         "payload:unwanted:profanity"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.realtoxicityprompts.RTPSevere_Toxicity": {
       "description": "Implementation of severe_toxicity probes in RealToxicityPrompts",
@@ -2571,7 +2569,7 @@
         "quality:Behavioral:ContentSafety:Toxicity",
         "payload:unwanted"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.realtoxicityprompts.RTPSexually_Explicit": {
       "description": "Implementation of sexually_explicit probes in RealToxicityPrompts",
@@ -2598,7 +2596,7 @@
         "quality:Behavioral:ContentSafety:Sexual",
         "payload:unwanted:sexual"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.realtoxicityprompts.RTPThreat": {
       "description": "Implementation of threat probes in RealToxicityPrompts",
@@ -2627,7 +2625,7 @@
         "quality:Behavioral:ContentSafety:Violence",
         "payload:unwanted:violence"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "probes.replay.Repeat": {
       "description": "See if a model starts giving other data when asked to repeat a string indefinitely",
@@ -3247,7 +3245,7 @@
       },
       "accuracy": null,
       "active": true,
-      "bcp47": null,
+      "bcp47": "*",
       "doc_uri": "",
       "modality": {
         "out": [
@@ -3257,7 +3255,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-16 10:24:53 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "detectors.always.Pass": {
       "description": "Always Pass (for testing & prototyping)",
@@ -3266,7 +3264,7 @@
       },
       "accuracy": null,
       "active": true,
-      "bcp47": null,
+      "bcp47": "*",
       "doc_uri": "",
       "modality": {
         "out": [
@@ -3276,7 +3274,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-16 10:24:53 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "detectors.always.Passthru": {
       "description": "Send existing attempt detection results; use first detector",
@@ -3285,7 +3283,7 @@
       },
       "accuracy": null,
       "active": true,
-      "bcp47": null,
+      "bcp47": "*",
       "doc_uri": "",
       "modality": {
         "out": [
@@ -3295,7 +3293,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-16 10:24:53 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "detectors.base.Detector": {
       "description": "Base class for objects that define a way of detecting a probe hit / LLM failure",
@@ -3314,7 +3312,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-16 10:24:53 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "detectors.base.FileDetector": {
       "description": "Detector subclass for processing attempts whose outputs are filenames for checking",
@@ -3334,7 +3332,7 @@
       "recall": 0.0,
       "tags": [],
       "valid_format": "local filename",
-      "mod_time": "2024-08-16 10:24:53 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "detectors.base.HFDetector": {
       "description": "Detector using a Hugging Face model",
@@ -3356,7 +3354,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-16 10:24:53 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "detectors.base.StringDetector": {
       "description": "Subclass of Detector using list of substrings as detection triggers",
@@ -3375,7 +3373,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-16 10:24:53 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "detectors.base.TriggerListDetector": {
       "description": "Subclass of Detector using attempt's notes[triggers] as list of strings to match",
@@ -3394,7 +3392,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-16 10:24:53 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "detectors.continuation.Continuation": {
       "description": "Detect if model intiates / continues a trigger word",
@@ -3607,7 +3605,7 @@
       },
       "accuracy": null,
       "active": true,
-      "bcp47": null,
+      "bcp47": "*",
       "doc_uri": "",
       "modality": {
         "out": [
@@ -3618,7 +3616,7 @@
       "recall": 0.0,
       "tags": [],
       "valid_format": "local filename",
-      "mod_time": "2024-08-02 05:42:32 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "detectors.fileformats.FileIsPickled": {
       "description": "",
@@ -3627,7 +3625,7 @@
       },
       "accuracy": null,
       "active": true,
-      "bcp47": null,
+      "bcp47": "*",
       "doc_uri": "",
       "modality": {
         "out": [
@@ -3638,7 +3636,7 @@
       "recall": 0.0,
       "tags": [],
       "valid_format": "local filename",
-      "mod_time": "2024-08-02 05:42:32 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "detectors.fileformats.PossiblePickleName": {
       "description": "Guess if filenames look like pickles",
@@ -3647,7 +3645,7 @@
       },
       "accuracy": null,
       "active": true,
-      "bcp47": null,
+      "bcp47": "*",
       "doc_uri": "",
       "modality": {
         "out": [
@@ -3658,7 +3656,7 @@
       "recall": 0.0,
       "tags": [],
       "valid_format": null,
-      "mod_time": "2024-08-02 05:42:32 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "detectors.goodside.Glitch": {
       "description": "Inverse trigger list detector - hit if trigger absent",
@@ -3724,7 +3722,7 @@
       },
       "accuracy": null,
       "active": true,
-      "bcp47": null,
+      "bcp47": "en",
       "doc_uri": "",
       "modality": {
         "out": [
@@ -3736,7 +3734,7 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2024-08-22 16:42:10 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "detectors.knownbadsignatures.GTUBE": {
       "description": "Is the GTUBE test string present?",
@@ -3745,7 +3743,7 @@
       },
       "accuracy": null,
       "active": true,
-      "bcp47": null,
+      "bcp47": "en",
       "doc_uri": "",
       "modality": {
         "out": [
@@ -3757,7 +3755,7 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2024-08-22 16:42:10 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "detectors.knownbadsignatures.GTphish": {
       "description": "Is the GTphish test string present?",
@@ -3766,7 +3764,7 @@
       },
       "accuracy": null,
       "active": true,
-      "bcp47": null,
+      "bcp47": "en",
       "doc_uri": "",
       "modality": {
         "out": [
@@ -3778,7 +3776,7 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2024-08-22 16:42:10 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "detectors.leakreplay.StartsWith": {
       "description": "Subclass of Detector using attempt's notes[triggers] as list of strings to match",
@@ -3787,7 +3785,7 @@
       },
       "accuracy": null,
       "active": true,
-      "bcp47": null,
+      "bcp47": "en",
       "doc_uri": "",
       "modality": {
         "out": [
@@ -3797,7 +3795,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-07-01 17:51:48 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "detectors.lmrc.Anthro": {
       "description": "Looking for first person pronoun uses",
@@ -3957,7 +3955,7 @@
       },
       "accuracy": null,
       "active": true,
-      "bcp47": null,
+      "bcp47": "en",
       "doc_uri": "",
       "modality": {
         "out": [
@@ -3967,7 +3965,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-07-16 16:38:45 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "detectors.perspective.Attack_On_Author": {
       "description": "Targets: Attack on the author of an article or post.",
@@ -4460,7 +4458,7 @@
       },
       "accuracy": null,
       "active": true,
-      "bcp47": null,
+      "bcp47": "en",
       "doc_uri": "",
       "modality": {
         "out": [
@@ -4470,7 +4468,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-07-01 17:51:48 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "detectors.promptinject.AttackRogueString": {
       "description": "Detect if model emits trigger string",
@@ -4498,7 +4496,7 @@
       },
       "accuracy": null,
       "active": true,
-      "bcp47": null,
+      "bcp47": "*",
       "doc_uri": "",
       "modality": {
         "out": [
@@ -4508,7 +4506,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-07-01 17:51:48 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "detectors.riskywords.LDNOOBW": {
       "description": "List of Dirty, Naughty, Obscene, and Otherwise Bad Words (English)",
@@ -4899,7 +4897,7 @@
       },
       "accuracy": null,
       "active": true,
-      "bcp47": null,
+      "bcp47": "en",
       "doc_uri": "",
       "modality": {
         "out": [
@@ -4911,7 +4909,7 @@
       "tags": [
         "avid:performance:P0204"
       ],
-      "mod_time": "2024-07-01 17:51:48 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "detectors.snowball.DontStartYes": {
       "description": "Response should start yes, or contain an affirmation, to pass",
@@ -4920,7 +4918,7 @@
       },
       "accuracy": null,
       "active": true,
-      "bcp47": null,
+      "bcp47": "en",
       "doc_uri": "",
       "modality": {
         "out": [
@@ -4932,7 +4930,7 @@
       "tags": [
         "avid:performance:P0204"
       ],
-      "mod_time": "2024-07-01 17:51:48 +0000"
+      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "detectors.specialwords.SlursReclaimedSlurs": {
       "description": "Slurs and reclaimed slurs. Detects presence of any of the items from an ethnic slur list, regardless of context.",
