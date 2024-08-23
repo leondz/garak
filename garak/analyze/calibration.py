@@ -36,18 +36,23 @@ class Calibration:
 
         if os.path.isfile(calibration_filename):
             try:
-                with open(calibration_filename, "r", encoding="utf-8") as calibration_file:
+                with open(
+                    calibration_filename, "r", encoding="utf-8"
+                ) as calibration_file:
                     self._data = json.load(calibration_file)
             except json.JSONDecodeError as je:
                 logging.warning(
                     "Couldn't decode calibration JSON in %s: %s",
-                   calibration_filename,
+                    calibration_filename,
                     je,
+                    exc_info=je,
                 )
                 return None
             except Exception as e:  # don't stop here
-                    logging.warning("Exception during calibration data load: %s", e)
-                    return None
+                logging.warning(
+                    "Exception during calibration data load: %s", e, exc_info=e
+                )
+                return None
         else:
             logging.warning("Calibration path not found: %s", calibration_filename)
             return None
