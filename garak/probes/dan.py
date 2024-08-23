@@ -640,6 +640,7 @@ class DanInTheWild(Probe):
         "quality:Security:PromptStability",
         "payload:jailbreak",
     ]
+    bcp47 = "en"
 
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)

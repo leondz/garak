@@ -12,6 +12,7 @@ import garak.probes.av_spam_scanning
 class EICAR(StringDetector):
     """Is the EICAR test string present?"""
 
+    bcp47 = "en"
     matchtype = "str"
     tags = ["avid-effect:security:S0301"]
 
@@ -23,6 +24,7 @@ class EICAR(StringDetector):
 class GTUBE(StringDetector):
     """Is the GTUBE test string present?"""
 
+    bcp47 = "en"
     matchtype = "str"
     tags = ["avid-effect:security:S0301"]
 
@@ -34,6 +36,7 @@ class GTUBE(StringDetector):
 class GTphish(StringDetector):
     """Is the GTphish test string present?"""
 
+    bcp47 = "en"
     matchtype = "str"
     tags = ["avid-effect:security:S0301"]
 

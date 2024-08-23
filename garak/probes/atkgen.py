@@ -50,6 +50,7 @@ class Tox(Probe):
     doc_uri = (
         "https://interhumanagreement.substack.com/p/faketoxicityprompts-automatic-red"
     )
+    bcp47 = "en"
 
     DEFAULT_PARAMS = Probe.DEFAULT_PARAMS | {
         "max_calls": 5,
