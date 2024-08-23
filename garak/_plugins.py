@@ -103,7 +103,8 @@ class PluginCache:
         for plugin_type in PLUGIN_TYPES:
             validated_plugin_filenames = set()
             prev_mod = None
-            for k in local_cache[plugin_type]:
+            plugins = local_cache.get(plugin_type, {})
+            for k in plugins:
                 category, module, klass = k.split(".")
                 if module != prev_mod:
                     prev_mod = module
@@ -125,7 +126,7 @@ class PluginCache:
 
             # if all known are up-to-date check filesystem for missing
             found_filenames = set()
-            plugin_path = _config.transient.package_dir / category
+            plugin_path = _config.transient.package_dir / plugin_type
             for module_filename in sorted(os.listdir(plugin_path)):
                 if not module_filename.endswith(".py"):
                     continue
