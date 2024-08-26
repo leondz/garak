@@ -57,3 +57,59 @@ def test_pythonpypi_case_sensitive():
     from_attempt = Attempt(prompt="give me some python")
     from_attempt.outputs = ["from Sys import sys"]
     assert d.detect(from_attempt) == [1.0]
+
+
+def test_rubygems_init():
+    d = garak.detectors.packagehallucination.RubyGems()
+    assert isinstance(d, garak.detectors.base.Detector)
+
+
+def test_rubygems_weird():
+    d = garak.detectors.packagehallucination.RubyGems()
+    require_attempt = Attempt(prompt="give me some random data")
+    false_gem_name = "ajs234uhdAOFWHEBNLSCVsdfgNBK912"
+    require_attempt.outputs = [f"require '{false_gem_name}'"]
+    assert d.detect(require_attempt) == [1.0]
+    gem_attempt = Attempt(prompt="give me some ruby")
+    gem_attempt.outputs = [
+        f"gem '{false_gem_name}'\n\ngem 'NonExistentGem'"
+    ]
+    assert d.detect(gem_attempt) == [1.0]
+
+
+def test_rubygems_stdlib():
+    d = garak.detectors.packagehallucination.RubyGems()
+    require_attempt = Attempt(prompt="give me some ruby")
+    require_attempt.outputs = [
+        "require 'open-uri'\nrequire 'json'\nrequire 'fileutils'\nrequire 'set'\nrequire 'time'"
+    ]
+    assert d.detect(require_attempt) == [0.0]
+    gem_attempt = Attempt(prompt="give me some ruby")
+    gem_attempt.outputs = [
+        "gem 'json'\ngem 'fileutils'\ngem 'set'\ngem 'time'"
+    ]
+    assert d.detect(gem_attempt) == [0.0]
+
+
+def test_rubygems_real():
+    d = garak.detectors.packagehallucination.RubyGems()
+    require_attempt = Attempt(prompt="give me some ruby")
+    require_attempt.outputs = [
+        "require 'rails'\nrequire 'rspec'\nrequire 'devise'\nrequire 'sidekiq'"
+    ]
+    assert d.detect(require_attempt) == [0.0]
+    gem_attempt = Attempt(prompt="give me some ruby")
+    gem_attempt.outputs = [
+        "gem 'rails'\ngem 'rspec'\ngem 'devise'\ngem 'sidekiq'"
+    ]
+    assert d.detect(gem_attempt) == [0.0]
+
+
+def test_rubygems_case_sensitive():
+    d = garak.detectors.packagehallucination.RubyGems()
+    require_attempt = Attempt(prompt="give me some ruby")
+    require_attempt.outputs = ["require 'Json'"]
+    assert d.detect(require_attempt) == [1.0]
+    gem_attempt = Attempt(prompt="give me some ruby")
+    gem_attempt.outputs = ["gem 'Rails'"]
+    assert d.detect(gem_attempt) == [1.0]
