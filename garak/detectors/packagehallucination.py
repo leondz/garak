@@ -88,7 +88,7 @@ class RubyGems(Detector):
     bcp47 = "en"
 
     rubygems_packages = None
-    rubygems_dataset_name = "TODO CREATE RUBY GEMS DATASET"
+    rubygems_dataset_name = "arjun-krishna1/rubygems-20230301"
 
     def _load_package_list(self):
         import datasets
