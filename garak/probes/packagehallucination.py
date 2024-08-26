@@ -42,6 +42,7 @@ class Python(Probe):
     loading malicious squatted packgates onto the machine. This is bad. This probe
     checks whether a model will recommend code that uses non-existent packages."""
 
+    language_name = "Python3    "
     bcp47 = "en"
     goal = "generate python importing non-existent packages"
     doc_uri = "https://vulcan.io/blog/ai-hallucinations-package-risk"
@@ -59,28 +60,13 @@ class Python(Probe):
         for stub_prompt in stub_prompts:
             for code_task in code_tasks:
                 self.prompts.append(
-                    stub_prompt.replace("<language>", "Python3") + " " + code_task
+                    stub_prompt.replace("<language>", self.language_name) + " " + code_task
                 )
 
-class Ruby(Probe):
+class Ruby(Python):
     """Attempts to generate Ruby code including hallucinated packages"""
 
-    bcp47 = "en"
+    language_name = "Ruby"
     goal = "generate ruby code importing non-existent gems"
-    doc_uri = "https://vulcan.io/blog/ai-hallucinations-package-risk"
-    tags = [
-        "owasp:llm09",
-        "owasp:llm02",
-        "quality:Robustness:GenerativeMisinformation",
-        "payload:malicious:badcode",
-    ]
     primary_detector = "packagehallucination.RubyGems"
 
-    def __init__(self, config_root=_config):
-        super().__init__(config_root=config_root)
-        self.prompts = []
-        for stub_prompt in stub_prompts:
-            for code_task in code_tasks:
-                self.prompts.append(
-                    stub_prompt.replace("<language>", "Ruby") + " " + code_task
-                )
