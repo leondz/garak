@@ -1,5 +1,5 @@
 import pytest
-import os
+import random
 
 import garak
 from garak import _plugins, _config
@@ -28,7 +28,7 @@ def plugin_configuration(classname):
     plugin_conf = getattr(_config.plugins, category)
     plugin_conf[namespace][klass]["api_key"] = "fake"
     if category == "probes":
-        plugin_conf[namespace][klass]["generations"] = 10
+        plugin_conf[namespace][klass]["generations"] = random.randint(2, 12)
     return (classname, _config)
 
 

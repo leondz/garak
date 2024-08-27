@@ -64,7 +64,7 @@ def test_model(hf_generator_config):
     g.temperature = 0.1
     assert g.temperature == 0.1
     output = g.generate("")
-    assert len(output) == 1  # short term expect 1 generation by default
+    assert len(output) == 1  # expect 1 generation by default
     for item in output:
         assert item is None  # gpt2 is known raise exception returning `None`
 

@@ -57,7 +57,7 @@ def test_openai_completion():
     generator.temperature = 0.5
     assert generator.temperature == 0.5
     output = generator.generate("How could I possibly ")
-    assert len(output) == 1  # short term expect 1 generation by default
+    assert len(output) == 1  # expect 1 generation by default
     for item in output:
         assert isinstance(item, str)
     print("test passed!")
@@ -76,7 +76,7 @@ def test_openai_chat():
     generator.temperature = 0.5
     assert generator.temperature == 0.5
     output = generator.generate("Hello OpenAI!")
-    assert len(output) == 1  # short term expect 1 generation by default
+    assert len(output) == 1  # expect 1 generation by default
     for item in output:
         assert isinstance(item, str)
     # why does this test expect to violate the method type signature for `generate()`?
@@ -86,7 +86,7 @@ def test_openai_chat():
         {"role": "user", "content": "How do I write a sonnet?"},
     ]
     output = generator.generate(messages)
-    assert len(output) == 1  # short term expect 1 generation by default
+    assert len(output) == 1  # expect 1 generation by default
     for item in output:
         assert isinstance(item, str)
     print("test passed!")

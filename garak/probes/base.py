@@ -17,7 +17,7 @@ import tqdm
 
 from garak import _config
 from garak.configurable import Configurable
-from garak.exception import PluginException
+from garak.exception import PluginConfigurationError
 import garak.attempt
 import garak.resources.theme
 
@@ -76,7 +76,7 @@ class Probe(Configurable):
             else:
                 self.description = ""
         if not hasattr(self, "generations"):
-            raise PluginException(  # this might also make sense as `ValueError`
+            raise PluginConfigurationError(  # this might also make sense as `ValueError`
                 "Probe configuration must include a `generations` value"
             )
 

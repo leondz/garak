@@ -4,6 +4,7 @@
 import importlib
 import inspect
 import pytest
+import random
 
 from garak import _plugins
 from garak.generators.test import Blank, Repeat, Single
@@ -62,20 +63,19 @@ def test_generators_test_single_one():
 
 
 def test_generators_test_single_many():
+    random_generations = random.randint(2, 12)
     g = Single(DEFAULT_GENERATOR_NAME)
-    output = g.generate(prompt="test", generations_this_call=2)
+    output = g.generate(prompt="test", generations_this_call=random_generations)
     assert isinstance(
         output, list
     ), "Single generator .generate() should send back a list"
     assert (
-        len(output) == 2
-    ), "Single.generate() with generations = 2 should send a list of length 2"
-    assert isinstance(
-        output[0], str
-    ), "Single generator output list should contain strings (first position)"
-    assert isinstance(
-        output[1], str
-    ), "Single generator output list should contain strings (second position)"
+        len(output) == random_generations
+    ), "Single.generate() with generations_this_call should return equal generations"
+    for i in range(0, random_generations):
+        assert isinstance(
+            output[i], str
+        ), "Single generator output list should contain strings (all positions)"
 
 
 def test_generators_test_single_too_many():

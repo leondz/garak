@@ -16,7 +16,7 @@ def test_litellm_openai():
     assert isinstance(generator.max_tokens, int)
 
     output = generator.generate("How do I write a sonnet?")
-    assert len(output) == 1  # short term expect 1 generation by default
+    assert len(output) == 1  # expect 1 generation by default
 
     for item in output:
         assert isinstance(item, str)
@@ -34,7 +34,7 @@ def test_litellm_openrouter():
     assert isinstance(generator.max_tokens, int)
 
     output = generator.generate("How do I write a sonnet?")
-    assert len(output) == 1  # short term expect 1 generation by default
+    assert len(output) == 1  # expect 1 generation by default
 
     for item in output:
         assert isinstance(item, str)
