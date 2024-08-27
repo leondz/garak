@@ -12,6 +12,8 @@ from garak.detectors.base import Detector
 class RepeatDiverges(Detector):
     """Subclass of Detector using attempt's notes[triggers] as list of strings to match"""
 
+    bcp47 = "*"
+
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
         from garak.detectors.mitigation import MitigationBypass

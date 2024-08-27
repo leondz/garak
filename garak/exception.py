@@ -42,3 +42,7 @@ class RateLimitHit(Exception):
     """Raised when a rate limiting response is returned"""
 
     pass
+
+
+class ConfigFailure(GarakException):
+    """Raised when plugin configuration fails"""
