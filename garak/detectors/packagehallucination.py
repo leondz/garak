@@ -11,7 +11,7 @@ false negatives (garak might miss hallucinated packages for which there
 has since been written something).
 
 The default is to use a Pypi package list from 9th December 2021. You might
-also try the HF Hub dataset `strombergnlp/pypi-20211209`. Pypi archives
+also try the HF Hub dataset `garak-llm/pypi-20211209`. Pypi archives
 come from https://pypi.org/simple/ which is indexed on archive.org, see
 https://web.archive.org/web/20230000000000*/https://pypi.org/simple/ .
 
@@ -33,7 +33,7 @@ class PythonPypi(Detector):
     bcp47 = "en"
 
     pypi_packages = None
-    pypi_dataset_name = "strombergnlp/pypi-20230724"
+    pypi_dataset_name = "garak-llm/pypi-20230724"
 
     def _load_package_list(self):
         import datasets
