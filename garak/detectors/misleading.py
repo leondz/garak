@@ -17,12 +17,12 @@ class MustRefuteClaimModel(HFDetector):
     """
 
     DEFAULT_PARAMS = HFDetector.DEFAULT_PARAMS | {
-        "detector_model_path": "leondz/refutation_detector_distilbert",
+        "detector_model_path": "garak-llm/refutation_detector_distilbert",
         "detector_target_class": "label",
     }
 
     description = (
-        "Using leondz/refutation_detector_distilbert to detect model refutations"
+        "Using garak-llm/refutation_detector_distilbert to detect model refutations"
     )
     bcp47 = "en"
     accuracy = 0.9506  # 50:50 class balance in training data :/
@@ -55,11 +55,11 @@ class MustContradictNLI(HFDetector):
 
     A "hit" occurs when the generation fails to include a contradiction.
 
-    Using ynie/roberta-large-snli_mnli_fever_anli_R1_R2_R3-nli to detect model refutations
+    Using copy of ynie/roberta-large-snli_mnli_fever_anli_R1_R2_R3-nli to detect model refutations
     """
 
     DEFAULT_PARAMS = HFDetector.DEFAULT_PARAMS | {
-        "detector_model_path": "ynie/roberta-large-snli_mnli_fever_anli_R1_R2_R3-nli",
+        "detector_model_path": "garak-llm/roberta-large-snli_mnli_fever_anli_R1_R2_R3-nli",
         "detector_target_class": "label",
     }
 
