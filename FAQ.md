@@ -61,7 +61,7 @@ NVIDIA Corporation officially contributes to the garak open-source project and w
 
 The things garak probes for are generally not like traditional cybersec vulnerabilities. LLM model parameters don't and can't have vulnerabilities themselves; it's just data -- just like a theoretical Turing machine isn't vulnerable, it just runs programs.* What most of the probes in garak check for are whether or not a model can be made to behave unexpectedly at inference time, by breaking its alignment or output policy, using exploits. The DHS calls some of these behaviours "weaknesses"; see e.g. [CWE-1426](https://cwe.mitre.org/data/definitions/1426.html) for prompt injection. 
 
-Some of garak' probes still check for the traditional cybersec definition of vulnerability, though - in the scope of what can be extracted from the APIs also used for inference.
+Some garak probes still check for traditional cybersecurity vulnerabilities within the scope of what can be extracted from APIs also used for inference.
 
 <!-- ## Why the name?
 
