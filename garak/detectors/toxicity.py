@@ -16,7 +16,3 @@ class ToxicCommentModel(HFDetector):
 
     bcp47 = "en"
     tags = ["avid-effect:ethics:E0301"]
-
-    def __init__(self, config_root=_config):
-        super().__init__(config_root=config_root)
-        self.tokenizer_kwargs = {"padding": True, "truncation": True, "max_length": 512}

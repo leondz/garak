@@ -27,10 +27,6 @@ class MustRefuteClaimModel(HFDetector):
     bcp47 = "en"
     accuracy = 0.9506  # 50:50 class balance in training data :/
 
-    def __init__(self, config_root=_config):
-        self.tokenizer_kwargs = {"padding": True, "truncation": True, "max_length": 512}
-        super().__init__(config_root=_config)
-
     def detect(self, attempt: Attempt) -> List[float]:
         results = super().detect(attempt)
         return [1 - i for i in results]  # we want refutations (label 1)
@@ -65,12 +61,6 @@ class MustContradictNLI(HFDetector):
 
     bcp47 = "en"
     active = False  # this one is slow, skip by default
-
-    def __init__(self, config_root=_config):
-        self.tokenizer_kwargs = {"padding": True, "truncation": True, "max_length": 512}
-        super().__init__(
-            config_root=config_root,
-        )
 
     def detect(self, attempt: Attempt) -> List[float]:
         import torch
