@@ -6,7 +6,7 @@
         "max_calls": 5,
         "constructive_tension": true,
         "red_team_model_type": "huggingface.Pipeline",
-        "red_team_model_name": "leondz/artgpt2tox",
+        "red_team_model_name": "garak-llm/artgpt2tox",
         "red_team_model_config": {
           "hf_args": {
             "device": "cpu",
@@ -39,7 +39,7 @@
         "quality:Behavioral:ContentSafety:Profanity",
         "payload:unwanted"
       ],
-      "mod_time": "2024-08-23 16:13:06 +0000"
+      "mod_time": "2024-08-27 17:41:28 +0000"
     },
     "probes.av_spam_scanning.EICAR": {
       "description": "Does the model check its output for viruses? Try to send the EICAR code through",
@@ -3866,7 +3866,7 @@
         "hf_args": {
           "device": "cpu"
         },
-        "detector_model_path": "ynie/roberta-large-snli_mnli_fever_anli_R1_R2_R3-nli",
+        "detector_model_path": "garak-llm/roberta-large-snli_mnli_fever_anli_R1_R2_R3-nli",
         "detector_target_class": "label"
       },
       "accuracy": null,
@@ -3881,7 +3881,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-01 05:58:56 +0000"
+      "mod_time": "2024-08-27 17:41:28 +0000"
     },
     "detectors.misleading.MustRefuteClaimKW": {
       "description": "Looking for strings indicating a refutation",
@@ -3900,16 +3900,16 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-01 05:58:56 +0000"
+      "mod_time": "2024-08-27 17:41:28 +0000"
     },
     "detectors.misleading.MustRefuteClaimModel": {
-      "description": "Using leondz/refutation_detector_distilbert to detect model refutations",
+      "description": "Using garak-llm/refutation_detector_distilbert to detect model refutations",
       "DEFAULT_PARAMS": {
         "skip": false,
         "hf_args": {
           "device": "cpu"
         },
-        "detector_model_path": "leondz/refutation_detector_distilbert",
+        "detector_model_path": "garak-llm/refutation_detector_distilbert",
         "detector_target_class": "label"
       },
       "accuracy": 0.9506,
@@ -3924,7 +3924,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-01 05:58:56 +0000"
+      "mod_time": "2024-08-27 17:41:28 +0000"
     },
     "detectors.mitigation.MitigationBypass": {
       "description": "Detect if a string response does not contain a mitigation message.",
@@ -3965,7 +3965,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-23 16:13:06 +0000"
+      "mod_time": "2024-08-27 17:41:28 +0000"
     },
     "detectors.perspective.Attack_On_Author": {
       "description": "Targets: Attack on the author of an article or post.",
@@ -4957,13 +4957,13 @@
       "mod_time": "2024-07-30 16:28:58 +0000"
     },
     "detectors.toxicity.ToxicCommentModel": {
-      "description": "Using martin-ha/toxic-comment-model DistilBERT to detect toxic content",
+      "description": "Using backup of martin-ha/toxic-comment-model DistilBERT to detect toxic content",
       "DEFAULT_PARAMS": {
         "skip": false,
         "hf_args": {
           "device": "cpu"
         },
-        "detector_model_path": "martin-ha/toxic-comment-model",
+        "detector_model_path": "garak-llm/toxic-comment-model",
         "detector_target_class": "toxic"
       },
       "accuracy": null,
@@ -4980,7 +4980,7 @@
       "tags": [
         "avid-effect:ethics:E0301"
       ],
-      "mod_time": "2024-08-01 05:58:56 +0000"
+      "mod_time": "2024-08-27 17:41:28 +0000"
     },
     "detectors.visual_jailbreak.FigStep": {
       "description": "Looks for specific strings in the output - these should be strings inserted by image",
@@ -6035,7 +6035,7 @@
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://huggingface.co/humarin/chatgpt_paraphraser_on_T5_base",
-      "mod_time": "2024-06-06 01:44:58 +0000"
+      "mod_time": "2024-08-27 17:41:28 +0000"
     },
     "buffs.paraphrase.PegasusT5": {
       "description": "Paraphrasing buff using Pegasus model",
@@ -6043,7 +6043,7 @@
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://huggingface.co/tuner007/pegasus_paraphrase",
-      "mod_time": "2024-06-06 01:44:58 +0000"
+      "mod_time": "2024-08-27 17:41:28 +0000"
     }
   }
 }
