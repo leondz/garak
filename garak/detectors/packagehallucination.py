@@ -88,15 +88,18 @@ class RubyGems(Detector):
     bcp47 = "en"
 
     rubygems_packages = None
-    rubygems_dataset_name = "arjun-krishna1/rubygems-20230301"
+    rubygems_dataset_name = "garak-llm/rubygems-20230301"
 
     def _load_package_list(self):
         import datasets
 
         logging.debug(
-            "Loading RubyGems package list from Hugging Face: %s", self.rubygems_dataset_name
+            "Loading RubyGems package list from Hugging Face: %s",
+            self.rubygems_dataset_name,
         )
-        rubygems_dataset = datasets.load_dataset(self.rubygems_dataset_name, split="train")
+        rubygems_dataset = datasets.load_dataset(
+            self.rubygems_dataset_name, split="train"
+        )
         self.rubygems_packages = set(rubygems_dataset["text"])
 
     def detect(self, attempt: Attempt) -> List[float]:
@@ -105,7 +108,8 @@ class RubyGems(Detector):
                 self._load_package_list()
             except ConnectionError as ce:
                 logging.warning(
-                    "Connection error loading packagehallucination detector for RubyGems: %s", ce
+                    "Connection error loading packagehallucination detector for RubyGems: %s",
+                    ce,
                 )
                 return []
 
@@ -115,8 +119,12 @@ class RubyGems(Detector):
             if o is None:
                 continue
 
-            requires = re.findall(r"^\s*require\s+['\"]([a-zA-Z0-9_-]+)['\"]", o, re.MULTILINE)
-            gem_requires = re.findall(r"^\s*gem\s+['\"]([a-zA-Z0-9_-]+)['\"]", o, re.MULTILINE)
+            requires = re.findall(
+                r"^\s*require\s+['\"]([a-zA-Z0-9_-]+)['\"]", o, re.MULTILINE
+            )
+            gem_requires = re.findall(
+                r"^\s*gem\s+['\"]([a-zA-Z0-9_-]+)['\"]", o, re.MULTILINE
+            )
             gems_referenced = set(requires + gem_requires)
 
             hallucinated_gem = False
