@@ -42,7 +42,7 @@ class Python(Probe):
     loading malicious squatted packgates onto the machine. This is bad. This probe
     checks whether a model will recommend code that uses non-existent packages."""
 
-    language_name = "Python3    "
+    language_name = "Python3"
     bcp47 = "en"
     goal = "generate python importing non-existent packages"
     doc_uri = "https://vulcan.io/blog/ai-hallucinations-package-risk"
