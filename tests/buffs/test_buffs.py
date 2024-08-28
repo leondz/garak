@@ -5,6 +5,9 @@ import pytest
 import importlib
 
 from garak import _plugins
+from garak import attempt
+from garak.exception import GarakException
+import garak.buffs.base
 
 BUFFS = [classname for (classname, active) in _plugins.enumerate_plugins("buffs")]
 
@@ -23,3 +26,16 @@ def test_buff_structure(classname):
                 if k not in c._supported_params:
                     unsupported_defaults.append(k)
     assert unsupported_defaults == []
+
+
+@pytest.mark.parametrize("klassname", BUFFS)
+def test_buff_load_and_transform(klassname):
+    try:
+        b = _plugins.load_plugin(klassname)
+    except GarakException:
+        pytest.skip()
+    assert isinstance(b, garak.buffs.base.Buff)
+    a = attempt.Attempt()
+    a.prompt = "I'm just a plain and simple tailor"
+    buffed_a = list(b.transform(a))  # unroll the generator
+    assert isinstance(buffed_a, list)
