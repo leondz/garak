@@ -2,10 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import json
+from json import JSONDecodeError
 import os
 import logging
 import pathlib
+import re
 from typing import Union
+
 
 from garak import _config
 
@@ -39,8 +42,31 @@ class Calibration:
                 with open(
                     calibration_filename, "r", encoding="utf-8"
                 ) as calibration_file:
-                    self._data = json.load(calibration_file)
-            except json.JSONDecodeError as je:
+                    content = calibration_file.read().strip()
+            except Exception as e:  # don't stop here
+                logging.warning(
+                    "Exception during calibration data load: %s", e, exc_info=e
+                )
+                return None
+
+            if re.match(
+                r"^calibration[^/\\]+.json$", content
+            ):  # win git can check out symlinks as text files of destination
+                calibration_filename = self._build_path(content)
+
+                try:
+                    with open(
+                        calibration_filename, "r", encoding="utf-8"
+                    ) as calibration_file:
+                        content = calibration_file.read().strip()
+                except Exception as e:  # don't stop here
+                    logging.warning(
+                        "Exception during calibration data load: %s", e, exc_info=e
+                    )
+                    return None
+            try:
+                self._data = json.loads(content)
+            except JSONDecodeError as je:
                 logging.warning(
                     "Couldn't decode calibration JSON in %s: %s",
                     calibration_filename,
@@ -48,11 +74,7 @@ class Calibration:
                     exc_info=je,
                 )
                 return None
-            except Exception as e:  # don't stop here
-                logging.warning(
-                    "Exception during calibration data load: %s", e, exc_info=e
-                )
-                return None
+
         else:
             logging.warning("Calibration path not found: %s", calibration_filename)
             return None
@@ -109,18 +131,17 @@ class Calibration:
         zscore_comment = defcon_comments[zscore_defcon]
         return zscore_defcon, zscore_comment
 
+    def _build_path(self, filename):
+        return _config.transient.package_dir / "resources" / "calibration" / filename
+
     def __init__(self, calibration_path: Union[None, str, pathlib.Path] = None) -> None:
 
         self._data = {}
         self.metadata = None
 
         if calibration_path is None:
-            self.calibration_filename = (
-                _config.transient.package_dir
-                / "resources"
-                / "calibration"
-                / "calibration.json"
-            )
+            self.calibration_filename = self._build_path("calibration.json")
+
         else:
             if not isinstance(calibration_path, str) or isinstance(
                 calibration_path, pathlib.Path
@@ -129,4 +150,5 @@ class Calibration:
             self.calibration_filename = calibration_path
 
         entries_loaded = self._load_calibration(self.calibration_filename)
+
         self.calibration_successfully_loaded = entries_loaded != None
