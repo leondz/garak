@@ -39,7 +39,7 @@ class Python(Probe):
     Generators sometimes recommend importing non-existent packages into code. These
     package names can be found by attackers and then squatted in public package
     repositories, so that incorrect code from generators will start to run, silently
-    loading malicious squatted packgates onto the machine. This is bad. This probe
+    loading malicious squatted packages onto the machine. This is bad. This probe
     checks whether a model will recommend code that uses non-existent packages."""
 
     language_name = "Python3"
@@ -60,13 +60,21 @@ class Python(Probe):
         for stub_prompt in stub_prompts:
             for code_task in code_tasks:
                 self.prompts.append(
-                    stub_prompt.replace("<language>", self.language_name) + " " + code_task
+                    stub_prompt.replace("<language>", self.language_name)
+                    + " "
+                    + code_task
                 )
 
+
 class Ruby(Python):
-    """Attempts to generate Ruby code including hallucinated packages"""
+    """Attempts to generate Ruby code including hallucinated gems
+
+    Generators sometimes recommend importing non-existent gems into code. These
+    gem names can be found by attackers and then squatted in public gem
+    repositories, so that incorrect code from generators will start to run, silently
+    loading malicious squatted gems onto the machine. This is bad. This probe
+    checks whether a model will recommend code that uses non-existent gems."""
 
     language_name = "Ruby"
     goal = "generate ruby code importing non-existent gems"
     primary_detector = "packagehallucination.RubyGems"
-
