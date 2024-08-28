@@ -24,6 +24,7 @@ Class docstrings are mandatory in garak, enforced by a test that's required to p
 
 It's important that generators always inheirt from ``garak.generators.base.Generator``. Not only does this often save a lot of work - using the logic in base's ``generate()`` is helpful - plugin listing also checks the parents of each class in each plugin when choosing to show a plugin as available. If there's a class in a module in ``garak/generators/`` that doesn't inherit from Generator, then it won't be listed as available.
 
+
 Setting the default generator
 *****************************
 
@@ -35,12 +36,32 @@ Before we go ahead and code up the generator, we need to tell garak which genera
 
 When this generator module is selected using ``--model_type replicate``, with ``replicate`` being the name of the Python module we're working in, the generator loader (in ``garak/generators/__init__.py``) will search for the ``DEFAULT_CLASS`` constant and use its value to determine which class to instantiate.
 
-Core params
-***********
+Configuration
+*************
 
-The first things we need to define in this new class are the core generator parameters, that describe a bit about how this generator behaves and what default values it should have. 
+Like many garak plugins, generators are configurable. This is achieved by the base class inheriting from ``Configurable``. So, the first code we see in a generator class looks like this:
 
-In the class, we'll set the ``generator_family_name`` to ``Replicate``. This can be the same for every generator in a module, or can vary a bit, but it should be a descriptive name that reflects what this class is for - the generator family name is printed to garak users at run time. We can also set a few default inference parameters that reflect how the model is invoked; we'll set ``temperature``, ``top_p``, and ``repetition_penalty``. Setting these variables in the class also indicates that this generator class supports those values, and they might be worth adjusting. Finally, because Replicate endpoints aren't guaranteed to support a single request for multiple generations at a time, we set ``supports_multiple_generations`` false. This is also the default value, so technically we don't have to do it, but it's OK to be explicit here.
+.. code-block:: python
+
+        ENV_VAR = "REPLICATE_API_TOKEN"
+        DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
+            "temperature": 1.0,
+            "top_p": 1.0,
+            "repetition_penalty": 1.0,
+        }
+
+Here, we set reserved name ``ENV_VAR`` to the name of the environment variable to look in for an API key. This API key can also be specified by configuration, instead of environment variable, so this step is optional. If you're coding a generator that doesn't need an API key, you can skip this.
+
+The second block, ``DEFAULT_PARAMS``, lists configurable values for this generator. These are values that aren't static and that makes for users to be able to adjust. It is defined by merging with the base generator's configurable parameters. The contents are a dictionary, where keys are parameter names and the values are default values. The parameter names will become variables within this generator object at instantiation -- and they're also the names of configuration variables that garak will look for in its YAML configs.
+
+In this case, we set a few default inference parameters that reflect how the model is invoked; we'll set ``temperature``, ``top_p``, and ``repetition_penalty``. Setting these variables in the class also indicates that this generator class supports those values, and they might be worth adjusting
+
+Descriptive params
+******************
+
+The next things we need to define in this new class are the core generator parameters, that describe a bit about how this generator behaves and what default values it should have. 
+
+In the class, we'll set the ``generator_family_name`` to ``Replicate``. This can be the same for every generator in a module, or can vary a bit, but it should be a descriptive name that reflects what this class is for - the generator family name is printed to garak users at run time. Finally, because Replicate endpoints aren't guaranteed to support a single request for multiple generations at a time, we set ``supports_multiple_generations`` false. This is also the default value, so technically we don't have to do it, but it's OK to be explicit here.
 
 We end up with this:
 
@@ -53,9 +74,6 @@ We end up with this:
         """
 
         generator_family_name = "Replicate"
-        temperature = 1
-        top_p = 1.0
-        repetition_penalty = 1
         supports_multiple_generations = False
 
 
@@ -75,13 +93,12 @@ So, in the constructor, we first call the parent constructor using ``super().__i
         def __init__(self, name, generations=10):
             super().__init__(name, generations=generations)
 
-            if os.getenv("REPLICATE_API_TOKEN", default=None) is None:
-                raise ValueError(
-                    '🛑 Put the Replicate API token in the REPLICATE_API_TOKEN environment variable (this was empty)\n \
-                    e.g.: export REPLICATE_API_TOKEN="r8-123XXXXXXXXXXXX"'
-                )
+            if self.api_key is not None:
+                # ensure the token is in the expected runtime env var
+                os.environ[self.ENV_VAR] = self.api_key
+            self.replicate = importlib.import_module("replicate")
 
-The API key is stored in an environment variable, ``REPLICATE_API_TOKEN``, which is accessed using ``os.getenv()``. So don't forget to import that at the top of the module!
+The configuration machinery will handle populating ``self.api_key``, and will override our local copy of the environment if we get a copy of ``api_key`` from somewhere else (e.g. a YAML config). We'll also import a copy of the ``replicate`` module in this instance, for local access. This is done because a garak run can involve multiple generator instances.
 
 .. code-block:: python
 
@@ -189,13 +206,18 @@ The next step is to instantiate the class. Let's try with that ``meta/llama-2-70
 .. code-block:: bash
 
     >>> g = garak.generators.replicate.ReplicateGenerator("meta/llama-2-70b-chat")
-    🦜 loading generator: Replicate: meta/llama-2-70b-chat
     Traceback (most recent call last):
     File "<stdin>", line 1, in <module>
-    File "/home/lderczynski/dev/garak/garak/generators/replicate.py", line 42, in __init__
-        raise ValueError(
-    ValueError: 🛑 Put the Replicate API token in the REPLICATE_API_TOKEN environment variable (this was empty)
-                    e.g.: export REPLICATE_API_TOKEN="r8-123XXXXXXXXXXXX"
+    File "/home/lderczynski/dev/garak/garak/generators/replicate.py", line 44, in __init__
+        super().__init__(name, generations=generations, config_root=config_root)
+    File "/home/lderczynski/dev/garak/garak/generators/base.py", line 43, in __init__
+        self._load_config(config_root)
+    File "/home/lderczynski/dev/garak/garak/configurable.py", line 60, in _load_config
+        self._validate_env_var()
+    File "/home/lderczynski/dev/garak/garak/configurable.py", line 116, in _validate_env_var
+        raise APIKeyMissingError(
+    garak.exception.APIKeyMissingError: 🛑 Put the Replicate API key in the REPLICATE_API_TOKEN environment variable (this was empty)
+                            e.g.: export REPLICATE_API_TOKEN="XXXXXXX"
 
 Oh, that's right! No API key. Looks like the validation exception is working as intended. Let's set up that value (maybe quit the interpreter, add it using the helpful suggestion in the exception method, and load up Python again).
 
@@ -210,7 +232,7 @@ Oh, that's right! No API key. Looks like the validation exception is working as 
     🦜 loading generator: Replicate: meta/llama-2-70b-chat
     >>> 
 
-Excellent! Now let's try a test generation:
+Excellent! Now let's try a test generation (remember to do the export of the API token using a real token):
 
 .. code-block:: bash
 
