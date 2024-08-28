@@ -27,14 +27,12 @@ ZSCORE_DEFCON_BOUNDS = [-1, -0.125, 0.125, 1]
 class Calibration:
     """Helper for managing probe/detector score calibration data processing"""
 
-    def load_calibration(
+    def _load_calibration(
         self, calibration_filename: Union[str, None] = None
     ) -> Union[None, int]:
 
         if calibration_filename is None:
             calibration_filename = self.calibration_filename
-
-        self._load_attempted = True
 
         if os.path.isfile(calibration_filename):
             try:
@@ -76,10 +74,10 @@ class Calibration:
         detector_module: str,
         detector_classname: str,
         score: float,
-    ) -> float:
+    ) -> Union[float, None]:
 
-        if not self._load_attempted:
-            self.load_calibration()
+        if not self.calibration_successfully_loaded:
+            return None
 
         calibration_key = (
             f"{probe_module}.{probe_classname}/{detector_module}.{detector_classname}"
@@ -130,4 +128,5 @@ class Calibration:
                 raise ValueError("calibration_path must be a string or Path")
             self.calibration_filename = calibration_path
 
-        self._load_attempted = False
+        entries_loaded = self._load_calibration(self.calibration_filename)
+        self.calibration_successfully_loaded = entries_loaded != None

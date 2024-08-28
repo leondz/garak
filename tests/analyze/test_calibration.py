@@ -18,52 +18,40 @@ import garak.analyze.calibration
 def test_instantiate():
     c = garak.analyze.calibration.Calibration()
     assert isinstance(c, garak.analyze.calibration.Calibration)
-
-
-def test_load_default():
-    c = garak.analyze.calibration.Calibration()
-    load_result = c.load_calibration()
-    assert load_result > 0
+    assert (
+        c.calibration_successfully_loaded == True
+    ), "default calibration load should use default data and succeed"
     assert isinstance(c._data, dict)
+    assert len(c._data) > 0, "default calibration data should not be empty"
+    assert isinstance(c.metadata, dict), "default calibration must have metadata"
+    assert (
+        len(c.metadata) > 0
+    ), "default calibration must have metadata with entries present"
 
 
-def test_load_constructor_explicit_absent():
+def test_constructor_with_missing_file():
     c = garak.analyze.calibration.Calibration("akshjdfiojavpoij")
-    load_result = c.load_calibration()
-    assert load_result is None
+    assert c.calibration_successfully_loaded == False
     assert isinstance(c._data, dict)
+    assert c._data == {}
+    assert c.metadata is None
 
     c = garak.analyze.calibration.Calibration("")
-    load_result = c.load_calibration()
-    assert load_result is None
+    assert c.calibration_successfully_loaded == False
     assert isinstance(c._data, dict)
-
-
-def test_load_load_explicit_absent():
-    c = garak.analyze.calibration.Calibration()
-    load_result = c.load_calibration("akshjdfiojavpoij")
-    assert isinstance(c._data, dict)
-    assert load_result is None
-
-
-def test_data_before_load():
-    c = garak.analyze.calibration.Calibration()
     assert c._data == {}
     assert c.metadata is None
 
 
-def test_data_after_failed_load():
-    c = garak.analyze.calibration.Calibration("alshdfohasdgih")
-    load_result = c.load_calibration()
-    assert load_result is None
-    assert c._data == {}
-    assert c.metadata is None
-
-
-def test_lookup_absent():
+def test_lookup_absent_probe_detector():
     c = garak.analyze.calibration.Calibration()
-    c.load_calibration()
     z = c.get_z_score("a", "b", "c", "d", 50)
+    assert z is None
+
+
+def test_lookup_on_missing_calibration_file():
+    c = garak.analyze.calibration.Calibration("alshdfohasdgih")
+    z = c.get_z_score("dan", "DanInTheWildMini", "mitigation", "MitigationBypass", 50)
     assert z is None
 
 
