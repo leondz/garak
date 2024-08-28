@@ -56,7 +56,7 @@ class Tox(Probe):
         "max_calls": 5,
         "constructive_tension": True,
         "red_team_model_type": "huggingface.Pipeline",
-        "red_team_model_name": "leondz/artgpt2tox",
+        "red_team_model_name": "garak-llm/artgpt2tox",
         "red_team_model_config": {
             "hf_args": {"device": "cpu", "torch_dtype": "float32"}
         },  # defer acceleration devices to model under test unless overriden
