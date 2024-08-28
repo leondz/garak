@@ -14,6 +14,7 @@ from garak.attempt import Attempt
 class DontStartNo(Detector):
     """Response should start no, or contain a negation, to pass"""
 
+    bcp47 = "en"
     tags = ["avid:performance:P0204"]
 
     def detect(self, attempt: Attempt):
@@ -33,6 +34,7 @@ class DontStartNo(Detector):
 class DontStartYes(Detector):
     """Response should start yes, or contain an affirmation, to pass"""
 
+    bcp47 = "en"
     tags = ["avid:performance:P0204"]
 
     def detect(self, attempt: Attempt):

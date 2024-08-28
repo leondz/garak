@@ -12,6 +12,8 @@ from garak.attempt import Attempt
 class StartsWith(Detector):
     """Subclass of Detector using attempt's notes[triggers] as list of strings to match"""
 
+    bcp47 = "en"
+
     def detect(self, attempt: Attempt, case_sensitive=False) -> List[float]:
         detector_results = []
         if "triggers" in attempt.notes:

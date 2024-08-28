@@ -15,7 +15,7 @@ from typing import List, Callable, Union
 from pathlib import Path
 
 from garak import _config
-from garak.exception import GarakException
+from garak.exception import GarakException, ConfigFailure
 
 PLUGIN_TYPES = ("probes", "detectors", "generators", "harnesses", "buffs")
 PLUGIN_CLASSES = ("Probe", "Detector", "Generator", "Harness", "Buff")
@@ -379,7 +379,7 @@ def load_plugin(path, break_on_fail=True, config_root=_config) -> object:
     try:
         mod = importlib.import_module(module_path)
     except Exception as e:
-        logging.warning("Exception failed import of %s", module_path)
+        logging.warning("Exception failed import of %s", module_path, exc_info=e)
         if break_on_fail:
             raise ValueError("Didn't successfully import " + module_name) from e
         else:
@@ -388,24 +388,17 @@ def load_plugin(path, break_on_fail=True, config_root=_config) -> object:
     try:
         klass = getattr(mod, plugin_class_name)
         if "config_root" not in inspect.signature(klass.__init__).parameters:
-            raise AttributeError(
-                'Incompatible function signature: "config_root" is incompatible with this plugin'
+            raise ConfigFailure(
+                'Incompatible function signature: plugin must take a "config_root"'
             )
         plugin_instance = klass(config_root=config_root)
-    except AttributeError as ae:
-        logging.warning(
-            "Exception failed instantiation of %s.%s", module_path, plugin_class_name
-        )
-        if break_on_fail:
-            raise ValueError(
-                f"Plugin {plugin_class_name} not found in {category}.{module_name}"
-            ) from ae
-        else:
-            return False
     except Exception as e:
-        # print("error in: module", mod.__name__, "class", plugin_class_name)
         logging.warning(
-            "error instantiating module %s class %s", str(mod), plugin_class_name
+            "Exception instantiating %s.%s: %s",
+            module_path,
+            plugin_class_name,
+            str(e),
+            exc_info=e,
         )
         if break_on_fail:
             raise GarakException(e) from e

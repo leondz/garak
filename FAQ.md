@@ -5,7 +5,7 @@
 
 Good question! Emphasis on the first bit, GA-rak. 
 
-Both 'a's like a in English hat, or à in French, or æ in IPA.
+Both 'a's like a in English "hat", or à in French, or /æ/ in IPA.
 
 ## What's this tool for?
 
@@ -56,6 +56,12 @@ Gated models simply require login and in some case acceptance of model provider 
 ## Is it safe to build garak into toolchains? Who's supporting this?
 
 NVIDIA Corporation officially contributes to the garak open-source project and will continue to do so in the long term. Garak will continue to be licensed with Apache 2.0. Get in touch if you'd like to talk more about this.
+
+## Can an LLM have vulnerabilities?
+
+The things garak probes for are generally not like traditional cybersec vulnerabilities. LLM model parameters don't and can't have vulnerabilities themselves; it's just data. What most of the probes in garak check for are whether or not a model can be made to behave unexpectedly at inference time, by breaking its alignment or output policy, using exploits. The DHS calls some of these behaviours "weaknesses"; see e.g. [CWE-1426](https://cwe.mitre.org/data/definitions/1426.html) for prompt injection. 
+
+Some garak probes still check for traditional cybersecurity vulnerabilities within the scope of what can be extracted from APIs also used for inference.
 
 <!-- ## Why the name?
 

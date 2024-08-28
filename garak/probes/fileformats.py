@@ -16,6 +16,7 @@ from garak.probes.base import Probe
 import garak.attempt
 import garak.resources.theme
 
+
 class HF_Files(Probe, Configurable):
     """Get a manifest of files associated with a Hugging Face generator
 
@@ -23,6 +24,7 @@ class HF_Files(Probe, Configurable):
     generator, if that applies to the generator. Not enabled for all types,
     e.g. some endpoints."""
 
+    bcp47 = "*"
     tags = ["owasp:llm05"]
     goal = "get a list of files associated with the model"
 
