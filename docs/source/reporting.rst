@@ -1,5 +1,11 @@
 Reporting
-==========
+=========
+
+.. automodule:: garak.buffs
+   :members:
+   :undoc-members:
+   :show-inheritance:   
+
 
 By default, ``garak`` outputs a JSONL file, with the name ``garak.<uuid>.report.jsonl``, that stores outcomes from a scan. ``garak`` provides a CLI option to further structure this file for downstream consumption. The open data schema of AI vulnerability Database (`AVID <https://avidml.org>`_) is used for this purpose.
 
