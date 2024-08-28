@@ -3,6 +3,10 @@ garak.probes.base
 
 This class defines the basic structure of garak's probes. All probes inherit from garak.probes.base.Probe.
 
+Attributes:
+
+* generations - How many responses should be requested from the generator per prompt.
+
 Functions:
 
 1. **__init__()**: Class constructor. Call this from probes after doing local init. It does things like setting ``probename``, setting up the description automatically from the class docstring, and logging probe instantiation.

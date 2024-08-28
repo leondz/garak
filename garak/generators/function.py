@@ -51,7 +51,7 @@ from garak.generators.base import Generator
 #  self.kwargs = { "special_param": param_value, "special_other_param": other_value }
 #  custom_generator(prompt, **kwargs)
 class Single(Generator):
-    """pass a module#function to be called as generator, with format function(prompt:str, **kwargs)->List[Union(str, None)] the parameter name `generations` is reserved"""
+    """pass a module#function to be called as generator, with format function(prompt:str, **kwargs)->List[Union(str, None)] the parameter `name` is reserved"""
 
     DEFAULT_PARAMS = {
         "kwargs": {},

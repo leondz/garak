@@ -23,7 +23,6 @@ hf_dict = {
 
 def load_generator(
     model_name: str,
-    generations: int = 1,
     max_tokens: int = 150,
     temperature: float = None,
     device: Union[int, str] = 0,
@@ -34,7 +33,6 @@ def load_generator(
     Parameters
     ----------
     model_name : Name of the model to load
-    generations : Number of outputs to generate per call
     max_tokens : Maximum output tokens
     temperature : Model temperature
     device : Device to run the model on. Accepts GPU ID (int) or "cpu"
@@ -47,7 +45,6 @@ def load_generator(
 
     config = {
         "name": model_name,
-        "generations": generations,
         "max_tokens": max_tokens,
     }
 

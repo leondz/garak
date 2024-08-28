@@ -116,7 +116,6 @@ class RestGenerator(Generator):
         "api_key",
         "name",
         "uri",
-        "generations",
         "key_env_var",
         "req_template",
         "req_template_json",

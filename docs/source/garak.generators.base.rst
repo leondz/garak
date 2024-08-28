@@ -7,7 +7,6 @@ Attributes:
 
 * name - The name of the specific generator class. This is optionally also set in the constructor.
 * description - An optional description of the generator.
-* generations - How many responses should be requested from the generator per prompt.
 * max_tokens - The maximum number of tokens to generate.
 * temperature - Optionally, a temperature param to pass to the underlying model.
 * top_k - Optionally, a temperature param to pass to the underlying model.

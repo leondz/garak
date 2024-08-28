@@ -62,8 +62,6 @@ class Probe(Configurable):
         1. populates self.probename based on the class name,
         2. logs and optionally prints the probe's loading,
         3. populates self.description based on the class docstring if not yet set
-
-        Raises `PluginException` when passed configuration does not include required probe `generations`.
         """
         self._load_config(config_root)
         self.probename = str(self.__class__).split("'")[1]

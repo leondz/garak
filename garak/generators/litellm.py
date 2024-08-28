@@ -92,7 +92,6 @@ class LiteLLMGenerator(Generator):
 
     _supported_params = (
         "name",
-        "generations",
         "context_len",
         "max_tokens",
         "api_key",
@@ -151,11 +150,13 @@ class LiteLLMGenerator(Generator):
                 custom_llm_provider=self.provider,
             )
         except (
-            litellm.exceptions.AuthenticationError, # authentication failed for detected or passed `provider`
+            litellm.exceptions.AuthenticationError,  # authentication failed for detected or passed `provider`
             litellm.exceptions.BadRequestError,
         ) as e:
 
-            raise BadGeneratorException("Unrecoverable error during litellm completion see log for details") from e
+            raise BadGeneratorException(
+                "Unrecoverable error during litellm completion see log for details"
+            ) from e
 
         if self.supports_multiple_generations:
             return [c.message.content for c in response.choices]

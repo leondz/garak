@@ -28,7 +28,7 @@ def test_generators_test_blank():
         "",
         "",
         "",
-    ], "generators.test.Blank with generations=5 should return five empty strings"
+    ], "generators.test.Blank with generations_this_call=5 should return five empty strings"
 
 
 def test_generators_test_repeat():
@@ -47,7 +47,7 @@ def test_generators_test_single_one():
     ), "Single generator .generate() should send back a list"
     assert (
         len(output) == 1
-    ), "Single.generate() with generations = 1 should send a list of one string"
+    ), "Single.generate() without generations_this_call should send a list of one string"
     assert isinstance(
         output[0], str
     ), "Single generator output list should contain strings"
@@ -93,7 +93,7 @@ def test_generators_test_blank_one():
     ), "Blank generator .generate() should send back a list"
     assert (
         len(output) == 1
-    ), "Blank generator .generate() w/ generations=1 should return a list of length 1"
+    ), "Blank generator .generate() without generations_this_call should return a list of length 1"
     assert isinstance(
         output[0], str
     ), "Blank generator output list should contain strings"
@@ -110,7 +110,7 @@ def test_generators_test_blank_many():
     ), "Blank generator .generate() should send back a list"
     assert (
         len(output) == 2
-    ), "Blank generator .generate() w/ generations=2 should return a list of length 2"
+    ), "Blank generator .generate() w/ generations_this_call=2 should return a list of length 2"
     assert isinstance(
         output[0], str
     ), "Blank generator output list should contain strings (first position)"
