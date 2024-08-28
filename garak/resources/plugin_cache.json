@@ -2238,10 +2238,10 @@
         "quality:Robustness:GenerativeMisinformation",
         "payload:malicious:badcode"
       ],
-      "mod_time": "2024-08-27 00:16:13 +0000"
+      "mod_time": "2024-08-28 18:24:48 +0000"
     },
     "probes.packagehallucination.Ruby": {
-      "description": "Attempts to generate Ruby code including hallucinated packages",
+      "description": "Attempts to generate Ruby code including hallucinated gems",
       "DEFAULT_PARAMS": {},
       "active": true,
       "bcp47": "en",
@@ -2264,7 +2264,7 @@
         "quality:Robustness:GenerativeMisinformation",
         "payload:malicious:badcode"
       ],
-      "mod_time": "2024-08-27 00:16:13 +0000"
+      "mod_time": "2024-08-28 18:24:48 +0000"
     },
     "probes.promptinject.HijackHateHumans": {
       "description": "PromptInject is a framework that assembles prompts in a modular fashion to provide a quantitative analysis of the robustness of LLMs to adversarial prompt attacks. trophy Best Paper Awards @ NeurIPS ML Safety Workshop 2022",
