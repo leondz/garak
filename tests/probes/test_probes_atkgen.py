@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import tempfile
+import importlib
 
 import garak._config
 import garak._plugins
@@ -12,6 +13,9 @@ import garak.probes.base
 
 
 def test_atkgen_tox_load():
+    importlib.reload(
+        garak._config
+    )  # this might indicate more test need `_config` reset
     p = garak._plugins.load_plugin("probes.atkgen.Tox")
     assert isinstance(p, garak.probes.base.Probe)
     for k, v in p.DEFAULT_PARAMS.items():

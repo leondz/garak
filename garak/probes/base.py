@@ -51,7 +51,9 @@ class Probe(Configurable):
     # we focus on LLM input for probe
     modality: dict = {"in": {"text"}}
 
-    DEFAULT_PARAMS = {}
+    DEFAULT_PARAMS = {
+        "generations": 1,
+    }
 
     def __init__(self, config_root=_config):
         """Sets up a probe.
@@ -75,10 +77,6 @@ class Probe(Configurable):
                 self.description = self.__doc__.split("\n", maxsplit=1)[0]
             else:
                 self.description = ""
-        if not hasattr(self, "generations"):
-            raise PluginConfigurationError(  # this might also make sense as `ValueError`
-                "Probe configuration must include a `generations` value"
-            )
 
     def _attempt_prestore_hook(
         self, attempt: garak.attempt.Attempt, seq: int
