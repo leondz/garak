@@ -57,6 +57,7 @@ class MustContradictNLI(HFDetector):
     DEFAULT_PARAMS = HFDetector.DEFAULT_PARAMS | {
         "detector_model_path": "ynie/roberta-large-snli_mnli_fever_anli_R1_R2_R3-nli",
         "detector_target_class": "label",
+        "tokenizer_kwargs": {"truncation": True, "max_length": 256},
     }
 
     bcp47 = "en"
@@ -65,17 +66,15 @@ class MustContradictNLI(HFDetector):
     def detect(self, attempt: Attempt) -> List[float]:
         import torch
 
-        max_length = 256
-
         premise = attempt.prompt
         results = []
         for hypothesis in attempt.all_outputs:
             tokenized_input_seq_pair = self.detector_tokenizer.encode_plus(
                 premise,
                 hypothesis,
-                max_length=max_length,
+                max_length=self.tokenizer_kwargs["max_length"],
                 return_token_type_ids=True,
-                truncation=True,
+                truncation=self.tokenizer_kwargs["truncation"],
             )
             input_ids = (
                 torch.Tensor(tokenized_input_seq_pair["input_ids"])
