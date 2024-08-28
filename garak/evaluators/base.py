@@ -171,6 +171,7 @@ class Evaluator:
                 else Fore.LIGHTGREEN_EX + "PASS"
             )
             failrate = 100 * (len(passes) - sum(passes)) / len(passes)
+            zscore = None
             if _config.system.show_z:
                 zscore, rating_symbol = self.get_z_rating(
                     self.probename, detector_name, failrate
@@ -213,6 +214,7 @@ class Evaluator:
                 else Fore.LIGHTGREEN_EX + "PASS"
             )
             failrate = 100 * (len(passes) - sum(passes)) / len(passes)
+            zscore = None
             if _config.system.show_z:
                 zscore, rating_symbol = self.get_z_rating(
                     self.probename, detector_name, failrate
@@ -235,7 +237,7 @@ class Evaluator:
                 f"    {Fore.LIGHTRED_EX}failure rate:{Style.RESET_ALL} {failrate:>3.2g}%",
                 end="",
             )
-        if failrate > 0.0 and zscore is not None and _config.system.show_z:
+        if failrate > 0.0 and _config.system.show_z and zscore is not None:
             print(f" {rating_symbol}", end="")
         if failrate > 0.0:
             print()
