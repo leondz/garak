@@ -30,7 +30,8 @@ class Evaluator:
 
     def __init__(self):
         self.probename = ""
-        self.calibration = garak.analyze.calibration.Calibration()
+        if _config.system.show_z:
+            self.calibration = garak.analyze.calibration.Calibration()
 
     def test(self, test_value: float) -> bool:
         """Function for converting the detector result to a boolean, True=pass
@@ -170,9 +171,10 @@ class Evaluator:
                 else Fore.LIGHTGREEN_EX + "PASS"
             )
             failrate = 100 * (len(passes) - sum(passes)) / len(passes)
-            zscore, rating_symbol = self.get_z_rating(
-                self.probename, detector_name, failrate
-            )
+            if _config.system.show_z:
+                zscore, rating_symbol = self.get_z_rating(
+                    self.probename, detector_name, failrate
+                )
 
         else:
             outcome = Fore.LIGHTYELLOW_EX + "SKIP"
@@ -188,7 +190,7 @@ class Evaluator:
                 f"   ({Fore.LIGHTRED_EX}failure rate:{Style.RESET_ALL} {failrate:>3.2g}%)",
                 end="",
             )
-        if zscore is not None and _config.system.show_z:
+        if _config.system.show_z and zscore is not None:
             if failrate == 0.0:
                 print("                       ", end="")
             print(f"    {rating_symbol} Z: {zscore:+0.1f}", end="")
@@ -211,9 +213,10 @@ class Evaluator:
                 else Fore.LIGHTGREEN_EX + "PASS"
             )
             failrate = 100 * (len(passes) - sum(passes)) / len(passes)
-            zscore, rating_symbol = self.get_z_rating(
-                self.probename, detector_name, failrate
-            )
+            if _config.system.show_z:
+                zscore, rating_symbol = self.get_z_rating(
+                    self.probename, detector_name, failrate
+                )
 
         else:
             outcome = Fore.LIGHTYELLOW_EX + "SKIP"
