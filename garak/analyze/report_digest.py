@@ -214,18 +214,18 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
                             getattr(dm, detector_class).__doc__
                         )
 
-                        zscore = None
-                        if calibration is not None:
-                            zscore = calibration.get_z_score(
-                                probe_module,
-                                probe_class,
-                                detector_module,
-                                detector_class,
-                                score / 100,
-                            )
+                        zscore = calibration.get_z_score(
+                            probe_module,
+                            probe_class,
+                            detector_module,
+                            detector_class,
+                            score / 100,
+                        )
+
                         if zscore is None:
                             zscore_defcon, zscore_comment = None, None
                             zscore = "n/a"
+
                         else:
                             zscore_defcon, zscore_comment = (
                                 calibration.defcon_and_comment(zscore)
