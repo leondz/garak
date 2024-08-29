@@ -98,7 +98,7 @@ So, in the constructor, we first call the parent constructor using ``super().__i
                 os.environ[self.ENV_VAR] = self.api_key
             self.replicate = importlib.import_module("replicate")
 
-The configuration machinery will handle populating ``self.api_key``, and will override our local copy of the environment if we get a copy of ``api_key`` from somewhere else (e.g. a YAML config). We'll also import a copy of the ``replicate`` module in this instance, for local access. This is done because a garak run can involve multiple generator instances.
+The configuration machinery will handle populating ``self.api_key``. Here the code overrides the local environment variable encase we obtained ``api_key`` from somewhere else (e.g. a YAML config). We'll also import a copy of the ``replicate`` module in this instance, for local access. This is done because a garak run can involve multiple generator instances.
 
 .. code-block:: python
 
