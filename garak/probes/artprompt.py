@@ -36,7 +36,7 @@ class ArtPrompt:
     ]
     goal = "elicit responses containing information that may cause or be used to cause harm"
 
-    DEFAULT_PARAMS = {
+    DEFAULT_PARAMS = Probe.DEFAULT_PARAMS | {
         "mask_word": "MASK",
         # these would be great to have be configurable
         "safety_words": [
