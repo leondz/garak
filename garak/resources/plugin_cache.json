@@ -3,6 +3,7 @@
     "probes.atkgen.Tox": {
       "description": "Automatic attack generation, trying to elicit toxic outputs from the model.",
       "DEFAULT_PARAMS": {
+        "generations": 1,
         "max_calls": 5,
         "constructive_tension": true,
         "red_team_model_type": "huggingface.Pipeline",
@@ -39,11 +40,13 @@
         "quality:Behavioral:ContentSafety:Profanity",
         "payload:unwanted"
       ],
-      "mod_time": "2024-08-27 17:41:28 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "probes.av_spam_scanning.EICAR": {
       "description": "Does the model check its output for viruses? Try to send the EICAR code through",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "*",
       "doc_uri": "https://en.wikipedia.org/wiki/EICAR_test_file",
@@ -70,7 +73,9 @@
     },
     "probes.av_spam_scanning.GTUBE": {
       "description": "Does the model check its output for spam? Try to send the GTUBE code through",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "*",
       "doc_uri": "https://en.wikipedia.org/wiki/GTUBE",
@@ -97,7 +102,9 @@
     },
     "probes.av_spam_scanning.GTphish": {
       "description": "Does the model check its output for phishing? Try to send the GTphish code through",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "*",
       "doc_uri": "https://www.cisco.com/c/en/us/support/docs/security/email-security-appliance/213465-testing-outbreak-filter-url-rewriting.html",
@@ -124,7 +131,9 @@
     },
     "probes.base.Probe": {
       "description": "Base class for objects that define and execute LLM evaluations",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": null,
       "doc_uri": "",
@@ -141,10 +150,11 @@
         "always.Fail"
       ],
       "tags": [],
-      "mod_time": "2024-08-16 10:24:53 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "probes.base.TreeSearchProbe": {
       "DEFAULT_PARAMS": {
+        "generations": 1,
         "queue_children_at_start": true,
         "per_generation_threshold": 0.5,
         "per_node_threshold": 0.1,
@@ -167,11 +177,13 @@
         "always.Fail"
       ],
       "tags": [],
-      "mod_time": "2024-08-16 10:24:53 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "probes.continuation.ContinueSlursReclaimedSlurs": {
       "description": "Continue partial word with slur or reclaimed slur.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": false,
       "bcp47": "en",
       "doc_uri": "",
@@ -200,7 +212,9 @@
     },
     "probes.continuation.ContinueSlursReclaimedSlursMini": {
       "description": "Continue partial word with slur or reclaimed slur.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -229,7 +243,9 @@
     },
     "probes.dan.Ablation_Dan_11_0": {
       "description": "Ablation experiements over the DAN 11.0 prompt",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": false,
       "bcp47": "en",
       "doc_uri": "",
@@ -256,7 +272,9 @@
     },
     "probes.dan.AntiDAN": {
       "description": "Anti-DAN",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -283,7 +301,9 @@
     },
     "probes.dan.AutoDAN": {
       "description": "Probe leveraging AutoDAN attack generation",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": false,
       "bcp47": "en",
       "doc_uri": "https://arxiv.org/abs/2310.04451",
@@ -310,7 +330,9 @@
     },
     "probes.dan.AutoDANCached": {
       "description": "Probe leveraging generated AutoDAN prompts",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://arxiv.org/abs/2310.04451",
@@ -337,7 +359,9 @@
     },
     "probes.dan.ChatGPT_Developer_Mode_RANTI": {
       "description": "ChatGPT DevMode + Ranti",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -364,7 +388,9 @@
     },
     "probes.dan.ChatGPT_Developer_Mode_v2": {
       "description": "ChatGPT Developer Mode v2",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -391,7 +417,9 @@
     },
     "probes.dan.ChatGPT_Image_Markdown": {
       "description": "ChatGPT Markdown Image Unlocker / markdown injection",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -418,7 +446,9 @@
     },
     "probes.dan.DAN_Jailbreak": {
       "description": "DAN Jailbreak",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -445,7 +475,9 @@
     },
     "probes.dan.DUDE": {
       "description": "DUDE",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -472,7 +504,9 @@
     },
     "probes.dan.DanInTheWild": {
       "description": "A library of jailbreaks.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": false,
       "bcp47": "en",
       "doc_uri": "https://arxiv.org/abs/2308.03825",
@@ -498,7 +532,9 @@
     },
     "probes.dan.DanInTheWildMini": {
       "description": "A subset of 100 jailbreaks from the DanInTheWild jailbreak library.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://arxiv.org/abs/2308.03825",
@@ -524,7 +560,9 @@
     },
     "probes.dan.Dan_10_0": {
       "description": "DAN 10.0",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -551,7 +589,9 @@
     },
     "probes.dan.Dan_11_0": {
       "description": "DAN 11.0",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -579,7 +619,9 @@
     },
     "probes.dan.Dan_6_0": {
       "description": "DAN 6.0",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -606,7 +648,9 @@
     },
     "probes.dan.Dan_6_2": {
       "description": "DAN 6.2",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -633,7 +677,9 @@
     },
     "probes.dan.Dan_7_0": {
       "description": "DAN 7.0",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -660,7 +706,9 @@
     },
     "probes.dan.Dan_8_0": {
       "description": "DAN 8.0",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -687,7 +735,9 @@
     },
     "probes.dan.Dan_9_0": {
       "description": "DAN 9.0",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -714,7 +764,9 @@
     },
     "probes.dan.STAN": {
       "description": "STAN",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -741,7 +793,9 @@
     },
     "probes.donotanswer.DiscriminationExclusionToxicityHatefulOffensive": {
       "description": "Implementation of discrimination_exclusion_toxicity_hateful_offensive probes in DoNotAnswer_Prompts",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -768,7 +822,9 @@
     },
     "probes.donotanswer.HumanChatbox": {
       "description": "Implementation of human_chatbox probes in DoNotAnswer_Prompts",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -792,7 +848,9 @@
     },
     "probes.donotanswer.InformationHazard": {
       "description": "Implementation of information_hazard probes in DoNotAnswer_Prompts",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -817,7 +875,9 @@
     },
     "probes.donotanswer.MaliciousUses": {
       "description": "Implementation of malicious_uses probes in DoNotAnswer_Prompts",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -840,7 +900,9 @@
     },
     "probes.donotanswer.MisinformationHarms": {
       "description": "Implementation of misinformation_harms probes in DoNotAnswer_Prompts",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -865,7 +927,9 @@
     },
     "probes.encoding.InjectAscii85": {
       "description": "Probe for susceptibility to base85 encoded injections",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak",
@@ -893,7 +957,9 @@
     },
     "probes.encoding.InjectBase16": {
       "description": "Probe for susceptibility to base16 encoded injections\"",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak",
@@ -921,7 +987,9 @@
     },
     "probes.encoding.InjectBase2048": {
       "description": "Probe for susceptibility to Base2048 encoding injections",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak",
@@ -949,7 +1017,9 @@
     },
     "probes.encoding.InjectBase32": {
       "description": "Probe for susceptibility to base32 encoded injections",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak",
@@ -977,7 +1047,9 @@
     },
     "probes.encoding.InjectBase64": {
       "description": "Probe for susceptibility to base64 encoded injections",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak",
@@ -1005,7 +1077,9 @@
     },
     "probes.encoding.InjectBraille": {
       "description": "Probe for susceptibility to Braille encoding injections. Credit Wally#3422",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -1033,7 +1107,9 @@
     },
     "probes.encoding.InjectEcoji": {
       "description": "Probe for susceptibility to Ecoji encoding.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://ecoji.io/",
@@ -1061,7 +1137,9 @@
     },
     "probes.encoding.InjectHex": {
       "description": "Probe for susceptibility to hex encoded injections",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak",
@@ -1089,7 +1167,9 @@
     },
     "probes.encoding.InjectMime": {
       "description": "Probe for susceptibility to MIME encoding injections",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": false,
       "bcp47": "en",
       "doc_uri": "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak",
@@ -1117,7 +1197,9 @@
     },
     "probes.encoding.InjectMorse": {
       "description": "Probe for susceptibility to Morse encoding. Credit Wally#3422",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -1145,7 +1227,9 @@
     },
     "probes.encoding.InjectNato": {
       "description": "Probe for susceptibility to Nato phonetic alphabet encoding.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://en.wikipedia.org/wiki/NATO_phonetic_alphabet",
@@ -1173,7 +1257,9 @@
     },
     "probes.encoding.InjectQP": {
       "description": "Probe for susceptibility to QP encoded injections",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": false,
       "bcp47": "en",
       "doc_uri": "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak",
@@ -1201,7 +1287,9 @@
     },
     "probes.encoding.InjectROT13": {
       "description": "Probe for susceptibility to ROT13 encoding injections",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak",
@@ -1229,7 +1317,9 @@
     },
     "probes.encoding.InjectUU": {
       "description": "Probe for susceptibility to UU encoded injections",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak",
@@ -1257,7 +1347,9 @@
     },
     "probes.encoding.InjectZalgo": {
       "description": "Probe for susceptibility to Zalgo encoding.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://en.wikipedia.org/wiki/Zalgo_text",
@@ -1285,7 +1377,9 @@
     },
     "probes.fileformats.HF_Files": {
       "description": "Get a manifest of files associated with a Hugging Face generator",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "*",
       "doc_uri": "",
@@ -1307,11 +1401,13 @@
       "tags": [
         "owasp:llm05"
       ],
-      "mod_time": "2024-08-23 16:13:06 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "probes.glitch.Glitch": {
       "description": "Probe model for glitch tokens that provoke unusual behavior",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": false,
       "bcp47": "en",
       "doc_uri": "https://www.lesswrong.com/posts/aPeJE8bSo6rAFoLqg/solidgoldmagikarp-plus-prompt-generation",
@@ -1338,7 +1434,9 @@
     },
     "probes.glitch.Glitch100": {
       "description": "Probe model for glitch tokens that provoke unusual behavior",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://www.lesswrong.com/posts/aPeJE8bSo6rAFoLqg/solidgoldmagikarp-plus-prompt-generation",
@@ -1365,7 +1463,9 @@
     },
     "probes.goodside.Davidjl": {
       "description": "Exploit the ' davidjl' magic token",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://twitter.com/goodside/status/1666598580319035392",
@@ -1392,7 +1492,9 @@
     },
     "probes.goodside.Tag": {
       "description": "Exploit UTF tag page encoding for user-invisible prompt injection",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://twitter.com/goodside/status/1745511940351287394",
@@ -1418,7 +1520,9 @@
     },
     "probes.goodside.ThreatenJSON": {
       "description": "Will model strip preamble and give JSON?",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://twitter.com/goodside/status/1657396491676164096",
@@ -1444,7 +1548,9 @@
     },
     "probes.goodside.WhoIsRiley": {
       "description": "Probe for misinfo about Riley Goodside",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://twitter.com/goodside",
@@ -1535,7 +1641,9 @@
     },
     "probes.grandma.Win10": {
       "description": "Will the model yield a Windows 10 product key if we beg it to?",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://www.independent.co.uk/tech/chatgpt-microsoft-windows-11-grandma-exploit-b2360213.html",
@@ -1563,7 +1671,9 @@
     },
     "probes.grandma.Win11": {
       "description": "Will the model yield a Windows 11 product key if we beg it to?",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://www.independent.co.uk/tech/chatgpt-microsoft-windows-11-grandma-exploit-b2360213.html",
@@ -1591,7 +1701,9 @@
     },
     "probes.leakreplay.GuardianCloze": {
       "description": "Cloze data replay for literature. Uses passages that either GPT-4 or ChatGPT have been known to replay.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "*",
       "doc_uri": "https://arxiv.org/abs/2305.00118",
@@ -1618,7 +1730,9 @@
     },
     "probes.leakreplay.GuardianComplete": {
       "description": "Data replay probe for literature, using document completion. Uses passages that either GPT-4 or ChatGPT have been known to replay.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "*",
       "doc_uri": "https://arxiv.org/abs/2305.00118",
@@ -1645,7 +1759,9 @@
     },
     "probes.leakreplay.LiteratureCloze": {
       "description": "Cloze data replay for literature. Uses passages that either GPT-4 or ChatGPT have been known to replay.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": false,
       "bcp47": "*",
       "doc_uri": "https://arxiv.org/abs/2305.00118",
@@ -1672,7 +1788,9 @@
     },
     "probes.leakreplay.LiteratureCloze80": {
       "description": "Cloze data replay for literature. Uses passages that either GPT-4 or ChatGPT have been known to replay.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "*",
       "doc_uri": "https://arxiv.org/abs/2305.00118",
@@ -1699,7 +1817,9 @@
     },
     "probes.leakreplay.LiteratureComplete": {
       "description": "Data replay probe for literature, using document completion. Uses passages that either GPT-4 or ChatGPT have been known to replay.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": false,
       "bcp47": "*",
       "doc_uri": "https://arxiv.org/abs/2305.00118",
@@ -1726,7 +1846,9 @@
     },
     "probes.leakreplay.LiteratureComplete80": {
       "description": "Data replay probe for literature, using document completion. Uses passages that either GPT-4 or ChatGPT have been known to replay.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "*",
       "doc_uri": "https://arxiv.org/abs/2305.00118",
@@ -1753,7 +1875,9 @@
     },
     "probes.leakreplay.NYTCloze": {
       "description": "Cloze data replay for literature. Uses passages that either GPT-4 or ChatGPT have been known to replay.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "*",
       "doc_uri": "https://arxiv.org/abs/2305.00118",
@@ -1780,7 +1904,9 @@
     },
     "probes.leakreplay.NYTComplete": {
       "description": "Data replay probe for literature, using document completion. Uses passages that either GPT-4 or ChatGPT have been known to replay.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "*",
       "doc_uri": "https://arxiv.org/abs/2305.00118",
@@ -1807,7 +1933,9 @@
     },
     "probes.leakreplay.PotterCloze": {
       "description": "Cloze data replay for literature. Uses passages that either GPT-4 or ChatGPT have been known to replay.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "*",
       "doc_uri": "https://arxiv.org/abs/2305.00118",
@@ -1834,7 +1962,9 @@
     },
     "probes.leakreplay.PotterComplete": {
       "description": "Data replay probe for literature, using document completion. Uses passages that either GPT-4 or ChatGPT have been known to replay.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "*",
       "doc_uri": "https://arxiv.org/abs/2305.00118",
@@ -1861,7 +1991,9 @@
     },
     "probes.lmrc.Anthropomorphisation": {
       "description": "Providing output that encourages anthropomorphisation of AI systems",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/anthropomorphisation.md",
@@ -1884,7 +2016,9 @@
     },
     "probes.lmrc.Bullying": {
       "description": "Generation of repeated threats, denigration",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/bullying.md",
@@ -1910,7 +2044,9 @@
     },
     "probes.lmrc.Deadnaming": {
       "description": "Mentioning a name that a person does not wish to be associated with",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/deadnaming.md",
@@ -1935,7 +2071,9 @@
     },
     "probes.lmrc.Profanity": {
       "description": "Using profane words, especially when not prompted to do so.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/profanity.md",
@@ -1972,7 +2110,9 @@
     },
     "probes.lmrc.QuackMedicine": {
       "description": "Promoting non-scientific medicine.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/quack_medicine.md",
@@ -1999,7 +2139,9 @@
     },
     "probes.lmrc.SexualContent": {
       "description": "Content that discusses bodies and interactions in a sexual manner, or other sexually explicit material",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/sexual_content.md",
@@ -2028,7 +2170,9 @@
     },
     "probes.lmrc.Sexualisation": {
       "description": "Causal or overt sexual objectification, reducing a person or group of people to sexual objects.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/sexualisation.md",
@@ -2059,7 +2203,9 @@
     },
     "probes.lmrc.SlurUsage": {
       "description": "Using an identity-based slur in a non-reclaimed way - either directly or recommending the consumer to use in speech/action.",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://github.com/leondz/lm_risk_cards/blob/main/cards/en/slur_usage.md",
@@ -2088,7 +2234,9 @@
     },
     "probes.malwaregen.Evasion": {
       "description": "Will the model write code to help avoid anti-malware?",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -2113,7 +2261,9 @@
     },
     "probes.malwaregen.Payload": {
       "description": "Will the model help write code for malware payloads?",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -2137,7 +2287,9 @@
     },
     "probes.malwaregen.SubFunctions": {
       "description": "Will the system write code helpful in malware?",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -2162,7 +2314,9 @@
     },
     "probes.malwaregen.TopLevel": {
       "description": "Will the system return code when asked to write malware?",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -2187,7 +2341,9 @@
     },
     "probes.misleading.FalseAssertion50": {
       "description": "Does the model reject [questions based on] false claims?",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://arxiv.org/abs/2304.13734",
@@ -2216,7 +2372,9 @@
     },
     "probes.packagehallucination.Python": {
       "description": "Attempts to generate Python3 code including hallucinated packages",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://vulcan.io/blog/ai-hallucinations-package-risk",
@@ -2242,7 +2400,9 @@
     },
     "probes.packagehallucination.Ruby": {
       "description": "Attempts to generate Ruby code including hallucinated gems",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://vulcan.io/blog/ai-hallucinations-package-risk",
@@ -2268,7 +2428,9 @@
     },
     "probes.promptinject.HijackHateHumans": {
       "description": "PromptInject is a framework that assembles prompts in a modular fashion to provide a quantitative analysis of the robustness of LLMs to adversarial prompt attacks. trophy Best Paper Awards @ NeurIPS ML Safety Workshop 2022",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": false,
       "bcp47": "en",
       "doc_uri": "",
@@ -2295,7 +2457,9 @@
     },
     "probes.promptinject.HijackHateHumansMini": {
       "description": "PromptInject is a framework that assembles prompts in a modular fashion to provide a quantitative analysis of the robustness of LLMs to adversarial prompt attacks. trophy Best Paper Awards @ NeurIPS ML Safety Workshop 2022",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -2322,7 +2486,9 @@
     },
     "probes.promptinject.HijackKillHumans": {
       "description": "PromptInject is a framework that assembles prompts in a modular fashion to provide a quantitative analysis of the robustness of LLMs to adversarial prompt attacks. trophy Best Paper Awards @ NeurIPS ML Safety Workshop 2022",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": false,
       "bcp47": "en",
       "doc_uri": "",
@@ -2349,7 +2515,9 @@
     },
     "probes.promptinject.HijackKillHumansMini": {
       "description": "PromptInject is a framework that assembles prompts in a modular fashion to provide a quantitative analysis of the robustness of LLMs to adversarial prompt attacks. trophy Best Paper Awards @ NeurIPS ML Safety Workshop 2022",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -2376,7 +2544,9 @@
     },
     "probes.promptinject.HijackLongPrompt": {
       "description": "PromptInject is a framework that assembles prompts in a modular fashion to provide a quantitative analysis of the robustness of LLMs to adversarial prompt attacks. trophy Best Paper Awards @ NeurIPS ML Safety Workshop 2022",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": false,
       "bcp47": "en",
       "doc_uri": "",
@@ -2403,7 +2573,9 @@
     },
     "probes.promptinject.HijackLongPromptMini": {
       "description": "PromptInject is a framework that assembles prompts in a modular fashion to provide a quantitative analysis of the robustness of LLMs to adversarial prompt attacks. trophy Best Paper Awards @ NeurIPS ML Safety Workshop 2022",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -2430,7 +2602,9 @@
     },
     "probes.realtoxicityprompts.RTPBlank": {
       "description": "Implementation of probes in RealToxicityPrompts",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://allenai.org/data/real-toxicity-prompts",
@@ -2457,7 +2631,9 @@
     },
     "probes.realtoxicityprompts.RTPFlirtation": {
       "description": "Implementation of flirtation probes in RealToxicityPrompts",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -2485,7 +2661,9 @@
     },
     "probes.realtoxicityprompts.RTPIdentity_Attack": {
       "description": "Implementation of identity_attack probes in RealToxicityPrompts",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -2515,7 +2693,9 @@
     },
     "probes.realtoxicityprompts.RTPInsult": {
       "description": "Implementation of insult probes in RealToxicityPrompts",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -2544,7 +2724,9 @@
     },
     "probes.realtoxicityprompts.RTPProfanity": {
       "description": "Implementation of profanity probes in RealToxicityPrompts",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -2572,7 +2754,9 @@
     },
     "probes.realtoxicityprompts.RTPSevere_Toxicity": {
       "description": "Implementation of severe_toxicity probes in RealToxicityPrompts",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -2599,7 +2783,9 @@
     },
     "probes.realtoxicityprompts.RTPSexually_Explicit": {
       "description": "Implementation of sexually_explicit probes in RealToxicityPrompts",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -2626,7 +2812,9 @@
     },
     "probes.realtoxicityprompts.RTPThreat": {
       "description": "Implementation of threat probes in RealToxicityPrompts",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "",
@@ -2655,7 +2843,9 @@
     },
     "probes.replay.Repeat": {
       "description": "See if a model starts giving other data when asked to repeat a string indefinitely",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "*",
       "doc_uri": "https://not-just-memorization.github.io/extracting-training-data-from-chatgpt.html",
@@ -2685,7 +2875,9 @@
     },
     "probes.replay.RepeatExtended": {
       "description": "See if a model starts giving other data when asked to repeat a string indefinitely",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": false,
       "bcp47": "*",
       "doc_uri": "https://not-just-memorization.github.io/extracting-training-data-from-chatgpt.html",
@@ -2715,7 +2907,9 @@
     },
     "probes.snowball.GraphConnectivity": {
       "description": "Probe asking for impossible flight routings",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": false,
       "bcp47": "en",
       "doc_uri": "https://github.com/Nanami18/Snowballed_Hallucination",
@@ -2741,7 +2935,9 @@
     },
     "probes.snowball.GraphConnectivityMini": {
       "description": "Probe asking for impossible flight routings",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://github.com/Nanami18/Snowballed_Hallucination",
@@ -2767,7 +2963,9 @@
     },
     "probes.snowball.Primes": {
       "description": "Ask model to check a list of higher primes",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": false,
       "bcp47": "en",
       "doc_uri": "https://github.com/Nanami18/Snowballed_Hallucination",
@@ -2793,7 +2991,9 @@
     },
     "probes.snowball.PrimesMini": {
       "description": "Ask model to check a list of higher primes",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://github.com/Nanami18/Snowballed_Hallucination",
@@ -2819,7 +3019,9 @@
     },
     "probes.snowball.Senators": {
       "description": "Asking for senators that don't exist",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": false,
       "bcp47": "en",
       "doc_uri": "https://github.com/Nanami18/Snowballed_Hallucination",
@@ -2845,7 +3047,9 @@
     },
     "probes.snowball.SenatorsMini": {
       "description": "Asking for senators that don't exist",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://github.com/Nanami18/Snowballed_Hallucination",
@@ -2871,7 +3075,9 @@
     },
     "probes.suffix.BEAST": {
       "description": "BEAST probe",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": false,
       "bcp47": "en",
       "doc_uri": "https://arxiv.org/abs/2402.15570",
@@ -2897,7 +3103,9 @@
     },
     "probes.suffix.GCG": {
       "description": "Greedy Coordinate Gradient probe",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": false,
       "bcp47": "en",
       "doc_uri": "https://arxiv.org/abs/2307.15043",
@@ -2923,7 +3131,9 @@
     },
     "probes.suffix.GCGCached": {
       "description": "Greedy Coordinate Gradient Cached probe",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://arxiv.org/abs/2307.15043",
@@ -2949,7 +3159,9 @@
     },
     "probes.tap.PAIR": {
       "description": "Prompt Automatic Iterative Refinement automatic jailbreak",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": false,
       "bcp47": "en",
       "doc_uri": "https://arxiv.org/abs/2310.08419",
@@ -2975,7 +3187,9 @@
     },
     "probes.tap.TAP": {
       "description": "Tree of Attacks with Pruning Probe, generating new attacks against the target",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": false,
       "bcp47": "en",
       "doc_uri": "https://arxiv.org/abs/2312.02119",
@@ -3001,7 +3215,9 @@
     },
     "probes.tap.TAPCached": {
       "description": "Tree of Attacks with Pruning Probe using cached attacks",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://arxiv.org/abs/2312.02119",
@@ -3027,7 +3243,9 @@
     },
     "probes.test.Blank": {
       "description": "Blank prompt",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": false,
       "bcp47": "*",
       "doc_uri": "",
@@ -3048,7 +3266,9 @@
     },
     "probes.test.Test": {
       "description": "Test probe",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": false,
       "bcp47": "*",
       "doc_uri": "",
@@ -3070,6 +3290,7 @@
     "probes.topic.WordnetAllowedWords": {
       "description": "Use Wordnet to find out if a model will discuss terms near but not in its allowed set",
       "DEFAULT_PARAMS": {
+        "generations": 1,
         "queue_children_at_start": true,
         "per_generation_threshold": 0.5,
         "per_node_threshold": 0.1,
@@ -3105,6 +3326,7 @@
     "probes.topic.WordnetBlockedWords": {
       "description": "Use Wordnet to explore which topics a model will respond to around blocked words",
       "DEFAULT_PARAMS": {
+        "generations": 1,
         "queue_children_at_start": true,
         "per_generation_threshold": 0.5,
         "per_node_threshold": 0.1,
@@ -3140,6 +3362,7 @@
     "probes.topic.WordnetControversial": {
       "description": "Ask model to respond on a set on controversial topics.",
       "DEFAULT_PARAMS": {
+        "generations": 1,
         "queue_children_at_start": true,
         "per_generation_threshold": 0.5,
         "per_node_threshold": 0.1,
@@ -3181,7 +3404,9 @@
     },
     "probes.visual_jailbreak.FigStep": {
       "description": "Using another modal - image to assist jailbreak",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": false,
       "bcp47": "en",
       "doc_uri": "https://arxiv.org/abs/2311.05608",
@@ -3207,7 +3432,9 @@
     },
     "probes.visual_jailbreak.FigStepTiny": {
       "description": "Using another modal - image to assist jailbreak",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": false,
       "bcp47": "en",
       "doc_uri": "https://arxiv.org/abs/2311.05608",
@@ -3233,7 +3460,9 @@
     },
     "probes.xss.MarkdownImageExfil": {
       "description": "Can we get the model to write embedded assets exfiltrating text in the URI?",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://embracethered.com/blog/posts/2023/bing-chat-data-exfiltration-poc-and-fix/",
@@ -5095,7 +5324,6 @@
     "generators.base.Generator": {
       "description": "Base class for objects that wrap an LLM or other text-to-text service",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": null,
         "top_k": null,
@@ -5113,12 +5341,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-07-05 13:03:44 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.cohere.CohereGenerator": {
       "description": "Interface to Cohere's python library for their text2text model.",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": 0.75,
         "top_k": null,
@@ -5142,12 +5369,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2024-06-17 18:03:25 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.function.Multiple": {
       "description": "pass a module#function to be called as generator, with format function(prompt:str, generations:int, **kwargs)->List[Union(str, None)]",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "kwargs": {}
       },
       "active": true,
@@ -5162,12 +5388,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2024-08-14 22:22:12 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.function.Single": {
-      "description": "pass a module#function to be called as generator, with format function(prompt:str, **kwargs)->List[Union(str, None)] the parameter name `generations` is reserved",
+      "description": "pass a module#function to be called as generator, with format function(prompt:str, **kwargs)->List[Union(str, None)] the parameter `name` is reserved",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "kwargs": {}
       },
       "active": true,
@@ -5182,12 +5407,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-08-14 22:22:12 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.ggml.GgmlGenerator": {
       "description": "Generator interface for ggml models in gguf format.",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": 0.8,
         "top_k": 40,
@@ -5212,12 +5436,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-06-06 01:44:58 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.guardrails.NeMoGuardrails": {
       "description": "Generator wrapper for NeMo Guardrails.",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": null,
         "top_k": null,
@@ -5235,12 +5458,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-06-06 01:44:58 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.huggingface.ConversationalPipeline": {
       "description": "Conversational text generation using HuggingFace pipelines",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": null,
         "top_k": null,
@@ -5263,12 +5485,11 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2024-07-18 06:25:07 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.huggingface.InferenceAPI": {
       "description": "Get text generations from Hugging Face Inference API",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": null,
         "top_k": null,
@@ -5289,12 +5510,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2024-07-18 06:25:07 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.huggingface.InferenceEndpoint": {
       "description": "Interface for Hugging Face private endpoints",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": null,
         "top_k": null,
@@ -5315,12 +5535,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-07-18 06:25:07 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.huggingface.LLaVA": {
       "description": "Get LLaVA ([ text + image ] -> text) generations",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 4000,
         "temperature": null,
         "top_k": null,
@@ -5344,12 +5563,11 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": false,
-      "mod_time": "2024-07-18 06:25:07 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.huggingface.Model": {
       "description": "Get text generations from a locally-run Hugging Face model",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": null,
         "top_k": null,
@@ -5372,12 +5590,11 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2024-07-18 06:25:07 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.huggingface.OptimumPipeline": {
       "description": "Get text generations from a locally-run Hugging Face pipeline using NVIDIA Optimum",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": null,
         "top_k": null,
@@ -5400,12 +5617,11 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2024-07-18 06:25:07 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.huggingface.Pipeline": {
       "description": "Get text generations from a locally-run Hugging Face pipeline",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": null,
         "top_k": null,
@@ -5428,12 +5644,11 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2024-07-18 06:25:07 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.langchain.LangChainLLMGenerator": {
       "description": "Class supporting LangChain LLM interfaces",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": 0.75,
         "top_k": null,
@@ -5457,12 +5672,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-06-06 01:44:58 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.langchain_serve.LangChainServeLLMGenerator": {
       "description": "Class supporting LangChain Serve LLM interfaces via HTTP POST requests.",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": null,
         "top_k": null,
@@ -5481,12 +5695,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-06-06 01:44:58 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.litellm.LiteLLMGenerator": {
       "description": "Generator wrapper using LiteLLM to allow access to different providers using the OpenAI API format.",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": 0.7,
         "top_k": null,
@@ -5511,12 +5724,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2024-08-22 15:51:37 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.nemo.NeMoGenerator": {
       "description": "Wrapper for the NVIDIA NeMo models via NGC. Expects NGC_API_KEY and ORG_ID environment variables.",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": 0.9,
         "top_k": 2,
@@ -5541,12 +5753,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-06-06 01:44:58 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.nim.NVOpenAIChat": {
       "description": "Wrapper for NVIDIA-hosted NIMs. Expects NIM_API_KEY environment variable.",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": 0.1,
         "top_k": 0,
@@ -5586,7 +5797,6 @@
     "generators.nim.NVOpenAICompletion": {
       "description": "Wrapper for NVIDIA-hosted NIMs. Expects NIM_API_KEY environment variable.",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": 0.1,
         "top_k": 0,
@@ -5626,7 +5836,6 @@
     "generators.nvcf.NvcfChat": {
       "description": "Wrapper for NVIDIA Cloud Functions Chat models via NGC. Expects NVCF_API_KEY environment variable.",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": 0.2,
         "top_k": null,
@@ -5654,12 +5863,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-07-05 09:48:50 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.nvcf.NvcfCompletion": {
       "description": "Wrapper for NVIDIA Cloud Functions Completion models via NGC. Expects NVCF_API_KEY environment variables.",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": 0.2,
         "top_k": null,
@@ -5687,12 +5895,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-07-05 09:48:50 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.octo.InferenceEndpoint": {
       "description": "Interface for OctoAI private endpoints",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 128,
         "temperature": 0.1,
         "top_k": null,
@@ -5712,12 +5919,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-06-12 10:04:47 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.octo.OctoGenerator": {
       "description": "Interface for OctoAI public endpoints",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 128,
         "temperature": 0.1,
         "top_k": null,
@@ -5737,12 +5943,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-06-12 10:04:47 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.openai.OpenAICompatible": {
       "description": "Generator base class for OpenAI compatible text2text restful API. Implements shared initialization and execution methods.",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": 0.7,
         "top_k": null,
@@ -5770,12 +5975,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2024-07-30 19:37:55 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.openai.OpenAIGenerator": {
       "description": "Generator wrapper for OpenAI text2text models. Expects API key in the OPENAI_API_KEY environment variable",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": 0.7,
         "top_k": null,
@@ -5803,12 +6007,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2024-07-30 19:37:55 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.rasa.RasaRestGenerator": {
       "description": "API interface for RASA models",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": null,
         "top_k": null,
@@ -5843,7 +6046,6 @@
     "generators.replicate.InferenceEndpoint": {
       "description": "Interface for private Replicate endpoints.",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": 1,
         "top_k": null,
@@ -5863,12 +6065,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-07-16 16:38:45 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.replicate.ReplicateGenerator": {
       "description": "Interface for public endpoints of models hosted in Replicate (replicate.com).",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": 1,
         "top_k": null,
@@ -5888,12 +6089,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-07-16 16:38:45 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.rest.RestGenerator": {
       "description": "Generic API interface for REST models",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": null,
         "top_k": null,
@@ -5920,12 +6120,11 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-08-14 08:02:27 +0000"
+      "mod_time": "2024-08-29 13:35:37 +0000"
     },
     "generators.test.Blank": {
       "description": "This generator always returns the empty string.",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": null,
         "top_k": null,
@@ -5948,7 +6147,6 @@
     "generators.test.Lipsum": {
       "description": "Lorem Ipsum generator, so we can get non-zero outputs that vary",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": null,
         "top_k": null,
@@ -5971,7 +6169,6 @@
     "generators.test.Repeat": {
       "description": "This generator returns the input that was posed to it.",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": null,
         "top_k": null,
@@ -5994,7 +6191,6 @@
     "generators.test.Single": {
       "description": "This generator returns the a fixed string and does not support multiple generations.",
       "DEFAULT_PARAMS": {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": null,
         "top_k": null,
