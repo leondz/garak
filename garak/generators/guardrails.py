@@ -17,7 +17,7 @@ class NeMoGuardrails(Generator):
     supports_multiple_generations = False
     generator_family_name = "Guardrails"
 
-    def __init__(self, name="", generations=1, config_root=_config):
+    def __init__(self, name="", config_root=_config):
         # another class that may need to skip testing due to non required dependency
         try:
             from nemoguardrails import RailsConfig, LLMRails
@@ -28,7 +28,6 @@ class NeMoGuardrails(Generator):
             ) from e
 
         self.name = name
-        self.generations = generations
         self._load_config(config_root)
         self.fullname = f"Guardrails {self.name}"
 
@@ -37,9 +36,7 @@ class NeMoGuardrails(Generator):
             config = RailsConfig.from_path(self.name)
             self.rails = LLMRails(config=config)
 
-        super().__init__(
-            self.name, generations=self.generations, config_root=config_root
-        )
+        super().__init__(self.name, config_root=config_root)
 
     def _call_model(
         self, prompt: str, generations_this_call: int = 1

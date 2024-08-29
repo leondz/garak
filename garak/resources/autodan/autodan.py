@@ -137,9 +137,7 @@ def autodan_generate(
     crit = nn.CrossEntropyLoss(reduction="mean")
 
     config_root = {
-        "generators": {
-            mutation_generator_type: {"name": mutation_generator_name, "generations": 1}
-        }
+        "generators": {mutation_generator_type: {"name": mutation_generator_name}}
     }
     mutation_generator = load_plugin(
         "generators." + mutation_generator_type, config_root=config_root

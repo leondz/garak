@@ -92,7 +92,11 @@ def _crystallise(d):
     return dict(d)
 
 
-nested_dict = lambda: defaultdict(nested_dict)
+def _nested_dict():
+    return defaultdict(nested_dict)
+
+
+nested_dict = _nested_dict
 
 plugins.probes = nested_dict()
 plugins.generators = nested_dict()

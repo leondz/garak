@@ -26,7 +26,13 @@ class GarakBackoffTrigger(GarakException):
     pass
 
 
-class BadGeneratorException(GarakException):
+class PluginConfigurationError(GarakException):
+    """Plugin config/description is not usable"""
+
+    pass
+
+
+class BadGeneratorException(PluginConfigurationError):
     """Generator config/description is not usable"""
 
     pass
@@ -36,3 +42,7 @@ class RateLimitHit(Exception):
     """Raised when a rate limiting response is returned"""
 
     pass
+
+
+class ConfigFailure(GarakException):
+    """Raised when plugin configuration fails"""

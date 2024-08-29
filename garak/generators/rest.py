@@ -59,23 +59,26 @@ class RestGenerator(Generator):
     and response value are both under the ``text`` key, we'd define the service
     using something like: ::
 
-    {
-        "rest": {
-            "RestGenerator": {
-                "name": "example service",
-                "uri": "https://example.ai/llm",
-                "method": "post",
-                "headers": {
-                    "X-Authorization": "$KEY",
-                },
-                "req_template_json_object": {
-                    "text": "$INPUT"
-                },
-                "response_json": true,
-                "response_json_field": "text"
+    .. code-block:: JSON
+      :linenos:
+
+        {
+            "rest": {
+                "RestGenerator": {
+                    "name": "example service",
+                    "uri": "https://example.ai/llm",
+                    "method": "post",
+                    "headers": {
+                        "X-Authorization": "$KEY",
+                    },
+                    "req_template_json_object": {
+                        "text": "$INPUT"
+                    },
+                    "response_json": true,
+                    "response_json_field": "text"
+                }
             }
         }
-    }
 
     NB. ``response_json_field`` can also be a JSONPath, for JSON responses where
     the target text is not in a top level field. It is treated as a JSONPath
@@ -113,7 +116,6 @@ class RestGenerator(Generator):
         "api_key",
         "name",
         "uri",
-        "generations",
         "key_env_var",
         "req_template",
         "req_template_json",
@@ -130,11 +132,10 @@ class RestGenerator(Generator):
         "top_k",
     )
 
-    def __init__(self, uri=None, generations=10, config_root=_config):
+    def __init__(self, uri=None, config_root=_config):
         self.uri = uri
         self.name = uri
         self.seed = _config.run.seed
-        self.generations = generations
         self.supports_multiple_generations = False  # not implemented yet
         self.escape_function = self._json_escape
         self.retry_5xx = True
@@ -198,9 +199,7 @@ class RestGenerator(Generator):
                 )
                 raise e
 
-        super().__init__(
-            self.name, generations=self.generations, config_root=config_root
-        )
+        super().__init__(self.name, config_root=config_root)
 
     def _validate_env_var(self):
         key_match = "$KEY"

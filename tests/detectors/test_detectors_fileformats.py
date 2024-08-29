@@ -131,7 +131,7 @@ def decoded_filename(request, encoded_exec_filename):
 try:
     import magic
 except ImportError as e:
-    magic == None
+    magic = None
 
 
 @pytest.mark.skipif(magic is None, reason="libmagic not available")

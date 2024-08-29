@@ -7,7 +7,6 @@ Attributes:
 
 * name - The name of the specific generator class. This is optionally also set in the constructor.
 * description - An optional description of the generator.
-* generations - How many responses should be requested from the generator per prompt.
 * max_tokens - The maximum number of tokens to generate.
 * temperature - Optionally, a temperature param to pass to the underlying model.
 * top_k - Optionally, a temperature param to pass to the underlying model.
@@ -27,7 +26,7 @@ Functions:
 The general flow in ``generate()`` is as follows:
 
   #. Call the ``_pre_generate_hook()``.
-  #. Work out how many generations we're doing this call (if -1 is passed via ``generations_this_call``, the default count in self.generations is used).
+  #. Work out how many generations we're doing this call (passed via ``generations_this_call``).
   #. If only one generation is requested, return the output of ``_call_model`` with 1 generation specified.
   #. If the underlying model supports multiple generations, return the output of ``_call_model`` invoked with the full count of generations.
   #. Otherwise, we need to assemble the outputs over multiple calls. There are two options here.

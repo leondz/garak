@@ -1,8 +1,8 @@
 import pytest
-import os
+import random
 
 import garak
-from garak import _plugins
+from garak import _plugins, _config
 import garak.generators
 
 PROBES = [classname for (classname, active) in _plugins.enumerate_plugins("probes")]
@@ -25,18 +25,11 @@ GENERATORS = [
 @pytest.fixture
 def plugin_configuration(classname):
     category, namespace, klass = classname.split(".")
-    from garak._config import GarakSubConfig
-
-    plugin_config = {
-        namespace: {
-            klass: {
-                "api_key": "fake",
-            }
-        }
-    }
-    config_root = GarakSubConfig()
-    setattr(config_root, category, plugin_config)
-    return (classname, config_root)
+    plugin_conf = getattr(_config.plugins, category)
+    plugin_conf[namespace][klass]["api_key"] = "fake"
+    if category == "probes":
+        plugin_conf[namespace][klass]["generations"] = random.randint(2, 12)
+    return (classname, _config)
 
 
 @pytest.mark.parametrize("classname", PROBES)

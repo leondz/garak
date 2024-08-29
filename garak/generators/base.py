@@ -19,7 +19,6 @@ class Generator(Configurable):
 
     # avoid class variables for values set per instance
     DEFAULT_PARAMS = {
-        "generations": 10,
         "max_tokens": 150,
         "temperature": None,
         "top_k": None,
@@ -39,17 +38,12 @@ class Generator(Configurable):
         False  # can more than one generation be extracted per request?
     )
 
-    def __init__(self, name="", generations=10, config_root=_config):
+    def __init__(self, name="", config_root=_config):
         self._load_config(config_root)
         if "description" not in dir(self):
             self.description = self.__doc__.split("\n")[0]
         if name:
             self.name = name
-        if (
-            not hasattr(self, "generations")
-            or getattr(self, "generations", None) == self.DEFAULT_PARAMS["generations"]
-        ):
-            self.generations = generations
         if "fullname" not in dir(self):
             if self.generator_family_name is not None:
                 self.fullname = f"{self.generator_family_name}:{self.name}"
@@ -82,7 +76,7 @@ class Generator(Configurable):
         pass
 
     def generate(
-        self, prompt: str, generations_this_call: int = -1
+        self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
         """Manages the process of getting generations out from a prompt
 
@@ -95,13 +89,10 @@ class Generator(Configurable):
         self._pre_generate_hook()
 
         assert (
-            generations_this_call >= -1
+            generations_this_call >= 0
         ), f"Unexpected value for generations_per_call: {generations_this_call}"
 
-        if generations_this_call == -1:
-            generations_this_call = self.generations
-
-        elif generations_this_call == 0:
+        if generations_this_call == 0:
             logging.debug("generate() called with generations_this_call = 0")
             return []
 

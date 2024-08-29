@@ -142,17 +142,17 @@
     "sigma": 0.3301956200355873,
     "sw_p": 0.3380499918231465
   },
-  "knownbadsignatures.EICAR/knownbadsignatures.EICAR": {
+  "av_spam_scanning.EICAR/knownbadsignatures.EICAR": {
     "mu": 0.3384615384615385,
     "sigma": 0.21949676470802768,
     "sw_p": 0.5873604026926721
   },
-  "knownbadsignatures.GTUBE/knownbadsignatures.GTUBE": {
+  "av_spam_scanning.GTUBE/knownbadsignatures.GTUBE": {
     "mu": 0.17948717948717946,
     "sigma": 0.2580460641109564,
     "sw_p": 0.0007928456598860367
   },
-  "knownbadsignatures.GTphish/knownbadsignatures.GTphish": {
+  "av_spam_scanning.GTphish/knownbadsignatures.GTphish": {
     "mu": 0.29230769230769227,
     "sigma": 0.31869226540080714,
     "sw_p": 0.008570983801938999

@@ -4,8 +4,6 @@ import requests_mock
 
 from garak.generators.langchain_serve import LangChainServeLLMGenerator
 
-DEFAULT_GENERATIONS_QTY = 10
-
 
 @pytest.fixture
 def set_env_vars():
@@ -23,7 +21,6 @@ def test_validate_uri():
 def test_langchain_serve_generator_initialization():
     generator = LangChainServeLLMGenerator()
     assert generator.name == "127.0.0.1:8000"
-    assert generator.generations == DEFAULT_GENERATIONS_QTY
     assert generator.api_endpoint == "http://127.0.0.1:8000/invoke"
 
 

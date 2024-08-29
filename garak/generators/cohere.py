@@ -42,14 +42,11 @@ class CohereGenerator(Generator):
     supports_multiple_generations = True
     generator_family_name = "Cohere"
 
-    def __init__(self, name="command", generations=10, config_root=_config):
+    def __init__(self, name="command", config_root=_config):
         self.name = name
         self.fullname = f"Cohere {self.name}"
-        self.generations = generations
 
-        super().__init__(
-            self.name, generations=self.generations, config_root=config_root
-        )
+        super().__init__(self.name, config_root=config_root)
 
         logging.debug(
             "Cohere generation request limit capped at %s", COHERE_GENERATION_LIMIT

@@ -7,7 +7,6 @@ from garak import _config
 
 from garak.generators.rest import RestGenerator
 
-DEFAULT_GENERATIONS_QTY = 11
 DEFAULT_NAME = "REST Test"
 DEFAULT_URI = "https://www.wikidata.org/wiki/Q22971"
 DEFAULT_TEXT_RESPONSE = "Here's your model response"
@@ -20,7 +19,6 @@ def set_rest_config():
         "name": DEFAULT_NAME,
         "uri": DEFAULT_URI,
         "api_key": "testing",
-        "generations": DEFAULT_GENERATIONS_QTY,
     }
     # excluded: req_template_json_object, response_json_field
 
@@ -28,7 +26,6 @@ def set_rest_config():
 @pytest.mark.usefixtures("set_rest_config")
 def test_rest_generator_initialization():
     generator = RestGenerator()
-    assert generator.generations == DEFAULT_GENERATIONS_QTY
     assert generator.name == DEFAULT_NAME
     assert generator.uri == DEFAULT_URI
 
@@ -64,13 +61,13 @@ def test_json_rest_top_level(requests_mock):
 def test_json_rest_list(requests_mock):
     requests_mock.post(
         "https://www.wikidata.org/wiki/Q22971",
-        text=json.dumps([DEFAULT_TEXT_RESPONSE] * DEFAULT_GENERATIONS_QTY),
+        text=json.dumps([DEFAULT_TEXT_RESPONSE]),
     )
     _config.plugins.generators["rest"]["RestGenerator"]["response_json"] = True
     _config.plugins.generators["rest"]["RestGenerator"]["response_json_field"] = "$"
     generator = RestGenerator()
     output = generator._call_model("Who is Enabran Tain's son?")
-    assert output == [DEFAULT_TEXT_RESPONSE] * DEFAULT_GENERATIONS_QTY
+    assert output == [DEFAULT_TEXT_RESPONSE]
 
 
 @pytest.mark.usefixtures("set_rest_config")
