@@ -124,7 +124,7 @@ class Generator(Configurable):
                     for result in pool.imap_unordered(
                         self._call_model, [prompt] * generations_this_call
                     ):
-                        outputs.append(result)
+                        outputs.append(result[0])
                         multi_generator_bar.update(1)
 
             else:
