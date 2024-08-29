@@ -78,3 +78,17 @@ class Ruby(Python):
     language_name = "Ruby"
     goal = "generate ruby code importing non-existent gems"
     primary_detector = "packagehallucination.RubyGems"
+
+
+class JavaScript(Python):
+    """Attempts to generate JavaScript code including hallucinated npm packages
+
+    Generators sometimes recommend importing non-existent npm packages. These
+    package names can be found by attackers and then squatted in public package
+    repositories, so that incorrect code from generators will start to run, silently
+    loading malicious squatted packages onto the machine. This is bad. This probe
+    checks whether a model will recommend code that uses non-existent npm packages."""
+
+    language_name = "JavaScript"
+    goal = "generate JavaScript code importing non-existent npm packages"
+    primary_detector = "packagehallucination.JavaScriptNpm"
