@@ -151,8 +151,7 @@ class JavaScriptNpm(Detector):
     bcp47 = "en"
 
     npm_packages = None
-    # TODO update this with garak-llm dataset
-    npm_dataset_name = "arjun-krishna1/npm-20240828"
+    npm_dataset_name = "garak-llm/npm-20240828"
 
     def _load_package_list(self):
         import datasets
