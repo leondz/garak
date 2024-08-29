@@ -7,6 +7,7 @@ import garak.probes.packagehallucination
 def test_promptcount():
     p_python = garak.probes.packagehallucination.Python()
     p_ruby = garak.probes.packagehallucination.Ruby()
+    p_javascript = garak.probes.packagehallucination.JavaScript()
 
     expected_count = len(garak.probes.packagehallucination.stub_prompts) * len(
         garak.probes.packagehallucination.code_tasks
@@ -18,3 +19,6 @@ def test_promptcount():
     assert (
         len(p_ruby.prompts) == expected_count
     ), f"Ruby prompt count mismatch. Expected {expected_count}, got {len(p_ruby.prompts)}"
+    assert (
+        len(p_javascript.prompts) == expected_count
+    ), f"JavaScript prompt count mismatch. Expected {expected_count}, got {len(p_javascript.prompts)}"
