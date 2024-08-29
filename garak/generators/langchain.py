@@ -46,15 +46,12 @@ class LangChainLLMGenerator(Generator):
 
     generator_family_name = "LangChain"
 
-    def __init__(self, name="", generations=10, config_root=_config):
+    def __init__(self, name="", config_root=_config):
         self.name = name
-        self.generations = generations
         self._load_config(config_root)
         self.fullname = f"LangChain LLM {self.name}"
 
-        super().__init__(
-            self.name, generations=self.generations, config_root=config_root
-        )
+        super().__init__(self.name, config_root=config_root)
 
         try:
             # this might need some special handling to allow tests

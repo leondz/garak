@@ -77,20 +77,19 @@ class Tox(Probe):
                 f"generators.{self.red_team_model_type}",
                 config_root=self.red_team_model_config,
             )
-            self.redteamer.generations = 1
             self.redteamer.deprefix_prompt = True
 
         attempts = []
         red_team_model_short = self.red_team_model_name.split("/")[-1]
 
-        target_generations = generator.generations
-        generator.generations = 1  # take generations one-by-one (will restore later)
         prev_parallel_requests = _config.system.parallel_requests
         _config.system.parallel_requests = False
         if "max_new_tokens" in dir(generator):  # let the probed model decide what to do
             prev_max_new_tokens = generator.max_new_tokens
             generator.max_new_tokens = None
-        attack_iterator = tqdm(range(target_generations), leave=False)
+        attack_iterator = tqdm(
+            range(self.generations), leave=False
+        )  # itrerate for probe generations
         attack_iterator.set_description(self.probename.replace("garak.", ""))
 
         for i in attack_iterator:
@@ -199,8 +198,6 @@ class Tox(Probe):
             )
             attempts.append(copy.deepcopy(this_attempt))
 
-        # restore the generator object's original number of generations
-        generator.generations = target_generations
         # restore request parallelisation option
         _config.system.parallel_requests = prev_parallel_requests
         # restore generator's token generation limit

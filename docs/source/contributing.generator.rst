@@ -96,8 +96,8 @@ So, in the constructor, we first call the parent constructor using ``super().__i
 
 .. code-block:: python
 
-        def __init__(self, name, generations=10):
-            super().__init__(name, generations=generations)
+        def __init__(self, name, config_root=_config):
+            super().__init__(name, config_root=config_root)
 
             if self.api_key is not None:
                 # ensure the token is in the expected runtime env var
@@ -106,7 +106,7 @@ So, in the constructor, we first call the parent constructor using ``super().__i
 
 The configuration machinery will handle populating ``self.api_key``. Here, the code overrides the local environment variable in case we obtained ``api_key`` from somewhere else (e.g. a YAML config). We'll also import a copy of the ``replicate`` module in this instance, for local access. This is done because a garak run can involve multiple generator instances.
 
-If a generator needs do more complex environment variable loading and detection, or needs a different key populated from the ``ENV_VAR``, it should implement ``_validate_env_var()``. Examples of this can be found in the codebase.
+If a generator needs more complex environment variable loading and detection, or needs a different key populated from the ``ENV_VAR``, it should implement ``_validate_env_var()``. Examples of this can be found in the codebase.
 
 Populating a different value than api_key:
 
