@@ -88,6 +88,12 @@ Thinking more about user experience - when is a good time to quit because of a m
 
 So, in the constructor, we first call the parent constructor using ``super().__init__()``, and then do a check for the API key. If the key is missing, we should print a clear message to the user, showing them what the key might look like, and where it should go. And we draw attention to that helpful message with a clear emoji.
 
+
+.. code-block:: python
+
+    import os
+
+
 .. code-block:: python
 
         def __init__(self, name, generations=10):
@@ -98,19 +104,56 @@ So, in the constructor, we first call the parent constructor using ``super().__i
                 os.environ[self.ENV_VAR] = self.api_key
             self.replicate = importlib.import_module("replicate")
 
-The configuration machinery will handle populating ``self.api_key``. Here the code overrides the local environment variable encase we obtained ``api_key`` from somewhere else (e.g. a YAML config). We'll also import a copy of the ``replicate`` module in this instance, for local access. This is done because a garak run can involve multiple generator instances.
+The configuration machinery will handle populating ``self.api_key``. Here, the code overrides the local environment variable in case we obtained ``api_key`` from somewhere else (e.g. a YAML config). We'll also import a copy of the ``replicate`` module in this instance, for local access. This is done because a garak run can involve multiple generator instances.
+
+If a generator needs do more complex environment variable loading and detection, or needs a different key populated from the ``ENV_VAR``, it should implement ``_validate_env_var()``. Examples of this can be found in the codebase.
+
+Populating a different value than api_key:
 
 .. code-block:: python
 
-    import os
+        def _validate_env_var(self): 
+            if self.uri is None and hasattr(self, "key_env_var"): 
+                self.uri = os.getenv(self.key_env_var) 
+            if not self._validate_uri(self.uri): 
+                raise ValueError("Invalid API endpoint URI") 
 
-Finally, if the key check passed, let's try to load up the Replicate API using the ``replicate`` module and the user-supplied key. We don't want to do speculative loading in garak - everything should be imported as late as reasonable, to keep user experience fast. So in this case, we import the ``replicate`` API module after the initial validation. Finally, to give the module some persistence, it's loaded at the level of our generator module, instead of just in this method. We add this to the end of ``__init__()``:
+(from garak/generators/langchain_serve.py)
+
+
+Populating from additional environment vars -- notice the call to super()._validate_env_var() at the end is important to still set self.api_key:
+
+.. code-block:: python
+
+        def _validate_env_var(self): 
+            if self.org_id is None: 
+                if not hasattr(self, "org_env_var"): 
+                    self.org_env_var = self.ORG_ENV_VAR 
+                self.org_id = os.getenv(self.org_env_var, None) 
+
+            if self.org_id is None: 
+                raise APIKeyMissingError( 
+                    f'Put your org ID in the {self.org_env_var} environment variable (this was empty)\n \ 
+                    e.g.: export {self.org_env_var}="xxxx8yyyy/org-name"\n \ 
+                    Check "view code" on https://llm.ngc.nvidia.com/playground to see the ID' 
+                ) 
+
+            return super()._validate_env_var() 
+
+(garak/generators/nemo.py)
+
+
+Finally, if the key check passed, let's try to load up the Replicate API using the ``replicate`` module and the user-supplied key. We don't want to do speculative loading in garak - everything should be imported as late as reasonable, to keep user experience fast.
+
+How one handles this can vary. It's done this way here because replicate holds a ``Client()`` object, and the import there may not support if more than one ``ReplicateGenerator`` needed to exist at the same time using different API keys. This is a quirk of the replicate library's design. 
+
+So in this case, we import the ``replicate`` API module after the initial validation. Finally, to give the module some persistence, it's loaded at the level of our generator module, instead of just in this method. We add this to the end of ``__init__()``:
 
 .. code-block:: python
 
             self.replicate = importlib.import_module("replicate")
 
-Finally, forget to import ``importlib`` at the top!
+Finally, don't forget to import ``importlib`` at the top!
 
 .. code-block:: python
 
@@ -219,7 +262,7 @@ The next step is to instantiate the class. Let's try with that ``meta/llama-2-70
     garak.exception.APIKeyMissingError: 🛑 Put the Replicate API key in the REPLICATE_API_TOKEN environment variable (this was empty)
                             e.g.: export REPLICATE_API_TOKEN="XXXXXXX"
 
-Oh, that's right! No API key. Looks like the validation exception is working as intended. Let's set up that value (maybe quit the interpreter, add it using the helpful suggestion in the exception method, and load up Python again).
+Oh, that's right! No API key. This stack trace is an example of how the ``Configurable`` interface (superclass in Python) handles the ``ENV_VAR`` load for the generator without the developer having to do it manually. Looks like the validation exception is working as intended. Let's set up that value (maybe quit the interpreter, add it using the helpful suggestion in the exception method, and load up Python again).
 
 .. code-block:: bash
 
