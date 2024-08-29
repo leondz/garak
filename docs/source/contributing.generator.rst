@@ -88,18 +88,6 @@ Thinking more about user experience - when is a good time to quit because of a m
 
 So, in the constructor, we first call the parent constructor using ``super().__init__()``, and then do a check for the API key. If the key is missing, we should print a clear message to the user, showing them what the key might look like, and where it should go. And we draw attention to that helpful message with a clear emoji.
 
-.. code-block:: python
-
-        def __init__(self, name, config_root=_config):
-            super().__init__(name, config_root=config_root)
-
-            if os.getenv("REPLICATE_API_TOKEN", default=None) is None:
-                raise ValueError(
-                    '🛑 Put the Replicate API token in the REPLICATE_API_TOKEN environment variable (this was empty)\n \
-                    e.g.: export REPLICATE_API_TOKEN="r8-123XXXXXXXXXXXX"'
-                )
-
-The API key is stored in an environment variable, ``REPLICATE_API_TOKEN``, which is accessed using ``os.getenv()``. So don't forget to import that at the top of the module!
 
 .. code-block:: python
 
@@ -108,8 +96,8 @@ The API key is stored in an environment variable, ``REPLICATE_API_TOKEN``, which
 
 .. code-block:: python
 
-        def __init__(self, name, generations=10):
-            super().__init__(name, generations=generations)
+        def __init__(self, name, config_root=_config):
+            super().__init__(name, config_root=config_root)
 
             if self.api_key is not None:
                 # ensure the token is in the expected runtime env var
@@ -118,7 +106,7 @@ The API key is stored in an environment variable, ``REPLICATE_API_TOKEN``, which
 
 The configuration machinery will handle populating ``self.api_key``. Here, the code overrides the local environment variable in case we obtained ``api_key`` from somewhere else (e.g. a YAML config). We'll also import a copy of the ``replicate`` module in this instance, for local access. This is done because a garak run can involve multiple generator instances.
 
-If a generator needs do more complex environment variable loading and detection, or needs a different key populated from the ``ENV_VAR``, it should implement ``_validate_env_var()``. Examples of this can be found in the codebase.
+If a generator needs more complex environment variable loading and detection, or needs a different key populated from the ``ENV_VAR``, it should implement ``_validate_env_var()``. Examples of this can be found in the codebase.
 
 Populating a different value than api_key:
 
@@ -297,7 +285,7 @@ Excellent! Now let's try a test generation (remember to do the export of the API
     >>> import garak.generators.replicate
     >>> g = garak.generators.replicate.ReplicateGenerator("meta/llama-2-70b-chat")
     🦜 loading generator: Replicate: meta/llama-2-70b-chat
-    >>> g.generate("test prompt")
+    >>> g.generate("test prompt", generations_this_call=1)
     [" Sure, I'm happy to help! Can you please provide an actual prompt or question you'd like me to assist with? I'll do my best to provide a helpful and informative response while adhering to the guidelines you've outlined."]
     >>>
 
