@@ -9,6 +9,9 @@ import ollama
 from garak import _config
 from garak.generators.base import Generator
 
+def _give_up(error):
+    return isinstance(error, ollama.ResponseError) and error.status_code == 404
+
 class OllamaGenerator(Generator):
     """Interface for Ollama endpoints    
 
@@ -28,7 +31,7 @@ class OllamaGenerator(Generator):
 
         self.client = ollama.Client(self.DEFAULT_PARAMS['host'], timeout=self.DEFAULT_PARAMS["timeout"]) # Instantiates the client with the timeout
 
-    @backoff.on_exception(backoff.fibo, (TimeoutError, ollama.ResponseError), max_value=70)
+    @backoff.on_exception(backoff.fibo, (TimeoutError, ollama.ResponseError), max_value=70, giveup=_give_up)
     def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[Union[str, None]]:
         response = self.client.generate(self.name, prompt)
         return [response['response']]
@@ -39,7 +42,7 @@ class OllamaGeneratorChat(OllamaGenerator):
         Model names can be passed in short form like "llama2" or specific versions or sizes like "gemma:7b" or "llama2:latest"
     """
 
-    @backoff.on_exception(backoff.fibo, (TimeoutError, ollama.ResponseError), max_value=70)
+    @backoff.on_exception(backoff.fibo, (TimeoutError, ollama.ResponseError), max_value=70, giveup=_give_up)
     def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[Union[str, None]]:
         response = self.client.chat(model=self.name, messages=[
             {
