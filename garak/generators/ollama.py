@@ -1,4 +1,4 @@
-"""OctoML LLM interface"""
+"""Ollama interface"""
 
 
 from typing import List, Union
