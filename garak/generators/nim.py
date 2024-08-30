@@ -3,11 +3,14 @@
 
 """NVIDIA Inference Microservice LLM interface"""
 
+import logging
 import random
 from typing import List, Union
 
 import openai
 
+from garak import _config
+from garak.exception import GarakException
 from garak.generators.openai import OpenAICompatible
 
 
@@ -77,7 +80,23 @@ class NVOpenAIChat(OpenAICompatible):
         if self.vary_temp_each_call:
             self.temperature = random.random()
 
-        return super()._call_model(prompt, generations_this_call)
+        try:
+            result = super()._call_model(prompt, generations_this_call)
+        #        except openai.NotFoundError as oe:
+        except Exception as oe:
+            msg = "NIM endpoint not found. Is it spelled correctly?"
+            logging.critical(msg, exc_info=oe)
+            print(f"🛑 {msg}")
+            raise GarakException(oe.__str__()) from oe
+
+        return result
+
+    def __init__(self, name="", config_root=_config):
+        super().__init__(name, config_root=config_root)
+        if "/" not in name:
+            msg = "❓ Is this a valid NIM name? expected a slash-formatted name, e.g. 'org/model'"
+            logging.info(msg)
+            print(msg)
 
 
 class NVOpenAICompletion(NVOpenAIChat):
