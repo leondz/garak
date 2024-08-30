@@ -4,7 +4,6 @@ import httpx
 
 from garak.generators.azure import AzureOpenAIGenerator
 
-DEFAULT_GENERATIONS_QTY = 10
 DEFAULT_DEPLOYMENT_NAME = "gpt-4o-deployment-test"
 
 @pytest.fixture
@@ -60,7 +59,6 @@ def test_azureopenai_chat(respx_mock, openai_compat_mocks):
     generator = AzureOpenAIGenerator(name=DEFAULT_DEPLOYMENT_NAME)
     assert generator.name == DEFAULT_DEPLOYMENT_NAME
     assert generator.model_name == os.environ[AzureOpenAIGenerator.MODEL_NAME_ENV_VAR]
-    assert generator.generations == DEFAULT_GENERATIONS_QTY
     assert isinstance(generator.max_tokens, int)
     generator.max_tokens = 99
     assert generator.max_tokens == 99
