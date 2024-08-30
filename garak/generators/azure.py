@@ -23,22 +23,22 @@ openai_model_mapping = {
 }
 
 class AzureOpenAIGenerator(OpenAICompatible):
-    """Wrapper for Azure Open AI. Expects AZURE_API_KEY, AZURE_ENDPOINT and AZURE_DEPLOYMENT_NAME environment variables.
+    """Wrapper for Azure Open AI. Expects AZURE_API_KEY, AZURE_ENDPOINT and AZURE_MODEL_NAME environment variables.
 
     Uses the [OpenAI-compatible API](https://learn.microsoft.com/en-us/azure/ai-services/openai/api-version-deprecation)
     via direct HTTP request.
 
     To get started with this generator:
     #. Visit [https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models) and find the LLM you'd like to use.
-    #. [Deploy a model](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/create-resource?pivots=web-portal#deploy-a-model) and copy paste the model and deployment names
+    #. [Deploy a model](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/create-resource?pivots=web-portal#deploy-a-model) and copy paste the model and deployment names.
     #. On the Azure portal page for the Azure OpenAI you want to use click on "Resource Management -> Keys and Endpoint" and copy paste the API Key and endpoint. 
-    #. In your console, Set the ``AZURE_API_KEY``, ``AZURE_ENDPOINT`` and ``AZURE_DEPLOYMENT_NAME`` variables.
-    #. Run garak, setting ``--model_type`` to ``azure`` and ``--model_name`` to [the name of the model](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models)
+    #. In your console, Set the ``AZURE_API_KEY``, ``AZURE_ENDPOINT`` and ``AZURE_MODEL_NAME`` variables.
+    #. Run garak, setting ``--model_type`` to ``azure`` and ``--model_name`` to the name **of the deployment**.
     - e.g. ``gpt-4o``.
     """
 
     ENV_VAR = "AZURE_API_KEY"
-    DEPLOYMENT_NAME_ENV_VAR = "AZURE_DEPLOYMENT_NAME"
+    MODEL_NAME_ENV_VAR = "AZURE_MODEL_NAME"
     ENDPOINT_ENV_VAR = "AZURE_ENDPOINT"
 
     active = True
@@ -46,21 +46,20 @@ class AzureOpenAIGenerator(OpenAICompatible):
     api_version = "2024-06-01"
     
     DEFAULT_PARAMS = OpenAICompatible.DEFAULT_PARAMS | {
-        "deployment_name": None,
+        "model_name": None,
         "uri": None,
-        "name_backup": None,
     }
 
     def _validate_env_var(self):
-        if self.deployment_name is None:
-            if not hasattr(self, "deployment_name_env_var"):
-                self.deployment_name_env_var = self.DEPLOYMENT_NAME_ENV_VAR
+        if self.model_name is None:
+            if not hasattr(self, "model_name_env_var"):
+                self.model_name_env_var = self.MODEL_NAME_ENV_VAR
                 
-            self.deployment_name = os.getenv(self.deployment_name_env_var, None)
+            self.model_name = os.getenv(self.model_name_env_var, None)
 
-            if self.deployment_name is None:
+            if self.model_name is None:
                 raise ValueError(
-                    f'The {self.DEPLOYMENT_NAME_ENV_VAR} environment variable is required.\n'
+                    f'The {self.MODEL_NAME_ENV_VAR} environment variable is required.\n'
                 )
                 
         if self.uri is None:
@@ -77,38 +76,34 @@ class AzureOpenAIGenerator(OpenAICompatible):
         return super()._validate_env_var()
 
     def _load_client(self):
-        if self.name in openai_model_mapping:
-            self.name = openai_model_mapping[self.name]
+        if self.model_name in openai_model_mapping:
+            self.model_name = openai_model_mapping[self.model_name]
 
         self.client = openai.AzureOpenAI(azure_endpoint=self.uri, api_key=self.api_key, api_version=self.api_version)
 
         if self.name == "":
             raise ValueError(
-                f"Model name is required for {self.generator_family_name}, use --model_name"
+                f"Deployment name is required for {self.generator_family_name}, use --model_name"
             )
 
-        if self.name in completion_models:
+        if self.model_name in completion_models:
             self.generator = self.client.completions
-        elif self.name in chat_models:
+        elif self.model_name in chat_models:
             self.generator = self.client.chat.completions
-        elif "-".join(self.name.split("-")[:-1]) in chat_models and re.match(
-            r"^.+-[01][0-9][0-3][0-9]$", self.name
+        elif "-".join(self.model_name.split("-")[:-1]) in chat_models and re.match(
+            r"^.+-[01][0-9][0-3][0-9]$", self.model_name
         ):  # handle model names -MMDDish suffix
             self.generator = self.client.completions
         else:
             raise ValueError(
-                f"No {self.generator_family_name} API defined for '{self.name}' in generators/openai.py - please add one!"
+                f"No {self.generator_family_name} API defined for '{self.model_name}' in generators/openai.py - please add one!"
             )
 
-        if self.name in context_lengths:
-            self.context_len = context_lengths[self.name]
-
-        self.name_backup = self.name
-        self.name = self.deployment_name
+        if self.model_name in context_lengths:
+            self.context_len = context_lengths[self.model_name]
 
     def _clear_client(self):
         self.generator = None
         self.client = None
-        self.name = self.name_backup
 
 DEFAULT_CLASS = "AzureOpenAIGenerator"
