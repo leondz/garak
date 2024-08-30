@@ -131,10 +131,9 @@ def test_detector_metadata(classname):
         assert bcp47_part == "*" or re.match(
             BCP_LENIENT_RE, bcp47_part
         ), "langs must be described with either * or a bcp47 code"
-    assert isinstance(
-        d.doc_uri, str
-    ), "detectors should give a doc uri describing/citing the attack"
-    if len(d.doc_uri) > 1:
+    assert isinstance(d.doc_uri, str) or d.doc_uri is None
+    if isinstance(d.doc_uri, str):
+        assert len(d.doc_uri) > 1, "string doc_uris must be populated. else use None"
         assert d.doc_uri.lower().startswith(
             "http"
         ), "doc uris should be fully-specified absolute HTTP addresses"
