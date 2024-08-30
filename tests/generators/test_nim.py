@@ -6,6 +6,7 @@ import pytest
 
 import garak.cli
 from garak.generators.nim import NVOpenAIChat
+from garak import _config
 
 
 @pytest.mark.skipif(
@@ -43,6 +44,20 @@ def test_nim_parallel_attempts():
         "-m nim -p lmrc.Anthropomorphisation -g 1 -n google/gemma-2b --parallel_attempts 10".split()
     )
     assert True
+
+
+@pytest.mark.skipif(
+    os.getenv(NVOpenAIChat.ENV_VAR, None) is None,
+    reason=f"NIM API key is not set in {NVOpenAIChat.ENV_VAR}",
+)
+def test_nim_parallel_requests():
+    _config.system.parallel_requests = 2
+
+    g = NVOpenAIChat(name="nvidia/nemotron-4-340b-instruct")
+
+    result = g.generate("this is a test", generations_this_call=3)
+    assert isinstance(result, list), "NIM generate() should return a list"
+    assert isinstance(result[0], str), "Items in the generate result should be strings"
 
 
 @pytest.mark.skipif(
