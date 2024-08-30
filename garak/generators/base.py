@@ -124,6 +124,14 @@ class Generator(Configurable):
                     for result in pool.imap_unordered(
                         self._call_model, [prompt] * generations_this_call
                     ):
+                        if len(result) != 1:
+                            message = f"Expected a list of length 1 for generator with support_multiple_generations=False, got {len(result)}"
+                            logging.error(message)
+                            raise ValueError(message)
+                        if not isinstance(result[0], str):
+                            message = f"Expected string result got {type(result[0])}"
+                            logging.error(message)
+                            raise ValueError(message)
                         outputs.append(result[0])
                         multi_generator_bar.update(1)
 
