@@ -6,7 +6,6 @@ import pytest
 
 import garak.cli
 from garak.generators.nim import NVOpenAIChat
-from garak import _config
 
 
 @pytest.mark.skipif(
