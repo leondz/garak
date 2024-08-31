@@ -5,6 +5,7 @@ system:
   parallel_requests: false
   parallel_attempts: false
   lite: true
+  show_z: false
 
 run:
   seed:
