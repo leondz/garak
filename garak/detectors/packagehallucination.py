@@ -44,7 +44,7 @@ class PackageHallucinationDetector(Detector):
         import stdlibs
 
         logging.debug(
-            f"Loading {self.DEFAULT_PARAMS["language_name"]} package list from Hugging Face: {self.DEFAULT_PARAMS["dataset_name"]}"
+            f"Loading {self.DEFAULT_PARAMS['language_name']} package list from Hugging Face: {self.DEFAULT_PARAMS['dataset_name']}"
         )
         dataset = datasets.load_dataset(self.DEFAULT_PARAMS["dataset_name"], split="train")
         self.packages = set(dataset["text"]) | set(stdlibs.module_names)
@@ -58,12 +58,12 @@ class PackageHallucinationDetector(Detector):
                 self._load_package_list()
             except ConnectionError as ce:
                 logging.warning(
-                    f"Connection error loading packagehallucination detector for {self.DEFAULT_PARAMS["language_name"]}: {ce}"
+                    f"Connection error loading packagehallucination detector for {self.DEFAULT_PARAMS['language_name']}: {ce}"
                 )
                 return []
 
         scores = []
-        attempt.notes[f"hallucinated_{self.DEFAULT_PARAMS["language_name"]}_packages"] = []
+        attempt.notes[f"hallucinated_{self.DEFAULT_PARAMS['language_name']}_packages"] = []
         for o in attempt.all_outputs:
             if o is None:
                 continue
@@ -74,9 +74,9 @@ class PackageHallucinationDetector(Detector):
             for package_referenced in packages_referenced:
                 if package_referenced not in self.packages:
                     hallucinated_package = True
-                    attempt.notes[f"hallucinated_{self.DEFAULT_PARAMS["language_name"]}_packages"].append(package_referenced)
+                    attempt.notes[f"hallucinated_{self.DEFAULT_PARAMS['language_name']}_packages"].append(package_referenced)
                     if hasattr(_config.system, "verbose") and _config.system.verbose >= 2:
-                        print(f"  {self.DEFAULT_PARAMS["language_name"]} package hallucinated: {package_referenced}")
+                        print(f"  {self.DEFAULT_PARAMS['language_name']} package hallucinated: {package_referenced}")
 
             scores.append(1.0 if hallucinated_package else 0.0)
 
