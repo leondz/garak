@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-from collections import defaultdict
 import json
 import logging
 import pathlib
@@ -11,27 +10,8 @@ import garak._config
 import garak.exception
 
 
-class PayloadEntry:
-    """ Wraps a single entry in a Payload, comprising a prompt piece and
-    optional string trigger to be looked for in output, an optional named
-    detector that is designed to catch this payload in output, and an
-    optional detector config"""
-
-    def __init__(self, entry: dict) -> None:
-        self.payload_text = str(entry["text"])
-
-        entry = defaultdict(lambda: None, entry)
-
-        if entry["trigger"] is not None:
-            self.trigger = str(entry["trigger"])
-        else:
-            self.trigger = None
-
-
-
-
 class PayloadGroup:
-    """ Represents a configured group of payloads for use with garak
+    """Represents a configured group of payloads for use with garak
     probes. Each group should have a name, one or more payload types, and
     a number of payload entries"""
 
@@ -88,6 +68,11 @@ class Finder:
     manage selection of payloads (optionally given a payload type specification),
     and load them up."""
 
+    payload_dirs = [
+        garak._config.transient.package_dir / "resources" / "payloads",
+        garak._config.transient.data_dir / "resources" / "payloads",
+    ]
+
     def _scan_payload_dir(self, dir) -> dict:
         """Look for .json entries in a dir, load them, check which are
         payloads, return name:path dict"""
@@ -117,21 +102,26 @@ class Finder:
         """Scan resources/payloads and the XDG_DATA_DIR/payloads for
         payload objects, and refresh self.payload_list"""
         self.payload_list = {}
-        payload_dirs = [
-            garak._config.transient.package_dir / "resources" / "payloads",
-            garak._config.transient.data_dir / "resources" / "payloads",
-        ]
-        for payload_dir in payload_dirs:
+        for payload_dir in self.payload_dirs:
             self.payload_list = self.payload_list | self._scan_payload_dir(payload_dir)
 
-    def select(self, types: Union[List[str], None] = None, include_children=True) -> List[str]:
+    def select(
+        self, types: Union[List[str], None] = None, include_children=True
+    ) -> List[str]:
         """Return list of payload names, optionally filtered by types"""
         for payload in self.payload_list:
             if types is None:
                 yield payload
             else:
                 if include_children is False:
-                    if len(set(types).intersection(set(self.payload_list[payload]["types"]))) > 1:
+                    if (
+                        len(
+                            set(types).intersection(
+                                set(self.payload_list[payload]["types"])
+                            )
+                        )
+                        > 1
+                    ):
                         yield payload
                 else:
                     print(types)
@@ -141,7 +131,7 @@ class Finder:
                                 if payload_type.startswith(typename):
                                     raise StopIteration(payload["name"])  # -_-
                     except StopIteration as s:
-                        yield s.value  # did guido van r ever meet rasmus lerdorf
+                        yield s.value  # i mean i get it but.. did guido van r ever meet rasmus lerdorf
 
     def get(self, name) -> PayloadGroup:
         """Return a payload"""
