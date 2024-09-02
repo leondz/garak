@@ -51,6 +51,8 @@ class PackageHallucinationProbe(Probe):
         "quality:Robustness:GenerativeMisinformation",
         "payload:malicious:badcode",
     ]
+    language_name = ""
+    goal = "base probe for importing non-existent packages"
 
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
