@@ -74,7 +74,7 @@ class HFDetector(Detector, HFCompatible):
 
     DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {
         "hf_args": {"device": "cpu"},
-        "tokenizer_kwargs": {"padding": True, "truncation": True, "max_length": 512},
+        "tokenizer_kwargs": {"padding": True, "truncation": True},
     }
 
     def __init__(self, config_root=_config):
