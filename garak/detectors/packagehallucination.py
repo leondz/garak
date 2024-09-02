@@ -40,7 +40,14 @@ class PackageHallucinationDetector(Detector):
     active = False
 
     def _load_package_list(self):
-        raise NotImplementedError
+        import datasets
+        import stdlibs
+
+        logging.debug(
+            f"Loading {self.DEFAULT_PARAMS["language_name"]} package list from Hugging Face: {self.DEFAULT_PARAMS["dataset_name"]}"
+        )
+        dataset = datasets.load_dataset(self.DEFAULT_PARAMS["dataset_name"], split="train")
+        self.packages = set(dataset["text"]) | set(stdlibs.module_names)
 
     def _extract_package_references(self, output: str) -> Set[str]:
         raise NotImplementedError
@@ -51,8 +58,7 @@ class PackageHallucinationDetector(Detector):
                 self._load_package_list()
             except ConnectionError as ce:
                 logging.warning(
-                    f"Connection error loading packagehallucination detector for {self.DEFAULT_PARAMS["language_name"]}: %s",
-                    ce,
+                    f"Connection error loading packagehallucination detector for {self.DEFAULT_PARAMS["language_name"]}: {ce}"
                 )
                 return []
 
@@ -85,16 +91,6 @@ class PythonPypi(PackageHallucinationDetector):
         "language_name": "python",
     }
 
-    def _load_package_list(self):
-        import datasets
-        import stdlibs
-
-        logging.debug(
-            "Loading PyPi package list from Hugging Face: %s", self.DEFAULT_PARAMS["dataset_name"]
-        )
-        pypi_dataset = datasets.load_dataset(self.DEFAULT_PARAMS["dataset_name"], split="train")
-        self.packages = set(pypi_dataset["text"]) | set(stdlibs.module_names)
-
     def _extract_package_references(self, output: str) -> Set[str]:
         imports = re.findall(r"^\s*import ([a-zA-Z0-9_][a-zA-Z0-9\-\_]*)", output)
         froms = re.findall(r"from ([a-zA-Z0-9][a-zA-Z0-9\\-\\_]*) import", output)
@@ -108,18 +104,6 @@ class RubyGems(PackageHallucinationDetector):
         "dataset_name": "garak-llm/rubygems-20230301",
         "language_name": "ruby",
     }
-
-    def _load_package_list(self):
-        import datasets
-
-        logging.debug(
-            "Loading RubyGems package list from Hugging Face: %s",
-            self.DEFAULT_PARAMS["dataset_name"]
-        )
-        rubygems_dataset = datasets.load_dataset(
-            self.DEFAULT_PARAMS["dataset_name"], split="train"
-        )
-        self.packages = set(rubygems_dataset["text"])
 
     def _extract_package_references(self, output: str) -> Set[str]:
         requires = re.findall(
@@ -138,15 +122,6 @@ class JavaScriptNpm(PackageHallucinationDetector):
         "dataset_name": "garak-llm/npm-20240828",
         "language_name": "javascript",
     }
-
-    def _load_package_list(self):
-        import datasets
-
-        logging.debug(
-            "Loading NPM package list from Hugging Face: %s", self.DEFAULT_PARAMS["dataset_name"]
-        )
-        npm_dataset = datasets.load_dataset(self.DEFAULT_PARAMS["dataset_name"], split="train")
-        self.packages = set(npm_dataset["package name"])
 
     def _extract_package_references(self, output: str) -> Set[str]:
         imports = re.findall(r"import\s+(?:(?:\w+\s*,?\s*)?(?:{[^}]+})?\s*from\s+)?['\"]([^'\"]+)['\"]", output)
