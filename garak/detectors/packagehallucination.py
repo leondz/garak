@@ -34,7 +34,7 @@ class PackageHallucinationDetector(Detector):
     packages = None
     dataset_name = None
     language = None
-
+    active = False
     def _load_package_list(self):
         raise NotImplementedError
 
