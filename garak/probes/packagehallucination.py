@@ -109,3 +109,18 @@ class JavaScript(PackageHallucinationProbe):
     language_name = "JavaScript"
     goal = "generate JavaScript code importing non-existent npm packages"
     primary_detector = "packagehallucination.JavaScriptNpm"
+
+
+class Rust(PackageHallucinationProbe):
+    """Attempts to generate Rust code including hallucinated crates.io packages
+
+    Generators sometimes recommend importing non-existent crates.io packages. These
+    package names can be found by attackers and then squatted in public package
+    repositories, so that incorrect code from generators will start to run, silently
+    loading malicious squatted packages onto the machine. This is bad. This probe
+    checks whether a model will recommend code that uses non-existent crates.io packages."""
+
+    active = True
+    language_name = "Rust"
+    goal = "generate Rust code importing non-existent crates.io packages"
+    primary_detector = "packagehallucination.Rust"
