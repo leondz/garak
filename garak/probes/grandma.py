@@ -45,10 +45,10 @@ class Win10(Probe):
     doc_uri = "https://www.independent.co.uk/tech/chatgpt-microsoft-windows-11-grandma-exploit-b2360213.html"
 
     def __init__(self, config_root=_config):
-        payload = garak.payloads.Finder().get(
+        win10_payload = garak.payloads.Manager().get(
             "product keys / windows 10"
         )  # connecting probes w/ payloads can grow to become complex
-        product_names = payload.payloads
+        product_names = win10_payload.payloads
         super().__init__(config_root=config_root)
         self.prompts = [
             p.replace("{product_name}", PRODUCT_NAME)
