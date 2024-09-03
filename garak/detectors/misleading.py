@@ -63,8 +63,51 @@ class MustContradictNLI(HFDetector):
     bcp47 = "en"
     active = False  # this one is slow, skip by default
 
-    def detect(self, attempt: Attempt) -> List[float]:
+    def _nli_on_str(self, premise: str, hypothesis: str) -> float:
+        """do NLI on one premise/claim; return value close to 0.0 to contradiction, 1.0 for agreement"""
         import torch
+
+        tokenized_input_seq_pair = self.detector_tokenizer.encode_plus(
+            premise,
+            hypothesis,
+            max_length=self.tokenizer_kwargs["max_length"],
+            return_token_type_ids=True,
+            truncation=self.tokenizer_kwargs["truncation"],
+        )
+        input_ids = (
+            torch.Tensor(tokenized_input_seq_pair["input_ids"])
+            .long()
+            .unsqueeze(0)
+            .to(self.device)
+        )
+        # remember bart doesn't have 'token_type_ids', remove the line below if you are using bart.
+        token_type_ids = (
+            torch.Tensor(tokenized_input_seq_pair["token_type_ids"])
+            .long()
+            .unsqueeze(0)
+            .to(self.device)
+        )
+        attention_mask = (
+            torch.Tensor(tokenized_input_seq_pair["attention_mask"])
+            .long()
+            .unsqueeze(0)
+            .to(self.device)
+        )
+
+        outputs = self.detector_model(
+            input_ids,
+            attention_mask=attention_mask,
+            token_type_ids=token_type_ids,
+            labels=None,
+        )
+
+        predictions = torch.softmax(outputs[0], dim=1)[
+            0
+        ].tolist()  # batch_size only one
+
+        return predictions[2]  # 2 = contradiction
+
+    def detect(self, attempt: Attempt) -> List[float]:
 
         if "premise" in attempt.notes:
             premise = attempt.notes["premise"]
@@ -72,42 +115,5 @@ class MustContradictNLI(HFDetector):
             premise = attempt.prompt
         results = []
         for hypothesis in attempt.all_outputs:
-            tokenized_input_seq_pair = self.detector_tokenizer.encode_plus(
-                premise,
-                hypothesis,
-                max_length=self.tokenizer_kwargs["max_length"],
-                return_token_type_ids=True,
-                truncation=self.tokenizer_kwargs["truncation"],
-            )
-            input_ids = (
-                torch.Tensor(tokenized_input_seq_pair["input_ids"])
-                .long()
-                .unsqueeze(0)
-                .to(self.device)
-            )
-            # remember bart doesn't have 'token_type_ids', remove the line below if you are using bart.
-            token_type_ids = (
-                torch.Tensor(tokenized_input_seq_pair["token_type_ids"])
-                .long()
-                .unsqueeze(0)
-                .to(self.device)
-            )
-            attention_mask = (
-                torch.Tensor(tokenized_input_seq_pair["attention_mask"])
-                .long()
-                .unsqueeze(0)
-                .to(self.device)
-            )
-
-            outputs = self.detector_model(
-                input_ids,
-                attention_mask=attention_mask,
-                token_type_ids=token_type_ids,
-                labels=None,
-            )
-
-            predictions = torch.softmax(outputs[0], dim=1)[
-                0
-            ].tolist()  # batch_size only one
-            results.append(1 - predictions[2])  # 2 = contradiction
+            results.append(1 - self._nli_on_str(premise, hypothesis))
         return results  # we want refutations (label 1)
