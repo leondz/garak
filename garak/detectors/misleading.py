@@ -66,7 +66,10 @@ class MustContradictNLI(HFDetector):
     def detect(self, attempt: Attempt) -> List[float]:
         import torch
 
-        premise = attempt.prompt
+        if "premise" in attempt.notes:
+            premise = attempt.notes["premise"]
+        else:
+            premise = attempt.prompt
         results = []
         for hypothesis in attempt.all_outputs:
             tokenized_input_seq_pair = self.detector_tokenizer.encode_plus(
