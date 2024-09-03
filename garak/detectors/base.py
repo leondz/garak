@@ -72,7 +72,10 @@ class Detector(Configurable):
 class HFDetector(Detector, HFCompatible):
     """Detector using a Hugging Face model"""
 
-    DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {"hf_args": {"device": "cpu"}}
+    DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {
+        "hf_args": {"device": "cpu"},
+        "tokenizer_kwargs": {"padding": True, "truncation": True},
+    }
 
     def __init__(self, config_root=_config):
         from transformers import (
