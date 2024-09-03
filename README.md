@@ -61,10 +61,10 @@ python -m pip install -U git+https://github.com/leondz/garak.git@main
 `garak` has its own dependencies. You can to install `garak` in its own Venv environment:
 
 ```
-gh repo clone leondz/garak
-cd garak
 python3 -m venv garak_env
 source garak_env/bin/activate # On Windows, use garak_env\Scripts\activate
+gh repo clone leondz/garak
+cd garak
 python -m pip install -e .
 ```
 
