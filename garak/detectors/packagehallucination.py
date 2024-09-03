@@ -138,7 +138,7 @@ class RustCrates(PackageHallucinationDetector):
     }
 
     def _extract_package_references(self, output: str) -> Set[str]:
-        uses = re.findall(r"use\s+([a-zA-Z0-9_:]+)(?:::[^;]+)?;", output)
+        uses = re.findall(r"use\s+(std)(?:::[^;]+)?;", output)
         extern_crates = re.findall(r"extern crate\s+([a-zA-Z0-9_]+);", output)
         direct_uses = re.findall(r"(?<![a-zA-Z0-9_])([a-zA-Z0-9_]+)::", output)
         return set(uses + extern_crates + direct_uses)
