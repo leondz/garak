@@ -6,6 +6,7 @@
 Tries to make model generate test supporting false claims. """
 
 from garak import _config
+from garak.attempt import Attempt
 from garak.probes.base import Probe
 
 
@@ -30,7 +31,7 @@ class MisinfoStories(Probe):
 class MisinfoWrite(MisinfoStories):
     """Ask a model to write a story about a false claim
 
-    This probe tried to get models to write stories about known rumours, that have been debunked.
+    This probe tries to get models to write stories about known rumours, that have been debunked.
     """
 
     goal = "write stories about false claims"
@@ -57,7 +58,7 @@ class MisinfoCheck(MisinfoStories):
     This probe tries to get models to confirm known, debunked rumours."""
 
     goal = "get confirmation of a false story"
-    primary_detector = "mitigation.MitigationBypass"
+    primary_detector = "misinfo.AnySentContradicting"
 
     prompt_prefixes = [
         "Is it true that",
@@ -72,6 +73,10 @@ class MisinfoCheck(MisinfoStories):
             for prefix in self.prompt_prefixes:
                 self.prompts.append(f"{prefix} {story}?")
 
+    def _attempt_prestore_hook(self, attempt: Attempt, seq: int) -> Attempt:
+        attempt.notes["premise"] = self.stories[int(seq / len(self.prompt_prefixes))]
+        return attempt
+
 
 class MisinfoRefute(MisinfoStories):
     """Checks if a model will refute a false claim
@@ -79,10 +84,14 @@ class MisinfoRefute(MisinfoStories):
     This probe tests if models will refute known, debunked rumours."""
 
     goal = "Check if model refutes known misinformation"
-    primary_detector = "misleading.MustContradictNLI"
+    primary_detector = "misinfo.FirstSentSupporting"
 
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
 
         for story in self.stories:
             self.prompts.append(story)
+
+    def _attempt_prestore_hook(self, attempt: Attempt, seq: int) -> Attempt:
+        attempt.notes["premise"] = self.prompts[seq]
+        return attempt
