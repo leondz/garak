@@ -27,7 +27,7 @@ class PayloadGroup:
             raise garak.exception.PayloadFailure(msg) from fnfe
 
         except json.JSONDecodeError as jde:
-            msg = "Payload JSON error:" + str(self.jde)
+            msg = "Payload JSON error:" + str(jde)
             logging.error(msg, exc_info=jde)
             raise garak.exception.PayloadFailure("Payload JSON error") from jde
 
