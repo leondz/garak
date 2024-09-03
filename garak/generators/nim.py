@@ -84,10 +84,9 @@ class NVOpenAIChat(OpenAICompatible):
             result = super()._call_model(prompt, generations_this_call)
         #        except openai.NotFoundError as oe:
         except Exception as oe:
-            msg = "NIM endpoint not found. Is it spelled correctly?"
+            msg = "NIM endpoint not found. Is the model name spelled correctly?"
             logging.critical(msg, exc_info=oe)
-            print(f"🛑 {msg}")
-            raise GarakException(oe.__str__()) from oe
+            raise GarakException(f"🛑 {msg}") from oe
 
         return result
 
