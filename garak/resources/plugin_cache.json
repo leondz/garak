@@ -3567,7 +3567,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-30 19:34:46 +0000"
+      "mod_time": "2024-09-03 09:02:26 +0000"
     },
     "detectors.base.FileDetector": {
       "description": "Detector subclass for processing attempts whose outputs are filenames for checking",
@@ -3587,7 +3587,7 @@
       "recall": 0.0,
       "tags": [],
       "valid_format": "local filename",
-      "mod_time": "2024-08-30 19:34:46 +0000"
+      "mod_time": "2024-09-03 09:02:26 +0000"
     },
     "detectors.base.HFDetector": {
       "description": "Detector using a Hugging Face model",
@@ -3595,6 +3595,10 @@
         "skip": false,
         "hf_args": {
           "device": "cpu"
+        },
+        "tokenizer_kwargs": {
+          "padding": true,
+          "truncation": true
         }
       },
       "accuracy": null,
@@ -3609,7 +3613,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-30 19:34:46 +0000"
+      "mod_time": "2024-09-03 09:02:26 +0000"
     },
     "detectors.base.StringDetector": {
       "description": "Subclass of Detector using list of substrings as detection triggers",
@@ -3628,7 +3632,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-30 19:34:46 +0000"
+      "mod_time": "2024-09-03 09:02:26 +0000"
     },
     "detectors.base.TriggerListDetector": {
       "description": "Subclass of Detector using attempt's notes[triggers] as list of strings to match",
@@ -3647,7 +3651,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-30 19:34:46 +0000"
+      "mod_time": "2024-09-03 09:02:26 +0000"
     },
     "detectors.continuation.Continuation": {
       "description": "Detect if model intiates / continues a trigger word",
@@ -4121,6 +4125,10 @@
         "hf_args": {
           "device": "cpu"
         },
+        "tokenizer_kwargs": {
+          "truncation": true,
+          "max_length": 256
+        },
         "detector_model_path": "garak-llm/roberta-large-snli_mnli_fever_anli_R1_R2_R3-nli",
         "detector_target_class": "label"
       },
@@ -4136,7 +4144,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-27 17:41:28 +0000"
+      "mod_time": "2024-09-03 09:02:26 +0000"
     },
     "detectors.misleading.MustRefuteClaimKW": {
       "description": "Looking for strings indicating a refutation",
@@ -4155,7 +4163,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-27 17:41:28 +0000"
+      "mod_time": "2024-09-03 09:02:26 +0000"
     },
     "detectors.misleading.MustRefuteClaimModel": {
       "description": "Using garak-llm/refutation_detector_distilbert to detect model refutations",
@@ -4163,6 +4171,10 @@
         "skip": false,
         "hf_args": {
           "device": "cpu"
+        },
+        "tokenizer_kwargs": {
+          "padding": true,
+          "truncation": true
         },
         "detector_model_path": "garak-llm/refutation_detector_distilbert",
         "detector_target_class": "label"
@@ -4179,7 +4191,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-27 17:41:28 +0000"
+      "mod_time": "2024-09-03 09:02:26 +0000"
     },
     "detectors.mitigation.MitigationBypass": {
       "description": "Detect if a string response does not contain a mitigation message.",
@@ -5237,6 +5249,10 @@
         "hf_args": {
           "device": "cpu"
         },
+        "tokenizer_kwargs": {
+          "padding": true,
+          "truncation": true
+        },
         "detector_model_path": "garak-llm/toxic-comment-model",
         "detector_target_class": "toxic"
       },
@@ -5254,7 +5270,7 @@
       "tags": [
         "avid-effect:ethics:E0301"
       ],
-      "mod_time": "2024-08-27 17:41:28 +0000"
+      "mod_time": "2024-09-03 09:02:26 +0000"
     },
     "detectors.visual_jailbreak.FigStep": {
       "description": "Looks for specific strings in the output - these should be strings inserted by image",
