@@ -2370,13 +2370,69 @@
       ],
       "mod_time": "2024-07-30 16:28:58 +0000"
     },
+    "probes.packagehallucination.JavaScript": {
+      "description": "Attempts to generate JavaScript code including hallucinated npm packages",
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
+      "active": true,
+      "bcp47": "*",
+      "doc_uri": "https://vulcan.io/blog/ai-hallucinations-package-risk",
+      "extended_detectors": [],
+      "goal": "generate JavaScript code importing non-existent npm packages",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "packagehallucination.JavaScriptNpm",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "owasp:llm09",
+        "owasp:llm02",
+        "quality:Robustness:GenerativeMisinformation",
+        "payload:malicious:badcode"
+      ],
+      "mod_time": "2024-09-02 14:27:57 +0000"
+    },
+    "probes.packagehallucination.PackageHallucinationProbe": {
+      "description": "Base class for package hallucination probes",
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
+      "active": false,
+      "bcp47": "*",
+      "doc_uri": "https://vulcan.io/blog/ai-hallucinations-package-risk",
+      "extended_detectors": [],
+      "goal": "base probe for importing non-existent packages",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": null,
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "owasp:llm09",
+        "owasp:llm02",
+        "quality:Robustness:GenerativeMisinformation",
+        "payload:malicious:badcode"
+      ],
+      "mod_time": "2024-09-02 14:27:57 +0000"
+    },
     "probes.packagehallucination.Python": {
       "description": "Attempts to generate Python3 code including hallucinated packages",
       "DEFAULT_PARAMS": {
         "generations": 1
       },
       "active": true,
-      "bcp47": "en",
+      "bcp47": "*",
       "doc_uri": "https://vulcan.io/blog/ai-hallucinations-package-risk",
       "extended_detectors": [],
       "goal": "generate python importing non-existent packages",
@@ -2396,7 +2452,7 @@
         "quality:Robustness:GenerativeMisinformation",
         "payload:malicious:badcode"
       ],
-      "mod_time": "2024-08-28 18:24:48 +0000"
+      "mod_time": "2024-09-02 14:27:57 +0000"
     },
     "probes.packagehallucination.Ruby": {
       "description": "Attempts to generate Ruby code including hallucinated gems",
@@ -2404,7 +2460,7 @@
         "generations": 1
       },
       "active": true,
-      "bcp47": "en",
+      "bcp47": "*",
       "doc_uri": "https://vulcan.io/blog/ai-hallucinations-package-risk",
       "extended_detectors": [],
       "goal": "generate ruby code importing non-existent gems",
@@ -2424,7 +2480,7 @@
         "quality:Robustness:GenerativeMisinformation",
         "payload:malicious:badcode"
       ],
-      "mod_time": "2024-08-28 18:24:48 +0000"
+      "mod_time": "2024-09-02 14:27:57 +0000"
     },
     "probes.promptinject.HijackHateHumans": {
       "description": "PromptInject is a framework that assembles prompts in a modular fashion to provide a quantitative analysis of the robustness of LLMs to adversarial prompt attacks. trophy Best Paper Awards @ NeurIPS ML Safety Workshop 2022",
@@ -4215,14 +4271,16 @@
       ],
       "mod_time": "2024-07-25 15:08:38 +0000"
     },
-    "detectors.packagehallucination.PythonPypi": {
-      "description": "Check if the output tries to import a package not listed in stdlib or a pypi archive listing",
+    "detectors.packagehallucination.JavaScriptNpm": {
+      "description": "Check if the output tries to import or require an npm package not listed in the npm registry",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "dataset_name": "garak-llm/npm-20240828",
+        "language_name": "javascript"
       },
       "accuracy": null,
-      "active": true,
-      "bcp47": "en",
+      "active": false,
+      "bcp47": "*",
       "doc_uri": null,
       "modality": {
         "out": [
@@ -4232,16 +4290,60 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-28 15:25:26 +0000"
+      "mod_time": "2024-09-02 14:13:41 +0000"
+    },
+    "detectors.packagehallucination.PackageHallucinationDetector": {
+      "description": "Base class for package hallucination detectors",
+      "DEFAULT_PARAMS": {
+        "skip": false,
+        "dataset_name": null,
+        "language_name": null
+      },
+      "accuracy": null,
+      "active": false,
+      "bcp47": "*",
+      "doc_uri": null,
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "tags": [],
+      "mod_time": "2024-09-02 14:13:41 +0000"
+    },
+    "detectors.packagehallucination.PythonPypi": {
+      "description": "Check if the output tries to import a package not listed in stdlib or a pypi archive listing",
+      "DEFAULT_PARAMS": {
+        "skip": false,
+        "dataset_name": "garak-llm/pypi-20230724",
+        "language_name": "python"
+      },
+      "accuracy": null,
+      "active": false,
+      "bcp47": "*",
+      "doc_uri": null,
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "tags": [],
+      "mod_time": "2024-09-02 14:13:41 +0000"
     },
     "detectors.packagehallucination.RubyGems": {
       "description": "Check if the output tries to require a gem not listed in the Ruby standard library or RubyGems",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "dataset_name": "garak-llm/rubygems-20230301",
+        "language_name": "ruby"
       },
       "accuracy": null,
-      "active": true,
-      "bcp47": "en",
+      "active": false,
+      "bcp47": "*",
       "doc_uri": null,
       "modality": {
         "out": [
@@ -4251,7 +4353,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-28 15:25:26 +0000"
+      "mod_time": "2024-09-02 14:13:41 +0000"
     },
     "detectors.perspective.Attack_On_Author": {
       "description": "Targets: Attack on the author of an article or post.",
@@ -5808,7 +5910,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-07-30 19:37:55 +0000"
+      "mod_time": "2024-09-03 10:59:40 +0000"
     },
     "generators.nim.NVOpenAICompletion": {
       "description": "Wrapper for NVIDIA-hosted NIMs. Expects NIM_API_KEY environment variable.",
@@ -5847,7 +5949,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-07-30 19:37:55 +0000"
+      "mod_time": "2024-09-03 10:59:40 +0000"
     },
     "generators.nvcf.NvcfChat": {
       "description": "Wrapper for NVIDIA Cloud Functions Chat models via NGC. Expects NVCF_API_KEY environment variable.",
