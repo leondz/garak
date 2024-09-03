@@ -9,27 +9,27 @@ import garak._config
 import garak.payloads
 
 
-def test_payload_finder():
-    f = garak.payloads.Finder()
-    assert isinstance(f, garak.payloads.Finder)
+def test_payload_Manager():
+    f = garak.payloads.Manager()
+    assert isinstance(f, garak.payloads.Manager)
 
 
 def test_payload_list():
-    f = garak.payloads.Finder()
-    for payload_name in f.select():
+    f = garak.payloads.Manager()
+    for payload_name in f.search():
         assert isinstance(
             payload_name, str
-        ), "Payload names from Finder().select() must be strings"
+        ), "Payload names from Manager().search() must be strings"
 
 
 PAYLOAD_NAMES = list(
-    garak.payloads.Finder().select()
+    garak.payloads.Manager().search()
 )  # default includes local custom payloads to help test them
 
 
 @pytest.mark.parametrize("payload_name", PAYLOAD_NAMES)
 def test_core_payloads(payload_name):
-    f = garak.payloads.Finder()
+    f = garak.payloads.Manager()
     p = f.get(payload_name)
     assert isinstance(
         p, garak.payloads.PayloadGroup
@@ -52,7 +52,7 @@ def payload_typology():
 
 @pytest.mark.parametrize("payload_name", PAYLOAD_NAMES)
 def test_payloads_have_valid_tags(payload_name, payload_typology):
-    f = garak.payloads.Finder()
+    f = garak.payloads.Manager()
     p = f.get(payload_name)
     for typee in p.types:
         assert (

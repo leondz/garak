@@ -4,7 +4,7 @@
 import json
 import logging
 import pathlib
-from typing import List, Union
+from typing import Generator, List, Union
 
 import garak._config
 import garak.exception
@@ -63,9 +63,9 @@ class PayloadGroup:
         self._load()
 
 
-class Finder:
-    """The payload Finder manages payload groups. It'll inventory them on disk,
-    manage selection of payloads (optionally given a payload type specification),
+class Manager:
+    """The payload Manager manages payload groups. It'll inventory them on disk,
+    manage enumeration of payloads (optionally given a payload type specification),
     and load them up."""
 
     payload_dirs = [
@@ -105,9 +105,9 @@ class Finder:
         for payload_dir in self.payload_dirs:
             self.payload_list = self.payload_list | self._scan_payload_dir(payload_dir)
 
-    def select(
+    def search(
         self, types: Union[List[str], None] = None, include_children=True
-    ) -> List[str]:
+    ) -> Generator[str, None, None]:
         """Return list of payload names, optionally filtered by types"""
         for payload in self.payload_list:
             if types is None:
