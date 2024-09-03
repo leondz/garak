@@ -26,8 +26,8 @@ class OllamaGenerator(Generator):
     active = True
     generator_family_name = "Ollama"
 
-    def __init__(self, name="", generations=10, config_root=_config):        
-        super().__init__(name, generations, config_root) # Sets the name and generations
+    def __init__(self, name="", config_root=_config):        
+        super().__init__(name, config_root) # Sets the name and generations
 
         self.client = ollama.Client(self.DEFAULT_PARAMS['host'], timeout=self.DEFAULT_PARAMS["timeout"]) # Instantiates the client with the timeout
 
@@ -44,6 +44,7 @@ class OllamaGeneratorChat(OllamaGenerator):
     """
 
     @backoff.on_exception(backoff.fibo, (TimeoutError, ollama.ResponseError), max_value=70, giveup=_give_up)
+    @backoff.on_predicate(backoff.fibo, lambda ans: ans == None or len(ans) == 0, max_tries=3) # Ollama sometimes returns empty responses. Only 3 retries to not delay generations expecting empty responses too much
     def _call_model(self, prompt: str, generations_this_call: int = 1) -> List[Union[str, None]]:
         response = self.client.chat(model=self.name, messages=[
             {

@@ -1,7 +1,7 @@
 import pytest
 import ollama
 from httpx import ConnectError
-from garak.generators.ollama import OllamaGeneratorChat
+from garak.generators.ollama import OllamaGeneratorChat, OllamaGenerator
 
 PINGED_OLLAMA_SERVER = False # Avoid calling the server multiple times if it is not running
 OLLAMA_SERVER_UP = False
@@ -20,6 +20,18 @@ def ollama_is_running():
             PINGED_OLLAMA_SERVER = True
     return OLLAMA_SERVER_UP
 
+def no_models():
+    return len(ollama.list()) == 0 or len(ollama.list()["models"]) == 0
+
+@pytest.mark.skipif(
+    not ollama_is_running(),
+    reason=f"Ollama server is not currently running",
+)
+def test_error_on_nonexistant_model_chat():
+    model_name = "non-existant-model"
+    gen = OllamaGeneratorChat(model_name)
+    with pytest.raises(ollama.ResponseError):
+        gen.generate("This shouldnt work")
 
 @pytest.mark.skipif(
     not ollama_is_running(),
@@ -27,7 +39,7 @@ def ollama_is_running():
 )
 def test_error_on_nonexistant_model():
     model_name = "non-existant-model"
-    gen = OllamaGeneratorChat(model_name)
+    gen = OllamaGenerator(model_name)
     with pytest.raises(ollama.ResponseError):
         gen.generate("This shouldnt work")
 
@@ -37,14 +49,31 @@ def test_error_on_nonexistant_model():
     reason=f"Ollama server is not currently running",
 )
 @pytest.mark.skipif(
-    not ollama_is_running() or len(ollama.list()) == 0 or len(ollama.list()["models"]) == 0,
+    not ollama_is_running() or no_models(), # Avoid checking models if no server
+    reason=f"No Ollama models pulled"
+)
+# This test might fail if the GPU is busy, and the generation takes more than 30 seconds
+def test_generation_on_pulled_model_chat():
+    model_name = ollama.list()["models"][0]["name"]
+    gen = OllamaGeneratorChat(model_name)
+    responses = gen.generate("Say \"Hello!\"")
+    assert len(responses) == 1
+    assert all(isinstance(response, str) for response in responses)
+    assert all(len(response) > 0 for response in responses)
+
+@pytest.mark.skipif(
+    not ollama_is_running(),
+    reason=f"Ollama server is not currently running",
+)
+@pytest.mark.skipif(
+    not ollama_is_running() or no_models(), # Avoid checking models if no server
     reason=f"No Ollama models pulled"
 )
 # This test might fail if the GPU is busy, and the generation takes more than 30 seconds
 def test_generation_on_pulled_model():
     model_name = ollama.list()["models"][0]["name"]
-    gen = OllamaGeneratorChat(model_name)
+    gen = OllamaGenerator(model_name)
     responses = gen.generate("Say \"Hello!\"")
-    assert len(responses) == gen.generations
+    assert len(responses) == 1
     assert all(isinstance(response, str) for response in responses)
     assert all(len(response) > 0 for response in responses)
