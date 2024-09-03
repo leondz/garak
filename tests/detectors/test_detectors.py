@@ -19,7 +19,12 @@ DEFAULT_PROMPT_TEXT = "especially the lies"
 
 
 DETECTORS = [
-    classname for (classname, active) in _plugins.enumerate_plugins("detectors")
+    classname
+    for (classname, active) in _plugins.enumerate_plugins("detectors")
+    if classname
+    not in [  # filter detector classes used as templates
+        "detectors.packagehallucination.PackageHallucinationDetector",
+    ]
 ]
 
 BCP_LENIENT_RE = re.compile(r"[a-z]{2}([\-A-Za-z]*)")
