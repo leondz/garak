@@ -3501,7 +3501,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "*",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -3520,7 +3520,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "*",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -3539,7 +3539,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "*",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -3558,7 +3558,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": null,
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -3567,7 +3567,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-23 16:13:06 +0000"
+      "mod_time": "2024-08-30 19:34:46 +0000"
     },
     "detectors.base.FileDetector": {
       "description": "Detector subclass for processing attempts whose outputs are filenames for checking",
@@ -3577,7 +3577,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": null,
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -3587,7 +3587,7 @@
       "recall": 0.0,
       "tags": [],
       "valid_format": "local filename",
-      "mod_time": "2024-08-23 16:13:06 +0000"
+      "mod_time": "2024-08-30 19:34:46 +0000"
     },
     "detectors.base.HFDetector": {
       "description": "Detector using a Hugging Face model",
@@ -3600,7 +3600,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": null,
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -3609,7 +3609,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-23 16:13:06 +0000"
+      "mod_time": "2024-08-30 19:34:46 +0000"
     },
     "detectors.base.StringDetector": {
       "description": "Subclass of Detector using list of substrings as detection triggers",
@@ -3619,7 +3619,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": null,
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -3628,7 +3628,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-23 16:13:06 +0000"
+      "mod_time": "2024-08-30 19:34:46 +0000"
     },
     "detectors.base.TriggerListDetector": {
       "description": "Subclass of Detector using attempt's notes[triggers] as list of strings to match",
@@ -3638,7 +3638,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": null,
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -3647,7 +3647,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-08-23 16:13:06 +0000"
+      "mod_time": "2024-08-30 19:34:46 +0000"
     },
     "detectors.continuation.Continuation": {
       "description": "Detect if model intiates / continues a trigger word",
@@ -3657,7 +3657,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "*",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -3676,7 +3676,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -3697,7 +3697,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -3718,7 +3718,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -3739,7 +3739,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -3760,7 +3760,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -3781,7 +3781,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "*",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -3802,7 +3802,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -3823,7 +3823,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -3842,7 +3842,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -3861,7 +3861,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "*",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -3881,7 +3881,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "*",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -3901,7 +3901,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "*",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -3959,7 +3959,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -3978,7 +3978,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -3999,7 +3999,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4020,7 +4020,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4041,7 +4041,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4060,7 +4060,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4081,7 +4081,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4103,7 +4103,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "*",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4127,7 +4127,7 @@
       "accuracy": null,
       "active": false,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4146,7 +4146,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4170,7 +4170,7 @@
       "accuracy": 0.9506,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4211,7 +4211,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4230,7 +4230,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4249,7 +4249,7 @@
       "accuracy": null,
       "active": false,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4271,7 +4271,7 @@
       "accuracy": null,
       "active": false,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4293,7 +4293,7 @@
       "accuracy": null,
       "active": false,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4316,7 +4316,7 @@
       "accuracy": null,
       "active": false,
       "bcp47": "ar,zh,cs,nl,en,fr,de,hi,hi-Latn,id,it,ja,ko,pl,pt,ru,es,sv",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4340,7 +4340,7 @@
       "accuracy": null,
       "active": false,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4364,7 +4364,7 @@
       "accuracy": null,
       "active": false,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4385,7 +4385,7 @@
       "accuracy": null,
       "active": false,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4408,7 +4408,7 @@
       "accuracy": null,
       "active": false,
       "bcp47": "ar,zh,cs,nl,en,fr,de,hi,hi-Latn,id,it,ja,ko,pl,pt,ru,es,sv",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4431,7 +4431,7 @@
       "accuracy": null,
       "active": false,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4453,7 +4453,7 @@
       "accuracy": null,
       "active": false,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4472,7 +4472,7 @@
       "accuracy": null,
       "active": false,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4494,7 +4494,7 @@
       "accuracy": null,
       "active": false,
       "bcp47": "ar,zh,cs,nl,en,fr,de,hi,hi-Latn,id,it,ja,ko,pl,pt,ru,es,sv",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4516,7 +4516,7 @@
       "accuracy": null,
       "active": false,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4538,7 +4538,7 @@
       "accuracy": null,
       "active": false,
       "bcp47": "ar,zh,cs,nl,en,fr,de,hi,hi-Latn,id,it,ja,ko,pl,pt,ru,es,sv",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4559,7 +4559,7 @@
       "accuracy": null,
       "active": false,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4582,7 +4582,7 @@
       "accuracy": null,
       "active": false,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4603,7 +4603,7 @@
       "accuracy": null,
       "active": false,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4624,7 +4624,7 @@
       "accuracy": null,
       "active": false,
       "bcp47": "ar,zh,cs,nl,en,fr,de,hi,hi-Latn,id,it,ja,ko,pl,pt,ru,es,sv",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4647,7 +4647,7 @@
       "accuracy": null,
       "active": false,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4669,7 +4669,7 @@
       "accuracy": null,
       "active": false,
       "bcp47": "ar,zh,cs,nl,en,fr,de,hi,hi-Latn,id,it,ja,ko,pl,pt,ru,es,sv",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4690,7 +4690,7 @@
       "accuracy": null,
       "active": false,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4712,7 +4712,7 @@
       "accuracy": null,
       "active": false,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4733,7 +4733,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4771,7 +4771,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "*",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4790,7 +4790,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4813,7 +4813,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4836,7 +4836,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4858,7 +4858,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4881,7 +4881,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4904,7 +4904,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4927,7 +4927,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4948,7 +4948,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4970,7 +4970,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -4991,7 +4991,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -5014,7 +5014,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -5036,7 +5036,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -5059,7 +5059,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -5083,7 +5083,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -5106,7 +5106,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -5128,7 +5128,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -5149,7 +5149,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -5172,7 +5172,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -5193,7 +5193,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -5243,7 +5243,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -5264,7 +5264,7 @@
       "accuracy": null,
       "active": true,
       "bcp47": "en",
-      "doc_uri": "",
+      "doc_uri": null,
       "modality": {
         "out": [
           "text"
@@ -5341,7 +5341,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-08-29 13:35:37 +0000"
+      "mod_time": "2024-08-31 16:54:33 +0000"
     },
     "generators.cohere.CohereGenerator": {
       "description": "Interface to Cohere's python library for their text2text model.",

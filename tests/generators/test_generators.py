@@ -7,6 +7,7 @@ import pytest
 import random
 
 from garak import _plugins
+from garak import _config
 from garak.generators.test import Blank, Repeat, Single
 from garak.generators.base import Generator
 
@@ -123,6 +124,17 @@ def test_generators_test_blank_many():
     assert (
         output[1] == ""
     ), "Blank generator .generate() output list should contain strings (second position)"
+
+
+def test_parallel_requests():
+    _config.system.parallel_requests = 2
+
+    g = _plugins.load_plugin("generators.test.Lipsum")
+    result = g.generate(prompt="this is a test", generations_this_call=3)
+    assert isinstance(result, list), "Generator generate() should return a list"
+    assert len(result) == 3, "Generator should return 3 results as requested"
+    assert all(isinstance(item, str) for item in result), "All items in the generate result should be strings"
+    assert all(len(item) > 0 for item in result), "All generated strings should be non-empty"
 
 
 @pytest.mark.parametrize("classname", GENERATORS)
