@@ -58,13 +58,13 @@ python -m pip install -U git+https://github.com/leondz/garak.git@main
 
 ### Clone from source
 
-`garak` has its own dependencies. You can to install `garak` in its own Conda environment:
+`garak` has its own dependencies. You can to install `garak` in its own Venv environment:
 
 ```
-conda create --name garak "python>=3.10,<=3.12"
-conda activate garak
 gh repo clone leondz/garak
 cd garak
+python3 -m venv garak_env
+source garak_env/bin/activate # On Windows, use garak_env\Scripts\activate
 python -m pip install -e .
 ```
 
