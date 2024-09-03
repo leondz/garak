@@ -12,7 +12,7 @@ import backoff
 import requests
 
 from garak import _config
-from garak.exception import ModelNameMissingError
+from garak.exception import ModelNameMissingError, BadGeneratorException
 from garak.generators.base import Generator
 
 
@@ -27,12 +27,17 @@ class NvcfChat(Generator):
         "invoke_url_base": "https://api.nvcf.nvidia.com/v2/nvcf/pexec/functions/",
         "extra_nvcf_logging": False,
         "timeout": 60,
+        "version_id": None,  # string
+        "stop_on_404": True,
+        "extra_params": {  # extra params for the payload, e.g. "n":1 or "model":"google/gemma2b"
+            "stream": False
+        },
     }
 
     supports_multiple_generations = False
     generator_family_name = "NVCF"
 
-    def __init__(self, name=None, generations=10, config_root=_config):
+    def __init__(self, name=None, config_root=_config):
         self.name = name
         self._load_config(config_root)
         self.fullname = (
@@ -47,9 +52,10 @@ class NvcfChat(Generator):
 
         self.invoke_url = self.invoke_url_base + self.name
 
-        super().__init__(
-            self.name, generations=self.generations, config_root=config_root
-        )
+        if self.version_id is not None:
+            self.invoke_url += f"/versions/{self.version_id}"
+
+        super().__init__(self.name, config_root=config_root)
 
         self.headers = {
             "Authorization": f"Bearer {self.api_key}",
@@ -65,6 +71,9 @@ class NvcfChat(Generator):
             "max_tokens": self.max_tokens,
             "stream": False,
         }
+
+        for k, v in self.extra_params.items():
+            payload[k] = v
 
         return payload
 
@@ -100,6 +109,7 @@ class NvcfChat(Generator):
             payload["seed"] = self.seed
 
         request_time = time.time()
+        logging.debug("nvcf : payload %s", repr(payload))
         response = session.post(self.invoke_url, headers=self.headers, json=payload)
 
         while response.status_code == 202:
@@ -115,11 +125,16 @@ class NvcfChat(Generator):
 
         if 400 <= response.status_code < 600:
             logging.warning("nvcf : returned error code %s", response.status_code)
-            logging.warning("nvcf : payload %s", repr(payload))
             logging.warning("nvcf : returned error body %s", response.content)
             if response.status_code == 400 and prompt == "":
                 # error messages for refusing a blank prompt are fragile and include multi-level wrapped JSON, so this catch is a little broad
                 return [None]
+            if response.status_code == 404 and self.stop_on_404:
+                msg = "nvcf : got 404, endpoint unavailable, stopping"
+                logging.critical(msg)
+                print("\n\n" + msg)
+                print("nvcf :", response.content)
+                raise BadGeneratorException()
             if response.status_code >= 500:
                 if response.status_code == 500 and json.loads(response.content)[
                     "detail"
@@ -150,6 +165,9 @@ class NvcfCompletion(NvcfChat):
             "max_tokens": self.max_tokens,
             "stream": False,
         }
+
+        for k, v in self.extra_params.items():
+            payload[k] = v
 
         return payload
 

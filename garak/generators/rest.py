@@ -16,14 +16,8 @@ import jsonpath_ng
 from jsonpath_ng.exceptions import JsonPathParserError
 
 from garak import _config
-from garak.exception import APIKeyMissingError
+from garak.exception import APIKeyMissingError, RateLimitHit
 from garak.generators.base import Generator
-
-
-class RESTRateLimitError(Exception):
-    """Raised when a rate limiting response is returned"""
-
-    pass
 
 
 class RestGenerator(Generator):
@@ -65,23 +59,26 @@ class RestGenerator(Generator):
     and response value are both under the ``text`` key, we'd define the service
     using something like: ::
 
-    {
-        "rest": {
-            "RestGenerator": {
-                "name": "example service",
-                "uri": "https://example.ai/llm",
-                "method": "post",
-                "headers": {
-                    "X-Authorization": "$KEY",
-                },
-                "req_template_json_object": {
-                    "text": "$INPUT"
-                },
-                "response_json": true,
-                "response_json_field": "text"
+    .. code-block:: JSON
+      :linenos:
+
+        {
+            "rest": {
+                "RestGenerator": {
+                    "name": "example service",
+                    "uri": "https://example.ai/llm",
+                    "method": "post",
+                    "headers": {
+                        "X-Authorization": "$KEY",
+                    },
+                    "req_template_json_object": {
+                        "text": "$INPUT"
+                    },
+                    "response_json": true,
+                    "response_json_field": "text"
+                }
             }
         }
-    }
 
     NB. ``response_json_field`` can also be a JSONPath, for JSON responses where
     the target text is not in a top level field. It is treated as a JSONPath
@@ -119,7 +116,6 @@ class RestGenerator(Generator):
         "api_key",
         "name",
         "uri",
-        "generations",
         "key_env_var",
         "req_template",
         "req_template_json",
@@ -136,11 +132,10 @@ class RestGenerator(Generator):
         "top_k",
     )
 
-    def __init__(self, uri=None, generations=10, config_root=_config):
+    def __init__(self, uri=None, config_root=_config):
         self.uri = uri
         self.name = uri
         self.seed = _config.run.seed
-        self.generations = generations
         self.supports_multiple_generations = False  # not implemented yet
         self.escape_function = self._json_escape
         self.retry_5xx = True
@@ -204,9 +199,7 @@ class RestGenerator(Generator):
                 )
                 raise e
 
-        super().__init__(
-            self.name, generations=self.generations, config_root=config_root
-        )
+        super().__init__(self.name, config_root=config_root)
 
     def _validate_env_var(self):
         key_match = "$KEY"
@@ -247,7 +240,7 @@ class RestGenerator(Generator):
         return output.replace("$INPUT", self.escape_function(text))
 
     # we'll overload IOError as the rate limit exception
-    @backoff.on_exception(backoff.fibo, RESTRateLimitError, max_value=70)
+    @backoff.on_exception(backoff.fibo, RateLimitHit, max_value=70)
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
@@ -274,9 +267,7 @@ class RestGenerator(Generator):
         }
         resp = self.http_function(self.uri, **req_kArgs)
         if resp.status_code in self.ratelimit_codes:
-            raise RESTRateLimitError(
-                f"Rate limited: {resp.status_code} - {resp.reason}"
-            )
+            raise RateLimitHit(f"Rate limited: {resp.status_code} - {resp.reason}")
 
         elif str(resp.status_code)[0] == "3":
             raise NotImplementedError(

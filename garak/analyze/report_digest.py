@@ -8,15 +8,19 @@ import json
 import markdown
 import os
 import re
-import sqlite3
 import sys
 
 import jinja2
+import sqlite3
 
 from garak import _config
+import garak.analyze.calibration
+
+if not _config.loaded:
+    _config.load_config()
 
 templateLoader = jinja2.FileSystemLoader(
-    searchpath=_config.transient.basedir / "analyze" / "templates"
+    searchpath=_config.transient.package_dir / "analyze" / "templates"
 )
 templateEnv = jinja2.Environment(loader=templateLoader)
 
@@ -25,11 +29,12 @@ footer_template = templateEnv.get_template("digest_footer.jinja")
 group_template = templateEnv.get_template("digest_group.jinja")
 probe_template = templateEnv.get_template("digest_probe.jinja")
 detector_template = templateEnv.get_template("digest_detector.jinja")
-end_module = templateEnv.get_template("end_module.jinja")
+end_module = templateEnv.get_template("digest_end_module.jinja")
+about_z_template = templateEnv.get_template("digest_about_z.jinja")
 
 
 misp_resource_file = (
-    _config.transient.basedir / "garak" / "resources" / "misp_descriptions.tsv"
+    _config.transient.package_dir / "resources" / "misp_descriptions.tsv"
 )
 misp_descriptions = {}
 if os.path.isfile(misp_resource_file):
@@ -70,6 +75,9 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
                 run_uuid = record["run"]
             elif record["entry_type"] == "start_run setup":
                 setup = record
+
+    calibration = garak.analyze.calibration.Calibration()
+    calibration_used = False
 
     digest_content = header_template.render(
         {
@@ -174,7 +182,7 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
             }
         )
 
-        if top_score < 100.0:
+        if top_score < 100.0 or _config.reporting.show_100_pass_modules:
             res = cursor.execute(
                 f"select probe_module, probe_class, avg(score)*100 as s from results where probe_group='{probe_group}' group by probe_class order by s asc, probe_class asc;"
             )
@@ -192,7 +200,7 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
                     }
                 )
                 # print(f"\tplugin: {probe_module}.{probe_class} - {score:.1f}%")
-                if score < 100.0:
+                if score < 100.0 or _config.reporting.show_100_pass_modules:
                     res = cursor.execute(
                         f"select detector, score*100 from results where probe_group='{probe_group}' and probe_class='{probe_class}' order by score asc, detector asc;"
                     )
@@ -206,12 +214,34 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
                             getattr(dm, detector_class).__doc__
                         )
 
+                        zscore = calibration.get_z_score(
+                            probe_module,
+                            probe_class,
+                            detector_module,
+                            detector_class,
+                            score / 100,
+                        )
+
+                        if zscore is None:
+                            zscore_defcon, zscore_comment = None, None
+                            zscore = "n/a"
+
+                        else:
+                            zscore_defcon, zscore_comment = (
+                                calibration.defcon_and_comment(zscore)
+                            )
+                            zscore = f"{zscore:+.1f}"
+                            calibration_used = True
+
                         digest_content += detector_template.render(
                             {
                                 "detector_name": detector,
                                 "detector_score": f"{score:.1f}%",
                                 "severity": map_score(score),
                                 "detector_description": detector_description,
+                                "zscore": zscore,
+                                "zscore_defcon": zscore_defcon,
+                                "zscore_comment": zscore_comment,
                             }
                         )
                         # print(f"\t\tdetector: {detector} - {score:.1f}%")
@@ -220,15 +250,35 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
 
     conn.close()
 
+    if calibration_used:
+        calibration_date, calibration_model_count, calibration_model_list = "", "?", ""
+        if calibration.metadata is not None:
+            calibration_date = calibration.metadata["date"]
+            calibration_models = calibration.metadata["filenames"]
+            calibration_models = [
+                s.replace(".report.jsonl", "") for s in calibration_models
+            ]
+            calibration_model_list = ", ".join(sorted(calibration_models))
+            calibration_model_count = len(calibration_models)
+
+        digest_content += about_z_template.render(
+            {
+                "calibration_date": calibration_date,
+                "model_count": calibration_model_count,
+                "model_list": calibration_model_list,
+            }
+        )
+
     digest_content += footer_template.render()
 
     return digest_content
 
 
 if __name__ == "__main__":
+    sys.stdout.reconfigure(encoding="utf-8")
     report_path = sys.argv[1]
     taxonomy = None
     if len(sys.argv) == 3:
         taxonomy = sys.argv[2]
     digest_content = compile_digest(report_path, taxonomy=taxonomy)
-    print(digest_content.encode("utf-8"))
+    print(digest_content)

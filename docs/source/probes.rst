@@ -11,15 +11,16 @@ For a detailed oversight into how a probe operates, see :ref:`garak.probes.base.
 
    garak.probes
    garak.probes.atkgen
+   garak.probes.av_spam_scanning
    garak.probes.base
    garak.probes.continuation
    garak.probes.dan
    garak.probes.donotanswer
    garak.probes.encoding
-   garak.probes.gcg
+   garak.probes.fileformats
    garak.probes.glitch
    garak.probes.goodside
-   garak.probes.knownbadsignatures
+   garak.probes.grandma
    garak.probes.leakreplay
    garak.probes.lmrc
    garak.probes.malwaregen
@@ -30,7 +31,9 @@ For a detailed oversight into how a probe operates, see :ref:`garak.probes.base.
    garak.probes.realtoxicityprompts
    garak.probes.replay
    garak.probes.snowball
+   garak.probes.suffix
    garak.probes.tap
    garak.probes.test
+   garak.probes.topic
    garak.probes.xss
    garak.probes.visual_jailbreak

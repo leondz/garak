@@ -3,10 +3,14 @@
 
 """NVIDIA Inference Microservice LLM interface"""
 
+import logging
+import random
 from typing import List, Union
 
 import openai
 
+from garak import _config
+from garak.exception import GarakException
 from garak.generators.openai import OpenAICompatible
 
 
@@ -38,6 +42,9 @@ class NVOpenAIChat(OpenAICompatible):
         "top_p": 0.7,
         "top_k": 0,  # top_k is hard set to zero as of 24.04.30
         "uri": "https://integrate.api.nvidia.com/v1/",
+        "vary_seed_each_call": True,  # encourage variation when generations>1. not respected by all NIMs
+        "vary_temp_each_call": True,  # encourage variation when generations>1. not respected by all NIMs
+        "suppressed_params": {"n", "frequency_penalty", "presence_penalty"},
     }
     active = True
     supports_multiple_generations = False
@@ -63,8 +70,32 @@ class NVOpenAIChat(OpenAICompatible):
     def _call_model(
         self, prompt: str | List[dict], generations_this_call: int = 1
     ) -> List[Union[str, None]]:
-        assert generations_this_call == 1, "n>1 is not supported"
-        return super()._call_model(prompt, generations_this_call)
+        assert (
+            generations_this_call == 1
+        ), "generations_per_call / n > 1 is not supported"
+
+        if self.vary_seed_each_call:
+            self.seed = random.randint(0, 65535)
+
+        if self.vary_temp_each_call:
+            self.temperature = random.random()
+
+        try:
+            result = super()._call_model(prompt, generations_this_call)
+        #        except openai.NotFoundError as oe:
+        except Exception as oe:
+            msg = "NIM endpoint not found. Is the model name spelled correctly?"
+            logging.critical(msg, exc_info=oe)
+            raise GarakException(f"🛑 {msg}") from oe
+
+        return result
+
+    def __init__(self, name="", config_root=_config):
+        super().__init__(name, config_root=config_root)
+        if "/" not in name:
+            msg = "❓ Is this a valid NIM name? expected a slash-formatted name, e.g. 'org/model'"
+            logging.info(msg)
+            print(msg)
 
 
 class NVOpenAICompletion(NVOpenAIChat):

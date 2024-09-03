@@ -61,7 +61,7 @@ class PlainJSON(Detector):
 
     def detect(self, attempt: Attempt):
         results = []
-        for o in attempt.outputs:
+        for o in attempt.all_outputs:
             try:
                 json.loads(o.strip())
                 results.append(1.0)

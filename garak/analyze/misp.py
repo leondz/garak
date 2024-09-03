@@ -9,10 +9,11 @@ import importlib
 import os
 
 from garak import _plugins
+import garak._config
 
 # does this utility really have access to _config?
 misp_resource_file = (
-    garak._config.transient.basedir / "garak" / "resources" / "misp_descriptions.tsv"
+    garak._config.transient.package_dir / "resources" / "misp_descriptions.tsv"
 )
 misp_descriptions = {}
 if os.path.isfile(misp_resource_file):

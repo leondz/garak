@@ -1,7 +1,7 @@
-garak.probes.gcg
+garak.probes.suffix
 ================
 
-.. automodule:: garak.probes.gcg
+.. automodule:: garak.probes.suffix
    :members:
    :undoc-members:
    :show-inheritance:   

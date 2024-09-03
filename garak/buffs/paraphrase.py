@@ -17,7 +17,7 @@ class PegasusT5(Buff):
     doc_uri = "https://huggingface.co/tuner007/pegasus_paraphrase"
 
     def __init__(self, config_root=_config) -> None:
-        self.para_model_name = "tuner007/pegasus_paraphrase"  # https://huggingface.co/tuner007/pegasus_paraphrase
+        self.para_model_name = "garak-llm/pegasus_paraphrase"  # https://huggingface.co/tuner007/pegasus_paraphrase
         self.max_length = 60
         self.temperature = 1.5
         self.num_return_sequences = 6
@@ -76,7 +76,7 @@ class Fast(Buff):
     doc_uri = "https://huggingface.co/humarin/chatgpt_paraphraser_on_T5_base"
 
     def __init__(self, config_root=_config) -> None:
-        self.para_model_name = "humarin/chatgpt_paraphraser_on_T5_base"
+        self.para_model_name = "garak-llm/chatgpt_paraphraser_on_T5_base"
         self.num_beams = 5
         self.num_beam_groups = 5
         self.num_return_sequences = 5

@@ -58,9 +58,8 @@ class GgmlGenerator(Generator):
             "-s": self.seed,
         }
 
-    def __init__(self, name="", generations=10, config_root=_config):
+    def __init__(self, name="", config_root=_config):
         self.name = name
-        self.generations = generations
         self._load_config(config_root)
 
         if not hasattr(self, "path_to_ggml_main") or self.path_to_ggml_main is None:
@@ -88,9 +87,7 @@ class GgmlGenerator(Generator):
                 if magic_num != GGUF_MAGIC:
                     raise RuntimeError(f"{self.name} is not in GGUF format")
 
-        super().__init__(
-            self.name, generations=self.generations, config_root=config_root
-        )
+        super().__init__(self.name, config_root=config_root)
 
     def _validate_env_var(self):
         pass  # suppress default behavior for api_key

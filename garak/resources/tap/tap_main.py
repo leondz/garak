@@ -4,6 +4,7 @@
 import copy
 import re
 import torch.cuda
+from pathlib import Path
 from tqdm import tqdm
 from logging import getLogger
 from typing import Union, Optional
@@ -34,7 +35,7 @@ logger = getLogger(__name__)
 SAVE_RESULTS = True
 
 resources_tap_data_file = (
-    garak._config.transient.basedir
+    garak._config.transient.cache_dir
     / "resources"
     / "tap"
     / "data"
@@ -340,7 +341,7 @@ def run_tap(
     keep_last_n: int = 1,
     pruning: bool = True,
     save_results: bool = SAVE_RESULTS,
-    outfile: str = resources_tap_data_file,
+    outfile: Path = resources_tap_data_file,
 ):
     """
     Function for generating attacks using TAP where a generator has already been instantiated.
@@ -527,6 +528,7 @@ def run_tap(
             jailbreaks = list(set(jailbreaks))
             msg = f"Found {len(jailbreaks)} jailbreak(s). Exiting."
             if save_results:
+                outfile.parent.mkdir(mode=0o740, parents=True, exist_ok=True)
                 with open(outfile, "a", encoding="utf-8") as f:
                     for jailbreak in jailbreaks:
                         f.write(f"{jailbreak}\n")
@@ -565,7 +567,7 @@ def generate_tap(
     n_streams: int = 1,
     keep_last_n: int = 1,
     save_results: bool = SAVE_RESULTS,
-    outfile: str = resources_tap_data_file,
+    outfile: Path = resources_tap_data_file,
 ):
     """
     Function for generating attacks using TAP when a generator has not been instantiated.

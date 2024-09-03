@@ -23,7 +23,6 @@ hf_dict = {
 
 def load_generator(
     model_name: str,
-    generations: int = 1,
     max_tokens: int = 150,
     temperature: float = None,
     device: Union[int, str] = 0,
@@ -34,7 +33,6 @@ def load_generator(
     Parameters
     ----------
     model_name : Name of the model to load
-    generations : Number of outputs to generate per call
     max_tokens : Maximum output tokens
     temperature : Model temperature
     device : Device to run the model on. Accepts GPU ID (int) or "cpu"
@@ -46,7 +44,7 @@ def load_generator(
     """
 
     config = {
-        "generations": generations,
+        "name": model_name,
         "max_tokens": max_tokens,
     }
 
@@ -55,12 +53,22 @@ def load_generator(
 
     if model_name.lower() in hf_dict.keys():
         config["name"] = hf_dict[model_name]
-        config["device"] = device
 
     if model_name in supported_openai:
-        generator = OpenAIGenerator(config_root=config)
+        config_root = {
+            "generators": {
+                OpenAIGenerator.__module__.split(".")[-1]: {
+                    OpenAIGenerator.__name__: config
+                }
+            }
+        }
+        generator = OpenAIGenerator(config_root=config_root)
     elif model_name in supported_huggingface:
-        generator = Model(config_root=config)
+        config["hf_args"] = {"device": device}
+        config_root = {
+            "generators": {Model.__module__.split(".")[-1]: {Model.__name__: config}}
+        }
+        generator = Model(config_root=config_root)
     else:
         msg = (
             f"{model_name} is not currently supported for TAP generation. Support is available for the following "

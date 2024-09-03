@@ -21,8 +21,8 @@ from garak.generators.base import Generator
 
 
 class ReplicateGenerator(Generator):
-    """
-    Interface for public endpoints of models hosted in Replicate (replicate.com).
+    """Interface for public endpoints of models hosted in Replicate (replicate.com).
+
     Expects API key in REPLICATE_API_TOKEN environment variable.
     """
 
@@ -36,12 +36,12 @@ class ReplicateGenerator(Generator):
     generator_family_name = "Replicate"
     supports_multiple_generations = False
 
-    def __init__(self, name="", generations=10, config_root=_config):
+    def __init__(self, name="", config_root=_config):
         self.seed = 9
         if hasattr(_config.run, "seed") and _config.run.seed is not None:
             self.seed = _config.run.seed
 
-        super().__init__(name, generations=generations, config_root=config_root)
+        super().__init__(name, config_root=config_root)
 
         if self.api_key is not None:
             # ensure the token is in the expected runtime env var
@@ -69,8 +69,8 @@ class ReplicateGenerator(Generator):
 
 
 class InferenceEndpoint(ReplicateGenerator):
-    """
-    Interface for private Replicate endpoints.
+    """Interface for private Replicate endpoints.
+
     Expects `name` in the format of `username/deployed-model-name`.
     """
 

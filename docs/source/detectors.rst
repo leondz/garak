@@ -10,6 +10,7 @@ garak.detectors
    garak.detectors.continuation
    garak.detectors.dan
    garak.detectors.encoding
+   garak.detectors.fileformats
    garak.detectors.goodside
    garak.detectors.knownbadsignatures
    garak.detectors.leakreplay
@@ -20,6 +21,7 @@ garak.detectors
    garak.detectors.packagehallucination
    garak.detectors.perspective
    garak.detectors.promptinject
+   garak.detectors.productkey
    garak.detectors.replay
    garak.detectors.riskywords
    garak.detectors.snowball
