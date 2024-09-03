@@ -35,12 +35,12 @@ For development: clone from `git`
 
 You can also clone the source and run `garak` directly. This works fine and is recommended for development.
 
-`garak` has its own dependencies. You can to install `garak` in its own Conda environment:
+`garak` has its own dependencies. You can to install `garak` in its own Venv environment:
 
 .. code-block:: console
 
-    conda create --name garak "python>=3.10,<=3.12"
-    conda activate garak
+    python3 -m venv garak_env
+    source garak_env/bin/activate # On Windows, use garak_env\Scripts\activate
     gh repo clone leondz/garak
     cd garak
     python3 -m pip install -r requirements.txt

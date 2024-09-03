@@ -234,7 +234,7 @@ A good first step is to fire up the Python interpreter and try to import the mod
 
 .. code-block:: bash
 
-    $ conda activate garak
+    $ source garak_env/bin/activate
     $ python
     $ python
     Python 3.11.9 (main, Apr 19 2024, 16:48:06) [GCC 11.2.0] on linux
