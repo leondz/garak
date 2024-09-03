@@ -20,12 +20,12 @@ def test_leakreplay_output_count():
     generations = 1
     garak._config.load_base_config()
     garak._config.transient.reportfile = open(os.devnull, "w+")
+    garak._config.plugins.probes["leakreplay"]["generations"] = generations
     a = garak.attempt.Attempt(prompt="test")
     p = garak._plugins.load_plugin(
         "probes.leakreplay.LiteratureCloze80", config_root=garak._config
     )
     g = garak._plugins.load_plugin("generators.test.Blank", config_root=garak._config)
-    g.generations = generations
     p.generator = g
     results = p._execute_all([a])
     assert len(a.all_outputs) == generations

@@ -21,11 +21,11 @@ import garak.generators.test
 # -> evaluators (3) should be able to consume generators of results --> enforced in harness; cast to list, multiple consumption
 
 
-
 @pytest.fixture(autouse=True)
 def _config_loaded():
     importlib.reload(garak._config)
     garak._config.load_base_config()
+    garak._config.plugins.probes["test"]["generations"] = 1
     temp_report_file = tempfile.NamedTemporaryFile(mode="w+")
     garak._config.transient.reportfile = temp_report_file
     garak._config.transient.report_filename = temp_report_file.name
@@ -52,12 +52,16 @@ def test_generator_consume_attempt_generator():
         result_len == count
     ), "there should be the same number of attempts in the passed generator as results returned in _execute_all"
 
+
 def test_attempt_outputs_can_consume_generator():
     a = garak.attempt.Attempt(prompt="fish")
     count = 5
     str_iter = ("abc" for _ in range(count))
     a.outputs = str_iter
     outputs_list = list(a.outputs)
-    assert len(outputs_list) == count, "attempt.outputs should have same cardinality as generator used to populate it"
-    assert len(list(a.outputs)) == len(outputs_list), "attempt.outputs should have the same cardinality every time"
-
+    assert (
+        len(outputs_list) == count
+    ), "attempt.outputs should have same cardinality as probe used to populate it"
+    assert len(list(a.outputs)) == len(
+        outputs_list
+    ), "attempt.outputs should have the same cardinality every time"

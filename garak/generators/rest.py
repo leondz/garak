@@ -116,7 +116,6 @@ class RestGenerator(Generator):
         "api_key",
         "name",
         "uri",
-        "generations",
         "key_env_var",
         "req_template",
         "req_template_json",
@@ -133,11 +132,10 @@ class RestGenerator(Generator):
         "top_k",
     )
 
-    def __init__(self, uri=None, generations=10, config_root=_config):
+    def __init__(self, uri=None, config_root=_config):
         self.uri = uri
         self.name = uri
         self.seed = _config.run.seed
-        self.generations = generations
         self.supports_multiple_generations = False  # not implemented yet
         self.escape_function = self._json_escape
         self.retry_5xx = True
@@ -201,9 +199,7 @@ class RestGenerator(Generator):
                 )
                 raise e
 
-        super().__init__(
-            self.name, generations=self.generations, config_root=config_root
-        )
+        super().__init__(self.name, config_root=config_root)
 
     def _validate_env_var(self):
         key_match = "$KEY"

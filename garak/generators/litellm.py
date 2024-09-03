@@ -92,7 +92,6 @@ class LiteLLMGenerator(Generator):
 
     _supported_params = (
         "name",
-        "generations",
         "context_len",
         "max_tokens",
         "api_key",
@@ -110,7 +109,6 @@ class LiteLLMGenerator(Generator):
         self.name = name
         self.api_base = None
         self.provider = None
-        self.generations = generations
         self._load_config(config_root)
         self.fullname = f"LiteLLM {self.name}"
         self.supports_multiple_generations = not any(
@@ -118,9 +116,7 @@ class LiteLLMGenerator(Generator):
             for provider in unsupported_multiple_gen_providers
         )
 
-        super().__init__(
-            self.name, generations=self.generations, config_root=config_root
-        )
+        super().__init__(self.name, config_root=config_root)
 
     @backoff.on_exception(backoff.fibo, litellm.exceptions.APIError, max_value=70)
     def _call_model(
@@ -154,11 +150,13 @@ class LiteLLMGenerator(Generator):
                 custom_llm_provider=self.provider,
             )
         except (
-            litellm.exceptions.AuthenticationError, # authentication failed for detected or passed `provider`
+            litellm.exceptions.AuthenticationError,  # authentication failed for detected or passed `provider`
             litellm.exceptions.BadRequestError,
         ) as e:
 
-            raise BadGeneratorException("Unrecoverable error during litellm completion see log for details") from e
+            raise BadGeneratorException(
+                "Unrecoverable error during litellm completion see log for details"
+            ) from e
 
         if self.supports_multiple_generations:
             return [c.message.content for c in response.choices]

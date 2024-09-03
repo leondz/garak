@@ -34,18 +34,15 @@ class LangChainServeLLMGenerator(Generator):
     config_hash = "default"
 
     def __init__(
-        self, name=None, generations=10, config_root=_config
+        self, name=None, config_root=_config
     ):  # name not required, will be extracted from uri
         self.uri = None
-        self.generations = generations
         self._load_config(config_root)
         self.name = self.uri.split("/")[-1]
         self.fullname = f"LangChain Serve LLM {self.name}"
         self.api_endpoint = f"{self.uri}/invoke"
 
-        super().__init__(
-            self.name, generations=self.generations, config_root=config_root
-        )
+        super().__init__(self.name, config_root=config_root)
 
     def _validate_env_var(self):
         if self.uri is None and hasattr(self, "key_env_var"):

@@ -17,6 +17,7 @@ import tqdm
 
 from garak import _config
 from garak.configurable import Configurable
+from garak.exception import PluginConfigurationError
 import garak.attempt
 import garak.resources.theme
 
@@ -50,13 +51,18 @@ class Probe(Configurable):
     # we focus on LLM input for probe
     modality: dict = {"in": {"text"}}
 
-    DEFAULT_PARAMS = {}
+    DEFAULT_PARAMS = {
+        "generations": 1,
+    }
 
     def __init__(self, config_root=_config):
-        """Sets up a probe. This constructor:
+        """Sets up a probe.
+
+        This constructor:
         1. populates self.probename based on the class name,
         2. logs and optionally prints the probe's loading,
-        3. populates self.description based on the class docstring if not yet set"""
+        3. populates self.description based on the class docstring if not yet set
+        """
         self._load_config(config_root)
         self.probename = str(self.__class__).split("'")[1]
         if hasattr(_config.system, "verbose") and _config.system.verbose > 0:
@@ -147,7 +153,9 @@ class Probe(Configurable):
     def _execute_attempt(self, this_attempt):
         """handles sending an attempt to the generator, postprocessing, and logging"""
         self._generator_precall_hook(self.generator, this_attempt)
-        this_attempt.outputs = self.generator.generate(this_attempt.prompt)
+        this_attempt.outputs = self.generator.generate(
+            this_attempt.prompt, generations_this_call=self.generations
+        )
         if self.post_buff_hook:
             this_attempt = self._postprocess_buff(this_attempt)
         this_attempt = self._postprocess_hook(this_attempt)

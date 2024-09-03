@@ -19,7 +19,7 @@ import garak.attempt
 class Detector(Configurable):
     """Base class for objects that define a way of detecting a probe hit / LLM failure"""
 
-    doc_uri = ""  # reference
+    doc_uri = None  # reference
     bcp47 = None  # language this is for. format: a comma-separated list of bcp47 tags, or "*"
     precision = 0.0
     recall = 0.0
@@ -72,7 +72,10 @@ class Detector(Configurable):
 class HFDetector(Detector, HFCompatible):
     """Detector using a Hugging Face model"""
 
-    DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {"hf_args": {"device": "cpu"}}
+    DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {
+        "hf_args": {"device": "cpu"},
+        "tokenizer_kwargs": {"padding": True, "truncation": True},
+    }
 
     def __init__(self, config_root=_config):
         from transformers import (

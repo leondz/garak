@@ -5,12 +5,13 @@ system:
   parallel_requests: false
   parallel_attempts: false
   lite: true
+  show_z: false
 
 run:
   seed:
   deprefix: true
   eval_threshold: 0.5
-  generations: 10
+  generations: 5
   probe_tags:
 
 plugins:

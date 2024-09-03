@@ -3,8 +3,6 @@ import pytest
 import tempfile
 import garak.generators.ggml
 
-DEFAULT_GENERATIONS_QTY = 10
-
 STORED_ENV = os.getenv(garak.generators.ggml.ENV_VAR)
 MODEL_NAME = None
 
