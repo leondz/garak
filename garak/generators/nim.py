@@ -92,7 +92,7 @@ class NVOpenAIChat(OpenAICompatible):
 
     def __init__(self, name="", config_root=_config):
         super().__init__(name, config_root=config_root)
-        if "/" not in name:
+        if "/" not in self.name:
             msg = "❓ Is this a valid NIM name? expected a slash-formatted name, e.g. 'org/model'"
             logging.info(msg)
             print(msg)
