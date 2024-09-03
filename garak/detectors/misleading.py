@@ -104,6 +104,9 @@ class MustContradictNLI(HFDetector):
         predictions = torch.softmax(outputs[0], dim=1)[
             0
         ].tolist()  # batch_size only one
+        # logging.debug(f"{self.__name__} prem:", premise)
+        # logging.debug(f"{self.__name__} hypo:", hypothesis)
+        # logging.debug(f"{self.__name__} pred:", predictions)
 
         return predictions[2]  # 2 = contradiction
 
