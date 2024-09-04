@@ -2396,7 +2396,7 @@
         "quality:Robustness:GenerativeMisinformation",
         "payload:malicious:badcode"
       ],
-      "mod_time": "2024-09-02 14:27:57 +0000"
+      "mod_time": "2024-09-04 12:16:55 +0000"
     },
     "probes.packagehallucination.PackageHallucinationProbe": {
       "description": "Base class for package hallucination probes",
@@ -2424,7 +2424,7 @@
         "quality:Robustness:GenerativeMisinformation",
         "payload:malicious:badcode"
       ],
-      "mod_time": "2024-09-02 14:27:57 +0000"
+      "mod_time": "2024-09-04 12:16:55 +0000"
     },
     "probes.packagehallucination.Python": {
       "description": "Attempts to generate Python3 code including hallucinated packages",
@@ -2452,7 +2452,7 @@
         "quality:Robustness:GenerativeMisinformation",
         "payload:malicious:badcode"
       ],
-      "mod_time": "2024-09-02 14:27:57 +0000"
+      "mod_time": "2024-09-04 12:16:55 +0000"
     },
     "probes.packagehallucination.Ruby": {
       "description": "Attempts to generate Ruby code including hallucinated gems",
@@ -2480,7 +2480,35 @@
         "quality:Robustness:GenerativeMisinformation",
         "payload:malicious:badcode"
       ],
-      "mod_time": "2024-09-02 14:27:57 +0000"
+      "mod_time": "2024-09-04 12:16:55 +0000"
+    },
+    "probes.packagehallucination.Rust": {
+      "description": "Attempts to generate Rust code including hallucinated crates.io packages",
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
+      "active": true,
+      "bcp47": "*",
+      "doc_uri": "https://vulcan.io/blog/ai-hallucinations-package-risk",
+      "extended_detectors": [],
+      "goal": "generate Rust code importing non-existent crates.io packages",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "packagehallucination.RustCrates",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "owasp:llm09",
+        "owasp:llm02",
+        "quality:Robustness:GenerativeMisinformation",
+        "payload:malicious:badcode"
+      ],
+      "mod_time": "2024-09-04 12:16:55 +0000"
     },
     "probes.promptinject.HijackHateHumans": {
       "description": "PromptInject is a framework that assembles prompts in a modular fashion to provide a quantitative analysis of the robustness of LLMs to adversarial prompt attacks. trophy Best Paper Awards @ NeurIPS ML Safety Workshop 2022",
@@ -4290,7 +4318,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-09-02 14:13:41 +0000"
+      "mod_time": "2024-09-03 21:13:33 +0000"
     },
     "detectors.packagehallucination.PackageHallucinationDetector": {
       "description": "Base class for package hallucination detectors",
@@ -4311,7 +4339,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-09-02 14:13:41 +0000"
+      "mod_time": "2024-09-03 21:13:33 +0000"
     },
     "detectors.packagehallucination.PythonPypi": {
       "description": "Check if the output tries to import a package not listed in stdlib or a pypi archive listing",
@@ -4332,7 +4360,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-09-02 14:13:41 +0000"
+      "mod_time": "2024-09-03 21:13:33 +0000"
     },
     "detectors.packagehallucination.RubyGems": {
       "description": "Check if the output tries to require a gem not listed in the Ruby standard library or RubyGems",
@@ -4353,7 +4381,28 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-09-02 14:13:41 +0000"
+      "mod_time": "2024-09-03 21:13:33 +0000"
+    },
+    "detectors.packagehallucination.RustCrates": {
+      "description": "Check if the output tries to use a Rust crate not listed in the crates.io registry",
+      "DEFAULT_PARAMS": {
+        "skip": false,
+        "dataset_name": "garak-llm/crates-20240903",
+        "language_name": "rust"
+      },
+      "accuracy": null,
+      "active": false,
+      "bcp47": "*",
+      "doc_uri": null,
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "tags": [],
+      "mod_time": "2024-09-03 21:13:33 +0000"
     },
     "detectors.perspective.Attack_On_Author": {
       "description": "Targets: Attack on the author of an article or post.",
