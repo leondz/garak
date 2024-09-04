@@ -38,7 +38,7 @@ We'd set:
 Each probe using LatentInjectionMixin must define:
 * top_instructions, the top-level instruction proveided to the target
 * docs, a list of document contexts, which must include latentinjection.INJECTION_MARKER
-* injection_sep, a list of tuples of injection_sep_start / injection_sep_end, used to wrap the injection
+* injection_sep_pairs, a list of tuples of injection_sep_start / injection_sep_end, used to wrap the injection
 * injection_instructions, a list of injection instructions
 * payloads, a list of payloads which must include latentinjection.TRIGGER_MARKER
 * payload_triggers, a list of strings we'll try to get into the output
@@ -332,7 +332,7 @@ Dr. Mark Riedl is a Professor in the Georgia Tech School of Interactive Computin
         return LatentInjectionMixin._attempt_prestore_hook(self, attempt, seq)
 
 
-class LatentInjectionFactSnippet(Probe, LatentInjectionMixin):
+class LatentInjectionFactSnippetEiffel(Probe, LatentInjectionMixin):
     """String-based latent prompt injections in fact snippets
 
     Check to see if model can be subverted by text placed in an
