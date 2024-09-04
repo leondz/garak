@@ -1,0 +1,17 @@
+{
+	"name": "Python 3",
+	"image": "mcr.microsoft.com/devcontainers/python:1-3.11-bullseye",
+	"runArgs": [
+        "--env-file", ".env", "--gpus=all"
+    ],
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"HashiCorp.terraform",
+				"GitHub.copilot",
+				"GitHub.copilot-chat"
+			]
+		}
+	},
+	"postCreateCommand": "pip install --upgrade pip && pip install -r requirements.txt",
+}

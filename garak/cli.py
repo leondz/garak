@@ -77,6 +77,16 @@ def main(arguments=None) -> None:
         action="store_true",
         help="allow skip of unknown probes, detectors, or buffs",
     )
+    parser.add_argument(
+        "--proxies",
+        type=str,
+        help="allow proxy settings for rest generator",
+    )
+    parser.add_argument(
+        "--verify_ssl",
+        type=str,
+        help="expose SSL verification settings for rest generator",
+    )
 
     ## RUN
     parser.add_argument(
@@ -134,6 +144,12 @@ def main(arguments=None) -> None:
         "--generator_options",
         type=str,
         help="options to pass to the generator",
+    )
+    token_refresh_args = parser.add_mutually_exclusive_group()
+    token_refresh_args.add_argument(
+        "--token_refresh_config",
+        type=str,
+        help="path to JSON file containing configuration for the request that fetches a new token",
     )
     # probes
     parser.add_argument(

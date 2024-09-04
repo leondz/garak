@@ -10,6 +10,7 @@ import json
 import logging
 from typing import List, Union
 import requests
+import os
 
 import backoff
 import jsonpath_ng
@@ -107,6 +108,8 @@ class RestGenerator(Generator):
         "response_json_field": None,
         "req_template": "$INPUT",
         "request_timeout": 20,
+        "proxies": None,
+        "verify_ssl": True,
     }
 
     ENV_VAR = "REST_API_KEY"
@@ -130,6 +133,8 @@ class RestGenerator(Generator):
         "ratelimit_codes",
         "temperature",
         "top_k",
+        "proxies",
+        "verify_ssl",
     )
 
     def __init__(self, uri=None, config_root=_config):
@@ -140,14 +145,36 @@ class RestGenerator(Generator):
         self.escape_function = self._json_escape
         self.retry_5xx = True
         self.key_env_var = self.ENV_VAR if hasattr(self, "ENV_VAR") else None
+        self.need_token_refresh = False
 
         # load configuration since super.__init__ has not been called
         self._load_config(config_root)
 
-        if (
-            hasattr(self, "req_template_json_object")
-            and self.req_template_json_object is not None
-        ):
+        # Load the token refresh configuration
+        if hasattr(config_root.transient.cli_args, "token_refresh_config"):
+            self.token_refresh_path = config_root.transient.cli_args.token_refresh_config
+            with open(self.token_refresh_path, "r") as f:
+                self.token_refresh_config = json.load(f)
+            if not isinstance(self.token_refresh_config["method"], str):
+                raise ValueError("token_refresh_config set but does not contain method")
+            if not isinstance(self.token_refresh_config["required_secrets"], list):
+                raise ValueError("token_refresh_config set but does not contain required_secrets list")
+            
+            if len(self.token_refresh_config["required_secrets"]) == 0:
+                raise ValueError("token_refresh_config required_secrets list is empty")
+            
+            self.token_refresh_http_function = getattr(requests, self.token_refresh_config["method"].lower())
+
+            secrets = {}
+            for secret in self.token_refresh_config["required_secrets"]:
+                if secret in os.environ:
+                    secrets[secret] = os.environ[secret]
+                else:
+                    raise ValueError(f"token_refresh_config required secret: {secret} not found in environment")
+            self.token_refresh_config["secrets"] = secrets
+
+
+        if (hasattr(self, "req_template_json_object") and self.req_template_json_object is not None):
             self.req_template = json.dumps(self.req_template_json_object)
 
         if self.response_json:
@@ -249,6 +276,25 @@ class RestGenerator(Generator):
         :param prompt: the input to be placed into the request template and sent to the endpoint
         :type prompt: str
         """
+        if self.need_token_refresh:
+            token_refresh_data_kw = "params" if self.token_refresh_http_function == requests.get else "data"
+            token_refresh_request_headers = dict(self.token_refresh_config["headers"])
+            token_refresh_request_data = self._populate_token_refresh(self.token_refresh_config["data"])
+            token_refresh_req_kArgs = {
+                token_refresh_data_kw: token_refresh_request_data,
+                "headers": token_refresh_request_headers,
+                "timeout": self.request_timeout,
+                "proxies": self.proxies,
+                "verify": self.verify_ssl,
+            }
+
+            # TODO: add error handling
+            token_refresh_resp = self.token_refresh_http_function(self.token_refresh_config['uri'], **token_refresh_req_kArgs)
+            token_refresh_response_object = json.loads(token_refresh_resp.content)
+            field_path_expr = jsonpath_ng.parse(self.token_refresh_config["response_json_field"])
+            token_refresh_json_extraction_results = field_path_expr.find(token_refresh_response_object)
+            self.api_key = token_refresh_json_extraction_results[0].value
+            self.need_token_refresh = False
 
         request_data = self._populate_template(self.req_template, prompt)
 
@@ -261,10 +307,11 @@ class RestGenerator(Generator):
         # the prompt data to a request via params or data based on the action verb
         data_kw = "params" if self.http_function == requests.get else "data"
         req_kArgs = {
-            data_kw: request_data,
-            "headers": request_headers,
-            "timeout": self.request_timeout,
-        }
+                data_kw: request_data,
+                "headers": request_headers,
+                "timeout": self.request_timeout,
+                "proxies": self.proxies,
+            }
         resp = self.http_function(self.uri, **req_kArgs)
         if resp.status_code in self.ratelimit_codes:
             raise RateLimitHit(f"Rate limited: {resp.status_code} - {resp.reason}")
@@ -275,6 +322,10 @@ class RestGenerator(Generator):
             )
 
         elif str(resp.status_code)[0] == "4":
+            # Token is expired, refresh it
+            if resp.status_code == 401:
+                self.need_token_refresh = True
+                raise RateLimitHit(f"Rate limited: {resp.status_code} - {resp.reason}")
             raise ConnectionError(
                 f"REST URI client error: {resp.status_code} - {resp.reason}"
             )
