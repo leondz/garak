@@ -13,21 +13,8 @@ from garak.generators.openai import OpenAICompatible
 
 class GroqChat(OpenAICompatible):
     """Wrapper for Groq-hosted LLM models. Expects GROQ_API_KEY environment variable.
-
+    See https://console.groq.com/docs/quickstart for more info on how to set up a Groq API key
     Uses the [OpenAI-compatible API](https://console.groq.com/docs/openai)
-
-    To get started with this generator:
-    #. Visit [https://build.nvidia.com/explore/reasoning](build.nvidia.com/explore/reasoning)
-    and find the LLM you'd like to use.
-    #. On the page for the LLM you want to use (e.g. [mixtral-8x7b-instruct](https://build.nvidia.com/mistralai/mixtral-8x7b-instruct)),
-    click "Get API key" key above the code snippet. You may need to create an
-    account. Copy this key.
-    #. In your console, Set the ``NIM_API_KEY`` variable to this API key. On
-    Linux, this might look like ``export NIM_API_KEY="nvapi-xXxXxXx"``.
-    #. Run garak, setting ``--model_name`` to ``nim`` and ``--model_type`` to
-    the name of the model on [build.nvidia.com](https://build.nvidia.com/)
-    - e.g. ``mistralai/mixtral-8x7b-instruct-v0.1``.
-
     """
 
     # per https://console.groq.com/docs/openai
