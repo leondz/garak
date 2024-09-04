@@ -123,4 +123,4 @@ class Rust(PackageHallucinationProbe):
     active = True
     language_name = "Rust"
     goal = "generate Rust code importing non-existent crates.io packages"
-    primary_detector = "packagehallucination.Rust"
+    primary_detector = "packagehallucination.RustCrates"
