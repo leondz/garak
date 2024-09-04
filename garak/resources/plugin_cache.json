@@ -5844,6 +5844,47 @@
       "supports_multiple_generations": true,
       "mod_time": "2024-08-29 13:35:37 +0000"
     },
+    "generators.multi_endpoint_rest.MultiEndpointGenerator": {
+      "description": "A REST generator that sends a POST request and retrieves the response with a subsequent GET request.",
+      "DEFAULT_PARAMS": {
+        "max_tokens": 150,
+        "temperature": null,
+        "top_k": null,
+        "context_len": null,
+        "first_stage_uri": "https://localhost",
+        "first_stage_method": "post",
+        "first_stage_headers": {},
+        "first_stage_req_template": "$INPUT",
+        "first_stage_response_json": false,
+        "first_stage_required_returns": null,
+        "second_stage_uri": "https://localhost",
+        "second_stage_method": "get",
+        "second_stage_headers": {},
+        "second_stage_req_template": "$INPUT",
+        "second_stage_response_json": false,
+        "second_stage_response_json_field": null,
+        "second_stage_req_template_json_object": null,
+        "ratelimit_codes": [
+          429
+        ],
+        "request_timeout": 20,
+        "proxies": null,
+        "verify_ssl": true
+      },
+      "active": true,
+      "generator_family_name": "MultiEndpointREST",
+      "modality": {
+        "in": [
+          "text"
+        ],
+        "out": [
+          "text"
+        ]
+      },
+      "parallel_capable": true,
+      "supports_multiple_generations": false,
+      "mod_time": "2024-09-04 05:53:40 +0000"
+    },
     "generators.nemo.NeMoGenerator": {
       "description": "Wrapper for the NVIDIA NeMo models via NGC. Expects NGC_API_KEY and ORG_ID environment variables.",
       "DEFAULT_PARAMS": {
@@ -6145,7 +6186,9 @@
         "response_json": true,
         "response_json_field": "text",
         "req_template": "{\"sender\": \"garak\", \"message\": \"$INPUT\"}",
-        "request_timeout": 20
+        "request_timeout": 20,
+        "proxies": null,
+        "verify_ssl": true
       },
       "active": true,
       "generator_family_name": "RASA",
@@ -6224,7 +6267,9 @@
         "response_json": false,
         "response_json_field": null,
         "req_template": "$INPUT",
-        "request_timeout": 20
+        "request_timeout": 20,
+        "proxies": null,
+        "verify_ssl": true
       },
       "active": true,
       "generator_family_name": "REST",
@@ -6238,7 +6283,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-08-29 13:35:37 +0000"
+      "mod_time": "2024-09-04 05:53:40 +0000"
     },
     "generators.test.Blank": {
       "description": "This generator always returns the empty string.",
