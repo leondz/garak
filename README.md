@@ -162,6 +162,12 @@ Private Replicate endpoints:
 * `--model_name` (optional, `command` by default) - The specific Cohere model you'd like to test
 * set the `COHERE_API_KEY` environment variable to your Cohere API key, e.g. "aBcDeFgHiJ123456789"; see https://dashboard.cohere.ai/api-keys when logged in
 
+### Groq
+
+* `--model_type groq`
+* `--model_name` - The name of the model to access via the Groq API
+* set the `GROQ_API_KEY` environment variable to your Groq API key, see https://console.groq.com/docs/quickstart for details on creating an API key
+
 ### ggml
 
 * `--model_type ggml`
