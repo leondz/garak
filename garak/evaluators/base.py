@@ -188,7 +188,7 @@ class Evaluator:
         )
         if len(passes) and failrate > 0.0:
             print(
-                f"   ({Fore.LIGHTRED_EX}failure rate:{Style.RESET_ALL} {failrate:>3.2g}%)",
+                f"   ({Fore.LIGHTRED_EX}failure rate:{Style.RESET_ALL} {failrate:6.2f}%)",
                 end="",
             )
         if _config.system.show_z and zscore is not None:
@@ -234,7 +234,7 @@ class Evaluator:
         )
         if len(passes) and failrate > 0.0:
             print(
-                f"    {Fore.LIGHTRED_EX}failure rate:{Style.RESET_ALL} {failrate:>3.2g}%",
+                f"    {Fore.LIGHTRED_EX}failure rate:{Style.RESET_ALL} {failrate:6.2f}%",
                 end="",
             )
         if failrate > 0.0 and _config.system.show_z and zscore is not None:
