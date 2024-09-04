@@ -1,7 +1,4 @@
-# SPDX-FileCopyrightText: Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
-# SPDX-License-Identifier: Apache-2.0
-
-"""NVIDIA Inference Microservice LLM interface"""
+"""GroqChat API support"""
 
 import random
 from typing import List, Union
