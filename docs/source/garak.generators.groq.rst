@@ -1,7 +1,7 @@
-garak.generators.nim
+garak.generators.groq
 ====================
 
-.. automodule:: garak.generators.nim
+.. automodule:: garak.generators.groq
    :members:
    :undoc-members:
    :show-inheritance:   
