@@ -193,7 +193,7 @@ class Evaluator:
             )
         if _config.system.show_z and zscore is not None:
             if failrate == 0.0:
-                print("                       ", end="")
+                print("                          ", end="")
             print(f"    {rating_symbol} Z: {zscore:+0.1f}", end="")
         print()
 
