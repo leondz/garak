@@ -10,6 +10,8 @@ from garak.generators.groq import GroqChat
 
 
 def test_groq_invalid_multiple_completions():
+    if os.getenv(GroqChat.ENV_VAR, None) is None:
+        os.environ[GroqChat.ENV_VAR] = "fake_api_key"
     with pytest.raises(AssertionError) as e_info:
         generator = GroqChat(name="llama3-8b-8192")
         generator._call_model(
