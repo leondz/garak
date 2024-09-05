@@ -3,9 +3,19 @@
 
 import os
 import pytest
+import httpx
 
 import garak.cli
 from garak.generators.groq import GroqChat
+
+
+def test_groq_invalid_multiple_completions():
+    with pytest.raises(AssertionError) as e_info:
+        generator = GroqChat(name="llama3-8b-8192")
+        generator._call_model(
+            prompt="this is expected to fail", generations_this_call=2
+        )
+    assert "n > 1 is not supported" in str(e_info.value)
 
 
 @pytest.mark.skipif(
