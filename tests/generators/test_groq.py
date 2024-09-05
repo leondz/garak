@@ -25,7 +25,7 @@ def test_groq_generate_1():
     result = g._call_model("this is a test", generations_this_call=1)
     assert isinstance(result, list), "GroqChat _call_model should return a list"
     assert len(result) == 1, "GroqChat _call_model result list should have one item"
-    assert isinstance(result[0], str), "GroqChat _call_model should return a list"
+    assert isinstance(result[0], str), "GroqChat generate() should contain a str"
     result = g.generate("this is a test", generations_this_call=1)
     assert isinstance(result, list), "GroqChat generate() should return a list"
     assert (
