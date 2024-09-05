@@ -58,7 +58,6 @@ class Configurable:
             if not hasattr(self, "key_env_var"):
                 self.key_env_var = self.ENV_VAR
         self._validate_env_var()
-        # mark as configured, do not change as this is a one-time operation that should not be called again
         self._instance_configured = True
 
     def _apply_config(self, config):
