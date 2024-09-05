@@ -31,4 +31,4 @@ def test_groq_generate_1():
     assert (
         len(result) == 1
     ), "GroqChat generate() result list should have one item when generations_this_call=1"
-    assert isinstance(result[0], str), "GroqChat generate() should return a list"
+    assert isinstance(result[0], str), "GroqChat generate() should contain a str"
