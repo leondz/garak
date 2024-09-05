@@ -83,7 +83,7 @@ def test_docs_generators(classname):
 
 
 @pytest.mark.parametrize("classname", m["buffs"])
-def test_docs_generators(classname):
+def test_docs_buffs(classname):
     file_path = os.path.join(DOC_SOURCE, f"garak.buffs.{classname}.rst")
     assert os.path.isfile(file_path)
     assert os.path.getsize(file_path) > 0
