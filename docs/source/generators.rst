@@ -16,6 +16,8 @@ For a detailed oversight into how a generator operates, see :ref:`garak.generato
    garak.generators.guardrails
    garak.generators.huggingface
    garak.generators.langchain
+   garak.generators.langchain_serve
+   garak.generators.litellm
    garak.generators.octo
    garak.generators.openai
    garak.generators.nemo
@@ -23,5 +25,6 @@ For a detailed oversight into how a generator operates, see :ref:`garak.generato
    garak.generators.nvcf
    garak.generators.replicate
    garak.generators.rest
+   garak.generators.rasa
    garak.generators.test
 

@@ -161,7 +161,7 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
         if taxonomy is None:
             probe_module = re.sub("[^0-9A-Za-z_]", "", probe_group)
             m = importlib.import_module(f"garak.probes.{probe_module}")
-            group_doc = markdown.markdown(m.__doc__)
+            group_doc = markdown.markdown(plugin_docstring_to_description(m.__doc__))
             group_link = (
                 f"https://reference.garak.ai/en/latest/garak.probes.{probe_group}.html"
             )

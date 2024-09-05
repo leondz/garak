@@ -16,19 +16,21 @@ for top_path in TOP_PATHS:
 
 
 @pytest.mark.parametrize("category", TOP_PATHS)
-def test_top_docs(category):
+def test_top_docs(category: str):
     file_path = os.path.join(DOC_SOURCE, f"garak.{category}.rst")
     assert os.path.isfile(file_path)
     assert os.path.getsize(file_path) > 0
 
 
 @pytest.mark.parametrize("classname", m["probes"])
-def test_docs_probes(classname):
+def test_docs_probes(classname: str):
     file_path = os.path.join(DOC_SOURCE, f"garak.probes.{classname}.rst")
     assert os.path.isfile(
         file_path
     ), f"There must be an entry for each probe family in the docs; missing {file_path}"
-    assert os.path.getsize(file_path) > 0, "Probe family doc files can't be empty"
+    assert (
+        os.path.getsize(file_path) > 0
+    ), "plugin docs cannot be empty. you can just use a stub to read python docstrings, look at existing doc files"
     category_file = os.path.join(DOC_SOURCE, "probes.rst")
     target_doc = f"garak.probes.{classname}\n"
     assert (
@@ -37,12 +39,14 @@ def test_docs_probes(classname):
 
 
 @pytest.mark.parametrize("classname", m["detectors"])
-def test_docs_detectors(classname):
+def test_docs_detectors(classname: str):
     file_path = os.path.join(DOC_SOURCE, f"garak.detectors.{classname}.rst")
     assert os.path.isfile(
         file_path
     ), f"There must be an entry for each detector family in the docs; missing {file_path}"
-    assert os.path.getsize(file_path) > 0
+    assert (
+        os.path.getsize(file_path) > 0
+    ), "plugin docs cannot be empty. you can just use a stub to read python docstrings, look at existing doc files"
     category_file = os.path.join(DOC_SOURCE, "detectors.rst")
     target_doc = f"garak.detectors.{classname}\n"
     assert (
@@ -51,12 +55,14 @@ def test_docs_detectors(classname):
 
 
 @pytest.mark.parametrize("classname", m["harnesses"])
-def test_docs_harnesses(classname):
+def test_docs_harnesses(classname: str):
     file_path = os.path.join(DOC_SOURCE, f"garak.harnesses.{classname}.rst")
     assert os.path.isfile(
         file_path
     ), f"There must be an entry for each harness family in the docs; missing {file_path}"
-    assert os.path.getsize(file_path) > 0
+    assert (
+        os.path.getsize(file_path) > 0
+    ), "plugin docs cannot be empty. you can just use a stub to read python docstrings, look at existing doc files"
     category_file = os.path.join(DOC_SOURCE, "harnesses.rst")
     target_doc = f"garak.harnesses.{classname}\n"
     assert (
@@ -65,12 +71,14 @@ def test_docs_harnesses(classname):
 
 
 @pytest.mark.parametrize("classname", m["evaluators"])
-def test_docs_evaluators(classname):
+def test_docs_evaluators(classname: str):
     file_path = os.path.join(DOC_SOURCE, f"garak.evaluators.{classname}.rst")
     assert os.path.isfile(
         file_path
     ), f"There must be an entry for each evaluator family in the docs; missing {file_path}"
-    assert os.path.getsize(file_path) > 0
+    assert (
+        os.path.getsize(file_path) > 0
+    ), "plugin docs cannot be empty. you can just use a stub to read python docstrings, look at existing doc files"
     category_file = os.path.join(DOC_SOURCE, "evaluators.rst")
     target_doc = f"garak.evaluators.{classname}\n"
     assert (
@@ -79,12 +87,14 @@ def test_docs_evaluators(classname):
 
 
 @pytest.mark.parametrize("classname", m["generators"])
-def test_docs_generators(classname):
+def test_docs_generators(classname: str):
     file_path = os.path.join(DOC_SOURCE, f"garak.generators.{classname}.rst")
     assert os.path.isfile(
         file_path
     ), f"There must be an entry for each generator family in the docs; missing {file_path}"
-    assert os.path.getsize(file_path) > 0
+    assert (
+        os.path.getsize(file_path) > 0
+    ), "plugin docs cannot be empty. you can just use a stub to read python docstrings, look at existing doc files"
     category_file = os.path.join(DOC_SOURCE, "generators.rst")
     target_doc = f"garak.generators.{classname}\n"
     assert (
@@ -93,12 +103,14 @@ def test_docs_generators(classname):
 
 
 @pytest.mark.parametrize("classname", m["buffs"])
-def test_docs_generators(classname):
+def test_docs_buffs(classname: str):
     file_path = os.path.join(DOC_SOURCE, f"garak.buffs.{classname}.rst")
     assert os.path.isfile(
         file_path
     ), f"There must be an entry for each buff family in the docs; missing {file_path}"
-    assert os.path.getsize(file_path) > 0
+    assert (
+        os.path.getsize(file_path) > 0
+    ), "plugin docs cannot be empty. you can just use a stub to read python docstrings, look at existing doc files"
     category_file = os.path.join(DOC_SOURCE, "buffs.rst")
     target_doc = f"garak.buffs.{classname}\n"
     assert (
@@ -127,7 +139,7 @@ plugins = probes + detectors + generators + buffs
 
 
 @pytest.mark.parametrize("plugin_name", plugins)
-def test_check_docstring(plugin_name):
+def test_check_docstring(plugin_name: str):
     plugin_name_parts = plugin_name.split(".")
     module_name = "garak." + ".".join(plugin_name_parts[:-1])
     class_name = plugin_name_parts[-1]
