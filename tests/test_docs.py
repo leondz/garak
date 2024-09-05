@@ -16,14 +16,14 @@ for top_path in TOP_PATHS:
 
 
 @pytest.mark.parametrize("category", TOP_PATHS)
-def test_top_docs(category):
+def test_top_docs(category: str):
     file_path = os.path.join(DOC_SOURCE, f"garak.{category}.rst")
     assert os.path.isfile(file_path)
     assert os.path.getsize(file_path) > 0
 
 
 @pytest.mark.parametrize("classname", m["probes"])
-def test_docs_probes(classname):
+def test_docs_probes(classname: str):
     file_path = os.path.join(DOC_SOURCE, f"garak.probes.{classname}.rst")
     assert os.path.isfile(file_path), "probes need a documentation sub in docs/"
     assert (
@@ -37,7 +37,7 @@ def test_docs_probes(classname):
 
 
 @pytest.mark.parametrize("classname", m["detectors"])
-def test_docs_detectors(classname):
+def test_docs_detectors(classname: str):
     file_path = os.path.join(DOC_SOURCE, f"garak.detectors.{classname}.rst")
     assert os.path.isfile(file_path), "detectors need a documentation sub in docs/"
     assert (
@@ -51,7 +51,7 @@ def test_docs_detectors(classname):
 
 
 @pytest.mark.parametrize("classname", m["harnesses"])
-def test_docs_harnesses(classname):
+def test_docs_harnesses(classname: str):
     file_path = os.path.join(DOC_SOURCE, f"garak.harnesses.{classname}.rst")
     assert os.path.isfile(file_path), "harnesses need a documentation sub in docs/"
     assert (
@@ -65,7 +65,7 @@ def test_docs_harnesses(classname):
 
 
 @pytest.mark.parametrize("classname", m["evaluators"])
-def test_docs_evaluators(classname):
+def test_docs_evaluators(classname: str):
     file_path = os.path.join(DOC_SOURCE, f"garak.evaluators.{classname}.rst")
     assert os.path.isfile(file_path), "evaluators need a documentation sub in docs/"
     assert (
@@ -79,7 +79,7 @@ def test_docs_evaluators(classname):
 
 
 @pytest.mark.parametrize("classname", m["generators"])
-def test_docs_generators(classname):
+def test_docs_generators(classname: str):
     file_path = os.path.join(DOC_SOURCE, f"garak.generators.{classname}.rst")
     assert os.path.isfile(file_path), "generators need a documentation sub in docs/"
     assert (
@@ -93,7 +93,7 @@ def test_docs_generators(classname):
 
 
 @pytest.mark.parametrize("classname", m["buffs"])
-def test_docs_buffs(classname):
+def test_docs_buffs(classname: str):
     file_path = os.path.join(DOC_SOURCE, f"garak.buffs.{classname}.rst")
     assert os.path.isfile(file_path), "buffs need a documentation sub in docs/"
     assert (
@@ -127,7 +127,7 @@ plugins = probes + detectors + generators + buffs
 
 
 @pytest.mark.parametrize("plugin_name", plugins)
-def test_check_docstring(plugin_name):
+def test_check_docstring(plugin_name: str):
     plugin_name_parts = plugin_name.split(".")
     module_name = "garak." + ".".join(plugin_name_parts[:-1])
     class_name = plugin_name_parts[-1]
