@@ -12,7 +12,9 @@ from garak.generators.openai import OpenAICompatible
 
 
 class GroqChat(OpenAICompatible):
-    """Wrapper for Groq-hosted LLM models. Expects GROQ_API_KEY environment variable.
+    """Wrapper for Groq-hosted LLM models.
+    
+    Expects GROQ_API_KEY environment variable.
     See https://console.groq.com/docs/quickstart for more info on how to set up a Groq API key
     Uses the [OpenAI-compatible API](https://console.groq.com/docs/openai)
     """
