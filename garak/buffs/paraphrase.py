@@ -74,13 +74,13 @@ class Fast(Buff, HFCompatible):
     """CPU-friendly paraphrase buff based on Humarin's T5 paraphraser"""
 
     DEFAULT_PARAMS = Buff.DEFAULT_PARAMS | {
-        "hf_args": {"device": "cpu", "torch_dtype": "float32"}
+        "para_model_name": "garak-llm/chatgpt_paraphraser_on_T5_base",
+        "hf_args": {"device": "cpu", "torch_dtype": "float32"},
     }
     bcp47 = "en"
     doc_uri = "https://huggingface.co/humarin/chatgpt_paraphraser_on_T5_base"
 
     def __init__(self, config_root=_config) -> None:
-        self.para_model_name = "garak-llm/chatgpt_paraphraser_on_T5_base"
         self.num_beams = 5
         self.num_beam_groups = 5
         self.num_return_sequences = 5
