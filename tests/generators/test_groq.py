@@ -1,11 +1,6 @@
-# SPDX-FileCopyrightText: Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
-# SPDX-License-Identifier: Apache-2.0
-
 import os
 import pytest
-import httpx
 
-import garak.cli
 from garak.generators.groq import GroqChat
 
 
