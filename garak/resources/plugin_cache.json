@@ -1699,6 +1699,191 @@
       ],
       "mod_time": "2024-07-01 04:16:40 +0000"
     },
+    "probes.latentinjection.LatentInjectionFactSnippetEiffel": {
+      "description": "String-based latent prompt injections in fact snippets",
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
+      "active": true,
+      "bcp47": "en",
+      "doc_uri": "https://kai-greshake.de/posts/inject-my-pdf/",
+      "extended_detectors": [],
+      "goal": "subvert a snippet with instructions",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "base.TriggerListDetector",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "avid-effect:security:S0403",
+        "owasp:llm01",
+        "quality:Security:PromptStability"
+      ],
+      "mod_time": "2024-09-06 12:42:19 +0000"
+    },
+    "probes.latentinjection.LatentInjectionReport": {
+      "description": "String-based latent prompt injections via a report",
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
+      "active": true,
+      "bcp47": "en",
+      "doc_uri": "https://kai-greshake.de/posts/inject-my-pdf/",
+      "extended_detectors": [],
+      "goal": "subvert a report with instructions",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "base.TriggerListDetector",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "avid-effect:security:S0403",
+        "owasp:llm01",
+        "quality:Security:PromptStability"
+      ],
+      "mod_time": "2024-09-06 12:42:19 +0000"
+    },
+    "probes.latentinjection.LatentInjectionResume": {
+      "description": "String-based latent prompt injections via a resume",
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
+      "active": true,
+      "bcp47": "en",
+      "doc_uri": "https://kai-greshake.de/posts/inject-my-pdf/",
+      "extended_detectors": [],
+      "goal": "subvert a resume with instructions",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "base.TriggerListDetector",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "avid-effect:security:S0403",
+        "owasp:llm01",
+        "quality:Security:PromptStability"
+      ],
+      "mod_time": "2024-09-06 12:42:19 +0000"
+    },
+    "probes.latentinjection.LatentInjectionTranslationEnFr": {
+      "description": "String-based latent prompt injections via translation",
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
+      "active": true,
+      "bcp47": "en",
+      "doc_uri": "https://x.com/goodside/status/1569128808308957185",
+      "extended_detectors": [],
+      "goal": "subvert translation instructions",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "base.TriggerListDetector",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "avid-effect:security:S0403",
+        "owasp:llm01",
+        "quality:Security:PromptStability"
+      ],
+      "mod_time": "2024-09-06 12:42:19 +0000"
+    },
+    "probes.latentinjection.LatentInjectionTranslationEnZh": {
+      "description": "Latent prompt injection in Chinese context (\u7b80\u4f53\u5b57)",
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
+      "active": true,
+      "bcp47": "en",
+      "doc_uri": "https://x.com/goodside/status/1569128808308957185",
+      "extended_detectors": [],
+      "goal": "subvert translation instructions",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "base.TriggerListDetector",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "avid-effect:security:S0403",
+        "owasp:llm01",
+        "quality:Security:PromptStability"
+      ],
+      "mod_time": "2024-09-06 12:42:19 +0000"
+    },
+    "probes.latentinjection.LatentJailbreak": {
+      "description": "Implementation of Latent Jailbreak, using latent prompt injection-",
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
+      "active": false,
+      "bcp47": "en",
+      "doc_uri": "https://arxiv.org/abs/2307.08487",
+      "extended_detectors": [
+        "base.TriggerListDetector"
+      ],
+      "goal": "inject malicious instructions into output while posing as translation task",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "toxicity.ToxicCommentModel",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [],
+      "mod_time": "2024-09-06 12:42:19 +0000"
+    },
+    "probes.latentinjection.LatentJailbreakMini": {
+      "description": "Implementation of Latent Jailbreak, using latent prompt injection-",
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
+      "active": false,
+      "bcp47": "en",
+      "doc_uri": "https://arxiv.org/abs/2307.08487",
+      "extended_detectors": [
+        "base.TriggerListDetector"
+      ],
+      "goal": "inject malicious instructions into output while posing as translation task",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "toxicity.ToxicCommentModel",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [],
+      "mod_time": "2024-09-06 12:42:19 +0000"
+    },
     "probes.leakreplay.GuardianCloze": {
       "description": "Cloze data replay for literature. Uses passages that either GPT-4 or ChatGPT have been known to replay.",
       "DEFAULT_PARAMS": {
