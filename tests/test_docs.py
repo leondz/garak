@@ -25,7 +25,9 @@ def test_top_docs(category: str):
 @pytest.mark.parametrize("classname", m["probes"])
 def test_docs_probes(classname: str):
     file_path = os.path.join(DOC_SOURCE, f"garak.probes.{classname}.rst")
-    assert os.path.isfile(file_path), "probes need a documentation sub in docs/"
+    assert os.path.isfile(
+        file_path
+    ), f"There must be an entry for each probe family in the docs; missing {file_path}"
     assert (
         os.path.getsize(file_path) > 0
     ), "plugin docs cannot be empty. you can just use a stub to read python docstrings, look at existing doc files"
@@ -39,7 +41,9 @@ def test_docs_probes(classname: str):
 @pytest.mark.parametrize("classname", m["detectors"])
 def test_docs_detectors(classname: str):
     file_path = os.path.join(DOC_SOURCE, f"garak.detectors.{classname}.rst")
-    assert os.path.isfile(file_path), "detectors need a documentation sub in docs/"
+    assert os.path.isfile(
+        file_path
+    ), f"There must be an entry for each detector family in the docs; missing {file_path}"
     assert (
         os.path.getsize(file_path) > 0
     ), "plugin docs cannot be empty. you can just use a stub to read python docstrings, look at existing doc files"
@@ -53,7 +57,9 @@ def test_docs_detectors(classname: str):
 @pytest.mark.parametrize("classname", m["harnesses"])
 def test_docs_harnesses(classname: str):
     file_path = os.path.join(DOC_SOURCE, f"garak.harnesses.{classname}.rst")
-    assert os.path.isfile(file_path), "harnesses need a documentation sub in docs/"
+    assert os.path.isfile(
+        file_path
+    ), f"There must be an entry for each harness family in the docs; missing {file_path}"
     assert (
         os.path.getsize(file_path) > 0
     ), "plugin docs cannot be empty. you can just use a stub to read python docstrings, look at existing doc files"
@@ -67,7 +73,9 @@ def test_docs_harnesses(classname: str):
 @pytest.mark.parametrize("classname", m["evaluators"])
 def test_docs_evaluators(classname: str):
     file_path = os.path.join(DOC_SOURCE, f"garak.evaluators.{classname}.rst")
-    assert os.path.isfile(file_path), "evaluators need a documentation sub in docs/"
+    assert os.path.isfile(
+        file_path
+    ), f"There must be an entry for each evaluator family in the docs; missing {file_path}"
     assert (
         os.path.getsize(file_path) > 0
     ), "plugin docs cannot be empty. you can just use a stub to read python docstrings, look at existing doc files"
@@ -81,7 +89,9 @@ def test_docs_evaluators(classname: str):
 @pytest.mark.parametrize("classname", m["generators"])
 def test_docs_generators(classname: str):
     file_path = os.path.join(DOC_SOURCE, f"garak.generators.{classname}.rst")
-    assert os.path.isfile(file_path), "generators need a documentation sub in docs/"
+    assert os.path.isfile(
+        file_path
+    ), f"There must be an entry for each generator family in the docs; missing {file_path}"
     assert (
         os.path.getsize(file_path) > 0
     ), "plugin docs cannot be empty. you can just use a stub to read python docstrings, look at existing doc files"
@@ -95,7 +105,9 @@ def test_docs_generators(classname: str):
 @pytest.mark.parametrize("classname", m["buffs"])
 def test_docs_buffs(classname: str):
     file_path = os.path.join(DOC_SOURCE, f"garak.buffs.{classname}.rst")
-    assert os.path.isfile(file_path), "buffs need a documentation sub in docs/"
+    assert os.path.isfile(
+        file_path
+    ), f"There must be an entry for each buff family in the docs; missing {file_path}"
     assert (
         os.path.getsize(file_path) > 0
     ), "plugin docs cannot be empty. you can just use a stub to read python docstrings, look at existing doc files"
@@ -133,5 +145,5 @@ def test_check_docstring(plugin_name: str):
     class_name = plugin_name_parts[-1]
     mod = importlib.import_module(module_name)
     doc = getattr(getattr(mod, class_name), "__doc__")
-    assert isinstance(doc, str)
-    assert len(doc) > 0
+    assert isinstance(doc, str), "All plugins must have docstrings"
+    assert len(doc) > 0, "Plugin docstrings must not be empty"
