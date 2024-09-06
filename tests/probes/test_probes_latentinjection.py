@@ -28,9 +28,9 @@ def test_latentinjection_structure(classname):
     assert isinstance(p.top_instructions, list)
     for _ti in p.top_instructions:
         assert isinstance(_ti, str), "Top-level instructions must be a string"
-    for _doc in p.docs:
+    for _context in p.contexts:
         assert (
-            garak.probes.latentinjection.INJECTION_MARKER in _doc
+            garak.probes.latentinjection.INJECTION_MARKER in _context
         ), "Each doc must contain an injection marker - missing f-string?"
     for _ii in p.injection_instructions:
         assert (
