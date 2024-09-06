@@ -5790,6 +5790,48 @@
       "supports_multiple_generations": false,
       "mod_time": "2024-08-29 13:35:37 +0000"
     },
+    "generators.groq.GroqChat": {
+      "description": "Wrapper for Groq-hosted LLM models.",
+      "DEFAULT_PARAMS": {
+        "max_tokens": 150,
+        "temperature": 0.7,
+        "top_k": null,
+        "context_len": null,
+        "top_p": 1.0,
+        "frequency_penalty": 0.0,
+        "presence_penalty": 0.0,
+        "seed": null,
+        "stop": [
+          "#",
+          ";"
+        ],
+        "suppressed_params": [
+          "frequency_penalty",
+          "logit_bias",
+          "logprobs",
+          "n",
+          "presence_penalty",
+          "top_logprobs"
+        ],
+        "retry_json": true,
+        "uri": "https://api.groq.com/openai/v1",
+        "vary_seed_each_call": true,
+        "vary_temp_each_call": true
+      },
+      "active": true,
+      "generator_family_name": "Groq",
+      "modality": {
+        "in": [
+          "text"
+        ],
+        "out": [
+          "text"
+        ]
+      },
+      "parallel_capable": true,
+      "supports_multiple_generations": false,
+      "mod_time": "2024-09-06 13:19:56 +0000"
+    },
     "generators.guardrails.NeMoGuardrails": {
       "description": "Generator wrapper for NeMo Guardrails.",
       "DEFAULT_PARAMS": {
