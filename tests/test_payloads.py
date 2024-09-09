@@ -23,7 +23,7 @@ def test_core_payloads(payload_name):
     ), f"Not a valid payload: {payload_name}"
 
 
-@pytest.fixture(scope="module", autouse=True)
+@pytest.fixture(scope="module")
 def payload_typology():
     types = []
     with open(
