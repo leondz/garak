@@ -53,10 +53,17 @@ class HFCompatible:
                 self.context_len = config.n_ctx
 
     def _gather_hf_params(self, hf_constructor: Callable):
-        # this may be a bit too naive as it will pass any parameter valid for the pipeline signature
-        # this falls over when passed `from_pretrained` methods as the callable model params are not explicit
-        params = self.hf_args
-        if params["device"] is None:
+        """ "Identify arguments that impact huggingface transformers resources and behavior"""
+
+        # this may be a bit too naive as it will pass any parameter valid for the hf_constructor signature
+        # this falls over when passed some `from_pretrained` methods as the callable model params are not always explicit
+        params = (
+            self.hf_args
+            if hasattr(self, "hf_args") and isinstance(self.hf_args, dict)
+            else {}
+        )
+        if params is not None and not "device" in params and hasattr(self, "device"):
+            # consider setting self.device in all cases or if self.device is not found raise error `_select_hf_device` must be called
             params["device"] = self.device
 
         args = {}
@@ -95,6 +102,15 @@ class HFCompatible:
                     # per transformers convention hold `device_map` before `device`
                     continue
                 args[k] = params[k]
+
+        if (
+            not "device_map" in args
+            and "device_map" in params_to_process
+            and "device" in params_to_process
+            and "device" in args
+        ):
+            del args["device"]
+            args["device_map"] = self.device
 
         return args
 
