@@ -125,8 +125,8 @@ class PayloadGroup:
         self._load()
 
 
-class Manager:
-    """The payload Manager manages payload groups. It'll inventory them on disk,
+class Loadmaster:
+    """The payload Loadmaster manages payload groups. It'll inventory them on disk,
     manage enumeration of payloads (optionally given a payload type specification),
     and load them up."""
 
