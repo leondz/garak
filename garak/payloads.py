@@ -183,7 +183,6 @@ class Manager:
                     ):
                         yield payload
                 else:
-                    print(types)
                     try:
                         for typename in types:
                             for payload_type in self.payload_list[payload]["types"]:
