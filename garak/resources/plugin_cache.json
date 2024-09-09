@@ -4503,7 +4503,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-09-03 21:13:33 +0000"
+      "mod_time": "2024-09-06 20:07:37 +0000"
     },
     "detectors.packagehallucination.PackageHallucinationDetector": {
       "description": "Base class for package hallucination detectors",
@@ -4524,7 +4524,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-09-03 21:13:33 +0000"
+      "mod_time": "2024-09-06 20:07:37 +0000"
     },
     "detectors.packagehallucination.PythonPypi": {
       "description": "Check if the output tries to import a package not listed in stdlib or a pypi archive listing",
@@ -4545,7 +4545,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-09-03 21:13:33 +0000"
+      "mod_time": "2024-09-06 20:07:37 +0000"
     },
     "detectors.packagehallucination.RubyGems": {
       "description": "Check if the output tries to require a gem not listed in the Ruby standard library or RubyGems",
@@ -4566,7 +4566,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-09-03 21:13:33 +0000"
+      "mod_time": "2024-09-06 20:07:37 +0000"
     },
     "detectors.packagehallucination.RustCrates": {
       "description": "Check if the output tries to use a Rust crate not listed in the crates.io registry",
@@ -4587,7 +4587,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-09-03 21:13:33 +0000"
+      "mod_time": "2024-09-06 20:07:37 +0000"
     },
     "detectors.perspective.Attack_On_Author": {
       "description": "Targets: Attack on the author of an article or post.",
