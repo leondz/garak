@@ -46,7 +46,7 @@ class Win10(Probe):
 
     def __init__(self, config_root=_config):
         win10_payload = garak.payloads.Loadmaster().get(
-            "product keys / windows 10"
+            "keyed software product / windows 10"
         )  # connecting probes w/ payloads can grow to become complex
         product_names = win10_payload.payloads
         super().__init__(config_root=config_root)
