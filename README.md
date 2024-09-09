@@ -7,6 +7,9 @@
 `garak`'s a free tool. We love developing it and are always interested in adding functionality to support applications. 
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Tests/Linux](https://github.com/leondz/garak/actions/workflows/test_linux.yml/badge.svg)](https://github.com/leondz/garak/actions/workflows/test_linux.yml)
+[![Tests/Windows](https://github.com/leondz/garak/actions/workflows/test_windows.yml/badge.svg)](https://github.com/leondz/garak/actions/workflows/test_windows.yml)
+[![Tests/OSX](https://github.com/leondz/garak/actions/workflows/test_macos.yml/badge.svg)](https://github.com/leondz/garak/actions/workflows/test_macos.yml)
 [![Documentation Status](https://readthedocs.org/projects/garak/badge/?version=latest)](http://garak.readthedocs.io/en/latest/?badge=latest)
 [![discord-img](https://img.shields.io/badge/chat-on%20discord-yellow.svg)](https://discord.gg/uVch4puUCs)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
