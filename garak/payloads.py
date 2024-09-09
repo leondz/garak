@@ -36,12 +36,29 @@ The JSON structure of a payload is:
 
 
 import json
+import jsonschema
 import logging
 import pathlib
 from typing import Generator, List, Union
 
+
 import garak._config
 import garak.exception
+
+
+PAYLOAD_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "garak_payload_name": {"type": "string"},
+        "payload_types": {"type": "array", "items": {"type": "string"}},
+        "detector_name": {"type": "string"},
+        "payloads": {"type": "array", "items": {"type": "string"}},
+        "bcp47": {"type": "string"},
+    },
+    "required": [
+        "garak_payload_name",
+    ],
+}
 
 
 class PayloadGroup:
@@ -64,6 +81,14 @@ class PayloadGroup:
             msg = "Payload JSON error:" + str(jde)
             logging.error(msg, exc_info=jde)
             raise garak.exception.PayloadFailure("Payload JSON error") from jde
+
+        try:
+            jsonschema.validate(instance=loaded_payload, schema=PAYLOAD_SCHEMA)
+
+        except jsonschema.ValidationError as ve:
+            msg = "Payload JSON schema mismatch:" + str(ve)
+            logging.error(msg, exc_info=ve)
+            raise garak.exception.PayloadFailure("Payload didn't match schema") from ve
 
         self.types = loaded_payload["payload_types"]
         self.payloads = [str(p) for p in loaded_payload["payloads"]]
