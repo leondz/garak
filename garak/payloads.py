@@ -148,8 +148,9 @@ class Manager:
                     payload_name = payload_decoded["garak_payload_name"]
                     payload_types = payload_decoded["payload_types"]
                 except (json.JSONDecodeError, KeyError) as exc:
-                    logging.debug("Payload enum skipped %s", payload_path, exc_info=exc)
-                    raise Exception from exc
+                    msg = f"Payload enum skipped: {payload_path}"
+                    logging.debug(msg, exc_info=exc)
+                    continue
                 payloads_found[payload_name] = {
                     "path": payload_path,
                     "types": payload_types,
