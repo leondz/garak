@@ -52,11 +52,14 @@ PAYLOAD_SCHEMA = {
         "garak_payload_name": {"type": "string"},
         "payload_types": {"type": "array", "items": {"type": "string"}},
         "detector_name": {"type": "string"},
+        "detector_params": {"type": "object"},
         "payloads": {"type": "array", "items": {"type": "string"}},
         "bcp47": {"type": "string"},
     },
     "required": [
         "garak_payload_name",
+        "payload_types",
+        "payloads",
     ],
 }
 
