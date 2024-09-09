@@ -192,7 +192,7 @@ class Manager:
                         yield s.value  # i mean i get it but.. did guido van r ever meet rasmus lerdorf
 
     def get(self, name) -> PayloadGroup:
-        """Return a payload"""
+        """Return a PayloadGroup"""
 
         return PayloadGroup(name, self.payload_list[name]["path"])  # or raise KeyError
 
