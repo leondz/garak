@@ -24,7 +24,6 @@ import warnings
 import backoff
 import torch
 from PIL import Image
-from transformers import LlavaNextProcessor, LlavaNextForConditionalGeneration
 
 from garak import _config
 from garak.exception import ModelNameMissingError, GarakException
@@ -656,6 +655,8 @@ class LLaVA(Generator, HFCompatible):
             raise ModelNameMissingError(
                 f"Invalid model name {self.name}, current support: {self.supported_models}."
             )
+
+        from transformers import LlavaNextProcessor, LlavaNextForConditionalGeneration
 
         self.device = self._select_hf_device()
         model_kwargs = self._gather_hf_params(
