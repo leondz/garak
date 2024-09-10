@@ -5879,7 +5879,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2024-08-29 13:35:37 +0000"
+      "mod_time": "2024-09-10 12:29:15 +0000"
     },
     "generators.huggingface.InferenceAPI": {
       "description": "Get text generations from Hugging Face Inference API",
@@ -5904,7 +5904,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2024-08-29 13:35:37 +0000"
+      "mod_time": "2024-09-10 12:29:15 +0000"
     },
     "generators.huggingface.InferenceEndpoint": {
       "description": "Interface for Hugging Face private endpoints",
@@ -5929,7 +5929,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-08-29 13:35:37 +0000"
+      "mod_time": "2024-09-10 12:29:15 +0000"
     },
     "generators.huggingface.LLaVA": {
       "description": "Get LLaVA ([ text + image ] -> text) generations",
@@ -5957,7 +5957,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": false,
-      "mod_time": "2024-08-29 13:35:37 +0000"
+      "mod_time": "2024-09-10 12:29:15 +0000"
     },
     "generators.huggingface.Model": {
       "description": "Get text generations from a locally-run Hugging Face model",
@@ -5984,7 +5984,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2024-08-29 13:35:37 +0000"
+      "mod_time": "2024-09-10 12:29:15 +0000"
     },
     "generators.huggingface.OptimumPipeline": {
       "description": "Get text generations from a locally-run Hugging Face pipeline using NVIDIA Optimum",
@@ -6011,7 +6011,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2024-08-29 13:35:37 +0000"
+      "mod_time": "2024-09-10 12:29:15 +0000"
     },
     "generators.huggingface.Pipeline": {
       "description": "Get text generations from a locally-run Hugging Face pipeline",
@@ -6038,7 +6038,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2024-08-29 13:35:37 +0000"
+      "mod_time": "2024-09-10 12:29:15 +0000"
     },
     "generators.langchain.LangChainLLMGenerator": {
       "description": "Class supporting LangChain LLM interfaces",
@@ -6666,11 +6666,17 @@
     },
     "buffs.paraphrase.Fast": {
       "description": "CPU-friendly paraphrase buff based on Humarin's T5 paraphraser",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "para_model_name": "garak-llm/chatgpt_paraphraser_on_T5_base",
+        "hf_args": {
+          "device": "cpu",
+          "torch_dtype": "float32"
+        }
+      },
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://huggingface.co/humarin/chatgpt_paraphraser_on_T5_base",
-      "mod_time": "2024-08-27 17:41:28 +0000"
+      "mod_time": "2024-09-06 14:46:11 +0000"
     },
     "buffs.paraphrase.PegasusT5": {
       "description": "Paraphrasing buff using Pegasus model",
@@ -6678,7 +6684,7 @@
       "active": true,
       "bcp47": "en",
       "doc_uri": "https://huggingface.co/tuner007/pegasus_paraphrase",
-      "mod_time": "2024-08-27 17:41:28 +0000"
+      "mod_time": "2024-09-06 14:46:11 +0000"
     }
   }
 }
