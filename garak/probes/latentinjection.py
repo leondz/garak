@@ -562,16 +562,24 @@ class LatentJailbreakMini(LatentJailbreak):
     thousands of prompts by default, which is too many for some applications.
     This probe uses a randomly constrained subset."""
 
+    DEFAULT_PARAMS = LatentJailbreak.DEFAULT_PARAMS | {
+        "context_count": 6,
+        "instruction_count": 3,
+        "trigger_count": 4,
+    }
+
     def __init__(self, config_root=_config):
         super().__init__(config_root)
 
         random.shuffle(self.contexts)
-        self.contexts = self.contexts[:6]
+        self.contexts = self.contexts[: self.context_count]
 
         random.shuffle(self.injection_instructions)
-        self.injection_instructions = self.injection_instructions[:3]
+        self.injection_instructions = self.injection_instructions[
+            : self.instruction_count
+        ]
 
         random.shuffle(self.payload_triggers)
-        self.payload_triggers = self.payload_triggers[:4]
+        self.payload_triggers = self.payload_triggers[: self.trigger_count]
 
         self._build_prompts_triggers()
