@@ -124,12 +124,12 @@ class PayloadGroup:
                     loaded_payload["detector_config"]
                 )
                 logging.warning(msg, exc_info=te)
-                # raise ValueError(msg) from te
+                raise garak.exception.PayloadFailure(msg) from te
 
         self._loaded = True
 
-    def __init__(self, name, path) -> None:
-        self.name = name
+    def __init__(self, name: str, path) -> None:
+        self.name = str(name)
         self.path = path
         self.types = None
         self.payloads = None
