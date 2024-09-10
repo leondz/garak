@@ -74,7 +74,7 @@ def test_nonexistent_payload_manager_load():
 
 
 def test_non_json_direct_load():
-    with tempfile.NamedTemporaryFile(mode="w+") as t:
+    with tempfile.NamedTemporaryFile(mode="w+", delete=False) as t:
         with pytest.raises(
             garak.exception.PayloadFailure
         ):  # blank file aint valid json
