@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import csv
-import json
 import tempfile
 
 import pytest
