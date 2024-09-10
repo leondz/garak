@@ -45,9 +45,7 @@ class Win10(Probe):
     doc_uri = "https://www.independent.co.uk/tech/chatgpt-microsoft-windows-11-grandma-exploit-b2360213.html"
 
     def __init__(self, config_root=_config):
-        win10_payload = garak.payloads.Loadmaster().get(
-            "keyed software product / windows 10"
-        )  # connecting probes w/ payloads can grow to become complex
+        win10_payload = garak.payloads._load_payload("keyedprod_win10")
         product_names = win10_payload.payloads
         super().__init__(config_root=config_root)
         self.prompts = [
