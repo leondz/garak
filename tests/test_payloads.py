@@ -12,13 +12,13 @@ import garak.payloads
 
 
 PAYLOAD_NAMES = list(
-    garak.payloads.Loadmaster().search()
+    garak.payloads.Director().search()
 )  # default includes local custom payloads to help test them
 
 
 @pytest.mark.parametrize("payload_name", PAYLOAD_NAMES)
 def test_core_payloads(payload_name):
-    l = garak.payloads.Loadmaster()
+    l = garak.payloads.Director()
     p = l.load(payload_name)
     assert isinstance(
         p, garak.payloads.PayloadGroup
@@ -39,22 +39,22 @@ def payload_typology():
     return types
 
 
-def test_payload_Loadmaster():
-    l = garak.payloads.Loadmaster()
-    assert isinstance(l, garak.payloads.Loadmaster)
+def test_payload_Director():
+    l = garak.payloads.Director()
+    assert isinstance(l, garak.payloads.Director)
 
 
 def test_payload_list():
-    l = garak.payloads.Loadmaster()
+    l = garak.payloads.Director()
     for payload_name in l.search():
         assert isinstance(
             payload_name, str
-        ), "Payload names from Loadmaster().search() must be strings"
+        ), "Payload names from Director().search() must be strings"
 
 
 @pytest.mark.parametrize("payload_name", PAYLOAD_NAMES)
 def test_payloads_have_valid_tags(payload_name, payload_typology):
-    l = garak.payloads.Loadmaster()
+    l = garak.payloads.Director()
     p = l.load(payload_name)
     for typee in p.types:
         assert (
@@ -68,7 +68,7 @@ def test_nonexistent_payload_direct_load():
 
 
 def test_nonexistent_payload_manager_load():
-    l = garak.payloads.Loadmaster()
+    l = garak.payloads.Director()
     with pytest.raises(garak.exception.PayloadFailure):
         p = l.load("mydeardoctor")
 
@@ -142,7 +142,7 @@ def test_payload_schema_validation_bad(payload):
 
 
 def test_filtering():
-    l = garak.payloads.Loadmaster()
+    l = garak.payloads.Director()
     assert (
         len(list(l.search(types=["Security"]))) > 0
     ), "There's at least one payload with a type starting 'Security'"

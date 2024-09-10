@@ -174,8 +174,8 @@ def _load_payload(
     )
 
 
-class Loadmaster:
-    """The payload Loadmaster manages payload groups. It'll inventory them on disk,
+class Director:
+    """The payload Director manages payload groups. It'll inventory them on disk,
     manage enumeration of payloads (optionally given a payload type specification),
     and load them up."""
 
@@ -247,7 +247,7 @@ class Loadmaster:
             p = _load_payload(name, path)  # or raise KeyError
 
         except KeyError as ke:
-            msg = f"Requested payload {name} is not registered in this Loadmaster"
+            msg = f"Requested payload {name} is not registered in this Director"
             logging.error(msg, exc_info=ke)
             raise garak.exception.PayloadFailure(msg) from ke
 
