@@ -127,6 +127,7 @@ class PayloadGroup:
                 raise garak.exception.PayloadFailure(msg) from te
 
         if garak._config.transient.reportfile is not None:
+            payload_stat = pathlib.Path(self.path).stat()
             garak._config.transient.reportfile.write(
                 json.dumps(
                     {
@@ -134,6 +135,9 @@ class PayloadGroup:
                         "loading_complete": "payload",
                         "payload_name": self.name,
                         "payload_path": self.path,
+                        "entries": len(self.payloads),
+                        "filesize": payload_stat.st_size,
+                        "mtime": payload_stat.st_mtime,
                     }
                 )
                 + "\n"
@@ -146,7 +150,7 @@ class PayloadGroup:
         self.types = None
         self.payloads = None
         self.detector_name = None
-        self.detector_params = None
+        self.detector_config = None
         self._loaded = False
         self._load()
 
