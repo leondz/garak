@@ -70,6 +70,14 @@ PAYLOAD_SEARCH_DIRS = [
 ]
 
 
+def _validate_payload(payload_json):
+    try:
+        jsonschema.validate(instance=payload_json, schema=PAYLOAD_SCHEMA)
+    except jsonschema.ValidationError as ve:
+        return ve
+    return True
+
+
 class PayloadGroup:
     """Represents a configured group of payloads for use with garak
     probes. Each group should have a name, one or more payload types, and
@@ -91,13 +99,13 @@ class PayloadGroup:
             logging.error(msg, exc_info=jde)
             raise garak.exception.PayloadFailure("Payload JSON error") from jde
 
-        try:
-            jsonschema.validate(instance=loaded_payload, schema=PAYLOAD_SCHEMA)
-
-        except jsonschema.ValidationError as ve:
-            msg = "Payload JSON schema mismatch:" + str(ve)
-            logging.error(msg, exc_info=ve)
-            raise garak.exception.PayloadFailure("Payload didn't match schema") from ve
+        validation_result = _validate_payload(loaded_payload)
+        if validation_result is not True:
+            msg = "Payload JSON schema mismatch:" + str(validation_result)
+            logging.error(msg, exc_info=validation_result)
+            raise garak.exception.PayloadFailure(
+                "Payload didn't match schema"
+            ) from validation_result
 
         self.types = loaded_payload["payload_types"]
         self.payloads = [str(p) for p in loaded_payload["payloads"]]
@@ -134,7 +142,9 @@ class PayloadGroup:
 def _load_payload(
     name: str, path: Union[str, pathlib.Path, None] = None
 ) -> PayloadGroup:
-    if path is None:
+    if path is not None:
+        return PayloadGroup(name, path)
+    else:
         # iterate through search dirs
         for dir in PAYLOAD_SEARCH_DIRS:
             path = pathlib.Path(dir) / f"{name}.json"
@@ -225,8 +235,21 @@ class Loadmaster:
 
     def load(self, name) -> PayloadGroup:
         """Return a PayloadGroup"""
+        try:
+            path = self.payload_list[name]["path"]
+            p = _load_payload(name, path)  # or raise KeyError
 
-        return _load_payload(name, self.payload_list[name]["path"])  # or raise KeyError
+        except KeyError as ke:
+            msg = f"Requested payload {name} is not registered in this Loadmaster"
+            logging.error(msg, exc_info=ke)
+            raise garak.exception.PayloadFailure(msg) from ke
+
+        except FileNotFoundError as fnfe:
+            msg = f"Requested payload {name} not found at expected path {path}"
+            logging.error(msg, exc_info=fnfe)
+            raise garak.exception.PayloadFailure(msg) from fnfe
+
+        return p
 
     def __init__(self) -> None:
         self.payload_list = {}  # name: {path:path, types:types}
