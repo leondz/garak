@@ -9,6 +9,7 @@ labels: "documentation"
 
   Useful Links:
   - Wiki: https://docs.garak.ai/garak
+  - Code reference: https://reference.garak.ai/
 
   Before opening a new issue, please search existing issues https://github.com/leondz/garak/issues
 -->
@@ -32,7 +33,7 @@ Why should we document this and who will benefit from it?
 
 ### Draft the doc
 
-- [ ] Write the doc, following the format listed in these resources:
+- [ ] If you can, write the doc, following the format listed in these resources:
   - [Example of a similar article]()
 
 ### Open a pull request

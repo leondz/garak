@@ -15,11 +15,11 @@ labels: "new-plugin"
 
 ## Summary
 
-Brief explanation of the plugin.
+Brief explanation of the plugin (e.g. probe, generator, detector, ...).
 
 ### Basic example
 
-If you have a POC, blog post or any other useful references please let us know in this section.
+If you have a Proof-of-Concept, blog post or any other useful references please let us know in this section.
 
 ### Motivation
 
