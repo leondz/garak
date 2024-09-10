@@ -133,11 +133,11 @@ class PayloadGroup:
                     {
                         "entry_type": "init",
                         "loading_complete": "payload",
-                        "payload_name": self.name,
-                        "payload_path": self.path,
+                        "payload_name": str(self.name),
+                        "payload_path": str(self.path),
                         "entries": len(self.payloads),
-                        "filesize": payload_stat.st_size,
-                        "mtime": payload_stat.st_mtime,
+                        "filesize": int(payload_stat.st_size),
+                        "mtime": str(payload_stat.st_mtime),
                     }
                 )
                 + "\n"
