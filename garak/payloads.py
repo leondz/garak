@@ -160,9 +160,10 @@ class Loadmaster:
     manage enumeration of payloads (optionally given a payload type specification),
     and load them up."""
 
-    def _scan_payload_dir(self, dir, type_prefixes=None) -> dict:
+    def _scan_payload_dir(self, dir) -> dict:
         """Look for .json entries in a dir, load them, check which are
-        payloads, return name:path dict"""
+        payloads, return name:path dict. optionally filter by type prefixes"""
+
         payloads_found = {}
         dir = pathlib.Path(dir)
         if not dir.is_dir():
@@ -178,15 +179,6 @@ class Loadmaster:
                     msg = f"Invalid payload, skipping: {payload_path}"
                     logging.debug(msg, exc_info=exc)
                     # raise garak.exception.PayloadFailure(msg) from exc
-
-                if type_prefixes is not None:
-                    matches = [
-                        payload_type.startswith(type_prefix)
-                        for payload_type in payload_types
-                        for type_prefix in type_prefixes
-                    ]
-                    if not any(matches):
-                        continue
 
                 payload_name = payload_path.stem
 
@@ -215,23 +207,19 @@ class Loadmaster:
                 yield payload
             else:
                 if include_children is False:
-                    if (
-                        len(
-                            set(types).intersection(
-                                set(self.payload_list[payload]["types"])
-                            )
-                        )
-                        > 1
-                    ):
-                        yield payload
+                    matches = [
+                        payload_type == type_prefix
+                        for payload_type in self.payload_list[payload]["types"]
+                        for type_prefix in types
+                    ]
                 else:
-                    try:
-                        for typename in types:
-                            for payload_type in self.payload_list[payload]["types"]:
-                                if payload_type.startswith(typename):
-                                    raise StopIteration(payload["name"])  # -_-
-                    except StopIteration as s:
-                        yield s.value  # i mean i get it but.. did guido van r ever meet rasmus lerdorf
+                    matches = [
+                        payload_type.startswith(type_prefix)
+                        for payload_type in self.payload_list[payload]["types"]
+                        for type_prefix in types
+                    ]
+                if any(matches):
+                    yield payload
 
     def load(self, name) -> PayloadGroup:
         """Return a PayloadGroup"""

@@ -140,3 +140,29 @@ def test_payload_schema_validation_ok(payload):
 @pytest.mark.parametrize("payload", BAD_PAYLOADS)
 def test_payload_schema_validation_bad(payload):
     assert garak.payloads._validate_payload(payload) != True
+
+
+def test_filtering():
+    l = garak.payloads.Loadmaster()
+    assert (
+        len(list(l.search(types=["Security"]))) > 0
+    ), "There's at least one payload with a type starting 'Security'"
+    assert (
+        len(
+            list(
+                l.search(
+                    types=[
+                        "Security circumvention instructions/Product activation codes"
+                    ],
+                    include_children=False,
+                )
+            )
+        )
+        > 0
+    ), "There's at least one payload with this type"
+    assert (
+        len(list(l.search(types=["Security"], include_children=False))) == 0
+    ), "Security isn't a top-level type"
+    assert (
+        len(list(l.search(types=["Security"], include_children=True))) > 0
+    ), "There's at least one payload with a type starting 'Security'"
