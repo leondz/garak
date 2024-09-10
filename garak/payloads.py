@@ -126,6 +126,18 @@ class PayloadGroup:
                 logging.warning(msg, exc_info=te)
                 raise garak.exception.PayloadFailure(msg) from te
 
+        if garak._config.transient.reportfile is not None:
+            garak._config.transient.reportfile.write(
+                json.dumps(
+                    {
+                        "entry_type": "init",
+                        "loading_complete": "payload",
+                        "payload_name": self.name,
+                        "payload_path": self.path,
+                    }
+                )
+                + "\n"
+            )
         self._loaded = True
 
     def __init__(self, name: str, path) -> None:
