@@ -45,7 +45,7 @@ jobs:
                   comment: `
                     Thanks for your pull request! Before this pull request can be merged, it must pass the checks of our automated linting tools.
 
-                    We use `black` to ensure the consistent format of our code. This can be run from the root directory of garak:
+                    We use \`black\` to ensure the consistent format of our code. This can be run from the root directory of garak:
 
                     \`\`\`
                     black garak
