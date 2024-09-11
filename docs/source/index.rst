@@ -29,20 +29,24 @@ Check out the :doc:`usage` section for further information, including :ref:`inst
 Contents
 --------
 
+
+Using garak
+^^^^^^^^^^^
+
 .. toctree::
    :maxdepth: 1
 
    how
    usage
-   contributing
    reporting
 
-Garak command line reference
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Advanced usage
+^^^^^^^^^^^^^^
 
 .. toctree::
    :maxdepth: 1
 
+   configurable
    cliref
 
 Code reference
@@ -51,11 +55,16 @@ Code reference
 .. toctree::
    :maxdepth: 1
 
+   contributing
+
    basic
    attempt
    cli
    command
+   exception
    interactive
+   _config
+   _plugins
 
 Plugin structure
 ^^^^^^^^^^^^^^^^
