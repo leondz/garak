@@ -228,3 +228,33 @@ Here's an example of setting the temperature on an OpenAIGenerator:
             openai:
                 OpenAIGenerator:
                     temperature: 1.0
+
+RestGenerator
+^^^^^^^^^^^^^
+
+RestGenerator is a slightly complex generator, though mostly because it exposes
+so many config values, allowing flexible integrations. This example sets 
+``model_type: rest`` to ensure that this model is selected for the run; that might 
+not always be wanted, and it isn't compulsory.
+
+.. code-block:: yaml
+
+    plugins:
+        model_type: rest
+        generators:
+            rest:
+                RestGenerator:
+                    uri: https://api.example.ai/v1/
+                    key_env_var: EXAMPLE_KEY
+                    headers: Authentication: $KEY
+                    response_json_field: text
+                    request_timeout: 60
+
+This defines a REST endpoint where:
+
+* The URI is https://api.example.ai/v1/
+* The API key can be found in the ``EXAMPLE_KEY`` environment variable's value
+* The HTTP header ``"Authentication:"`` should be sent in every request, with the API key as its parameter
+* The output is JSON and the top-level field ``text`` holds the model's response
+* Wait up to 60 seconds before timing out (the generator will backoff and retry when this is reached)
+
