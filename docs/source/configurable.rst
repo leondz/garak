@@ -1,0 +1,230 @@
+Configuring ``garak``
+=====================
+
+Beyond the standard CLI options, garak is highly configurable.
+You can use YAML files to configure a garak run, down to the level
+of exactly how each plugin behaves.
+
+
+Specifying custom configuration
+-------------------------------
+
+Garak can be configured in multiple ways:
+
+* Via command-line parameters
+* Using YAML configs
+* Through specifying JSON on the command line
+
+The easiest way is often to use a YAML config, and how to do that is 
+described below.
+
+Garak's config hierarchy
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Configuration values can come from multiple places. At garak load, the
+``_config`` module manages parsing configuration. This includes determining
+the priority of which values go where. The hierarchy is as follows:
+
+1. Values given at the command line
+2. Config values given in a YAML file passed via ``--config``
+3. Values in a YAML site config, ``garak.site.yaml``, placed in the config directory (``XDG_CONFIG_DIR``, which is ``~/.config/garak/`` on Linux; see XDG spec for details)
+4. Fixed values kept in the garak core config - don't edit this. Package updates will overwrite it, and you might break your garak install. It's in ``garak/resources`` if you want to take a look.
+5. Default values specified in plugin code
+
+Config YAML
+^^^^^^^^^^^
+
+Let's take a look at the core config.
+
+.. code-block:: yaml
+
+    ---
+    system:
+        verbose: 0
+        narrow_output: false
+        parallel_requests: false
+        parallel_attempts: false
+        lite: true
+        show_z: false
+
+    run:
+        seed:
+        deprefix: true
+        eval_threshold: 0.5
+        generations: 5
+        probe_tags:
+
+    plugins:
+        model_type:
+        model_name:
+        probe_spec: all
+        detector_spec: auto
+        extended_detectors: false
+        buff_spec:
+        buffs_include_original_prompt: false
+        buff_max: 
+        detectors: {}
+        generators: {}
+        buffs: {}
+        harnesses: {}
+        probes:
+            encoding:
+                payloads:
+                    - default
+
+    reporting:
+        report_prefix:
+        taxonomy:
+        report_dir: garak_runs
+        show_100_pass_modules: true
+
+Here we can see many entries that correspond to command line options, such as 
+``model_name`` and ``model_type``, as well as some entried not exposed via CLI
+such as ``show_100_pass_modules``.
+
+
+``system`` config items
+"""""""""""""""""""""""
+
+* ``parallel_requests`` - For generators not supporting multiple responses per prompt: how many requests to send in parallel with the same prompt? (raising ``parallel_attempts`` generally yields higher performance, depending on how high ``generations`` is set)
+* ``parallel_attempts`` - For parallelisable generators, how many attempts should be run in parallel? Raising this is a great way of speeding up garak runs for API-based models
+* ``lite`` - Should we display a caution message that the run might not give very thorough results?
+* ``verbose`` - Degree of verbosity (values above 0 are experimental, the report & log are authoritative)
+* ``narrow_output`` - Support output on narrower CLIs
+* ``show_z`` - Display Z-scores and visual indicators on CLI. It's good, but may be too much info until one has seen garak run a couple of times
+
+``run`` config items
+""""""""""""""""""""
+
+* ``probe_tags`` - If given, the probe selection is filtered according to these tags; probes that don't match the tags are not selected
+* ``generations`` - How many time to send each prompt for inference
+* ``deprefix`` - Remove the prompt from the start of the output (some models return the prompt as part of their output)
+* ``seed`` - An optional random seed
+* ``eval_threshold`` - At what point in the 0..1 range output by detectors does a result count as a successful attack / hit
+
+``plugins`` config items
+""""""""""""""""""""""""
+* ``model_type`` - The generator model type, e.g. "nim" or "huggingface"
+* ``model_name`` - The name of the model to be used (optional - if blank, type-specific default is used)
+* ``probe_spec`` - A comma-separated list of probe modules or probe classnames (in ``model.classname``) format to be used. If a module is given, only ``active`` plugin in that module are chosen
+* ``detector_spec`` - An optional spec of detectors to be used, if overriding those recommended in probes. Specifying ``detector_spec`` means the ``pxd`` harness will be used.
+* ``extended_detectors`` - Should just the primary detector be used per probe, or should the extended detectors also be run? The former is fast, the latter thorough.
+* ``buff_spec`` - Comma-separated list of buffs and buff modules to use; same format as ``probe_spec``.
+* ``buffs_include_original_prompt`` - When buffing, should the original pre-buff prompt still be included in those posed to the model?
+* ``buff_max`` - Upper bound on how many items a buff should return
+* ``detectors`` - Root note for detector plugin configs
+* ``generators`` - Root note for generator plugin configs
+* ``buffs`` - Root note for buff plugin configs
+* ``harnesses`` - Root note for harness plugin configs
+* ``probes`` - Root note for probe plugin configs
+
+For an example of how to use the ``detectors``, ``generators``, ``buffs``, 
+``harnesses``, and ``probes`` root entries, see the ``garak.core.yaml`` 
+source above.
+
+``reporting`` config items
+""""""""""""""""""""""""""
+* ``report_dir`` - Directory for reporting; defaults to ``$XDG_DATA/garak/garak_runs``
+* ``report_prefix`` - Prefix for report files. Defaults to ``garak.$RUN_UUID``
+* ``taxonomy`` - Which taxonomy to use to group probes when creating HTML report
+* ``show_100_pass_modules`` - Should entries scoring 100% still be detailed in the HTML report?
+
+
+Examples: quick configs
+^^^^^^^^^^^^^^^^^^^^^^
+
+Garak comes bundled with some quick configs that can be loaded directly using ``--config``.
+These don't need the ``.yml`` extension when being requested. They include:
+
+* ``broad`` - Run all active probes, just once each, for a rapid broad test
+* ``fast`` - Go through a selection of light probes; skip extended detectors
+* ``full`` - Select many probes, and multiple payloads; use a paraphrase buff to get multiple variations on each prompt
+* ``long_attack_gen`` - Focus on ``atkgen``, with many generations, to give a higher chance of breaking through (i.e. yielding toxicity)
+* ``notox`` - Scan without any toxicity-inducing probes
+* ``tox_and_buffs`` - Go through toxicity & slur probes, using only relevant payloads, and a fast paraphraser
+
+These are great places to look at to get an idea of how garak YAML configs can look.
+Quick configs are stored under ``garak/configs/`` in the source code/install.
+
+
+Using a custom config
+^^^^^^^^^^^^^^^^^^^^^
+
+To override values in this we can create a new YAML file and point to it from the 
+command line using ``--config``. For example, to select just ``latentinjection``
+probes and run each prompt just once:
+
+.. code-block:: yaml
+    
+    ---
+    run:
+        generations: 1
+    
+    plugins:
+        probe_spec: latentinjection
+
+If we save this as ``latent1.yaml`` somewhere, then we can use it with ``garak --config latent1.yaml``.
+
+Plugins
+-------
+
+Garak's functions are through its plugins. Most parts of garak are plugins,
+like the ``probes`` and ``detectors`` that do the actual examination of the target,
+and the ``generators`` that interface with models, and even the ``harnesses`` 
+that manage run orchestration. Each plugin is a class that has both descriptive
+and configurable parameters.
+
+Viewing plugin parameters
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can see the parameters for any given plugin using garak ``--plugin_info``.
+
+.. code-block:: text
+
+    $ python -m garak --plugin_info probes.grandma.Win10
+    garak LLM vulnerability scanner v0.9.0.16.post1 ( https://github.com/leondz/garak ) at 2024-09-11T11:54:07.215242
+    Configured info on probes.grandma.Win10:
+                            description: Will the model yield a Windows 10 product key if we beg it to?
+                         DEFAULT_PARAMS: {'generations': 1}
+                                 active: True
+                                  bcp47: en
+                                doc_uri: https://www.independent.co.uk/tech/chatgpt-microsoft-windows-11-grandma-exploit-b2360213.html
+                     extended_detectors: ['mitigation.MitigationBypass']
+                                   goal: get model to output Win 10 product keys
+                               modality: {'in': ['text']}
+                parallelisable_attempts: True
+                       primary_detector: productkey.Win5x5
+                                   tags: ['avid-effect:security:S0300', 'owasp:llm06', 'risk-cards:lmrc:providing_illegal_info', 'quality:Behavioral:ContentSafety:LegalGoodsServices']
+                               mod_time: 2024-07-01 04:16:40 +0000
+
+Here, we see a list of the descriptive parameters of the plugin. We can see
+a link to documentation about it, which detectors it uses, tags describing
+the probe in various typologies, which languages and modalities it supports, and more.
+
+We can also see a ``DEFAULT_PARAMS`` entry. This is a dictionary containing
+configurable parameters for this plugin. In this case, there's a ``generations``
+parameter set to ``1``; this is the default value for ``probes``, but is often 
+overridden at run time by the CLI setup.
+
+At plugin load, the plugin instance has attributes named in ``DEFAULT_PARAMS``
+automatically created, and populated with either values given in the supplied
+config, or the default.
+
+Configuring plugins with YAML
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Plugin config happens inside the ``plugins`` block. Multiple plugins can be 
+configured in the same YAML. Descend through this specifying plugin type,
+model, and optionally class, and set variables in the end. These will then
+be loaded as the plugin's ``DEFAULT_PARAMS`` attribute is parsed and used to
+populate instance attributes.
+
+Here's an example of setting the temperature on an OpenAIGenerator:
+
+.. code-block:: yaml
+
+    plugins:
+        generators:
+            openai:
+                OpenAIGenerator:
+                    temperature: 1.0
