@@ -14,6 +14,8 @@ for top_path in TOP_PATHS:
         if not str(i).endswith("__init__.py")
     ]
 
+ROOT_MODULES = list(Path("garak").glob("*py"))
+
 
 @pytest.mark.parametrize("category", TOP_PATHS)
 def test_top_docs(category: str):
@@ -147,3 +149,19 @@ def test_check_docstring(plugin_name: str):
     doc = getattr(getattr(mod, class_name), "__doc__")
     assert isinstance(doc, str), "All plugins must have docstrings"
     assert len(doc) > 0, "Plugin docstrings must not be empty"
+
+
+@pytest.fixture(scope="session")
+def doc_index_source_text():
+    return open(Path("docs") / "source" / "index.rst", "r", encoding="utf-8").read()
+
+
+@pytest.mark.parametrize("root_module", ROOT_MODULES)
+def test_root_modules_docs(doc_index_source_text, root_module: str):
+    if not root_module.name.startswith("__"):
+        assert f"{root_module.stem}.rst" in [
+            entry.name for entry in Path(f"docs{os.sep}source").glob("*rst")
+        ], f"root module {root_module.name} must have documentation"
+        assert (
+            f" {root_module.stem}\n" in doc_index_source_text
+        ), f"root module doc page for {root_module.name} should be linked from doc root index"
