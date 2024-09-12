@@ -97,7 +97,7 @@ such as ``show_100_pass_modules``.
 """"""""""""""""""""
 
 * ``probe_tags`` - If given, the probe selection is filtered according to these tags; probes that don't match the tags are not selected
-* ``generations`` - How many time to send each prompt for inference
+* ``generations`` - How many times to send each prompt for inference
 * ``deprefix`` - Remove the prompt from the start of the output (some models return the prompt as part of their output)
 * ``seed`` - An optional random seed
 * ``eval_threshold`` - At what point in the 0..1 range output by detectors does a result count as a successful attack / hit
@@ -106,13 +106,13 @@ such as ``show_100_pass_modules``.
 """"""""""""""""""""""""
 * ``model_type`` - The generator model type, e.g. "nim" or "huggingface"
 * ``model_name`` - The name of the model to be used (optional - if blank, type-specific default is used)
-* ``probe_spec`` - A comma-separated list of probe modules or probe classnames (in ``model.classname``) format to be used. If a module is given, only ``active`` plugin in that module are chosen
-* ``detector_spec`` - An optional spec of detectors to be used, if overriding those recommended in probes. Specifying ``detector_spec`` means the ``pxd`` harness will be used.
+* ``probe_spec`` - A comma-separated list of probe modules or probe classnames (in ``module.classname``) format to be used. If a module is given, only ``active`` plugin in that module are chosen, this is equivalent to passing `-p` to the CLI
+* ``detector_spec`` - An optional spec of detectors to be used, if overriding those recommended in probes. Specifying ``detector_spec`` means the ``pxd`` harness will be used. This is equivalent to passing `-d` to the CLI
 * ``extended_detectors`` - Should just the primary detector be used per probe, or should the extended detectors also be run? The former is fast, the latter thorough.
 * ``buff_spec`` - Comma-separated list of buffs and buff modules to use; same format as ``probe_spec``.
 * ``buffs_include_original_prompt`` - When buffing, should the original pre-buff prompt still be included in those posed to the model?
 * ``buff_max`` - Upper bound on how many items a buff should return
-* ``detectors`` - Root note for detector plugin configs
+* ``detectors`` - Root node for detector plugin configs
 * ``generators`` - Root note for generator plugin configs
 * ``buffs`` - Root note for buff plugin configs
 * ``harnesses`` - Root note for harness plugin configs
@@ -179,7 +179,7 @@ Plugins
 
 Garak's functions are through its plugins. Most parts of garak are plugins,
 like the ``probes`` and ``detectors`` that do the actual examination of the target,
-and the ``generators`` that interface with models, and even the ``harnesses`` 
+the ``generators`` that interface with models, and even the ``harnesses`` 
 that manage run orchestration. Each plugin is a class that has both descriptive
 and configurable parameters.
 
@@ -239,6 +239,16 @@ Here's an example of setting the temperature on an OpenAIGenerator:
             openai:
                 OpenAIGenerator:
                     temperature: 1.0
+
+As noted the class is optional, if the configuration defines keys at the module level
+these will be applied to the instance and can be overridden by the class level. Here
+is an example that is equivalent to the configuration above:
+
+.. code-block:: yaml
+    plugins:
+        generators:
+            openai:
+                temperature: 1.0
 
 RestGenerator
 ^^^^^^^^^^^^^
