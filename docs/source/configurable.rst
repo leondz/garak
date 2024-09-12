@@ -107,7 +107,7 @@ such as ``show_100_pass_modules``.
 * ``model_type`` - The generator model type, e.g. "nim" or "huggingface"
 * ``model_name`` - The name of the model to be used (optional - if blank, type-specific default is used)
 * ``probe_spec`` - A comma-separated list of probe modules or probe classnames (in ``module.classname``) format to be used. If a module is given, only ``active`` plugin in that module are chosen, this is equivalent to passing `-p` to the CLI
-* ``detector_spec`` - An optional spec of detectors to be used, if overriding those recommended in probes. Specifying ``detector_spec`` means the ``pxd`` harness will be used.
+* ``detector_spec`` - An optional spec of detectors to be used, if overriding those recommended in probes. Specifying ``detector_spec`` means the ``pxd`` harness will be used. This is equivalent to passing `-d` to the CLI
 * ``extended_detectors`` - Should just the primary detector be used per probe, or should the extended detectors also be run? The former is fast, the latter thorough.
 * ``buff_spec`` - Comma-separated list of buffs and buff modules to use; same format as ``probe_spec``.
 * ``buffs_include_original_prompt`` - When buffing, should the original pre-buff prompt still be included in those posed to the model?
