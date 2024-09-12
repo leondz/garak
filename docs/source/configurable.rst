@@ -119,8 +119,7 @@ such as ``show_100_pass_modules``.
 * ``probes`` - Root note for probe plugin configs
 
 For an example of how to use the ``detectors``, ``generators``, ``buffs``, 
-``harnesses``, and ``probes`` root entries, see the ``garak.core.yaml`` 
-source above.
+``harnesses``, and ``probes`` root entries, see `Configuring plugins with YAML <config_with_yaml>`_ below.
 
 ``reporting`` config items
 """"""""""""""""""""""""""
@@ -130,8 +129,12 @@ source above.
 * ``show_100_pass_modules`` - Should entries scoring 100% still be detailed in the HTML report?
 
 
+Using a custom JSON config
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
 Examples: quick configs
-^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
 
 Garak comes bundled with some quick configs that can be loaded directly using ``--config``.
 These don't need the ``.yml`` extension when being requested. They include:
@@ -210,6 +213,8 @@ At plugin load, the plugin instance has attributes named in ``DEFAULT_PARAMS``
 automatically created, and populated with either values given in the supplied
 config, or the default.
 
+.. _config_with_yaml:
+
 Configuring plugins with YAML
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -253,7 +258,7 @@ not always be wanted, and it isn't compulsory.
 This defines a REST endpoint where:
 
 * The URI is https://api.example.ai/v1/
-* The API key can be found in the ``EXAMPLE_KEY`` environment variable's value
+* The API key can be found in the ``EXAMPLE_KEY`` environment variable's value (if unspecified, `REST_API_KEY` is checked)
 * The HTTP header ``"Authentication:"`` should be sent in every request, with the API key as its parameter
 * The output is JSON and the top-level field ``text`` holds the model's response
 * Wait up to 60 seconds before timing out (the generator will backoff and retry when this is reached)
