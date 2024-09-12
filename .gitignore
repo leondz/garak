@@ -167,3 +167,4 @@ hitlog.*.jsonl
 garak_runs/
 runs/
 logs/
+.github/dependabot.yml
