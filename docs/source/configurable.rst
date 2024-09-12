@@ -112,7 +112,7 @@ such as ``show_100_pass_modules``.
 * ``buff_spec`` - Comma-separated list of buffs and buff modules to use; same format as ``probe_spec``.
 * ``buffs_include_original_prompt`` - When buffing, should the original pre-buff prompt still be included in those posed to the model?
 * ``buff_max`` - Upper bound on how many items a buff should return
-* ``detectors`` - Root note for detector plugin configs
+* ``detectors`` - Root node for detector plugin configs
 * ``generators`` - Root note for generator plugin configs
 * ``buffs`` - Root note for buff plugin configs
 * ``harnesses`` - Root note for harness plugin configs
