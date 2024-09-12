@@ -26,6 +26,7 @@ class OllamaGenerator(Generator):
 
     active = True
     generator_family_name = "Ollama"
+    parallel_capable = False
 
     def __init__(self, name="", config_root=_config):
         super().__init__(name, config_root)  # Sets the name and generations
@@ -41,13 +42,13 @@ class OllamaGenerator(Generator):
         giveup=_give_up,
     )
     @backoff.on_predicate(
-        backoff.fibo, lambda ans: ans == None or len(ans) == 0, max_tries=3
+        backoff.fibo, lambda ans: ans == [None] or len(ans) == 0, max_tries=3
     )  # Ollama sometimes returns empty responses. Only 3 retries to not delay generations expecting empty responses too much
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
         response = self.client.generate(self.name, prompt)
-        return [response["response"]]
+        return [response.get("response", None)]
 
 
 class OllamaGeneratorChat(OllamaGenerator):
@@ -63,7 +64,7 @@ class OllamaGeneratorChat(OllamaGenerator):
         giveup=_give_up,
     )
     @backoff.on_predicate(
-        backoff.fibo, lambda ans: ans == None or len(ans) == 0, max_tries=3
+        backoff.fibo, lambda ans: ans == [None] or len(ans) == 0, max_tries=3
     )  # Ollama sometimes returns empty responses. Only 3 retries to not delay generations expecting empty responses too much
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
@@ -77,7 +78,7 @@ class OllamaGeneratorChat(OllamaGenerator):
                 },
             ],
         )
-        return [response["message"]["content"]]
+        return [response.get("message", {}).get("content", None)] # Return the response or None
 
 
 DEFAULT_CLASS = "OllamaGeneratorChat"
