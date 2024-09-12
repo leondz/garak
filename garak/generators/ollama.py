@@ -31,7 +31,7 @@ class OllamaGenerator(Generator):
         super().__init__(name, config_root)  # Sets the name and generations
 
         self.client = ollama.Client(
-            self.DEFAULT_PARAMS["host"], timeout=self.DEFAULT_PARAMS["timeout"]
+            self.host, timeout=self.timeout
         )  # Instantiates the client with the timeout
 
     @backoff.on_exception(
