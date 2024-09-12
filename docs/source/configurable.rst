@@ -229,6 +229,16 @@ Here's an example of setting the temperature on an OpenAIGenerator:
                 OpenAIGenerator:
                     temperature: 1.0
 
+As noted the class is optional, if the configuration defines keys at the module level
+these will be applied to the instance and can be overridden by the class level. Here
+is an example that is equivalent to the configuration above:
+
+.. code-block:: yaml
+    plugins:
+        generators:
+            openai:
+                temperature: 1.0
+
 RestGenerator
 ^^^^^^^^^^^^^
 
