@@ -1724,7 +1724,34 @@
         "owasp:llm01",
         "quality:Security:PromptStability"
       ],
-      "mod_time": "2024-09-06 12:42:19 +0000"
+      "mod_time": "2024-09-10 19:19:10 +0000"
+    },
+    "probes.latentinjection.LatentInjectionFactSnippetLegal": {
+      "description": "String-based latent prompt injections in legal snippets",
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
+      "active": true,
+      "bcp47": "en",
+      "doc_uri": "https://kai-greshake.de/posts/inject-my-pdf/",
+      "extended_detectors": [],
+      "goal": "subvert a snippet with instructions",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "base.TriggerListDetector",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "avid-effect:security:S0403",
+        "owasp:llm01",
+        "quality:Security:PromptStability"
+      ],
+      "mod_time": "2024-09-10 19:19:10 +0000"
     },
     "probes.latentinjection.LatentInjectionReport": {
       "description": "String-based latent prompt injections via a report",
@@ -1751,7 +1778,7 @@
         "owasp:llm01",
         "quality:Security:PromptStability"
       ],
-      "mod_time": "2024-09-06 12:42:19 +0000"
+      "mod_time": "2024-09-10 19:19:10 +0000"
     },
     "probes.latentinjection.LatentInjectionResume": {
       "description": "String-based latent prompt injections via a resume",
@@ -1778,7 +1805,7 @@
         "owasp:llm01",
         "quality:Security:PromptStability"
       ],
-      "mod_time": "2024-09-06 12:42:19 +0000"
+      "mod_time": "2024-09-10 19:19:10 +0000"
     },
     "probes.latentinjection.LatentInjectionTranslationEnFr": {
       "description": "String-based latent prompt injections via translation",
@@ -1805,7 +1832,7 @@
         "owasp:llm01",
         "quality:Security:PromptStability"
       ],
-      "mod_time": "2024-09-06 12:42:19 +0000"
+      "mod_time": "2024-09-10 19:19:10 +0000"
     },
     "probes.latentinjection.LatentInjectionTranslationEnZh": {
       "description": "Latent prompt injection in Chinese context (\u7b80\u4f53\u5b57)",
@@ -1832,7 +1859,7 @@
         "owasp:llm01",
         "quality:Security:PromptStability"
       ],
-      "mod_time": "2024-09-06 12:42:19 +0000"
+      "mod_time": "2024-09-10 19:19:10 +0000"
     },
     "probes.latentinjection.LatentJailbreak": {
       "description": "Implementation of Latent Jailbreak, using latent prompt injection-",
@@ -1857,12 +1884,15 @@
         "always.Fail"
       ],
       "tags": [],
-      "mod_time": "2024-09-06 12:42:19 +0000"
+      "mod_time": "2024-09-10 19:19:10 +0000"
     },
     "probes.latentinjection.LatentJailbreakMini": {
       "description": "Implementation of Latent Jailbreak, using latent prompt injection-",
       "DEFAULT_PARAMS": {
-        "generations": 1
+        "generations": 1,
+        "context_count": 6,
+        "instruction_count": 3,
+        "trigger_count": 4
       },
       "active": false,
       "bcp47": "en",
@@ -1882,7 +1912,7 @@
         "always.Fail"
       ],
       "tags": [],
-      "mod_time": "2024-09-06 12:42:19 +0000"
+      "mod_time": "2024-09-10 19:19:10 +0000"
     },
     "probes.leakreplay.GuardianCloze": {
       "description": "Cloze data replay for literature. Uses passages that either GPT-4 or ChatGPT have been known to replay.",
