@@ -132,6 +132,12 @@ For an example of how to use the ``detectors``, ``generators``, ``buffs``,
 Using a custom JSON config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Some plugins can take a JSON config specified on the command line. This config 
+has the same structure as a YAML config, starting with the plugin model/type.
+The config can either be written to a file and the path passed, with 
+`--generator_option_file` or `--probe_option_file`, or directly as JSON on the
+command prompt, with `--generator_options` or `--probe_options`. An example 
+is given in `RestGenerator Config with JSON <rest_generator_with_json>`_ below.
 
 Examples: quick configs
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -242,6 +248,9 @@ so many config values, allowing flexible integrations. This example sets
 ``model_type: rest`` to ensure that this model is selected for the run; that might 
 not always be wanted, and it isn't compulsory.
 
+RestGenerator with YAML
+"""""""""""""""""""""""
+
 .. code-block:: yaml
 
     plugins:
@@ -263,3 +272,39 @@ This defines a REST endpoint where:
 * The output is JSON and the top-level field ``text`` holds the model's response
 * Wait up to 60 seconds before timing out (the generator will backoff and retry when this is reached)
 
+.. _rest_generator_with_json:
+
+RestGenerator config with JSON
+""""""""""""""""""""""""""""""
+
+.. code-block:: JSON
+
+    {
+        "rest": {
+            "RestGenerator": {
+                "name": "example service",
+                "uri": "https://127.0.0.1/llm",
+                "method": "post",
+                "headers": {
+                    "X-Authorization": "$KEY"
+                },
+                "req_template_json_object": {
+                    "text": "$INPUT"
+                },
+                "response_json": true,
+                "response_json_field": "text"
+            }
+        }
+    }
+
+This defines a REST endpoint where:
+
+* The URI is https://127.0.0.1/llm
+* We'll use HTTP `POST` on requests
+* The HTTP header ``"X-Authorization:"`` should be sent in every request, with the API key as its parameter
+* The request template is to be a JSON dict with one key, `text`, holding the prompt
+* The output is JSON and the top-level field ``text`` holds the model's response
+
+
+This should be written to a file, and the file's path passed on the command 
+line with `-G`. 
