@@ -97,7 +97,7 @@ such as ``show_100_pass_modules``.
 """"""""""""""""""""
 
 * ``probe_tags`` - If given, the probe selection is filtered according to these tags; probes that don't match the tags are not selected
-* ``generations`` - How many time to send each prompt for inference
+* ``generations`` - How many times to send each prompt for inference
 * ``deprefix`` - Remove the prompt from the start of the output (some models return the prompt as part of their output)
 * ``seed`` - An optional random seed
 * ``eval_threshold`` - At what point in the 0..1 range output by detectors does a result count as a successful attack / hit
