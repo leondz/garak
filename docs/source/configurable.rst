@@ -170,7 +170,7 @@ Plugins
 
 Garak's functions are through its plugins. Most parts of garak are plugins,
 like the ``probes`` and ``detectors`` that do the actual examination of the target,
-and the ``generators`` that interface with models, and even the ``harnesses`` 
+the ``generators`` that interface with models, and even the ``harnesses`` 
 that manage run orchestration. Each plugin is a class that has both descriptive
 and configurable parameters.
 
