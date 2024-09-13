@@ -4,6 +4,7 @@ garak.generators.rest
 Flexible connector for REST-based APIs.
 
 Uses the following options from ``_config.plugins.generators["rest.RestGenerator"]``:
+
 * ``uri`` - (optional) the URI of the REST endpoint; this can also be passed in --model_name
 * ``name`` - a short name for this service; defaults to the uri
 * ``key_env_var`` - (optional) the name of the environment variable holding an API key, by default ``REST_API_KEY``
