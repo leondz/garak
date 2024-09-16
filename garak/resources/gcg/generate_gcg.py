@@ -40,52 +40,6 @@ logger = getLogger(__name__)
 resource_data = garak._config.transient.package_dir / "resources"
 gcg_resource_data = garak._config.transient.cache_dir / "resources" / "gcg" / "data"
 
-# GCG parser used by interactive mode
-gcg_parser = ArgumentParser()
-gcg_parser.add_argument("--model_names", nargs="+", help="Model names for generation")
-gcg_parser.add_argument(
-    "--transfer", action="store_true", help="Whether to generate attack for transfer"
-)
-gcg_parser.add_argument(
-    "--progressive", action="store_true", help="Use progressive goals"
-)
-gcg_parser.add_argument("--stop_success", action="store_true", help="Stop on success")
-gcg_parser.add_argument(
-    "--train_data",
-    type=str,
-    default=resource_data / "advbench" / "harmful_behaviors.csv",
-    help="Path to training data",
-)
-gcg_parser.add_argument(
-    "--n_train", type=int, default=50, help="Number of training samples to use"
-)
-gcg_parser.add_argument(
-    "--n_test", type=int, default=0, help="Number of test samples to use"
-)
-gcg_parser.add_argument(
-    "--outfile",
-    type=str,
-    default=gcg_resource_data / "gcg_prompts.txt",
-    help="Location to write GCG attack output",
-)
-gcg_parser.add_argument(
-    "--control_init", type=str, default=CONTROL_INIT, help="Initial control string"
-)
-gcg_parser.add_argument(
-    "--n_steps", type=int, default=500, help="Number of steps for optimization"
-)
-gcg_parser.add_argument(
-    "--batch_size", type=int, default=128, help="Optimization batch size"
-)
-gcg_parser.add_argument(
-    "--allow_non_ascii",
-    action="store_true",
-    help="Allow non-ASCII characters in control string",
-)
-gcg_parser.add_argument(
-    "--save_logs", action="store_true", help="Keep detailed GCG generation logs"
-)
-
 
 def run_gcg(
     target_generator: garak.generators.Generator = None,
