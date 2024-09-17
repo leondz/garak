@@ -12,6 +12,7 @@ import binascii
 import json
 
 from garak import _config
+from garak.data import path as data_path
 from garak.probes.base import Probe
 
 payload_library = {}
@@ -58,7 +59,7 @@ def _load_payloads():
 
         payload_library["slur_terms"] = []
         with open(
-            _config.transient.package_dir / "resources" / "slurprompts_mini.jsonl",
+            data_path / "slurprompts_mini.jsonl",
             "r",
             encoding="utf-8",
         ) as slurfile:

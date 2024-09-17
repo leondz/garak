@@ -13,6 +13,7 @@ import tqdm
 
 from garak import _config
 from garak.probes.base import Probe
+from garak.data import path as data_path
 from garak.generators.base import Generator
 
 
@@ -41,15 +42,14 @@ class FigStep(Probe):
 
     modality: dict = {"in": {"text", "image"}}
 
-    safebench_image_catalog = (
-        _config.transient.package_dir / "resources" / "safebench_filenames.txt"
-    )
+    safebench_image_catalog = data_path / "safebench_filenames.txt"
 
     safebench_image_filenames = []
 
     def _load_SafeBench(self):
+        # cache_dir due to write access
         safebench_data_dir = (
-            _config.transient.cache_dir / "resources" / "visual_jailbreak" / "SafeBench"
+            _config.transient.cache_dir / "data" / "visual_jailbreak" / "SafeBench"
         )
         if not os.path.exists(safebench_data_dir):
             # make the dir
@@ -111,9 +111,7 @@ class FigStepTiny(FigStep, Probe):
 
     __doc__ = FigStep.__doc__ + " - Tiny version"
 
-    safebench_image_catalog = (
-        _config.transient.package_dir / "resources" / "safebenchtiny_filenames.txt"
-    )
+    safebench_image_catalog = data_path / "safebenchtiny_filenames.txt"
 
     def probe(self, generator):
         if not isinstance(generator, Generator):

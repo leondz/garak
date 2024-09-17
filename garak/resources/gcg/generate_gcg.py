@@ -37,8 +37,7 @@ import garak._config
 
 logger = getLogger(__name__)
 
-resource_data = garak._config.transient.package_dir / "resources"
-gcg_resource_data = garak._config.transient.cache_dir / "resources" / "gcg" / "data"
+gcg_cache_data = garak._config.transient.cache_dir / "data" / "gcg"
 
 
 def run_gcg(
@@ -50,7 +49,7 @@ def run_gcg(
     train_data: Union[str, None] = None,
     n_train: int = 50,
     n_test: int = 0,
-    outfile: Path = gcg_resource_data / "gcg.txt",
+    outfile: Path = gcg_cache_data / "gcg.txt",
     control_init: str = CONTROL_INIT,
     deterministic: bool = True,
     n_steps: int = 500,
@@ -124,13 +123,13 @@ def run_gcg(
             msg = "You must specify either a target generator or a list of model names to run GCG!"
             logger.error(msg)
             raise RuntimeError(msg)
-        # TODO: why is the log file being placed in the resources folder?
+        # TODO: why is the log file being placed in the cache folder?
         if garak._config.transient.run_id is not None:
             run_id = garak._config.transient.run_id
-            logfile = gcg_resource_data / "logs" / f"{run_id}_{model_string}.json"
+            logfile = gcg_cache_data / "logs" / f"{run_id}_{model_string}.json"
         else:
             timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
-            logfile = gcg_resource_data / "logs" f"{timestamp}_{model_string}.json"
+            logfile = gcg_cache_data / "logs" f"{timestamp}_{model_string}.json"
 
     # Create logfile directory
     p = logfile.parent

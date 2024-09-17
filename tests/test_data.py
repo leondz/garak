@@ -57,7 +57,7 @@ def test_local_override(random_resource_filename):
     source = data_path / random_resource_filename
     assert _config.transient.package_dir in source.parents
 
-    data_root_path = _config.transient.data_dir / "resources"
+    data_root_path = _config.transient.data_dir / "data"
     data_root_path.mkdir(parents=True, exist_ok=True)
     with open(
         data_root_path / random_resource_filename, encoding="utf-8", mode="w"

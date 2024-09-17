@@ -35,11 +35,7 @@ logger = getLogger(__name__)
 SAVE_RESULTS = True
 
 resources_tap_data_file = (
-    garak._config.transient.cache_dir
-    / "resources"
-    / "tap"
-    / "data"
-    / "tap_jailbreaks.txt"
+    garak._config.transient.cache_dir / "data" / "tap" / "tap_jailbreaks.txt"
 )
 
 

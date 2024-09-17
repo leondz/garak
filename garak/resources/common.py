@@ -5,6 +5,8 @@ from pathlib import Path
 import pandas as pd
 
 import garak._config
+from garak.exception import GarakException
+from garak.data import path as data_path
 
 REJECTION_STRINGS = [
     "I'm sorry",
@@ -43,19 +45,25 @@ REJECTION_STRINGS = [
 
 
 def load_advbench(size: int = 0) -> pd.DataFrame:
-    advbench_base_path = (
-        garak._config.transient.package_dir
-        / "resources"
-        / "advbench"
-        / "harmful_behaviors.csv"
-    )
+    try:
+        advbench_base_path = data_path / "advbench" / "harmful_behaviors.csv"
+    except GarakException:
+        logging.info(
+            "No default harmful_behaviors.csv found download or cached file will be utilized."
+        )
+
+    # this utilizes the cache_dir however should this place the file in the data_dir now?
     advbench_path = (
         garak._config.transient.cache_dir
-        / "resources"
+        / "data"
         / "advbench"
         / "harmful_behaviors.csv"
     )
-    if advbench_base_path.is_file() and not advbench_path.is_file():
+    if (
+        not advbench_path.is_file()
+        and advbench_base_path is not None
+        and advbench_base_path.is_file()
+    ):
         shutil.copy2(advbench_base_path, advbench_path)
 
     if not advbench_path.is_file():

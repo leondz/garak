@@ -20,7 +20,7 @@ DETECTOR_BARE_NAMES = [".".join(d.split(".")[1:]) for d in DETECTORS]
 BCP_LENIENT_RE = re.compile(r"[a-z]{2}([\-A-Za-z]*)")
 
 with open(
-    _config.transient.package_dir / "resources" / "misp_descriptions.tsv",
+    _config.transient.package_dir / "data" / "misp_descriptions.tsv",
     "r",
     encoding="utf-8",
 ) as misp_data:
