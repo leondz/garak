@@ -7,6 +7,9 @@
 `garak`'s a free tool. We love developing it and are always interested in adding functionality to support applications. 
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Tests/Linux](https://github.com/leondz/garak/actions/workflows/test_linux.yml/badge.svg)](https://github.com/leondz/garak/actions/workflows/test_linux.yml)
+[![Tests/Windows](https://github.com/leondz/garak/actions/workflows/test_windows.yml/badge.svg)](https://github.com/leondz/garak/actions/workflows/test_windows.yml)
+[![Tests/OSX](https://github.com/leondz/garak/actions/workflows/test_macos.yml/badge.svg)](https://github.com/leondz/garak/actions/workflows/test_macos.yml)
 [![Documentation Status](https://readthedocs.org/projects/garak/badge/?version=latest)](http://garak.readthedocs.io/en/latest/?badge=latest)
 [![discord-img](https://img.shields.io/badge/chat-on%20discord-yellow.svg)](https://discord.gg/uVch4puUCs)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -161,6 +164,12 @@ Private Replicate endpoints:
 * `--model_type cohere`
 * `--model_name` (optional, `command` by default) - The specific Cohere model you'd like to test
 * set the `COHERE_API_KEY` environment variable to your Cohere API key, e.g. "aBcDeFgHiJ123456789"; see https://dashboard.cohere.ai/api-keys when logged in
+
+### Groq
+
+* `--model_type groq`
+* `--model_name` - The name of the model to access via the Groq API
+* set the `GROQ_API_KEY` environment variable to your Groq API key, see https://console.groq.com/docs/quickstart for details on creating an API key
 
 ### ggml
 
