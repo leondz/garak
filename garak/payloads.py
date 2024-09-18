@@ -36,9 +36,7 @@ PAYLOAD_SCHEMA = {
     ],
 }
 
-PAYLOAD_SEARCH_DIRS = [
-    data_path / "payloads",
-]
+PAYLOAD_DIR = data_path / "payloads"
 
 
 def _validate_payload(payload_json):
@@ -55,11 +53,9 @@ def load_payload(
     if path is not None:
         return PayloadGroup(name, path)
     else:
-        # iterate through search dirs
-        for dir in PAYLOAD_SEARCH_DIRS:
-            path = dir / f"{name}.json"
-            if path.is_file():
-                return PayloadGroup(name, path)
+        path = PAYLOAD_DIR / f"{name}.json"
+        if path.is_file():
+            return PayloadGroup(name, path)
     raise FileNotFoundError(
         "File '%s.json' not found in payload search directories" % name
     )
@@ -182,11 +178,7 @@ class Director:
     def _refresh_payloads(self) -> None:
         """Scan resources/payloads and the XDG_DATA_DIR/payloads for
         payload objects, and refresh self.payload_list"""
-        self.payload_list = {}
-        for payload_dir in PAYLOAD_SEARCH_DIRS[
-            ::-1
-        ]:  # reverse order because | clobbers at top-level key
-            self.payload_list = self.payload_list | self._scan_payload_dir(payload_dir)
+        self.payload_list = self._scan_payload_dir(PAYLOAD_DIR)
 
     def search(
         self, types: Union[List[str], None] = None, include_children=True

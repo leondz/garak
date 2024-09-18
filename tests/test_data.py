@@ -2,9 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import pytest
+import random
 import tempfile
 import os
 
+from pathlib import Path
 from garak import _config
 from garak.exception import GarakException
 from garak.data import path as data_path
@@ -66,3 +68,67 @@ def test_local_override(random_resource_filename):
 
     source = data_path / random_resource_filename
     assert _config.transient.data_dir in source.parents
+
+
+@pytest.fixture
+def random_file_tree(request) -> None:
+    files = []
+    temp_dir = tempfile.mkdtemp(dir=LocalDataPath.ORDERED_SEARCH_PATHS[-1])
+    temp_dirname = os.path.basename(temp_dir)
+    temp_dir = Path(temp_dir)
+    data_dir = LocalDataPath.ORDERED_SEARCH_PATHS[0] / temp_dirname
+    data_dir.mkdir()
+    testing_temp_dir = temp_dir / "testing"
+    testing_temp_dir.mkdir()
+    testing_data_dir = data_dir / "testing"
+    testing_data_dir.mkdir()
+
+    for i in range(random.randint(1, 10)):
+        with tempfile.NamedTemporaryFile(
+            dir=testing_temp_dir, suffix=".test", mode="w", delete=False
+        ) as tmpfile:
+            tmpfile.write("file data")
+            files.append(os.path.basename(tmpfile.name))
+
+    override_files = []
+    for i in range(random.randint(1, len(files))):
+        with open(testing_data_dir / files[i], mode="w") as over_file:
+            over_file.write("override data")
+            override_files.append(os.path.basename(over_file.name))
+
+    def remove_files():
+        for path in LocalDataPath.ORDERED_SEARCH_PATHS:
+            for file in files:
+                rem_path = path / temp_dirname / "testing" / os.path.basename(file)
+                if rem_path.exists():
+                    rem_path.unlink()
+            rem_path.parent.rmdir()
+            rem_path.parent.parent.rmdir()
+
+    request.addfinalizer(remove_files)
+
+    return (temp_dirname, files, override_files)
+
+
+def test_consolidated_glob(random_file_tree):
+    dirname, files, override_files = random_file_tree
+    glob_files = (data_path / dirname / "testing").glob("*.test")
+    found_override_files = []
+    for file in glob_files:
+        if LocalDataPath.ORDERED_SEARCH_PATHS[0] in file.parents:
+            found_override_files.append(file)
+
+    assert len(glob_files) == len(files)
+    assert len(found_override_files) == len(override_files)
+
+
+def test_consolidated_rglob(random_file_tree):
+    dirname, files, override_files = random_file_tree
+    glob_files = (data_path / dirname).rglob("*.test")
+    found_override_files = []
+    for file in glob_files:
+        if file.is_file() and LocalDataPath.ORDERED_SEARCH_PATHS[0] in file.parents:
+            found_override_files.append(file)
+
+    assert len(glob_files) == len(files)
+    assert len(found_override_files) == len(override_files)

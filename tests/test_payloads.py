@@ -29,7 +29,7 @@ def test_core_payloads(payload_name):
 def payload_typology():
     types = []
     with open(
-        garak._config.transient.package_dir / "data" / "typology_payloads.tsv",
+        garak.payloads.PAYLOAD_DIR / ".." / "typology_payloads.tsv",
         "r",
         encoding="utf-8",
     ) as typology_file:
