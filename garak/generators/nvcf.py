@@ -25,7 +25,6 @@ class NvcfChat(Generator):
         "top_p": 0.7,
         "fetch_url_format": "https://api.nvcf.nvidia.com/v2/nvcf/pexec/status/",
         "invoke_url_base": "https://api.nvcf.nvidia.com/v2/nvcf/pexec/functions/",
-        "extra_nvcf_logging": False,
         "timeout": 60,
         "version_id": None,  # string
         "stop_on_404": True,
