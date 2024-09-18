@@ -35,6 +35,7 @@ The JSON structure of a payload is:
 }
 """
 
+from __future__ import annotations
 
 import json
 import jsonschema
@@ -76,6 +77,22 @@ def _validate_payload(payload_json):
     except jsonschema.ValidationError as ve:
         return ve
     return True
+
+
+def load_payload(
+    name: str, path: Union[str, pathlib.Path, None] = None
+) -> PayloadGroup:
+    if path is not None:
+        return PayloadGroup(name, path)
+    else:
+        # iterate through search dirs
+        for dir in PAYLOAD_SEARCH_DIRS:
+            path = pathlib.Path(dir) / f"{name}.json"
+            if path.is_file():
+                return PayloadGroup(name, path)
+    raise FileNotFoundError(
+        "File '%s.json' not found in payload search directories" % name
+    )
 
 
 class PayloadGroup:
@@ -158,22 +175,6 @@ class PayloadGroup:
         self._load()
 
 
-def _load_payload(
-    name: str, path: Union[str, pathlib.Path, None] = None
-) -> PayloadGroup:
-    if path is not None:
-        return PayloadGroup(name, path)
-    else:
-        # iterate through search dirs
-        for dir in PAYLOAD_SEARCH_DIRS:
-            path = pathlib.Path(dir) / f"{name}.json"
-            if path.is_file():
-                return PayloadGroup(name, path)
-    raise FileNotFoundError(
-        "File '%s.json' not found in payload search directories" % name
-    )
-
-
 class Director:
     """The payload Director manages payload groups. It'll inventory them on disk,
     manage enumeration of payloads (optionally given a payload type specification),
@@ -244,7 +245,7 @@ class Director:
         """Return a PayloadGroup"""
         try:
             path = self.payload_list[name]["path"]
-            p = _load_payload(name, path)  # or raise KeyError
+            p = load_payload(name, path)  # or raise KeyError
 
         except KeyError as ke:
             msg = f"Requested payload {name} is not registered in this Director"

@@ -64,7 +64,7 @@ def test_payloads_have_valid_tags(payload_name, payload_typology):
 
 def test_nonexistent_payload_direct_load():
     with pytest.raises(FileNotFoundError):
-        garak.payloads._load_payload("jkasfohgi")
+        garak.payloads.load_payload("jkasfohgi")
 
 
 def test_nonexistent_payload_manager_load():
@@ -78,7 +78,7 @@ def test_non_json_direct_load():
         with pytest.raises(
             garak.exception.PayloadFailure
         ):  # blank file aint valid json
-            garak.payloads._load_payload("jkasfohgi", t.name)
+            garak.payloads.load_payload("jkasfohgi", t.name)
 
 
 OK_PAYLOADS = [
