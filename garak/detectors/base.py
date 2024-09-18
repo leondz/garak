@@ -162,10 +162,13 @@ class HFDetector(Detector, HFCompatible):
 class StringDetector(Detector):
     """Subclass of Detector using list of substrings as detection triggers"""
 
+    DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {
+        "matchtype": "str",  # "str" or "word"
+    }
+
     def __init__(self, substrings, config_root=_config):
         super().__init__(config_root=config_root)
         self.substrings = substrings
-        self.matchtype = "str"  # str or word
 
     def detect(
         self, attempt: garak.attempt.Attempt, case_sensitive=False
