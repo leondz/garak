@@ -29,7 +29,7 @@ def test_core_payloads(payload_name):
 def payload_typology():
     types = []
     with open(
-        garak._config.transient.package_dir / "resources" / "typology_payloads.tsv",
+        garak._config.transient.package_dir / "data" / "typology_payloads.tsv",
         "r",
         encoding="utf-8",
     ) as typology_file:
@@ -63,7 +63,7 @@ def test_payloads_have_valid_tags(payload_name, payload_typology):
 
 
 def test_nonexistent_payload_direct_load():
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(garak.exception.GarakException):
         garak.payloads.load_payload("jkasfohgi")
 
 

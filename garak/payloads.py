@@ -16,6 +16,7 @@ from typing import Generator, List, Union
 
 import garak._config
 import garak.exception
+from garak.data import path as data_path
 
 
 PAYLOAD_SCHEMA = {
@@ -36,8 +37,7 @@ PAYLOAD_SCHEMA = {
 }
 
 PAYLOAD_SEARCH_DIRS = [
-    garak._config.transient.data_dir / "resources" / "payloads",
-    garak._config.transient.package_dir / "resources" / "payloads",
+    data_path / "payloads",
 ]
 
 
@@ -57,7 +57,7 @@ def load_payload(
     else:
         # iterate through search dirs
         for dir in PAYLOAD_SEARCH_DIRS:
-            path = pathlib.Path(dir) / f"{name}.json"
+            path = dir / f"{name}.json"
             if path.is_file():
                 return PayloadGroup(name, path)
     raise FileNotFoundError(
@@ -155,7 +155,7 @@ class Director:
         payloads, return name:path dict. optionally filter by type prefixes"""
 
         payloads_found = {}
-        dir = pathlib.Path(dir)
+        dir = dir
         if not dir.is_dir():
             return {}
 

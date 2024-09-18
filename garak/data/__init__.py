@@ -34,13 +34,20 @@ class LocalDataPath(type(pathlib.Path())):
         _config.transient.package_dir / "data",
     ]
 
-    def _eval_paths(self, segment, next_call, relative):
-        prefix_removed = None
+    def _determine_suffix(self):
         for path in self.ORDERED_SEARCH_PATHS:
-            if (path == self and segment != relative) or path in self.parents:
-                prefix_removed = self.relative_to(path)
-                break
+            if path == self or path in self.parents:
+                return self.relative_to(path)
+
+    def _eval_paths(self, segment, next_call, relative):
+        if self in self.ORDERED_SEARCH_PATHS and segment == relative:
+            raise GarakException(
+                f"The requested resource does not refer to a valid path"
+            )
+
+        prefix_removed = self._determine_suffix()
         if prefix_removed is None:
+            # if LocalDataPath is instantiated using a path not in ORDERED_SEARCH_PATHS
             raise GarakException(
                 f"The requested resource does not refer to a valid path: {self}"
             )
@@ -54,6 +61,32 @@ class LocalDataPath(type(pathlib.Path())):
                 return LocalDataPath(projected)
 
         raise GarakException(f"The resource requested does not exist {segment}")
+
+    def _glob(self, pattern, recursive=False):
+        glob_method = "rglob" if recursive else "glob"
+
+        prefix_removed = self._determine_suffix()
+        candidate_files = []
+        for path in self.ORDERED_SEARCH_PATHS:
+            candidate_path = path / prefix_removed
+            dir_files = getattr(candidate_path, glob_method)(pattern)
+            candidate_files.append(dir_files)
+        relative_paths = []
+        selected_files = []
+        for files in candidate_files:
+            for file in files:
+                suffix = LocalDataPath(file)._determine_suffix()
+                if suffix not in relative_paths:
+                    selected_files.append(file)
+                    relative_paths.append(suffix)
+
+        return selected_files
+
+    def glob(self, pattern):
+        return self._glob(pattern, recursive=False)
+
+    def rglob(self, pattern):
+        return self._glob(pattern, recursive=True)
 
     def _make_child(self, segment):
         return self._eval_paths(segment, "_make_child", ("..",))
