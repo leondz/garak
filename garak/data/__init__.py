@@ -26,7 +26,7 @@ from garak import _config
 from garak.exception import GarakException
 
 
-class LocalDataPath(pathlib.Path):
+class LocalDataPath(type(pathlib.Path())):
     """restricted Path object usable only for existing resource files"""
 
     ORDERED_SEARCH_PATHS = [
@@ -34,27 +34,34 @@ class LocalDataPath(pathlib.Path):
         _config.transient.package_dir / "data",
     ]
 
-    def joinpath(self, *pathsegments):
-
-        for segment in pathsegments:
-            prefix_removed = None
-            for path in self.ORDERED_SEARCH_PATHS:
-                if (path == self and segment != "..") or path in self.parents:
-                    prefix_removed = self.relative_to(path)
-                    break
-            if prefix_removed is None:
-                raise GarakException(
-                    f"The requested resource does not refer to a valid path: {self}"
-                )
-            for path in self.ORDERED_SEARCH_PATHS:
-                if segment == "..":
-                    projected = (path / prefix_removed).parent
-                else:
-                    projected = (path / prefix_removed).joinpath(segment)
-                if projected.exists():
-                    return LocalDataPath(projected)
+    def _eval_paths(self, segment, next_call, relative):
+        prefix_removed = None
+        for path in self.ORDERED_SEARCH_PATHS:
+            if (path == self and segment != relative) or path in self.parents:
+                prefix_removed = self.relative_to(path)
+                break
+        if prefix_removed is None:
+            raise GarakException(
+                f"The requested resource does not refer to a valid path: {self}"
+            )
+        for path in self.ORDERED_SEARCH_PATHS:
+            if segment == relative:
+                projected = (path / prefix_removed).parent
+            else:
+                current_path = path / prefix_removed
+                projected = getattr(current_path, next_call)(segment)
+            if projected.exists():
+                return LocalDataPath(projected)
 
         raise GarakException(f"The resource requested does not exist {segment}")
+
+    def _make_child(self, segment):
+        return self._eval_paths(segment, "_make_child", ("..",))
+
+    def joinpath(self, *pathsegments):
+        for segment in pathsegments:
+            projected = self._eval_paths(segment, "joinpath", "..")
+        return projected
 
 
 path = LocalDataPath(_config.transient.data_dir / "data")
