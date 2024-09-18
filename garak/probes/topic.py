@@ -93,6 +93,7 @@ class WordnetBlockedWords(TreeSearchProbe):
         super().__init__(config_root)
 
         self.data_dir = _config.transient.cache_dir / "data" / "wn"
+        self.data_dir.parent.mkdir(mode=0o740, parents=True, exist_ok=True)
 
         wn.config.data_directory = self.data_dir
         wn.util.ProgressBar.FMT = (
