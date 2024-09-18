@@ -32,3 +32,7 @@ class RateLimitHit(Exception):
 
 class ConfigFailure(GarakException):
     """Raised when plugin configuration fails"""
+
+
+class PayloadFailure(GarakException):
+    """Problem instantiating/using payloads"""
