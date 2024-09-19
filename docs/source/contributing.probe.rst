@@ -149,6 +149,7 @@ If you want to debug your probe interactively, try using something like ``p = ga
 Finally, check a few properties:
 
 * Does the new probe appear in ``python -m garak --list_probes``?
+* Does the probe run? ``python -m garak -m test -p mynewprobe.MyNewProbe``
 * Do the garak tests pass? ``python -m pytest tests/``
 
 Done!
