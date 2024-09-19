@@ -27,19 +27,17 @@ chat_models = (
     "chatgpt-4o-latest", # links to latest version
     "gpt-3.5-turbo",  # links to latest version
     "gpt-3.5-turbo-0125",
-    "gpt-3.5-turbo-0613",  # deprecated, shutdown 2024-06-13
     "gpt-3.5-turbo-1106",
     "gpt-3.5-turbo-16k",
-    "gpt-3.5-turbo-16k-0613",  # # deprecated, shutdown 2024-06-13
     "gpt-4",  # links to latest version
     "gpt-4-0125-preview",
     "gpt-4-0314", # legacy
     "gpt-4-0613",
     "gpt-4-1106-preview",
     "gpt-4-1106-vision-preview",
-    "gpt-4-32k",
-    "gpt-4-32k",
-    "gpt-4-32k-0613",
+    "gpt-4-32k", # deprecated, shutdown 2025-06-06
+    "gpt-4-32k-0314", # deprecated, shutdown 2025-06-06
+    "gpt-4-32k-0613", # deprecated, shutdown 2025-06-06
     "gpt-4-turbo",  # links to latest version
     "gpt-4-turbo-2024-04-09",
     "gpt-4-turbo-preview",
@@ -53,6 +51,8 @@ chat_models = (
     "o1-mini-2024-09-12",
     "o1-preview", # links to latest version
     "o1-preview-2024-09-12",
+    #"gpt-3.5-turbo-0613",  # deprecated, shutdown 2024-09-13
+    #"gpt-3.5-turbo-16k-0613",  # # deprecated, shutdown 2024-09-13
 )
 
 completion_models = (
