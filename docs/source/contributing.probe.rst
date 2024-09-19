@@ -141,7 +141,10 @@ Let's try running our new probe against a HuggingFace ``Pipeline`` using ``meta-
   $ garak -m huggingface -n meta-llama/Llama-2-7b-chat-hf -p mynewprobe.MyNewProbe
 
 If it all runs well, you'll get a log and a hitlog file, which tell you how successful your new probe was!
-If you encounter errors, go through and try to address them.
+If you encounter errors, go through and try to address them. You can look at the bottom of the `garak.log` file, whose path is printed in the output every time you call garak, to see what errors there are.
+
+If you want to debug your probe interactively, try using something like ``p = garak._plugins.load_plugin("probes.mynewprobe.MyNewProbe")`` from a Python prompt to load the probe. The variable ``p`` will be assigned an instance of the probe (if instantiation was successful) and you can test a lot of the probe's intended functionality from here.
+
 
 Finally, check a few properties:
 
