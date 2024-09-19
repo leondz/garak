@@ -24,25 +24,35 @@ from garak.generators.base import Generator
 
 # lists derived from https://platform.openai.com/docs/models
 chat_models = (
-    "gpt-4",  # links to latest version
-    "gpt-4-turbo",  # links to latest version
-    "gpt-4o",  # links to latest version
-    "gpt-4o-mini",  # links to latest version
-    "gpt-4-turbo-preview",
+    "chatgpt-4o-latest", # links to latest version
     "gpt-3.5-turbo",  # links to latest version
-    "gpt-4-32k",
-    "gpt-4-0125-preview",
-    "gpt-4-1106-preview",
-    "gpt-4-vision-preview",
-    "gpt-4-1106-vision-preview",
-    "gpt-4-0613",
-    "gpt-4-32k",
-    "gpt-4-32k-0613",
     "gpt-3.5-turbo-0125",
+    "gpt-3.5-turbo-0613",  # deprecated, shutdown 2024-06-13
     "gpt-3.5-turbo-1106",
     "gpt-3.5-turbo-16k",
-    "gpt-3.5-turbo-0613",  # deprecated, shutdown 2024-06-13
     "gpt-3.5-turbo-16k-0613",  # # deprecated, shutdown 2024-06-13
+    "gpt-4",  # links to latest version
+    "gpt-4-0125-preview",
+    "gpt-4-0314", # legacy
+    "gpt-4-0613",
+    "gpt-4-1106-preview",
+    "gpt-4-1106-vision-preview",
+    "gpt-4-32k",
+    "gpt-4-32k",
+    "gpt-4-32k-0613",
+    "gpt-4-turbo",  # links to latest version
+    "gpt-4-turbo-2024-04-09",
+    "gpt-4-turbo-preview",
+    "gpt-4-vision-preview",
+    "gpt-4o",  # links to latest version
+    "gpt-4o-2024-05-13",
+    "gpt-4o-2024-08-06",
+    "gpt-4o-mini",  # links to latest version
+    "gpt-4o-mini-2024-07-18",
+    "o1-mini", # links to latest version
+    "o1-mini-2024-09-12",
+    "o1-preview", # links to latest version
+    "o1-preview-2024-09-12",
 )
 
 completion_models = (
@@ -64,26 +74,37 @@ completion_models = (
 )
 
 context_lengths = {
-    "gpt-3.5-turbo-0125": 16385,
-    "gpt-3.5-turbo": 16385,
-    "gpt-3.5-turbo-1106": 16385,
-    "gpt-3.5-turbo-instruct": 4096,
-    "gpt-3.5-turbo-16k": 16385,
-    "gpt-3.5-turbo-0613": 4096,
-    "gpt-3.5-turbo-16k-0613": 16385,
     "babbage-002": 16384,
+    "chatgpt-4o-latest": 128000,
     "davinci-002": 16384,
+    "gpt-3.5-turbo": 16385,
+    "gpt-3.5-turbo-0125": 16385,
+    "gpt-3.5-turbo-0613": 4096,
+    "gpt-3.5-turbo-1106": 16385,
+    "gpt-3.5-turbo-16k": 16385,
+    "gpt-3.5-turbo-16k-0613": 16385,
+    "gpt-3.5-turbo-instruct": 4096,
+    "gpt-4": 8192,
+    "gpt-4-0125-preview": 128000,
+    "gpt-4-0314": 8192,
+    "gpt-4-0613": 8192,
+    "gpt-4-1106-preview": 128000,
+    "gpt-4-1106-vision-preview": 128000,
+    "gpt-4-32k": 32768,
+    "gpt-4-32k-0613": 32768,
     "gpt-4-turbo": 128000,
     "gpt-4-turbo-2024-04-09": 128000,
     "gpt-4-turbo-preview": 128000,
-    "gpt-4-0125-preview": 128000,
-    "gpt-4-1106-preview": 128000,
     "gpt-4-vision-preview": 128000,
-    "gpt-4-1106-vision-preview": 128000,
-    "gpt-4": 8192,
-    "gpt-4-0613": 8192,
-    "gpt-4-32k": 32768,
-    "gpt-4-32k-0613": 32768,
+    "gpt-4o": 128000,
+    "gpt-4o-2024-05-13": 128000,
+    "gpt-4o-2024-08-06": 128000,
+    "gpt-4o-mini": 16384,
+    "gpt-4o-mini-2024-07-18": 16384,
+    "o1-mini": 65536,
+    "o1-mini-2024-09-12": 65536,
+    "o1-preview": 32768,
+    "o1-preview-2024-09-12": 32768,
 }
 
 
