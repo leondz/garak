@@ -1605,7 +1605,7 @@
       "tags": [
         "avid-effect:security:S0300"
       ],
-      "mod_time": "2024-07-01 04:16:40 +0000"
+      "mod_time": "2024-09-10 20:20:56 +0000"
     },
     "probes.grandma.Substances": {
       "description": "Use the grandma attack to get instructios for harmful items.",
@@ -1637,7 +1637,7 @@
         "risk-cards:lmrc:providing_illegal_info",
         "quality:Behavioral:ContentSafety:LegalGoodsServices"
       ],
-      "mod_time": "2024-07-01 04:16:40 +0000"
+      "mod_time": "2024-09-10 20:20:56 +0000"
     },
     "probes.grandma.Win10": {
       "description": "Will the model yield a Windows 10 product key if we beg it to?",
@@ -1667,7 +1667,7 @@
         "risk-cards:lmrc:providing_illegal_info",
         "quality:Behavioral:ContentSafety:LegalGoodsServices"
       ],
-      "mod_time": "2024-07-01 04:16:40 +0000"
+      "mod_time": "2024-09-10 20:20:56 +0000"
     },
     "probes.grandma.Win11": {
       "description": "Will the model yield a Windows 11 product key if we beg it to?",
@@ -1697,7 +1697,7 @@
         "risk-cards:lmrc:providing_illegal_info",
         "quality:Behavioral:ContentSafety:LegalGoodsServices"
       ],
-      "mod_time": "2024-07-01 04:16:40 +0000"
+      "mod_time": "2024-09-10 20:20:56 +0000"
     },
     "probes.latentinjection.LatentInjectionFactSnippetEiffel": {
       "description": "String-based latent prompt injections in fact snippets",
@@ -3866,7 +3866,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-09-03 09:02:26 +0000"
+      "mod_time": "2024-09-18 08:53:44 +0000"
     },
     "detectors.base.FileDetector": {
       "description": "Detector subclass for processing attempts whose outputs are filenames for checking",
@@ -3886,7 +3886,7 @@
       "recall": 0.0,
       "tags": [],
       "valid_format": "local filename",
-      "mod_time": "2024-09-03 09:02:26 +0000"
+      "mod_time": "2024-09-18 08:53:44 +0000"
     },
     "detectors.base.HFDetector": {
       "description": "Detector using a Hugging Face model",
@@ -3912,12 +3912,13 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-09-03 09:02:26 +0000"
+      "mod_time": "2024-09-18 08:53:44 +0000"
     },
     "detectors.base.StringDetector": {
       "description": "Subclass of Detector using list of substrings as detection triggers",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "str"
       },
       "accuracy": null,
       "active": true,
@@ -3931,7 +3932,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-09-03 09:02:26 +0000"
+      "mod_time": "2024-09-18 08:53:44 +0000"
     },
     "detectors.base.TriggerListDetector": {
       "description": "Subclass of Detector using attempt's notes[triggers] as list of strings to match",
@@ -3950,7 +3951,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-09-03 09:02:26 +0000"
+      "mod_time": "2024-09-18 08:53:44 +0000"
     },
     "detectors.continuation.Continuation": {
       "description": "Detect if model intiates / continues a trigger word",
@@ -3974,7 +3975,8 @@
     "detectors.dan.AntiDAN": {
       "description": "Do we get an ANTI-DAN positive?",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "str"
       },
       "accuracy": null,
       "active": true,
@@ -3995,7 +3997,8 @@
     "detectors.dan.DAN": {
       "description": "Do we get a [DAN] positive?",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "str"
       },
       "accuracy": null,
       "active": true,
@@ -4016,7 +4019,8 @@
     "detectors.dan.DANJailbreak": {
       "description": "Do we get a [\ud83d\udd13JAILBREAK] positive?",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "str"
       },
       "accuracy": null,
       "active": true,
@@ -4037,7 +4041,8 @@
     "detectors.dan.DUDE": {
       "description": "Do we get a DUDE positive?",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "str"
       },
       "accuracy": null,
       "active": true,
@@ -4058,7 +4063,8 @@
     "detectors.dan.DevMode": {
       "description": "Do we get a dev mode v2 positive?",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "str"
       },
       "accuracy": null,
       "active": true,
@@ -4079,7 +4085,8 @@
     "detectors.dan.MarkdownLink": {
       "description": "Look for markdown links",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "str"
       },
       "accuracy": null,
       "active": true,
@@ -4100,7 +4107,8 @@
     "detectors.dan.STAN": {
       "description": "Do we get a STAN positive?",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "str"
       },
       "accuracy": null,
       "active": true,
@@ -4140,7 +4148,8 @@
     "detectors.encoding.DecodeMatch": {
       "description": "Is there a direct hash decoding?",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "str"
       },
       "accuracy": null,
       "active": true,
@@ -4257,7 +4266,8 @@
     "detectors.goodside.RileyIsnt": {
       "description": "Look for mentions of being Canadian, female pronouns, being a singer",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "str"
       },
       "accuracy": null,
       "active": true,
@@ -4276,7 +4286,8 @@
     "detectors.knownbadsignatures.EICAR": {
       "description": "Is the EICAR test string present?",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "str"
       },
       "accuracy": null,
       "active": true,
@@ -4297,7 +4308,8 @@
     "detectors.knownbadsignatures.GTUBE": {
       "description": "Is the GTUBE test string present?",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "str"
       },
       "accuracy": null,
       "active": true,
@@ -4318,7 +4330,8 @@
     "detectors.knownbadsignatures.GTphish": {
       "description": "Is the GTphish test string present?",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "str"
       },
       "accuracy": null,
       "active": true,
@@ -4358,7 +4371,8 @@
     "detectors.lmrc.Anthro": {
       "description": "Looking for first person pronoun uses",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "str"
       },
       "accuracy": null,
       "active": true,
@@ -4379,7 +4393,8 @@
     "detectors.lmrc.QuackMedicine": {
       "description": "Keywords related to Quack Medicine detector",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "str"
       },
       "accuracy": null,
       "active": true,
@@ -4448,7 +4463,8 @@
     "detectors.misleading.MustRefuteClaimKW": {
       "description": "Looking for strings indicating a refutation",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "str"
       },
       "accuracy": null,
       "active": true,
@@ -4495,7 +4511,8 @@
     "detectors.mitigation.MitigationBypass": {
       "description": "Detect if a string response does not contain a mitigation message.",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "str"
       },
       "accuracy": null,
       "active": true,
@@ -4512,7 +4529,7 @@
         "avid-effect:security:S0403",
         "avid-effect:performance:P0204"
       ],
-      "mod_time": "2024-07-25 15:08:38 +0000"
+      "mod_time": "2024-09-18 09:10:02 +0000"
     },
     "detectors.packagehallucination.JavaScriptNpm": {
       "description": "Check if the output tries to import or require an npm package not listed in the npm registry",
@@ -5163,7 +5180,8 @@
     "detectors.riskywords.LDNOOBW": {
       "description": "List of Dirty, Naughty, Obscene, and Otherwise Bad Words (English)",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "str"
       },
       "accuracy": null,
       "active": true,
@@ -5181,12 +5199,13 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-09-18 08:53:44 +0000"
     },
     "detectors.riskywords.OfcomOffensiveDiscriminatory": {
       "description": "UK OFCOM potentially offensive list: discriminatory",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "word"
       },
       "accuracy": null,
       "active": true,
@@ -5204,12 +5223,13 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-09-18 08:53:44 +0000"
     },
     "detectors.riskywords.OfcomOffensiveGeneral": {
       "description": "UK OFCOM potentially offensive list: general",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "word"
       },
       "accuracy": null,
       "active": true,
@@ -5226,12 +5246,13 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-09-18 08:53:44 +0000"
     },
     "detectors.riskywords.OfcomOffensiveMentalHealth": {
       "description": "UK OFCOM potentially offensive list: mental health",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "word"
       },
       "accuracy": null,
       "active": true,
@@ -5249,12 +5270,13 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-09-18 08:53:44 +0000"
     },
     "detectors.riskywords.OfcomOffensiveRaceEthnic": {
       "description": "UK OFCOM potentially offensive list: race / ethnic",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "word"
       },
       "accuracy": null,
       "active": true,
@@ -5272,12 +5294,13 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-09-18 08:53:44 +0000"
     },
     "detectors.riskywords.OfcomOffensiveSexGender": {
       "description": "UK OFCOM potentially offensive list: sex & gender",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "word"
       },
       "accuracy": null,
       "active": true,
@@ -5295,12 +5318,13 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-09-18 08:53:44 +0000"
     },
     "detectors.riskywords.OfcomOffensiveSexual": {
       "description": "UK OFCOM potentially offensive list: sexual",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "word"
       },
       "accuracy": null,
       "active": true,
@@ -5316,12 +5340,13 @@
       "tags": [
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-09-18 08:53:44 +0000"
     },
     "detectors.riskywords.SurgeProfanityAnimalReferences": {
       "description": "Surge AI list: animal references",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "word"
       },
       "accuracy": null,
       "active": true,
@@ -5338,12 +5363,13 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-09-18 08:53:44 +0000"
     },
     "detectors.riskywords.SurgeProfanityBodilyFluids": {
       "description": "Surge AI list: bodily fluids / excrement",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "word"
       },
       "accuracy": null,
       "active": true,
@@ -5359,12 +5385,13 @@
       "tags": [
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-09-18 08:53:44 +0000"
     },
     "detectors.riskywords.SurgeProfanityMentalDisability": {
       "description": "Surge AI list: mental disability",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "word"
       },
       "accuracy": null,
       "active": true,
@@ -5382,12 +5409,13 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-09-18 08:53:44 +0000"
     },
     "detectors.riskywords.SurgeProfanityPhysicalAttributes": {
       "description": "Surge AI list: physical attributes",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "word"
       },
       "accuracy": null,
       "active": true,
@@ -5404,12 +5432,13 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-09-18 08:53:44 +0000"
     },
     "detectors.riskywords.SurgeProfanityPhysicalDisability": {
       "description": "Surge AI list: physical disability",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "word"
       },
       "accuracy": null,
       "active": true,
@@ -5427,12 +5456,13 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-09-18 08:53:44 +0000"
     },
     "detectors.riskywords.SurgeProfanityPolitical": {
       "description": "Surge AI list: political",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "word"
       },
       "accuracy": null,
       "active": true,
@@ -5451,12 +5481,13 @@
         "avid-effect:ethics:E0302",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-09-18 08:53:44 +0000"
     },
     "detectors.riskywords.SurgeProfanityRacialEthnic": {
       "description": "Surge AI list: racial / ethnic",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "word"
       },
       "accuracy": null,
       "active": true,
@@ -5474,12 +5505,13 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-09-18 08:53:44 +0000"
     },
     "detectors.riskywords.SurgeProfanityReligious": {
       "description": "Surge AI list: religious offense",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "word"
       },
       "accuracy": null,
       "active": true,
@@ -5496,12 +5528,13 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-09-18 08:53:44 +0000"
     },
     "detectors.riskywords.SurgeProfanitySexual": {
       "description": "Surge AI list: sexual anatomy / sexual acts",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "word"
       },
       "accuracy": null,
       "active": true,
@@ -5517,12 +5550,13 @@
       "tags": [
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-09-18 08:53:44 +0000"
     },
     "detectors.riskywords.SurgeProfanitySexualOrientationGender": {
       "description": "Surge AI list: sexual orientation / gender",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "word"
       },
       "accuracy": null,
       "active": true,
@@ -5540,7 +5574,7 @@
         "avid-effect:ethics:E0301",
         "avid-effect:performance:P0401"
       ],
-      "mod_time": "2024-07-30 16:28:58 +0000"
+      "mod_time": "2024-09-18 08:53:44 +0000"
     },
     "detectors.snowball.DontStartNo": {
       "description": "Response should start no, or contain a negation, to pass",
@@ -5587,7 +5621,8 @@
     "detectors.specialwords.SlursReclaimedSlurs": {
       "description": "Slurs and reclaimed slurs. Detects presence of any of the items from an ethnic slur list, regardless of context.",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "str"
       },
       "accuracy": null,
       "active": true,
@@ -5641,7 +5676,8 @@
     "detectors.visual_jailbreak.FigStep": {
       "description": "Looks for specific strings in the output - these should be strings inserted by image",
       "DEFAULT_PARAMS": {
-        "skip": false
+        "skip": false,
+        "matchtype": "str"
       },
       "accuracy": null,
       "active": true,
