@@ -90,3 +90,10 @@ def test_openai_chat():
     for item in output:
         assert isinstance(item, str)
     print("test passed!")
+
+
+def test_reasoning_switch():
+    with pytest.raises(ValueError):
+        generator = OpenAIGenerator(
+            name="o1-mini"
+        )  # o1 models should use ReasoningGenerator

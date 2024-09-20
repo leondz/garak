@@ -24,20 +24,20 @@ from garak.generators.base import Generator
 
 # lists derived from https://platform.openai.com/docs/models
 chat_models = (
-    "chatgpt-4o-latest", # links to latest version
+    "chatgpt-4o-latest",  # links to latest version
     "gpt-3.5-turbo",  # links to latest version
     "gpt-3.5-turbo-0125",
     "gpt-3.5-turbo-1106",
     "gpt-3.5-turbo-16k",
     "gpt-4",  # links to latest version
     "gpt-4-0125-preview",
-    "gpt-4-0314", # legacy
+    "gpt-4-0314",  # legacy
     "gpt-4-0613",
     "gpt-4-1106-preview",
     "gpt-4-1106-vision-preview",
-    "gpt-4-32k", # deprecated, shutdown 2025-06-06
-    "gpt-4-32k-0314", # deprecated, shutdown 2025-06-06
-    "gpt-4-32k-0613", # deprecated, shutdown 2025-06-06
+    "gpt-4-32k",  # deprecated, shutdown 2025-06-06
+    "gpt-4-32k-0314",  # deprecated, shutdown 2025-06-06
+    "gpt-4-32k-0613",  # deprecated, shutdown 2025-06-06
     "gpt-4-turbo",  # links to latest version
     "gpt-4-turbo-2024-04-09",
     "gpt-4-turbo-preview",
@@ -47,12 +47,12 @@ chat_models = (
     "gpt-4o-2024-08-06",
     "gpt-4o-mini",  # links to latest version
     "gpt-4o-mini-2024-07-18",
-    "o1-mini", # links to latest version
+    "o1-mini",  # links to latest version
     "o1-mini-2024-09-12",
-    "o1-preview", # links to latest version
+    "o1-preview",  # links to latest version
     "o1-preview-2024-09-12",
-    #"gpt-3.5-turbo-0613",  # deprecated, shutdown 2024-09-13
-    #"gpt-3.5-turbo-16k-0613",  # # deprecated, shutdown 2024-09-13
+    # "gpt-3.5-turbo-0613",  # deprecated, shutdown 2024-09-13
+    # "gpt-3.5-turbo-16k-0613",  # # deprecated, shutdown 2024-09-13
 )
 
 completion_models = (
@@ -127,6 +127,7 @@ class OpenAICompatible(Generator):
         "stop": ["#", ";"],
         "suppressed_params": set(),
         "retry_json": True,
+        "custom_params": {},
     }
 
     # avoid attempt to pickle the client attribute
@@ -211,6 +212,10 @@ class OpenAICompatible(Generator):
             if v is not None and k not in self.suppressed_params
         }
 
+        for k, v in self.custom_params.items():
+            if k not in self.suppressed_params:
+                create_args[k] = v
+
         if self.generator == self.client.completions:
             if not isinstance(prompt, str):
                 msg = (
@@ -285,10 +290,16 @@ class OpenAIGenerator(OpenAICompatible):
             r"^.+-[01][0-9][0-3][0-9]$", self.name
         ):  # handle model names -MMDDish suffix
             self.generator = self.client.completions
+
         else:
             raise ValueError(
                 f"No {self.generator_family_name} API defined for '{self.name}' in generators/openai.py - please add one!"
             )
+
+        if self.__class__.__name__ == "OpenAIGenerator" and self.name.startswith("o1-"):
+            msg = "o1 models should use openai.ReasoningGenerator"
+            logging.error(msg)
+            raise ValueError("🛑 " + msg)
 
     def _clear_client(self):
         self.generator = None
@@ -300,6 +311,29 @@ class OpenAIGenerator(OpenAICompatible):
         if self.name in context_lengths:
             self.context_len = context_lengths[self.name]
 
+        super().__init__(self.name, config_root=config_root)
+
+
+class ReasoningGenerator(OpenAIGenerator):
+    """Generator wrapper for OpenAI reasoning models, e.g. `o1` family."""
+
+    supports_multiple_generations = False
+
+    DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
+        "top_p": 1.0,
+        "frequency_penalty": 0.0,
+        "presence_penalty": 0.0,
+        "seed": None,
+        "stop": ["#", ";"],
+        "suppressed_params": set(["n", "temperature", "max_tokens", "stop"]),
+        "retry_json": True,
+        "custom_params": {
+            "max_completion_tokens": 1500,
+        },
+    }
+
+    def __init__(self, name="", config_root=_config):
+        self.name = name
         super().__init__(self.name, config_root=config_root)
 
 
