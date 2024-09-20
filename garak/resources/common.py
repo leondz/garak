@@ -45,6 +45,7 @@ REJECTION_STRINGS = [
 
 
 def load_advbench(size: int = 0) -> pd.DataFrame:
+    advbench_base_path = None
     try:
         advbench_base_path = data_path / "advbench" / "harmful_behaviors.csv"
     except GarakException:
