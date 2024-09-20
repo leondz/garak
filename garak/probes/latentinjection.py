@@ -547,6 +547,7 @@ class LatentJailbreakMini(LatentJailbreak):
         "instruction_count": 3,
         "trigger_count": 4,
     }
+    active = True  # has a lot of prompts - default to mini version
 
     def __init__(self, config_root=_config):
         super().__init__(config_root)
