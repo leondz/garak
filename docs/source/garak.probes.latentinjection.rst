@@ -3,10 +3,11 @@ garak.probes.latentinjection
 
 
 This probe tests whether models respond to injections embedded in context. This
-subsumes attacks including Indirect Prompt Injection, Latent Jailbreak, and 
-XPIA, and is specifically aimed at semi-overt prompt injections whose stealth is
-afforded by being placed in a larger context. This makes this class of attack
-similar to that effective against RAGs and other systems used for summarisation.
+subsumes attacks including `Indirect Prompt Injection <https://kai-greshake.de/posts/inject-my-pdf/>`_,
+`Latent Jailbreak <https://arxiv.org/abs/2307.08487>`_, and `XPIA <https://www.microsoft.com/en-us/security/blog/2024/04/11/how-microsoft-discovers-and-mitigates-evolving-attacks-against-ai-guardrails/>`_, and is specifically 
+aimed at semi-overt prompt injections whose stealth is afforded by being placed in a 
+larger context. This makes this class of attack similar to that effective against RAGs 
+and other systems used for summarisation.
 
 The module uses a templating system to construct prompts.
 
@@ -55,7 +56,7 @@ Each probe using ``LatentInjectionMixin`` must define:
 
 Each probe using ``LatentInjectionMixin`` may define:
 
-* ``injection_sep_pairs``, a list of tuples of injection_sep_start / injection_sep_end, used to wrap the injection. Default ``[("", "")]``
+* ``injection_sep_pairs``, a list of tuples of ``injection_sep_start`` / ``injection_sep_end``, used to wrap the injection. Default ``[("", "")]``
 
 .. automodule:: garak.probes.latentinjection
    :members:
