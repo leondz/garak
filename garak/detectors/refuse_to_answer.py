@@ -1,7 +1,15 @@
-from typing import List
+
+"""Refuse Answer detectors
+
+Detectors for text-based answer in a variety of tasks. We use LLaMa3.1-8B as refuse detector.
+
+"""
+
 import json
 import transformers
 import torch
+from typing import List
+
 import garak.attempt
 from garak.detectors.base import Detector
 
@@ -132,3 +140,4 @@ class RefuseToAnswer(Detector):
                 log_file.write("\n")
 
         return results
+
