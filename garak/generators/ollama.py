@@ -21,7 +21,7 @@ class OllamaGenerator(Generator):
 
     DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
         "timeout": 30,  # Add a timeout of 30 seconds. Ollama can tend to hang forever on failures, if this is not present
-        "host": "127.0.0.1:11434",  # The default host of an Ollama server. This should maybe be loaded from a config file somewhere
+        "host": "127.0.0.1:11434",  # The default host of an Ollama server. This can be overwritten with a passed config or generator config file.
     }
 
     active = True
