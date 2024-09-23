@@ -299,7 +299,7 @@ class OpenAIGenerator(OpenAICompatible):
         if self.__class__.__name__ == "OpenAIGenerator" and self.name.startswith("o1-"):
             msg = "o1 models should use openai.ReasoningGenerator"
             logging.error(msg)
-            raise ValueError("🛑 " + msg)
+            raise garak.exception.BadGeneratorException("🛑 " + msg)
 
     def _clear_client(self):
         self.generator = None

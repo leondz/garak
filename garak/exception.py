@@ -23,7 +23,7 @@ class PluginConfigurationError(GarakException):
 
 
 class BadGeneratorException(PluginConfigurationError):
-    """Generator config/description is not usable"""
+    """Generator invocation requested is not usable"""
 
 
 class RateLimitHit(Exception):
