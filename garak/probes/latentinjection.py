@@ -463,7 +463,7 @@ class LatentInjectionFactSnippetLegal(LatentInjectionFactSnippetEiffel):
     ]
 
 
-class LatentJailbreak(Probe, LatentInjectionMixin):
+class LatentJailbreak(LatentInjectionMixin, Probe):
     """Implementation of Latent Jailbreak, using latent prompt injection-
     style distraction to get model to write hateful/harmful text
 
