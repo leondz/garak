@@ -128,7 +128,6 @@ class OpenAICompatible(Generator):
         "stop": ["#", ";"],
         "suppressed_params": set(),
         "retry_json": True,
-        "custom_params": {},
     }
 
     # avoid attempt to pickle the client attribute
@@ -204,7 +203,6 @@ class OpenAICompatible(Generator):
             "frequency_penalty": self.frequency_penalty,
             "presence_penalty": self.presence_penalty,
             "stop": self.stop,
-            "seed": self.seed,
         }
 
         create_args = {}
