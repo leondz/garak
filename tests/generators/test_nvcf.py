@@ -31,7 +31,7 @@ def test_version_endpoint(klassname):
     _config.plugins.generators["nvcf"][klassname]["api_key"] = "placeholder key"
     _config.plugins.generators["nvcf"][klassname]["version_id"] = version
     g = _plugins.load_plugin(f"generators.nvcf.{klassname}")
-    assert g.invoke_url == f"{g.invoke_url_base}{name}/versions/{version}"
+    assert g.invoke_uri == f"{g.invoke_uri_base}{name}/versions/{version}"
 
 
 @pytest.mark.parametrize("klassname", PLUGINS)

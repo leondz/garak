@@ -16,7 +16,7 @@ Configurable values:
 * beam_width: 1
 * length_penalty: 1
 * guardrail: None -  (present in API but not implemented in library)
-* api_host: "https://api.llm.ngc.nvidia.com/v1" - endpoint URI
+* api_uri: "https://api.llm.ngc.nvidia.com/v1" - endpoint URI
 
 
 

@@ -6,8 +6,8 @@ and flexible generation.
 
 NVCF functions work by sending a request to an invocation endpoint, and then polling
 a status endpoint until the response is received. The cloud function is described
-using a UUID, which is passed to garak as the model_name. API key should be placed in
-environment variable NVCF_API_KEY or set in a garak config. For example:
+using a UUID, which is passed to garak as the ``model_name``. API key should be placed in
+environment variable ``NVCF_API_KEY`` or set in a garak config. For example:
 
 .. code-block::
 
@@ -22,8 +22,8 @@ Configurable values:
 
 * temperature - Temperature for generation. Passed as a value to the endpoint.
 * top_p - Number of tokens to sample. Passed as a value to the endpoint.
-* invoke_url_base - Base URL for the NVCF endpoint (default is for NVIDIA-hosted functions).
-* fetch_url_format - URL to check for request status updates (default is for NVIDIA-hosted functions).
+* invoke_uri_base - Base URL for the NVCF endpoint (default is for NVIDIA-hosted functions).
+* status_uri_base - URL to check for request status updates (default is for NVIDIA-hosted functions).
 * timeout - Read timeout for HTTP requests (note, this is network timeout, distinct from inference timeout)
 * version_id - API version id, postpended to endpoint URLs if supplied
 * stop_on_404 - Give up on endpoints returning 404 (i.e. nonexistent ones)
