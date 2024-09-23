@@ -50,15 +50,9 @@ def _validate_payload(payload_json):
 def load_payload(
     name: str, path: Union[str, pathlib.Path, None] = None
 ) -> PayloadGroup:
-    if path is not None:
-        return PayloadGroup(name, path)
-    else:
+    if path is None:
         path = PAYLOAD_DIR / f"{name}.json"
-        if path.is_file():
-            return PayloadGroup(name, path)
-    raise FileNotFoundError(
-        "File '%s.json' not found in payload search directories" % name
-    )
+    return PayloadGroup(name, path)
 
 
 class PayloadGroup:
@@ -214,10 +208,10 @@ class Director:
             logging.error(msg, exc_info=ke)
             raise garak.exception.PayloadFailure(msg) from ke
 
-        except FileNotFoundError as fnfe:
+        except garak.exception.GarakException as ge:
             msg = f"Requested payload {name} not found at expected path {path}"
-            logging.error(msg, exc_info=fnfe)
-            raise garak.exception.PayloadFailure(msg) from fnfe
+            logging.error(msg, exc_info=ge)
+            raise garak.exception.PayloadFailure(msg) from ge
 
         return p
 
