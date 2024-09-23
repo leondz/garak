@@ -339,7 +339,7 @@ OpenAIGenerator config with dictionary
 .. code-block:: python
 
     >>> import garak._plugins
-    >>> c = {"model_type":"openai.OpenAIGenerator", "generators":{"openai":{"OpenAIGenerator":{"seed":30,"name":"gpt-4"}}}}
+    >>> c = {"generators":{"openai":{"OpenAIGenerator":{"seed":30,"name":"gpt-4"}}}}
     >>> garak._plugins.load_plugin("generators.openai.OpenAIGenerator", config_root=c)
     🦜 loading generator: OpenAI: gpt-4
     <garak.generators.openai.OpenAIGenerator object at 0x71bc97693d70>
