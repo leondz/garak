@@ -1724,7 +1724,7 @@
         "owasp:llm01",
         "quality:Security:PromptStability"
       ],
-      "mod_time": "2024-09-20 11:48:05 +0000"
+      "mod_time": "2024-09-23 08:24:14 +0000"
     },
     "probes.latentinjection.LatentInjectionFactSnippetLegal": {
       "description": "String-based latent prompt injections in legal snippets",
@@ -1751,7 +1751,7 @@
         "owasp:llm01",
         "quality:Security:PromptStability"
       ],
-      "mod_time": "2024-09-20 11:48:05 +0000"
+      "mod_time": "2024-09-23 08:24:14 +0000"
     },
     "probes.latentinjection.LatentInjectionReport": {
       "description": "String-based latent prompt injections via a report",
@@ -1778,7 +1778,7 @@
         "owasp:llm01",
         "quality:Security:PromptStability"
       ],
-      "mod_time": "2024-09-20 11:48:05 +0000"
+      "mod_time": "2024-09-23 08:24:14 +0000"
     },
     "probes.latentinjection.LatentInjectionResume": {
       "description": "String-based latent prompt injections via a resume",
@@ -1805,7 +1805,7 @@
         "owasp:llm01",
         "quality:Security:PromptStability"
       ],
-      "mod_time": "2024-09-20 11:48:05 +0000"
+      "mod_time": "2024-09-23 08:24:14 +0000"
     },
     "probes.latentinjection.LatentInjectionTranslationEnFr": {
       "description": "String-based latent prompt injections via translation",
@@ -1832,7 +1832,7 @@
         "owasp:llm01",
         "quality:Security:PromptStability"
       ],
-      "mod_time": "2024-09-20 11:48:05 +0000"
+      "mod_time": "2024-09-23 08:24:14 +0000"
     },
     "probes.latentinjection.LatentInjectionTranslationEnZh": {
       "description": "Latent prompt injection in Chinese context (\u7b80\u4f53\u5b57)",
@@ -1859,7 +1859,7 @@
         "owasp:llm01",
         "quality:Security:PromptStability"
       ],
-      "mod_time": "2024-09-20 11:48:05 +0000"
+      "mod_time": "2024-09-23 08:24:14 +0000"
     },
     "probes.latentinjection.LatentJailbreak": {
       "description": "Implementation of Latent Jailbreak, using latent prompt injection-",
@@ -1883,8 +1883,12 @@
       "recommended_detector": [
         "always.Fail"
       ],
-      "tags": [],
-      "mod_time": "2024-09-20 11:48:05 +0000"
+      "tags": [
+        "avid-effect:security:S0403",
+        "owasp:llm01",
+        "quality:Security:PromptStability"
+      ],
+      "mod_time": "2024-09-23 08:24:14 +0000"
     },
     "probes.latentinjection.LatentJailbreakMini": {
       "description": "Implementation of Latent Jailbreak, using latent prompt injection-",
@@ -1894,7 +1898,7 @@
         "instruction_count": 3,
         "trigger_count": 4
       },
-      "active": false,
+      "active": true,
       "bcp47": "en",
       "doc_uri": "https://arxiv.org/abs/2307.08487",
       "extended_detectors": [
@@ -1911,8 +1915,12 @@
       "recommended_detector": [
         "always.Fail"
       ],
-      "tags": [],
-      "mod_time": "2024-09-20 11:48:05 +0000"
+      "tags": [
+        "avid-effect:security:S0403",
+        "owasp:llm01",
+        "quality:Security:PromptStability"
+      ],
+      "mod_time": "2024-09-23 08:24:14 +0000"
     },
     "probes.leakreplay.GuardianCloze": {
       "description": "Cloze data replay for literature. Uses passages that either GPT-4 or ChatGPT have been known to replay.",
