@@ -121,7 +121,7 @@ class PayloadGroup:
             garak._config.transient.reportfile.write(
                 json.dumps(
                     {
-                        "entry_type": "init",
+                        "entry_type": "payload_init",
                         "loading_complete": "payload",
                         "payload_name": str(self.name),
                         "payload_path": str(self.path),
