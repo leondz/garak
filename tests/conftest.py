@@ -1,6 +1,10 @@
 import pytest
 import os
-from garak import _config
+from garak import _config, _plugins
+
+# force a local cache file to exist when this top level import is loaded
+if not os.path.isfile(_plugins.PluginCache._user_plugin_cache_filename):
+    _plugins.PluginCache.instance()
 
 
 @pytest.fixture(autouse=True)

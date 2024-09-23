@@ -5,34 +5,34 @@
 class GarakException(Exception):
     """Base class for all  garak exceptions"""
 
-    pass
-
 
 class APIKeyMissingError(GarakException):
     """Exception to be raised if a required API key is not found"""
-
-    pass
 
 
 class ModelNameMissingError(GarakException):
     """A generator requires model_name to be set, but it wasn't"""
 
-    pass
-
 
 class GarakBackoffTrigger(GarakException):
     """Thrown when backoff should be triggered"""
 
-    pass
+
+class PluginConfigurationError(GarakException):
+    """Plugin config/description is not usable"""
 
 
-class BadGeneratorException(GarakException):
-    """Generator config/description is not usable"""
-
-    pass
+class BadGeneratorException(PluginConfigurationError):
+    """Generator invocation requested is not usable"""
 
 
 class RateLimitHit(Exception):
     """Raised when a rate limiting response is returned"""
 
-    pass
+
+class ConfigFailure(GarakException):
+    """Raised when plugin configuration fails"""
+
+
+class PayloadFailure(GarakException):
+    """Problem instantiating/using payloads"""

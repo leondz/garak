@@ -116,6 +116,8 @@ class Harness(Configurable):
                 detector_probe_name = d.detectorname.replace("garak.detectors.", "")
                 attempt_iterator.set_description("detectors." + detector_probe_name)
                 for attempt in attempt_iterator:
+                    if d.skip:
+                        continue
                     attempt.detector_results[detector_probe_name] = list(
                         d.detect(attempt)
                     )

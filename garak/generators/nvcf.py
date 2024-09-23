@@ -23,9 +23,8 @@ class NvcfChat(Generator):
     DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
         "temperature": 0.2,
         "top_p": 0.7,
-        "fetch_url_format": "https://api.nvcf.nvidia.com/v2/nvcf/pexec/status/",
-        "invoke_url_base": "https://api.nvcf.nvidia.com/v2/nvcf/pexec/functions/",
-        "extra_nvcf_logging": False,
+        "status_uri_base": "https://api.nvcf.nvidia.com/v2/nvcf/pexec/status/",
+        "invoke_uri_base": "https://api.nvcf.nvidia.com/v2/nvcf/pexec/functions/",
         "timeout": 60,
         "version_id": None,  # string
         "stop_on_404": True,
@@ -37,7 +36,7 @@ class NvcfChat(Generator):
     supports_multiple_generations = False
     generator_family_name = "NVCF"
 
-    def __init__(self, name=None, generations=10, config_root=_config):
+    def __init__(self, name=None, config_root=_config):
         self.name = name
         self._load_config(config_root)
         self.fullname = (
@@ -50,14 +49,12 @@ class NvcfChat(Generator):
                 "Please specify a function identifier in model name (-n)"
             )
 
-        self.invoke_url = self.invoke_url_base + self.name
+        self.invoke_uri = self.invoke_uri_base + self.name
 
         if self.version_id is not None:
-            self.invoke_url += f"/versions/{self.version_id}"
+            self.invoke_uri += f"/versions/{self.version_id}"
 
-        super().__init__(
-            self.name, generations=self.generations, config_root=config_root
-        )
+        super().__init__(self.name, config_root=config_root)
 
         self.headers = {
             "Authorization": f"Bearer {self.api_key}",
@@ -112,7 +109,7 @@ class NvcfChat(Generator):
 
         request_time = time.time()
         logging.debug("nvcf : payload %s", repr(payload))
-        response = session.post(self.invoke_url, headers=self.headers, json=payload)
+        response = session.post(self.invoke_uri, headers=self.headers, json=payload)
 
         while response.status_code == 202:
             if time.time() > request_time + self.timeout:
@@ -122,8 +119,8 @@ class NvcfChat(Generator):
                 msg = "Got HTTP 202 but no NVCF-REQID was returned"
                 logging.info("nvcf : %s", msg)
                 raise AttributeError(msg)
-            fetch_url = self.fetch_url_format + request_id
-            response = session.get(fetch_url, headers=self.headers)
+            status_uri = self.status_uri_base + request_id
+            response = session.get(status_uri, headers=self.headers)
 
         if 400 <= response.status_code < 600:
             logging.warning("nvcf : returned error code %s", response.status_code)

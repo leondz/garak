@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "garak"
-version = "0.9.0.14.post1"
+version = "0.9.0.16.post1"
 authors = [
   { name = "Leon Derczynski", email="lderczynski@nvidia.com" },
   { name = "Subho Majumdar", email="subho@vijil.ai" },
@@ -23,6 +23,10 @@ authors = [
   { name = "Oh Tien Cheng" },
   { name = "Brain John" },
   { name = "Naman Mishra" },
+  { name = "Soumili Nandi" },
+  { name = "Arjun Krishna" },
+  { name = "Mihailo Milenkovic" },
+  { name = "Kai Greshake" },
 ]
 license = { file = "LICENSE" }
 description = "LLM vulnerability scanner"
@@ -43,7 +47,7 @@ dependencies = [
   "colorama>=0.4.3",
   "tqdm>=4.64.0",
   "cohere>=4.5.1,<5",
-  "openai>=1.14.0,<2",
+  "openai>=1.45.0,<2",
   "replicate>=0.8.3",
   "google-api-python-client>=2.0",
   "backoff>=2.1.1",
@@ -65,13 +69,14 @@ dependencies = [
   "ecoji>=0.1.1",
   "deepl==1.17.0",
   "fschat>=0.2.36",
-  "litellm>=1.33.8",
+  "litellm>=1.41.21",
   "jsonpath-ng>=1.6.1",
   "huggingface_hub>=0.21.0",
   'python-magic-bin>=0.4.14; sys_platform == "win32"',
   'python-magic>=0.4.21; sys_platform != "win32"',
   "lorem==0.1.1",
   "xdg-base-dirs>=6.0.1",
+  "wn==0.9.5",
 ]
 
 [project.optional-dependencies]

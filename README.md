@@ -7,6 +7,9 @@
 `garak`'s a free tool. We love developing it and are always interested in adding functionality to support applications. 
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Tests/Linux](https://github.com/leondz/garak/actions/workflows/test_linux.yml/badge.svg)](https://github.com/leondz/garak/actions/workflows/test_linux.yml)
+[![Tests/Windows](https://github.com/leondz/garak/actions/workflows/test_windows.yml/badge.svg)](https://github.com/leondz/garak/actions/workflows/test_windows.yml)
+[![Tests/OSX](https://github.com/leondz/garak/actions/workflows/test_macos.yml/badge.svg)](https://github.com/leondz/garak/actions/workflows/test_macos.yml)
 [![Documentation Status](https://readthedocs.org/projects/garak/badge/?version=latest)](http://garak.readthedocs.io/en/latest/?badge=latest)
 [![discord-img](https://img.shields.io/badge/chat-on%20discord-yellow.svg)](https://discord.gg/uVch4puUCs)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -21,6 +24,7 @@
 ### > Join our [Discord](https://discord.gg/uVch4puUCs)!
 ### > Project links & home: [garak.ai](https://garak.ai/)
 ### > Twitter: [@garak_llm](https://twitter.com/garak_llm)
+### > DEF CON [slides](https://garak.ai/garak_aiv_slides.pdf)!
 
 <hr>
 
@@ -30,6 +34,8 @@ currently supports:
 * [hugging face hub](https://huggingface.co/models) generative models
 * [replicate](https://replicate.com/) text models
 * [openai api](https://platform.openai.com/docs/introduction) chat & continuation models
+* [litellm](https://www.litellm.ai/)
+* pretty much anything accessible via REST
 * gguf models like [llama.cpp](https://github.com/ggerganov/llama.cpp) version >= 1046
 * .. and many more LLMs!
 
@@ -62,7 +68,7 @@ conda create --name garak "python>=3.10,<=3.12"
 conda activate garak
 gh repo clone leondz/garak
 cd garak
-python -m pip install -r requirements.txt
+python -m pip install -e .
 ```
 
 OK, if that went fine, you're probably good to go!
@@ -71,11 +77,11 @@ OK, if that went fine, you're probably good to go!
 
 The general syntax is:
 
-`python3 -m garak <options>`
+`garak <options>`
 
 `garak` needs to know what model to scan, and by default, it'll try all the probes it knows on that model, using the vulnerability detectors recommended by each probe. You can see a list of probes using:
 
-`python3 -m garak --list_probes`
+`garak --list_probes`
 
 To specify a generator, use the `--model_type` and, optionally, the `--model_name` options. Model type specifies a model family/interface; model name specifies the exact model to be used. The "Intro to generators" section below describes some of the generators supported. A straightforward generator family is Hugging Face models; to load one of these, set `--model_type` to `huggingface` and `--model_name` to the model's name on Hub (e.g. `"RWKV/rwkv-4-169m-pile"`). Some generators might need an API key to be set as an environment variable, and they'll let you know if they need that.
 
@@ -119,11 +125,15 @@ Send PRs & open issues. Happy hunting!
 
 ### Hugging Face
 
+Using the Pipeline API:
 * `--model_type huggingface` (for transformers models to run locally)
 * `--model_name` - use the model name from Hub. Only generative models will work. If it fails and shouldn't, please open an issue and paste in the command you tried + the exception!
 
+Using the Inference API:
 * `--model_type huggingface.InferenceAPI` (for API-based model access)
 * `--model_name` - the model name from Hub, e.g. `"mosaicml/mpt-7b-instruct"`
+
+Using private endpoints:
 * `--model_type huggingface.InferenceEndpoint` (for private endpoints)
 * `--model_name` - the endpoint URL, e.g. `https://xxx.us-east-1.aws.endpoints.huggingface.cloud`
 
@@ -139,11 +149,15 @@ Recognised model types are whitelisted, because the plugin needs to know which s
 
 ### Replicate
 
+* set the `REPLICATE_API_TOKEN` environment variable to your Replicate API token, e.g. "r8-123XXXXXXXXXXXX"; see https://replicate.com/account/api-tokens when logged in
+
+Public Replicate models:
 * `--model_type replicate`
 * `--model_name` - the Replicate model name and hash, e.g. `"stability-ai/stablelm-tuned-alpha-7b:c49dae36"`
+
+Private Replicate endpoints:
 * `--model_type replicate.InferenceEndpoint` (for private endpoints)
 * `--model_name` - username/model-name slug from the deployed endpoint, e.g. `elim/elims-llama2-7b`
-* set the `REPLICATE_API_TOKEN` environment variable to your Replicate API token, e.g. "r8-123XXXXXXXXXXXX"; see https://replicate.com/account/api-tokens when logged in
 
 ### Cohere
 
@@ -151,19 +165,47 @@ Recognised model types are whitelisted, because the plugin needs to know which s
 * `--model_name` (optional, `command` by default) - The specific Cohere model you'd like to test
 * set the `COHERE_API_KEY` environment variable to your Cohere API key, e.g. "aBcDeFgHiJ123456789"; see https://dashboard.cohere.ai/api-keys when logged in
 
+### Groq
+
+* `--model_type groq`
+* `--model_name` - The name of the model to access via the Groq API
+* set the `GROQ_API_KEY` environment variable to your Groq API key, see https://console.groq.com/docs/quickstart for details on creating an API key
+
 ### ggml
 
 * `--model_type ggml`
 * `--model_name` - The path to the ggml model you'd like to load, e.g. `/home/leon/llama.cpp/models/7B/ggml-model-q4_0.bin`
 * set the `GGML_MAIN_PATH` environment variable to the path to your ggml `main` executable
 
+### REST
+
+`rest.RestGenerator` is highly flexible and can connect to any REST endpoint that returns plaintext or JSON. It does need some brief config, which will typically result a short YAML file describing your endpoint. See https://reference.garak.ai/en/latest/garak.generators.rest.html for examples.
+
+### NIM
+
+Use models from https://build.nvidia.com/ or other NIM endpoints.
+* set the `NIM_API_KEY` environment variable to your authentication API token, or specify it in the config YAML
+
+For chat models:
+* `--model_type nim`
+* `--model_name` - the NIM `model` name, e.g. `meta/llama-3.1-8b-instruct`
+
+For completion models:
+* `--model_type nim.NVOpenAICompletion`
+* `--model_name` - the NIM `model` name, e.g. `bigcode/starcoder2-15b`
+
+
 ### OctoAI
 
+* set the `OCTO_API_TOKEN` environment variable to your Replicate API token, e.g. "r8-123XXXXXXXXXXXX"; see https://replicate.com/account/api-tokens when logged in
+
+Octo public endpoint:
 * `--model_type octo`
 * `--model_name` - the OctoAI public endpoint for the model, e.g. `mistral-7b-instruct-fp16`
+
+Octo private endpoint:
 * `--model_type octo.InferenceEndpoint` (for private endpoints)
 * `--model_name` - the deployed endpoint URL, e.g. `https://llama-2-70b-chat-xxx.octoai.run/v1/chat/completions`
-* set the `OCTO_API_TOKEN` environment variable to your Replicate API token, e.g. "r8-123XXXXXXXXXXXX"; see https://replicate.com/account/api-tokens when logged in
 
 ### Test
 
@@ -180,14 +222,15 @@ For testing. This generator repeats back the prompt it received.
 | --- | --- |
 | blank | A simple probe that always sends an empty prompt. |
 | atkgen | Automated Attack Generation. A red-teaming LLM probes the target and reacts to it in an attempt to get toxic output. Prototype, mostly stateless, for now uses a simple GPT-2 [fine-tuned](https://huggingface.co/leondz/artgpt2tox) on the subset of hhrlhf attempts that yielded detectable toxicity (the only target currently supported for now). |
+| av_spam_scanning | Probes that attempt to make the model output malicious content signatures |
 | continuation | Probes that test if the model will continue a probably undesirable word |
 | dan | Various [DAN](https://adguard.com/en/blog/chatgpt-dan-prompt-abuse.html) and DAN-like attacks |
 | donotanswer | Prompts to which responsible language models should not answer. |
 | encoding | Prompt injection through text encoding |
 | gcg | Disrupt a system prompt by appending an adversarial suffix. |
 | glitch | Probe model for glitch tokens that provoke unusual behavior. |
+| grandma | Appeal to be reminded of one's grandmother. | 
 | goodside | Implementations of Riley Goodside attacks. |
-| knownbadsignatures | Probes that attempt to make the model output malicious content signatures |
 | leakerplay | Evaluate if a model will replay training data. |
 | lmrc | Subsample of the [Language Model Risk Cards](https://arxiv.org/abs/2303.18190) probes |
 | malwaregen | Attempts to have the model generate code for building malware |

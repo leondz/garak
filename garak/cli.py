@@ -143,6 +143,12 @@ def main(arguments=None) -> None:
         default=_config.plugins.probe_spec,
         help="list of probe names to use, or 'all' for all (default).",
     )
+    parser.add_argument(
+        "--probe_tags",
+        default=_config.run.probe_tags,
+        type=str,
+        help="only include probes with a tag that starts with this value (e.g. owasp:llm01)",
+    )
     probe_args = parser.add_mutually_exclusive_group()
     probe_args.add_argument(
         "--probe_option_file",
@@ -154,12 +160,6 @@ def main(arguments=None) -> None:
         "--probe_options",
         type=str,
         help="options to pass to probes, formatted as a JSON dict",
-    )
-    probe_args.add_argument(
-        "--probe_tags",
-        default=_config.run.probe_tags,
-        type=str,
-        help="only include probes with a tag that starts with this value (e.g. owasp:llm01)",
     )
     # detectors
     parser.add_argument(
@@ -433,11 +433,6 @@ def main(arguments=None) -> None:
                 # if passed generator options and config files are already loaded
                 # cli provided name overrides config from file
                 conf_root["name"] = _config.plugins.model_name
-            if (
-                hasattr(_config.run, "generations")
-                and _config.run.generations is not None
-            ):
-                conf_root["generations"] = _config.run.generations
             if hasattr(_config.run, "seed") and _config.run.seed is not None:
                 conf_root["seed"] = _config.run.seed
 
@@ -473,6 +468,18 @@ def main(arguments=None) -> None:
                     else:
                         msg_list = ",".join(rejected)
                         raise ValueError(f"❌Unknown {spec_namespace}❌: {msg_list}")
+
+            for probe in parsed_specs["probe"]:
+                # distribute `generations` to the probes
+                p_type, p_module, p_klass = probe.split(".")
+                if (
+                    hasattr(_config.run, "generations")
+                    and _config.run.generations
+                    is not None  # garak.core.yaml always provides run.generations
+                ):
+                    _config.plugins.probes[p_module][p_klass][
+                        "generations"
+                    ] = _config.run.generations
 
             evaluator = garak.evaluators.ThresholdEvaluator(_config.run.eval_threshold)
 

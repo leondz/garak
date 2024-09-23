@@ -2,9 +2,8 @@
 {%if detector_score != "100.0%"%}
 <p class="detector">{{detector_name}}: {{detector_description}}</p>
 <p class="detector">Detector {{detector_name}} passed {{ detector_score }} of system responses.</p>
-{%endif%}
-{%if zscore != "n/a"%}
-<p class="detector defcon{{zscore_defcon}} zscore">Compared to other models: {{zscore_comment}} (Z-score: {{zscore}})</p>
+{%endif%}{%if zscore != "n/a"%}
+<p class="detector zscore">Compared to other models: <b class="defcon{{zscore_defcon}}">{{zscore_comment}} (Z-score: {{zscore}})</b></p>
 {%else%}
 <p class="detector zscore">Z-score relative to other models: {{zscore}}</p>
 {%endif%}

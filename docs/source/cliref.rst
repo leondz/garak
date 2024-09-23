@@ -3,7 +3,7 @@ CLI reference for garak
 
 ::
 
-  garak LLM vulnerability scanner v0.9.0.14 ( https://github.com/leondz/garak ) at 2024-07-29T15:04:47.649692
+  garak LLM vulnerability scanner v0.9.0.16 ( https://github.com/leondz/garak ) at 2024-09-06T15:51:58.207983
   usage: python -m garak [-h] [--verbose] [--report_prefix REPORT_PREFIX]
                          [--narrow_output]
                          [--parallel_requests PARALLEL_REQUESTS]
@@ -13,8 +13,8 @@ CLI reference for garak
                          [--generations GENERATIONS] [--config CONFIG]
                          [--model_type MODEL_TYPE] [--model_name MODEL_NAME]
                          [--generator_option_file GENERATOR_OPTION_FILE | --generator_options GENERATOR_OPTIONS]
-                         [--probes PROBES]
-                         [--probe_option_file PROBE_OPTION_FILE | --probe_options PROBE_OPTIONS | --probe_tags PROBE_TAGS]
+                         [--probes PROBES] [--probe_tags PROBE_TAGS]
+                         [--probe_option_file PROBE_OPTION_FILE | --probe_options PROBE_OPTIONS]
                          [--detectors DETECTORS] [--extended_detectors]
                          [--buffs BUFFS] [--taxonomy TAXONOMY]
                          [--plugin_info PLUGIN_INFO] [--list_probes]
@@ -59,13 +59,13 @@ CLI reference for garak
     --probes PROBES, -p PROBES
                           list of probe names to use, or 'all' for all
                           (default).
+    --probe_tags PROBE_TAGS
+                          only include probes with a tag that starts with this
+                          value (e.g. owasp:llm01)
     --probe_option_file PROBE_OPTION_FILE, -P PROBE_OPTION_FILE
                           path to JSON file containing options to pass to probes
     --probe_options PROBE_OPTIONS
                           options to pass to probes, formatted as a JSON dict
-    --probe_tags PROBE_TAGS
-                          only include probes with a tag that starts with this
-                          value (e.g. owasp:llm01)
     --detectors DETECTORS, -d DETECTORS
                           list of detectors to use, or 'all' for all. Default is
                           to use the probe's suggestion.

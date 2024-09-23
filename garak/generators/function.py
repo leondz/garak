@@ -51,9 +51,11 @@ from garak.generators.base import Generator
 #  self.kwargs = { "special_param": param_value, "special_other_param": other_value }
 #  custom_generator(prompt, **kwargs)
 class Single(Generator):
-    """pass a module#function to be called as generator, with format function(prompt:str, **kwargs)->List[Union(str, None)] the parameter name `generations` is reserved"""
+    """pass a module#function to be called as generator, with format function(prompt:str, **kwargs)->List[Union(str, None)] the parameter `name` is reserved"""
 
-    DEFAULT_PARAMS = {"generations": 10}
+    DEFAULT_PARAMS = {
+        "kwargs": {},
+    }
     doc_uri = "https://github.com/leondz/garak/issues/137"
     generator_family_name = "function"
     supports_multiple_generations = False
@@ -61,14 +63,12 @@ class Single(Generator):
     def __init__(
         self,
         name="",
-        generations=DEFAULT_PARAMS["generations"],
         config_root=_config,
         **kwargs,
-    ):  # name="", generations=self.generations):
+    ):
         if len(kwargs) > 0:
             self.kwargs = kwargs.copy()
-        self.name = name
-        self.generations = generations  # if the user's function requires `generations` it would have been extracted from kwargs and will not be passed later
+        self.name = name  # if the user's function requires `name` it would have been extracted from kwargs and will not be passed later
         self._load_config(config_root)
 
         gen_module_name, gen_function_name = self.name.split("#")
@@ -79,14 +79,12 @@ class Single(Generator):
         self.generator = getattr(gen_module, gen_function_name)
         import inspect
 
-        if "generations" in inspect.signature(self.generator).parameters:
+        if "name" in inspect.signature(self.generator).parameters:
             raise ValueError(
-                'Incompatible function signature: "generations" is incompatible with this Generator'
+                'Incompatible function signature: "name" is incompatible with this Generator'
             )
 
-        super().__init__(
-            self.name, generations=self.generations, config_root=config_root
-        )
+        super().__init__(self.name, config_root=config_root)
 
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
@@ -102,7 +100,7 @@ class Multiple(Single):
     def _call_model(
         self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
-        return self.generator(prompt, generations=generations_this_call, **self.kwargs)
+        return self.generator(prompt, **self.kwargs)
 
 
 DEFAULT_CLASS = "Single"
