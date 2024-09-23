@@ -332,9 +332,5 @@ class ReasoningGenerator(OpenAIGenerator):
         },
     }
 
-    def __init__(self, name="", config_root=_config):
-        self.name = name
-        super().__init__(self.name, config_root=config_root)
-
 
 DEFAULT_CLASS = "OpenAIGenerator"
