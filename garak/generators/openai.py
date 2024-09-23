@@ -10,6 +10,7 @@ sources:
 * https://platform.openai.com/docs/model-index-for-researchers
 """
 
+import inspect
 import json
 import logging
 import re
@@ -206,15 +207,15 @@ class OpenAICompatible(Generator):
             "seed": self.seed,
         }
 
-        create_args = {
-            k: v
-            for k, v in create_args.items()
-            if v is not None and k not in self.suppressed_params
-        }
-
-        for k, v in self.custom_params.items():
-            if k not in self.suppressed_params:
-                create_args[k] = v
+        create_args = {}
+        if "n" not in self.suppressed_params:
+            create_args["n"] = generations_this_call
+        for arg in inspect.signature(self.generator.create).parameters:
+            if arg == "model":
+                create_args[arg] = self.name
+                continue
+            if hasattr(self, arg) and arg not in self.suppressed_params:
+                create_args[arg] = getattr(self, arg)
 
         if self.generator == self.client.completions:
             if not isinstance(prompt, str):
@@ -297,7 +298,7 @@ class OpenAIGenerator(OpenAICompatible):
             )
 
         if self.__class__.__name__ == "OpenAIGenerator" and self.name.startswith("o1-"):
-            msg = "o1 models should use openai.ReasoningGenerator"
+            msg = "'o1'-class models should use openai.OpenAIReasoningGenerator. Try e.g. `-m openai.OpenAIReasoningGenerator` instead of `-m openai`"
             logging.error(msg)
             raise garak.exception.BadGeneratorException("🛑 " + msg)
 
@@ -314,7 +315,7 @@ class OpenAIGenerator(OpenAICompatible):
         super().__init__(self.name, config_root=config_root)
 
 
-class ReasoningGenerator(OpenAIGenerator):
+class OpenAIReasoningGenerator(OpenAIGenerator):
     """Generator wrapper for OpenAI reasoning models, e.g. `o1` family."""
 
     supports_multiple_generations = False
@@ -327,9 +328,7 @@ class ReasoningGenerator(OpenAIGenerator):
         "stop": ["#", ";"],
         "suppressed_params": set(["n", "temperature", "max_tokens", "stop"]),
         "retry_json": True,
-        "custom_params": {
-            "max_completion_tokens": 1500,
-        },
+        "max_completion_tokens": 1500,
     }
 
 
