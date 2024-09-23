@@ -194,17 +194,6 @@ class OpenAICompatible(Generator):
             # reload client once when consuming the generator
             self._load_client()
 
-        create_args = {
-            "model": self.name,
-            "temperature": self.temperature,
-            "max_tokens": self.max_tokens,
-            "n": generations_this_call,
-            "top_p": self.top_p,
-            "frequency_penalty": self.frequency_penalty,
-            "presence_penalty": self.presence_penalty,
-            "stop": self.stop,
-        }
-
         create_args = {}
         if "n" not in self.suppressed_params:
             create_args["n"] = generations_this_call
