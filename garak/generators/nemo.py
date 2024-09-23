@@ -32,7 +32,7 @@ class NeMoGenerator(Generator):
         "beam_width": 1,
         "length_penalty": 1,
         "guardrail": None,  # NotImplemented in library
-        "api_host": "https://api.llm.ngc.nvidia.com/v1",
+        "api_uri": "https://api.llm.ngc.nvidia.com/v1",
     }
 
     supports_multiple_generations = False
@@ -48,7 +48,7 @@ class NeMoGenerator(Generator):
         super().__init__(self.name, config_root=config_root)
 
         self.nemo = nemollm.api.NemoLLM(
-            api_host=self.api_host, api_key=self.api_key, org_id=self.org_id
+            api_host=self.api_uri, api_key=self.api_key, org_id=self.org_id
         )
 
         if self.name is None:
