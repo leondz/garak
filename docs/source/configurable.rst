@@ -129,18 +129,8 @@ For an example of how to use the ``detectors``, ``generators``, ``buffs``,
 * ``show_100_pass_modules`` - Should entries scoring 100% still be detailed in the HTML report?
 
 
-Using a custom JSON config
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Some plugins can take a JSON config specified on the command line. This config 
-has the same structure as a YAML config, starting with the plugin model/type.
-The config can either be written to a file and the path passed, with 
-`--generator_option_file` or `--probe_option_file`, or directly as JSON on the
-command prompt, with `--generator_options` or `--probe_options`. An example 
-is given in `RestGenerator Config with JSON <rest_generator_with_json>`_ below.
-
-Examples: quick configs
-^^^^^^^^^^^^^^^^^^^^^^^
+Bundled quick configs
+^^^^^^^^^^^^^^^^^^^^^
 
 Garak comes bundled with some quick configs that can be loaded directly using ``--config``.
 These don't need the ``.yml`` extension when being requested. They include:
@@ -174,8 +164,21 @@ probes and run each prompt just once:
 
 If we save this as ``latent1.yaml`` somewhere, then we can use it with ``garak --config latent1.yaml``.
 
-Plugins
--------
+
+
+Using a custom JSON config
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Some plugins can take a JSON config specified on the command line. This config 
+has the same structure as a YAML config, starting with the plugin model/type.
+The config can either be written to a file and the path passed, with 
+`--generator_option_file` or `--probe_option_file`, or directly as JSON on the
+command prompt, with `--generator_options` or `--probe_options`. An example 
+is given in `RestGenerator Config with JSON <rest_generator_with_json>`_ below.
+
+
+Configuring Plugins
+-------------------
 
 Garak's functions are through its plugins. Most parts of garak are plugins,
 like the ``probes`` and ``detectors`` that do the actual examination of the target,
@@ -250,8 +253,8 @@ is an example that is equivalent to the configuration above:
             openai:
                 temperature: 1.0
 
-RestGenerator
-^^^^^^^^^^^^^
+Example: RestGenerator
+^^^^^^^^^^^^^^^^^^^^^^
 
 RestGenerator is a slightly complex generator, though mostly because it exposes
 so many config values, allowing flexible integrations. This example sets 
@@ -318,3 +321,25 @@ This defines a REST endpoint where:
 
 This should be written to a file, and the file's path passed on the command 
 line with `-G`. 
+
+Configuration in code
+---------------------
+
+The preferred way to instantiate a plugin is using ``garak._plugins.load_plugin()``.
+This function takes two parameters:
+
+* ``name``, the plugin's package, module, and class - e.g. ``generator.test.Lipsum``
+* (optional) ``config_root``, either garak._config or a dictionary of a config, beginning at a top-level plugin type.
+
+``load_plugin()`` returns a configured instance of the requested plugin.
+
+OpenAIGenerator config with dictionary
+""""""""""""""""""""""""""""""""""""""
+
+.. code-block:: python
+
+    >>> import garak._plugins
+    >>> c = {"generators":{"openai":{"OpenAIGenerator":{"seed":30,"name":"gpt-4"}}}}
+    >>> garak._plugins.load_plugin("generators.openai.OpenAIGenerator", config_root=c)
+    🦜 loading generator: OpenAI: gpt-4
+    <garak.generators.openai.OpenAIGenerator object at 0x71bc97693d70>
