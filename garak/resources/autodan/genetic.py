@@ -37,7 +37,7 @@ def _nltk_data():
     return default_path
 
 
-_nltk_data_path = _config.transient.cache_dir / "nltk_data"
+_nltk_data_path = _config.transient.cache_dir / "data" / "nltk_data"
 nltk.data.path.append(str(_nltk_data_path))
 
 # TODO: Refactor into setup.py

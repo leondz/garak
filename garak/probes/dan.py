@@ -11,6 +11,7 @@ from typing import Iterable
 
 import garak.attempt
 from garak import _config
+from garak.data import path as data_path
 from garak.probes.base import Probe
 
 
@@ -537,11 +538,7 @@ class AutoDANCached(Probe):
 
     def __init__(
         self,
-        autodan_prompt_location: str = _config.transient.package_dir
-        / "resources"
-        / "autodan"
-        / "data"
-        / "autodan_prompts.txt",
+        autodan_prompt_location: str = data_path / "autodan" / "autodan_prompts.txt",
         config_root=_config,
     ):
         self.autodan_prompt_location = autodan_prompt_location
@@ -645,9 +642,7 @@ class DanInTheWild(Probe):
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
 
-        inthewild_path = str(
-            _config.transient.package_dir / "resources" / "inthewild_jailbreak_llms.txt"
-        )
+        inthewild_path = str(data_path / "inthewild_jailbreak_llms.txt")
 
         with open(inthewild_path, "r", encoding="utf-8") as f:
             self.prompts = f.readlines()

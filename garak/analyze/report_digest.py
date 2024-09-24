@@ -14,7 +14,9 @@ import jinja2
 import sqlite3
 
 from garak import _config
+from garak.data import path as data_path
 import garak.analyze.calibration
+
 
 if not _config.loaded:
     _config.load_config()
@@ -33,9 +35,7 @@ end_module = templateEnv.get_template("digest_end_module.jinja")
 about_z_template = templateEnv.get_template("digest_about_z.jinja")
 
 
-misp_resource_file = (
-    _config.transient.package_dir / "resources" / "misp_descriptions.tsv"
-)
+misp_resource_file = data_path / "misp_descriptions.tsv"
 misp_descriptions = {}
 if os.path.isfile(misp_resource_file):
     with open(misp_resource_file, "r", encoding="utf-8") as f:

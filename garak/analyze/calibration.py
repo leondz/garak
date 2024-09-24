@@ -10,7 +10,7 @@ import re
 from typing import Union
 
 
-from garak import _config
+from garak.data import path as data_path
 
 MINIMUM_STD_DEV = (
     0.01732  # stddev=0 gives unusable z-scores; give it an arbitrary floor of 3^.5 %
@@ -132,7 +132,7 @@ class Calibration:
         return zscore_defcon, zscore_comment
 
     def _build_path(self, filename):
-        return _config.transient.package_dir / "resources" / "calibration" / filename
+        return data_path / "calibration" / filename
 
     def __init__(self, calibration_path: Union[None, str, pathlib.Path] = None) -> None:
 

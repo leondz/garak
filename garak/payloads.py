@@ -16,6 +16,7 @@ from typing import Generator, List, Union
 
 import garak._config
 import garak.exception
+from garak.data import path as data_path
 
 
 PAYLOAD_SCHEMA = {
@@ -35,10 +36,7 @@ PAYLOAD_SCHEMA = {
     ],
 }
 
-PAYLOAD_SEARCH_DIRS = [
-    garak._config.transient.data_dir / "resources" / "payloads",
-    garak._config.transient.package_dir / "resources" / "payloads",
-]
+PAYLOAD_DIR = data_path / "payloads"
 
 
 def _validate_payload(payload_json):
@@ -52,17 +50,9 @@ def _validate_payload(payload_json):
 def load_payload(
     name: str, path: Union[str, pathlib.Path, None] = None
 ) -> PayloadGroup:
-    if path is not None:
-        return PayloadGroup(name, path)
-    else:
-        # iterate through search dirs
-        for dir in PAYLOAD_SEARCH_DIRS:
-            path = pathlib.Path(dir) / f"{name}.json"
-            if path.is_file():
-                return PayloadGroup(name, path)
-    raise FileNotFoundError(
-        "File '%s.json' not found in payload search directories" % name
-    )
+    if path is None:
+        path = PAYLOAD_DIR / f"{name}.json"
+    return PayloadGroup(name, path)
 
 
 class PayloadGroup:
@@ -155,7 +145,7 @@ class Director:
         payloads, return name:path dict. optionally filter by type prefixes"""
 
         payloads_found = {}
-        dir = pathlib.Path(dir)
+        dir = dir
         if not dir.is_dir():
             return {}
 
@@ -182,11 +172,7 @@ class Director:
     def _refresh_payloads(self) -> None:
         """Scan resources/payloads and the XDG_DATA_DIR/payloads for
         payload objects, and refresh self.payload_list"""
-        self.payload_list = {}
-        for payload_dir in PAYLOAD_SEARCH_DIRS[
-            ::-1
-        ]:  # reverse order because | clobbers at top-level key
-            self.payload_list = self.payload_list | self._scan_payload_dir(payload_dir)
+        self.payload_list = self._scan_payload_dir(PAYLOAD_DIR)
 
     def search(
         self, types: Union[List[str], None] = None, include_children=True
@@ -222,10 +208,10 @@ class Director:
             logging.error(msg, exc_info=ke)
             raise garak.exception.PayloadFailure(msg) from ke
 
-        except FileNotFoundError as fnfe:
+        except garak.exception.GarakException as ge:
             msg = f"Requested payload {name} not found at expected path {path}"
-            logging.error(msg, exc_info=fnfe)
-            raise garak.exception.PayloadFailure(msg) from fnfe
+            logging.error(msg, exc_info=ge)
+            raise garak.exception.PayloadFailure(msg) from ge
 
         return p
 
