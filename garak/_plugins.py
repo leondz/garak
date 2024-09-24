@@ -323,14 +323,10 @@ def enumerate_plugins(
     if category not in PLUGIN_TYPES:
         raise ValueError("Not a recognised plugin type:", category)
 
-    base_mod = importlib.import_module(f"garak.{category}.base")
-
-    base_plugin_classnames = set(PluginCache._extract_modules_klasses(base_mod))
-
     plugin_class_names = set()
 
     for k, v in PluginCache.instance()[category].items():
-        if skip_base_classes and k.split(".")[-1] in base_plugin_classnames:
+        if skip_base_classes and ".base." in k:
             continue
         enum_entry = (k, v["active"])
         plugin_class_names.add(enum_entry)

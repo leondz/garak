@@ -7,6 +7,7 @@ from collections.abc import Iterable
 
 import garak.attempt
 from garak import _config
+from garak.generators.huggingface import HFCompatible
 from garak.buffs.base import Buff
 
 
@@ -69,14 +70,17 @@ class PegasusT5(Buff):
             yield paraphrased_attempt
 
 
-class Fast(Buff):
+class Fast(Buff, HFCompatible):
     """CPU-friendly paraphrase buff based on Humarin's T5 paraphraser"""
 
+    DEFAULT_PARAMS = Buff.DEFAULT_PARAMS | {
+        "para_model_name": "garak-llm/chatgpt_paraphraser_on_T5_base",
+        "hf_args": {"device": "cpu", "torch_dtype": "float32"},
+    }
     bcp47 = "en"
     doc_uri = "https://huggingface.co/humarin/chatgpt_paraphraser_on_T5_base"
 
     def __init__(self, config_root=_config) -> None:
-        self.para_model_name = "garak-llm/chatgpt_paraphraser_on_T5_base"
         self.num_beams = 5
         self.num_beam_groups = 5
         self.num_return_sequences = 5
@@ -85,20 +89,23 @@ class Fast(Buff):
         self.no_repeat_ngram_size = 2
         # self.temperature = 0.7
         self.max_length = 128
-        self.torch_device = None
+        self.device = None
         self.tokenizer = None
         self.para_model = None
         super().__init__(config_root=config_root)
 
     def _load_model(self):
-        import torch
         from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
-        self.torch_device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.tokenizer = AutoTokenizer.from_pretrained(self.para_model_name)
+        self.device = self._select_hf_device()
+        model_kwargs = self._gather_hf_params(
+            hf_constructor=AutoModelForSeq2SeqLM.from_pretrained
+        )  # will defer to device_map if device map was `auto` may not match self.device
+
         self.para_model = AutoModelForSeq2SeqLM.from_pretrained(
-            self.para_model_name
-        ).to(self.torch_device)
+            self.para_model_name, **model_kwargs
+        ).to(self.device)
+        self.tokenizer = AutoTokenizer.from_pretrained(self.para_model_name)
 
     def _get_response(self, input_text):
         if self.para_model is None:

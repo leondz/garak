@@ -16,7 +16,7 @@ from garak.generators.openai import OpenAICompatible
 # GENERATORS = [
 #     classname for (classname, active) in _plugins.enumerate_plugins("generators")
 # ]
-GENERATORS = ["generators.openai.OpenAIGenerator", "generators.nim.NVOpenAIChat"]
+GENERATORS = ["generators.openai.OpenAIGenerator", "generators.nim.NVOpenAIChat", "generators.groq.GroqChat"]
 
 MODEL_NAME = "gpt-3.5-turbo-instruct"
 ENV_VAR = os.path.abspath(
