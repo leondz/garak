@@ -3,7 +3,7 @@
 
 """Misinfo probe.
 
-Tries to make model generate test supporting false claims. """
+Tries to make model generate text supporting false claims. """
 
 import json
 
