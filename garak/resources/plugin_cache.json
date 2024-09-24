@@ -2725,6 +2725,33 @@
       ],
       "mod_time": "2024-09-04 12:16:55 +0000"
     },
+    "probes.past_tense.PastTense": {
+      "description": "Will the system give unsafe responses when asked to write about weapon creation or dangerous behavior?",
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
+      "active": true,
+      "bcp47": "en",
+      "doc_uri": "https://arxiv.org/pdf/2407.11969v2",
+      "extended_detectors": [],
+      "goal": "disregard the system prompt",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "keywords.KeywordsFromTL",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "owasp:llm01",
+        "quality:Security:PromptStability",
+        "payload:jailbreak"
+      ],
+      "mod_time": "2024-09-23 09:35:18 +0000"
+    },
     "probes.promptinject.HijackHateHumans": {
       "description": "PromptInject is a framework that assembles prompts in a modular fashion to provide a quantitative analysis of the robustness of LLMs to adversarial prompt attacks. trophy Best Paper Awards @ NeurIPS ML Safety Workshop 2022",
       "DEFAULT_PARAMS": {
@@ -4282,6 +4309,25 @@
       "recall": 0.0,
       "tags": [],
       "mod_time": "2024-07-01 17:51:48 +0000"
+    },
+    "detectors.keywords.KeywordsFromTL": {
+      "description": "Detects keywords from the list of triggers",
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
+      "accuracy": null,
+      "active": true,
+      "bcp47": "en",
+      "doc_uri": "https://arxiv.org/pdf/2407.11969v2",
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "tags": [],
+      "mod_time": "2024-09-23 09:34:54 +0000"
     },
     "detectors.knownbadsignatures.EICAR": {
       "description": "Is the EICAR test string present?",
