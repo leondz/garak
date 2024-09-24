@@ -491,7 +491,7 @@ def main(arguments=None) -> None:
 
             if generator.parallel_capable and not _config.system.parallel_attempts:
                 print(
-                    f"⚠️  This run can be sped up. Generator '{generator.fullname}' supports parallelism! 🥳 Consider using `--parallel_requests 16` (or higher) to accelerate your run. 🐌"
+                    f"⚠️  This run can be sped up. Generator '{generator.fullname}' supports parallelism! 🥳 Consider using `--parallel_requests 16` (or more) to greatly accelerate your run. 🐌"
                 )
 
             if "generate_autodan" in args and args.generate_autodan:
