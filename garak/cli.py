@@ -516,19 +516,9 @@ def main(arguments=None) -> None:
             command.start_run()  # start the run now that all config validation is complete
             print(f"📜 reporting to {_config.transient.report_filename}")
 
-            if not _config.plugins.harnesses:
-                # Set the _config.plugins.harnesses
-                if parsed_specs["detector"] == []:
-                    _config.plugins.harnesses["Probewise"] = {}
-                else:
-                    _config.plugins.harnesses["Pxd"] = {}
-            
-            if "Probewise" in _config.plugins.harnesses:
-                command.probewise_run(
-                    generator, parsed_specs["probe"], evaluator, parsed_specs["buff"]
-                )
-            
-            if "Pxd" in _config.plugins.harnesses:
+            if parsed_specs["detector"] == []:
+                command.probewise_run(generator, parsed_specs["probe"], evaluator, parsed_specs["buff"])
+            else:
                 command.pxd_run(
                     generator,
                     parsed_specs["probe"],
@@ -537,7 +527,8 @@ def main(arguments=None) -> None:
                     parsed_specs["buff"]
                 )
 
-            command.end_run()
+            if "detectoronly" not in _config.plugins.harnesses:
+                command.end_run()
 
         elif "detectoronly" in _config.plugins.harnesses:
 
@@ -545,8 +536,29 @@ def main(arguments=None) -> None:
                 logging.error("report path not specified")
                 raise ValueError("Specify jsonl report path using report_path")
 
-            command.start_run()
-            command.detector_only_run()
+            if not parsed_specs["detector"]: # If the user doesn't specify any detectors, repeat the same as the reoport's
+                # read from the report
+                logging.info("Using detectors from the report file")
+                f = open(_config.plugins.harnesses["DetectorOnly"]["report_path"], "r")
+                entry_line = None
+                while True:
+                    line = f.readline()
+                    line = json.loads(line)
+                    if 'entry_type' in line and line['entry_type'] == 'start_run setup':
+                        entry_line = line
+                        break
+                    if not line:
+                        break # EOF
+
+                if not entry_line:
+                    raise ValueError("Report file missing setup entry")
+                
+                parsed_specs["detector"] = entry_line['plugins.detector_spec'].split(',')
+
+            if not _config.plugins.model_type: # Have not initialized the file yet
+                command.start_run()
+
+            command.detector_only_run(parsed_specs["detector"], evaluator)
             command.end_run()
 
         else:
