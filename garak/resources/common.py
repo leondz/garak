@@ -50,7 +50,7 @@ def load_advbench(size: int = 0) -> pd.DataFrame:
         advbench_base_path = data_path / "advbench" / "harmful_behaviors.csv"
     except GarakException:
         logging.info(
-            "No default harmful_behaviors.csv found download or cached file will be utilized."
+            "Default 'advbench/harmful_behaviors.csv' not found, a download or cached file will be utilized."
         )
 
     # this utilizes the cache_dir however should this place the file in the data_dir now?
