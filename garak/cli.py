@@ -489,6 +489,11 @@ def main(arguments=None) -> None:
                 f"generators.{_config.plugins.model_type}", config_root=_config
             )
 
+            if generator.parallel_capable and not _config.system.parallel_attempts:
+                print(
+                    f"⚠️  This run can be sped up. Generator '{generator.fullname}' supports parallelism! 🥳 Consider using `--parallel_requests 16` (or higher) to accelerate your run. 🐌"
+                )
+
             if "generate_autodan" in args and args.generate_autodan:
                 from garak.resources.autodan import autodan_generate
 
