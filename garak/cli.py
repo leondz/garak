@@ -3,7 +3,22 @@
 
 """Flow for invoking garak from the command line"""
 
+import random
+
+HINT_CHANCE = 0.25
+
 command_options = "list_detectors list_probes list_generators list_buffs list_config plugin_info interactive report version".split()
+
+
+def hint(msg, logging=None):
+    # sub-optimal, but because our logging setup is thin & uses the global
+    # default, placing a top-level import can break logging - so we can't
+    # assume `logging` is imported at this point.
+    msg = f"⚠️  {msg}"
+    if logging is not None:
+        logging.info(msg)
+    if random.random() < HINT_CHANCE:
+        print(msg)
 
 
 def main(arguments=None) -> None:
@@ -496,8 +511,9 @@ def main(arguments=None) -> None:
                 and generator.parallel_capable
                 and _config.system.parallel_attempts is False
             ):
-                print(
-                    f"⚠️  This run can be sped up 🥳 Generator '{generator.fullname}' supports parallelism! Consider using `--parallel_requests 16` (or more) to greatly accelerate your run. 🐌"
+                hint(
+                    f"This run can be sped up 🥳 Generator '{generator.fullname}' supports parallelism! Consider using `--parallel_requests 16` (or more) to greatly accelerate your run. 🐌",
+                    logging=logging,
                 )
 
             if "generate_autodan" in args and args.generate_autodan:

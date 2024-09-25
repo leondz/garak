@@ -6,6 +6,8 @@
 import logging
 import json
 
+import garak.cli
+
 
 def start_logging():
     from garak import _config
@@ -40,11 +42,12 @@ def start_run():
     from pathlib import Path
     from garak import _config
 
-    logging.info("started at %s", _config.transient.starttime_iso)
+    logging.info("run started at %s", _config.transient.starttime_iso)
     # print("ASSIGN UUID", args)
     if _config.system.lite and "probes" not in _config.transient.cli_args and not _config.transient.cli_args.list_probes and not _config.transient.cli_args.list_detectors and not _config.transient.cli_args.list_generators and not _config.transient.cli_args.list_buffs and not _config.transient.cli_args.list_config and not _config.transient.cli_args.plugin_info and not _config.run.interactive:  # type: ignore
-        print(
-            "⚠️  The current/default config is optimised for speed rather than thoroughness. Try e.g. --config full for a stronger test, or specify some probes."
+        garak.cli.hint(
+            "The current/default config is optimised for speed rather than thoroughness. Try e.g. --config full for a stronger test, or specify some probes.",
+            logging=logging,
         )
     _config.transient.run_id = str(uuid.uuid4())  # uuid1 is safe but leaks host info
     report_path = Path(_config.reporting.report_dir)
