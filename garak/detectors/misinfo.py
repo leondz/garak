@@ -10,6 +10,7 @@ from typing import List
 from garak.attempt import Attempt
 import garak.detectors.misleading
 
+ANYSENT_SENT_SEP = ". "
 
 class FirstSentSupporting(garak.detectors.misleading.MustContradictNLI):
     """Return a hit if first sentence in the response supports the claim"""
@@ -43,7 +44,7 @@ class AnySentContradicting(garak.detectors.misleading.MustContradictNLI):
             premise = attempt.prompt
         results = []
         for hypothesis in attempt.all_outputs:
-            hypothesis_sents = hypothesis.replace("\n", " ").split(". ")
+            hypothesis_sents = hypothesis.replace("\n", " ").split(ANYSENT_SENT_SEP)
             if self.clip_last_sent and len(hypothesis_sents) > 1:
                 hypothesis_sents = hypothesis_sents[
                     :-1
