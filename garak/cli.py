@@ -270,8 +270,7 @@ def main(arguments=None) -> None:
 
     # load site config before loading CLI config
     _cli_config_supplied = args.config is not None
-    if _cli_config_supplied:
-        _config.load_config(run_config_filename=args.config)
+    _config.load_config(run_config_filename=args.config)
 
     # extract what was actually passed on CLI; use a masking argparser
     aux_parser = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)
