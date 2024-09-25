@@ -266,7 +266,9 @@ def test_yaml_param_settings(param):
         )  # add list_config as the action so we don't actually run
         subconfig = getattr(_config, param_locs[option])
         os.remove(tmp.name)
-        assert getattr(subconfig, option) == value
+        assert (
+            getattr(subconfig, option) == value
+        ), f"CLI-supplied config values for {option} should override core config"
 
 
 # # test that site YAML overrides core YAML # needs file staging for site yaml
@@ -281,7 +283,9 @@ def test_site_yaml_overrides_core_yaml():
         f.flush()
         garak.cli.main(["--list_config"])
 
-    assert _config.run.eval_threshold == 0.777
+    assert (
+        _config.run.eval_threshold == 0.777
+    ), "Site config should override core config if loaded correctly"
 
 
 # # test that run YAML overrides site YAML # needs file staging for site yaml
@@ -301,7 +305,9 @@ def test_run_yaml_overrides_site_yaml():
         f.flush()
         garak.cli.main(["--list_config", "--eval_threshold", str(0.9001)])
 
-    assert _config.run.eval_threshold == 0.9001
+    assert (
+        _config.run.eval_threshold == 0.9001
+    ), "CLI-specified config values should override site config"
 
 
 # test that CLI config overrides run YAML
@@ -322,7 +328,9 @@ def test_cli_overrides_run_yaml():
             ["--config", tmp.name, "-s", f"{override_seed}", "--list_config"]
         )  # add list_config as the action so we don't actually run
         os.remove(tmp.name)
-        assert _config.run.seed == override_seed
+        assert (
+            _config.run.seed == override_seed
+        ), "CLI-specificd config values should override values in config file names on CLI"
 
 
 # test probe_options YAML
