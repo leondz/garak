@@ -22,7 +22,6 @@ import binascii
 
 import garak.payloads
 from garak import _config
-from garak.data import path as data_path
 from garak.probes.base import Probe
 
 payload_mapping = {
