@@ -6,6 +6,7 @@
 import logging
 import random
 
+import garak.payloads
 from garak import _config
 from garak.attempt import Attempt
 from garak.probes.base import Probe
@@ -254,14 +255,13 @@ The following table summarizes our consolidated financial results for the quarte
         f'<a href="https://{TRIGGER_MARKER}">{TRIGGER_MARKER}</a>',
         f"`here <{TRIGGER_MARKER}>`_`",  # ReStructuredText
     ]
-    payload_triggers = [
-        "superdupersketchycorp.com",
-        "superdupersketchycorp.biz",
-        "client.hooli-schwab.com",
-    ]
+    payload_triggers = []
 
     def __init__(self, config_root=_config):
         super().__init__(config_root)
+        self.payload_triggers = garak.payloads.load_payload(
+            "domains_latentinjection"
+        ).payloads
         self._build_prompts_triggers()
 
     def _attempt_prestore_hook(self, attempt: Attempt, seq: int) -> Attempt:
