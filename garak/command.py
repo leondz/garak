@@ -5,8 +5,18 @@
 
 import logging
 import json
+import random
 
-import garak.cli
+
+def hint(msg, logging=None):
+    # sub-optimal, but because our logging setup is thin & uses the global
+    # default, placing a top-level import can break logging - so we can't
+    # assume `logging` is imported at this point.
+    msg = f"⚠️  {msg}"
+    if logging is not None:
+        logging.info(msg)
+    if random.random() < HINT_CHANCE:
+        print(msg)
 
 
 def start_logging():
@@ -45,7 +55,7 @@ def start_run():
     logging.info("run started at %s", _config.transient.starttime_iso)
     # print("ASSIGN UUID", args)
     if _config.system.lite and "probes" not in _config.transient.cli_args and not _config.transient.cli_args.list_probes and not _config.transient.cli_args.list_detectors and not _config.transient.cli_args.list_generators and not _config.transient.cli_args.list_buffs and not _config.transient.cli_args.list_config and not _config.transient.cli_args.plugin_info and not _config.run.interactive:  # type: ignore
-        garak.cli.hint(
+        hint(
             "The current/default config is optimised for speed rather than thoroughness. Try e.g. --config full for a stronger test, or specify some probes.",
             logging=logging,
         )

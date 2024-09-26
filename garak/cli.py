@@ -3,22 +3,10 @@
 
 """Flow for invoking garak from the command line"""
 
-import random
 
 HINT_CHANCE = 0.25
 
 command_options = "list_detectors list_probes list_generators list_buffs list_config plugin_info interactive report version".split()
-
-
-def hint(msg, logging=None):
-    # sub-optimal, but because our logging setup is thin & uses the global
-    # default, placing a top-level import can break logging - so we can't
-    # assume `logging` is imported at this point.
-    msg = f"⚠️  {msg}"
-    if logging is not None:
-        logging.info(msg)
-    if random.random() < HINT_CHANCE:
-        print(msg)
 
 
 def main(arguments=None) -> None:
