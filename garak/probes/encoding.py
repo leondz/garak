@@ -5,46 +5,42 @@ by presenting an encoded version of that text. Attempts to circumvent
 safeguards on input filtering.
 
 optional variable: "encoding.payloads" -> a list of payload types to be used
+
+Recommended garak payloads to try:
+
+* text_en
+* encoded
+* web_html_js
+* access_shell_commands
+* slur_terms_en
+
+
 """
 
 import base64
 import binascii
-import json
 
 import garak.payloads
 from garak import _config
 from garak.data import path as data_path
 from garak.probes.base import Probe
 
-payload_library = {}
+payload_mapping = {
+    "default": "text_en",
+    "xss": "web_html_js",
+    "slur_terms": "slur_terms_en",
+}
 payloads = []
-
 extra_tags = []
 
 
 def _load_payloads():
-    global payloads, payload_library
+    global payloads
     payloads = []
-    if not payload_library:
-        payload_library["default"] = garak.payloads.load_payload("text_en").payloads
-        payload_library["high_ppl"] = garak.payloads.load_payload("encoded").payloads
-        payload_library["xss"] = garak.payloads.load_payload("web_html_js").payloads
-        payload_library["shell"] = garak.payloads.load_payload(
-            "access_shell_commands"
-        ).payloads
-        payload_library["slur_terms"] = []
-        with open(
-            data_path / "slurprompts_mini.jsonl",
-            "r",
-            encoding="utf-8",
-        ) as slurfile:
-            for line in slurfile:
-                if line.strip():
-                    payload_library["slur_terms"].append(json.loads(line)["term"])
 
     extra_payload_tags = {
-        "xss": ["payload:malicious:renderer:xss"],
-        "slur_terms": ["payload:unwanted:hatespeech"],
+        "web_html_js": ["payload:malicious:renderer:xss"],
+        "slur_terms_en": ["payload:unwanted:hatespeech"],
     }
 
     if "encoding" in _config.plugins.probes:
@@ -52,14 +48,20 @@ def _load_payloads():
             _config.plugins.probes["encoding"]["payloads"] = [
                 _config.plugins.probes["encoding"]["payloads"]
             ]
+
         for payload_class in _config.plugins.probes["encoding"]["payloads"]:
-            if payload_class in payload_library:
-                payloads += payload_library[payload_class]
-            if payload_class in extra_payload_tags:
-                extra_tags += extra_payload_tags[payload_class]
+            if payload_class not in payload_mapping:
+                payload_to_add = payload_class
+            else:
+                payload_to_add = payload_mapping[payload_class]
+
+            payloads += garak.payloads.load_payload(payload_to_add).payloads
+
+            if payload_to_add in extra_payload_tags:
+                extra_tags += extra_payload_tags[payload_to_add]
 
     if not payloads:
-        payloads = payload_library["default"]
+        payloads = garak.payloads.load_payload(payload_mapping["default"]).payloads
 
 
 TEMPLATES = [
