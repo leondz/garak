@@ -7,6 +7,8 @@ import logging
 import json
 import random
 
+HINT_CHANCE = 0.25
+
 
 def hint(msg, logging=None):
     # sub-optimal, but because our logging setup is thin & uses the global

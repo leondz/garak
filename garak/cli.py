@@ -3,9 +3,6 @@
 
 """Flow for invoking garak from the command line"""
 
-
-HINT_CHANCE = 0.25
-
 command_options = "list_detectors list_probes list_generators list_buffs list_config plugin_info interactive report version".split()
 
 
@@ -498,7 +495,7 @@ def main(arguments=None) -> None:
                 and generator.parallel_capable
                 and _config.system.parallel_attempts is False
             ):
-                hint(
+                command.hint(
                     f"This run can be sped up 🥳 Generator '{generator.fullname}' supports parallelism! Consider using `--parallel_requests 16` (or more) to greatly accelerate your run. 🐌",
                     logging=logging,
                 )
