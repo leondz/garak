@@ -116,3 +116,7 @@ filterwarnings = [
     "ignore",
     "default:::garak",
 ]
+
+[tool.coverage.run]
+source = ["./garak"]
+omit = ["tests/*"]
