@@ -7,6 +7,7 @@ import ollama
 
 from garak import _config
 from garak.generators.base import Generator
+from httpx import TimeoutException
 
 
 def _give_up(error):
