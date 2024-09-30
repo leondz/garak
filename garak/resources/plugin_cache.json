@@ -6411,6 +6411,54 @@
       "supports_multiple_generations": false,
       "mod_time": "2024-08-29 13:35:37 +0000"
     },
+    "generators.ollama.OllamaGenerator": {
+      "description": "Interface for Ollama endpoints",
+      "DEFAULT_PARAMS": {
+        "max_tokens": 150,
+        "temperature": null,
+        "top_k": null,
+        "context_len": null,
+        "timeout": 30,
+        "host": "127.0.0.1:11434"
+      },
+      "active": true,
+      "generator_family_name": "Ollama",
+      "modality": {
+        "in": [
+          "text"
+        ],
+        "out": [
+          "text"
+        ]
+      },
+      "parallel_capable": false,
+      "supports_multiple_generations": false,
+      "mod_time": "2024-09-30 16:49:32 +0000"
+    },
+    "generators.ollama.OllamaGeneratorChat": {
+      "description": "Interface for Ollama endpoints, using the chat functionality",
+      "DEFAULT_PARAMS": {
+        "max_tokens": 150,
+        "temperature": null,
+        "top_k": null,
+        "context_len": null,
+        "timeout": 30,
+        "host": "127.0.0.1:11434"
+      },
+      "active": true,
+      "generator_family_name": "Ollama",
+      "modality": {
+        "in": [
+          "text"
+        ],
+        "out": [
+          "text"
+        ]
+      },
+      "parallel_capable": false,
+      "supports_multiple_generations": false,
+      "mod_time": "2024-09-30 16:49:32 +0000"
+    },
     "generators.openai.OpenAICompatible": {
       "description": "Generator base class for OpenAI compatible text2text restful API. Implements shared initialization and execution methods.",
       "DEFAULT_PARAMS": {
