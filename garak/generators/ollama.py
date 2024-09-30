@@ -37,7 +37,7 @@ class OllamaGenerator(Generator):
 
     @backoff.on_exception(
         backoff.fibo,
-        (TimeoutError, ollama.ResponseError),
+        (TimeoutException, ollama.ResponseError),
         max_value=70,
         giveup=_give_up,
     )
