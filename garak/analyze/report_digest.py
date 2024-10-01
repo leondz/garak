@@ -80,7 +80,7 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
             elif record["entry_type"] == "payload_init":
                 payloads.append(
                     record["payload_name"]
-                    + " "
+                    + "  "
                     + pprint.pformat(record, sort_dicts=True, width=60)
                 )
 
