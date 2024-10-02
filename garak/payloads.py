@@ -61,24 +61,24 @@ class PayloadGroup:
     a number of payload entries"""
 
     def _load(self):
-        logging.debug("Loading payload %s from %s", self.name, self.path)
+        logging.debug("payload: Loading payload %s from %s", self.name, self.path)
         try:
             with open(self.path, "r", encoding="utf-8") as payloadfile:
                 loaded_payload = json.load(payloadfile)
 
         except FileNotFoundError as fnfe:
-            msg = "Payload file not found:" + str(self.path)
+            msg = "payload: file not found:" + str(self.path)
             logging.error(msg, exc_info=fnfe)
             raise garak.exception.PayloadFailure(msg) from fnfe
 
         except json.JSONDecodeError as jde:
-            msg = "Payload JSON error:" + str(jde)
+            msg = "payload: JSON error:" + str(jde)
             logging.error(msg, exc_info=jde)
             raise garak.exception.PayloadFailure("Payload JSON error") from jde
 
         validation_result = _validate_payload(loaded_payload)
         if validation_result is not True:
-            msg = "Payload JSON schema mismatch:" + str(validation_result)
+            msg = "payload: JSON schema mismatch:" + str(validation_result)
             logging.error(msg, exc_info=validation_result)
             raise garak.exception.PayloadFailure(
                 "Payload didn't match schema"
@@ -97,7 +97,7 @@ class PayloadGroup:
                 self.detector_config = dict(loaded_payload["detector_config"])
 
             except TypeError as te:
-                msg = "Payload detector_config must be a dict, got: " + repr(
+                msg = "payload: detector_config must be a dict, got: " + repr(
                     loaded_payload["detector_config"]
                 )
                 logging.warning(msg, exc_info=te)
@@ -147,7 +147,10 @@ class Director:
         payloads_found = {}
         dir = dir
         if not dir.is_dir():
+            logging.debug("payload scan: skipping %s, not dir" % dir)
             return {}
+
+        logging.debug("payload scan: %s" % dir)
 
         entries = dir.glob("**/*.[jJ][sS][oO][nN]")
         for payload_path in entries:
@@ -156,7 +159,7 @@ class Director:
                     payload_decoded = json.load(payload_path_file)
                     payload_types = payload_decoded["payload_types"]
                 except (json.JSONDecodeError, KeyError) as exc:
-                    msg = f"Invalid payload, skipping: {payload_path}"
+                    msg = f"payload scan: Invalid payload, skipping: {payload_path}"
                     logging.debug(msg, exc_info=exc)
                     # raise garak.exception.PayloadFailure(msg) from exc
 
@@ -204,12 +207,14 @@ class Director:
             p = load_payload(name, path)  # or raise KeyError
 
         except KeyError as ke:
-            msg = f"Requested payload {name} is not registered in this Director"
+            msg = (
+                f"payload: Requested payload {name} is not registered in this Director"
+            )
             logging.error(msg, exc_info=ke)
             raise garak.exception.PayloadFailure(msg) from ke
 
         except garak.exception.GarakException as ge:
-            msg = f"Requested payload {name} not found at expected path {path}"
+            msg = f"payload: Requested payload {name} not found at expected path {path}"
             logging.error(msg, exc_info=ge)
             raise garak.exception.PayloadFailure(msg) from ge
 
