@@ -140,6 +140,8 @@ class Director:
     manage enumeration of payloads (optionally given a payload type specification),
     and load them up."""
 
+    payload_list = None
+
     def _scan_payload_dir(self, dir) -> dict:
         """Look for .json entries in a dir, load them, check which are
         payloads, return name:path dict. optionally filter by type prefixes"""
@@ -175,26 +177,30 @@ class Director:
     def _refresh_payloads(self) -> None:
         """Scan resources/payloads and the XDG_DATA_DIR/payloads for
         payload objects, and refresh self.payload_list"""
-        self.payload_list = self._scan_payload_dir(PAYLOAD_DIR)
+        self.__class__.payload_list = self._scan_payload_dir(PAYLOAD_DIR)
 
     def search(
         self, types: Union[List[str], None] = None, include_children=True
     ) -> Generator[str, None, None]:
         """Return list of payload names, optionally filtered by types"""
-        for payload in self.payload_list:
+        for payload in self.__class__.payload_list:
             if types is None:
                 yield payload
             else:
                 if include_children is False:
                     matches = [
                         payload_type == type_prefix
-                        for payload_type in self.payload_list[payload]["types"]
+                        for payload_type in self.__class__.payload_list[payload][
+                            "types"
+                        ]
                         for type_prefix in types
                     ]
                 else:
                     matches = [
                         payload_type.startswith(type_prefix)
-                        for payload_type in self.payload_list[payload]["types"]
+                        for payload_type in self.__class__.payload_list[payload][
+                            "types"
+                        ]
                         for type_prefix in types
                     ]
                 if any(matches):
@@ -203,7 +209,7 @@ class Director:
     def load(self, name) -> PayloadGroup:
         """Return a PayloadGroup"""
         try:
-            path = self.payload_list[name]["path"]
+            path = self.__class__.payload_list[name]["path"]
             p = load_payload(name, path)  # or raise KeyError
 
         except KeyError as ke:
@@ -221,5 +227,5 @@ class Director:
         return p
 
     def __init__(self) -> None:
-        self.payload_list = {}  # name: {path:path, types:types}
-        self._refresh_payloads()
+        if self.__class__.payload_list is None:
+            self._refresh_payloads()
