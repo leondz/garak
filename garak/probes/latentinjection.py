@@ -95,7 +95,7 @@ class LatentInjectionTranslationEnFr(Probe, LatentInjectionMixin):
     payloads = [f"{TRIGGER_MARKER}"]
     payload_triggers = ["Haha pwned!"]
 
-    payload_name = "rude_french"
+    DEFAULT_PARAMS = Probe.DEFAULT_PARAMS | {"payload_name": "rude_french"}
 
     def __init__(self, config_root=_config):
         super().__init__(config_root)
@@ -258,10 +258,14 @@ The following table summarizes our consolidated financial results for the quarte
     ]
     payload_triggers = []
 
+    DEFAULT_PARAMS = Probe.DEFAULT_PARAMS | {
+        "domains_payload_name": "domains_latentinjection"
+    }
+
     def __init__(self, config_root=_config):
         super().__init__(config_root)
         self.payload_triggers = (
-            garak.payloads.Director().load("domains_latentinjection").payloads
+            garak.payloads.Director().load(self.domains_payload_name).payloads
         )
         self._build_prompts_triggers()
 
