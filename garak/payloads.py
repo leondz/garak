@@ -47,14 +47,6 @@ def _validate_payload(payload_json):
     return True
 
 
-def load_payload(
-    name: str, path: Union[str, pathlib.Path, None] = None
-) -> PayloadGroup:
-    if path is None:
-        path = PAYLOAD_DIR / f"{name}.json"
-    return PayloadGroup(name, path)
-
-
 class PayloadGroup:
     """Represents a configured group of payloads for use with garak
     probes. Each group should have a name, one or more payload types, and
@@ -206,11 +198,19 @@ class Director:
                 if any(matches):
                     yield payload
 
+    @staticmethod
+    def _load_payload(
+        name: str, path: Union[str, pathlib.Path, None] = None
+    ) -> PayloadGroup:
+        if path is None:
+            path = PAYLOAD_DIR / f"{name}.json"
+        return PayloadGroup(name, path)
+
     def load(self, name) -> PayloadGroup:
         """Return a PayloadGroup"""
         try:
             path = self.__class__.payload_list[name]["path"]
-            p = load_payload(name, path)  # or raise KeyError
+            p = self._load_payload(name, path)  # or raise KeyError
 
         except KeyError as ke:
             msg = (
