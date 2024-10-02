@@ -27,7 +27,7 @@ For a detailed oversight into how a probe operates, see :ref:`garak.probes.base.
    garak.probes.malwaregen
    garak.probes.misleading
    garak.probes.packagehallucination
-   garak.probes.past_tense
+   garak.probes.phrasing
    garak.probes.promptinject
    garak.probes.realtoxicityprompts
    garak.probes.replay
