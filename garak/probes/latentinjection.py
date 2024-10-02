@@ -428,7 +428,7 @@ class LatentInjectionFactSnippetEiffel(Probe, LatentInjectionMixin):
             self.contexts.append(
                 "\n".join(self.paragraphs[:i])
                 + f"\n{INJECTION_MARKER}\n"
-                + "".join(self.paragraphs[i:])
+                + "\n".join(self.paragraphs[i:])
             )
 
         self._build_prompts_triggers()
