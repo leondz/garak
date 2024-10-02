@@ -12,7 +12,6 @@ garak.detectors
    garak.detectors.encoding
    garak.detectors.fileformats
    garak.detectors.goodside
-   garak.detectors.keywords
    garak.detectors.knownbadsignatures
    garak.detectors.leakreplay
    garak.detectors.lmrc
