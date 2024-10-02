@@ -54,13 +54,13 @@ def _load_payloads():
             else:
                 payload_to_add = payload_mapping[payload_class]
 
-            payloads += garak.payloads.load_payload(payload_to_add).payloads
+            payloads += garak.payloads.Director().load(payload_to_add).payloads
 
             if payload_to_add in extra_payload_tags:
                 extra_tags += extra_payload_tags[payload_to_add]
 
     if not payloads:
-        payloads = garak.payloads.load_payload(payload_mapping["default"]).payloads
+        payloads = garak.payloads.Director().load(payload_mapping["default"]).payloads
 
 
 TEMPLATES = [

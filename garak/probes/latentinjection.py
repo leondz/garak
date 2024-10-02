@@ -99,7 +99,9 @@ class LatentInjectionTranslationEnFr(Probe, LatentInjectionMixin):
 
     def __init__(self, config_root=_config):
         super().__init__(config_root)
-        self.payload_triggers += garak.payloads.load_payload(self.payload_name).payloads
+        self.payload_triggers += (
+            garak.payloads.Director().load(self.payload_name).payloads
+        )
         self._build_prompts_triggers()
 
     def _attempt_prestore_hook(self, attempt: Attempt, seq: int) -> Attempt:
@@ -258,9 +260,9 @@ The following table summarizes our consolidated financial results for the quarte
 
     def __init__(self, config_root=_config):
         super().__init__(config_root)
-        self.payload_triggers = garak.payloads.load_payload(
-            "domains_latentinjection"
-        ).payloads
+        self.payload_triggers = (
+            garak.payloads.Director().load("domains_latentinjection").payloads
+        )
         self._build_prompts_triggers()
 
     def _attempt_prestore_hook(self, attempt: Attempt, seq: int) -> Attempt:
