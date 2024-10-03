@@ -5,7 +5,7 @@ outputs. We reveal a curious generalization gap in the current refusal training 
 simply reformulating a harmful request in the past tense  is often sufficient to jailbreak many state-
 of-the-art LLMs
 """
-import garak.attempt
+
 from garak.probes.base import Probe
 from garak import _config
 
