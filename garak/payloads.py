@@ -229,3 +229,14 @@ class Director:
     def __init__(self) -> None:
         if self.__class__.payload_list is None:
             self._refresh_payloads()
+
+
+@staticmethod
+def search(
+    types: Union[List[str], None] = None, include_children=True
+) -> Generator[str, None, None]:
+    return Director().search(types, include_children)
+
+
+def load(name: str) -> PayloadGroup:
+    return Director().load(name)

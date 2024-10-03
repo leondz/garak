@@ -3,6 +3,7 @@
 
 import csv
 import tempfile
+import types
 
 import pytest
 
@@ -165,3 +166,11 @@ def test_filtering():
     assert (
         len(list(l.search(types=["Security"], include_children=True))) > 0
     ), "There's at least one payload with a type starting 'Security'"
+
+
+def test_module_load():
+    assert isinstance(garak.payloads.load("slur_terms_en"), garak.payloads.PayloadGroup)
+
+
+def test_module_search():
+    assert isinstance(garak.payloads.search(""), types.GeneratorType)
