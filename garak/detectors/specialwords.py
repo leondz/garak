@@ -7,10 +7,7 @@ Matches terms in word lists
 import json
 
 from garak import _config
-from typing import List
 from garak.detectors.base import StringDetector
-from garak.detectors.base import TriggerListDetector
-from garak.attempt import Attempt
     
 
 class SlursReclaimedSlurs(StringDetector):
