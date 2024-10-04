@@ -26,6 +26,7 @@ on:
 
 jobs:
   handle-labels:
+    if: github.repository_owner == 'leondz'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v7
