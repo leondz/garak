@@ -1,4 +1,57 @@
 {
+    "azure_chat_default_generations": {
+        "code": 200,
+        "json": {
+            "choices": [
+                {
+                    "finish_reason": "stop",
+                    "index": 0,
+                    "logprobs": null,
+                    "message": {
+                        "content": "This is a test!",
+                        "role": "assistant"
+                    }
+                }
+            ],
+            "created": 1724052469,
+            "id": "chatcmpl-9xr5pU1EE4XQw9Bd0QOgkFZ82cAS9",
+            "model": "gpt-4o-2024-05-13",
+            "object": "chat.completion",
+            "prompt_filter_results": [
+                {
+                    "prompt_index": 0,
+                    "content_filter_results": {
+                        "hate": {
+                            "filtered": false,
+                            "severity": "safe"
+                        },
+                        "jailbreak": {
+                            "filtered": false,
+                            "detected": false
+                        },
+                        "self_harm": {
+                            "filtered": false,
+                            "severity": "safe"
+                        },
+                        "sexual": {
+                            "filtered": false,
+                            "severity": "safe"
+                        },
+                        "violence": {
+                            "filtered": false,
+                            "severity": "safe"
+                        }
+                    }
+                }
+            ],
+            "system_fingerprint": "fp_abc28019ad",
+            "usage": {
+                "completion_tokens": 171,
+                "prompt_tokens": 42,
+                "total_tokens": 213
+            }
+        }
+    },
     "completion": {
         "code": 200,
         "json": {
