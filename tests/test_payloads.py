@@ -3,6 +3,7 @@
 
 import csv
 import tempfile
+import types
 
 import pytest
 
@@ -64,7 +65,7 @@ def test_payloads_have_valid_tags(payload_name, payload_typology):
 
 def test_nonexistent_payload_direct_load():
     with pytest.raises(garak.exception.GarakException):
-        garak.payloads.load_payload("jkasfohgi")
+        garak.payloads.Director._load_payload("jkasfohgi")
 
 
 def test_nonexistent_payload_manager_load():
@@ -78,7 +79,7 @@ def test_non_json_direct_load():
         with pytest.raises(
             garak.exception.PayloadFailure
         ):  # blank file aint valid json
-            garak.payloads.load_payload("jkasfohgi", t.name)
+            garak.payloads.Director._load_payload("jkasfohgi", t.name)
 
 
 OK_PAYLOADS = [
@@ -165,3 +166,11 @@ def test_filtering():
     assert (
         len(list(l.search(types=["Security"], include_children=True))) > 0
     ), "There's at least one payload with a type starting 'Security'"
+
+
+def test_module_load():
+    assert isinstance(garak.payloads.load("slur_terms_en"), garak.payloads.PayloadGroup)
+
+
+def test_module_search():
+    assert isinstance(garak.payloads.search(""), types.GeneratorType)
