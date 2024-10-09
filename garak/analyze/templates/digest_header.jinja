@@ -71,13 +71,25 @@ h2,h3,h4 {padding-top: 10px; padding-bottom: 10px}
 <h1>garak run: {{reportfile}}</h1>
 <button class="accordion">⚙️ view config</button>
 <div style="border:solid black 1px; padding: 5px; margin: 5px" class="panel">
-<h2>config</h2>
-<p>filename: {{reportfile}}</p>
-<p>garak version: {{garak_version}}</p>
-<p>generator: {{model_type}}.{{model_name}}</p>
-<p>started at: {{start_time}}</p>
-<p>run config: {{setup}}</p>
-<p>probe spec: {{probespec}}</p>
+<h2>config details</h2>
+<pre>
+filename: {{reportfile}}
+
+garak version: {{garak_version}}
+
+generator: {{model_type}}.{{model_name}}
+
+probe spec: {{probespec}}
+
+run started at: {{start_time}}
+
+run config: {{setup}}
+
+{% for payload in payloads %}
+payload: {{payload}}
+
+{% endfor %}
+</pre>
 </div>
 
 {%if model_name %}
