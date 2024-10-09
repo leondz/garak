@@ -425,8 +425,10 @@ class TreeSearchProbe(Probe):
             node_results = [
                 1.0 if s > self.per_generation_threshold else 0 for s in node_results
             ]
-
-            mean_score = sum(node_results) / len(node_results)
+            if len(node_results) > 0:
+                mean_score = sum(node_results) / len(node_results)
+            else:
+                mean_score = 0
             parent = self._get_node_parent(current_node)
             node_info = {
                 "entry_type": "tree_data",
