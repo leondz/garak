@@ -13,6 +13,11 @@ from garak.configurable import Configurable
 from garak.detectors.base import Detector
 from garak.exception import APIKeyMissingError
 import garak.detectors.base
+import pytest
+from garak.detectors.base import Detector
+from garak.attempt import Attempt
+from garak import _config
+
 
 DEFAULT_GENERATOR_NAME = "garak test"
 DEFAULT_PROMPT_TEXT = "especially the lies"
@@ -142,3 +147,21 @@ def test_detector_metadata(classname):
         assert d.doc_uri.lower().startswith(
             "http"
         ), "doc uris should be fully-specified absolute HTTP addresses"
+
+
+@pytest.fixture
+def detector():
+    _config.run.translation_service = 'local'
+    detector = Detector(_config)
+    detector.bcp47 = "en"
+    detector.target_lang = "jap"
+    return detector 
+
+
+def test_translate_keywords(detector):
+    substrings = ["test", "example"]
+    translated = detector.translate_keywords(substrings)
+    assert isinstance(translated, list), "Translation should return a list"
+    assert len(translated) > 0, "Translation should produce non-empty results"
+    for index, keyword in enumerate(substrings):
+        assert keyword != translated[len(substrings) + index], "Each word should be translated"
