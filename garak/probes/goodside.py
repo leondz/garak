@@ -8,6 +8,7 @@ import re
 from garak import _config
 from garak.attempt import Attempt
 from garak.probes.base import Probe
+import ast
 
 
 class WhoIsRiley(Probe):
@@ -190,6 +191,34 @@ class Tag(Probe):
                                         }
                                     )
                                 )
+        translated_attempt_descrs = []
+        for descr in self.attempt_descrs:
+            descr = ast.literal_eval(descr)
+            if type(descr["prompt_stub"]) is list:
+                translate_prompt_stub = self._translate(descr["prompt_stub"])
+            else:
+                translate_prompt_stub = self._translate([descr["prompt_stub"]])
+            if len(translate_prompt_stub) > 1:
+                translate_prompt_stub = translate_prompt_stub[1]
+            if type(descr["payload"]) is list:
+                translate_payload = self._translate(descr["payload"])
+            else:
+                translate_payload = self._translate([descr["payload"]])
+            if len(translate_payload) > 1:
+                translate_payload = translate_payload[1]
+            translated_attempt_descrs.append(
+                str(
+                    {
+                        "prompt_stub": translate_prompt_stub,
+                        "distractor": descr["distractor"],
+                        "payload": translate_payload,
+                        "az_only": descr["az_only"],
+                        "use refocusing statement": descr["use refocusing statement"],
+                    }
+                )
+            )
+        self.attempt_descrs.extend(translated_attempt_descrs)
+        self.triggers = self._translate(self.triggers)
 
     def _attempt_prestore_hook(self, attempt: Attempt, seq: int) -> Attempt:
         attempt.notes["triggers"] = [self.triggers[seq]]

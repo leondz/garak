@@ -14,6 +14,7 @@ from garak import _config
 from garak.configurable import Configurable
 from garak.generators.huggingface import HFCompatible
 import garak.attempt
+from garak.translator import SimpleTranslator, LocalTranslator, is_english
 
 
 class Detector(Configurable):
@@ -61,7 +62,38 @@ class Detector(Configurable):
             )
 
         logging.info(f"detector init: {self}")
+        translation_service = ""
+        if hasattr(config_root.run, 'translation_service'):
+            translation_service = config_root.run.translation_service
+        if translation_service == "local":
+            self.translator = LocalTranslator(config_root)
+        else:
+            self.translator = SimpleTranslator(config_root)
+        if hasattr(config_root.run, 'lang_spec'):
+            self.target_lang = config_root.run.lang_spec
+        if hasattr(self, 'substrings'):
+            self.substrings = self.translate_keywords(self.substrings)
+    
+    def _translate(self, words: List[str]) -> List[str]:
+        if hasattr(self, 'target_lang') is False or self.bcp47 == "*":
+            return words
+        translated_keywords = []
+        for lang in self.target_lang.split(","):
+            if self.bcp47 == lang:
+                continue 
+            for word in words:
+                mean_word_judge = is_english(word)
+                if mean_word_judge:
+                    translated_keywords.append(self.translator._get_response(word, self.bcp47, lang))
+                else:
+                    translated_keywords.append(word)
+        words = list(words)
+        words.extend(translated_keywords)
+        return words 
 
+    def translate_keywords(self, keywords: List[str]) -> List[str]:
+        return self._translate(keywords)
+        
     def detect(self, attempt: garak.attempt.Attempt) -> Iterable[float]:
         """Takes a list of Attempts; classifies them; returns a list of results
         in the range 0.0-1.0 where 0.0 represents no hit, 1.0 represents successful hit
@@ -169,6 +201,7 @@ class StringDetector(Detector):
     def __init__(self, substrings, config_root=_config):
         super().__init__(config_root=config_root)
         self.substrings = substrings
+        self.substrings = self.translate_keywords(self.substrings)
 
     def detect(
         self, attempt: garak.attempt.Attempt, case_sensitive=False
@@ -206,6 +239,7 @@ class TriggerListDetector(Detector):
         detector_results = []
         if "triggers" in attempt.notes:
             triggers = attempt.notes["triggers"]
+            triggers = self.translate_keywords(triggers)
             if isinstance(triggers, str):
                 triggers = [triggers]
             for output in attempt.all_outputs:
