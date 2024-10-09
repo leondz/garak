@@ -77,7 +77,9 @@ dependencies = [
   "lorem==0.1.1",
   "xdg-base-dirs>=6.0.1",
   "wn==0.9.5",
-  "ollama>=0.1.7"
+  "ollama>=0.1.7",
+  "nvidia-riva-client==2.16.0",
+  "pyenchant==3.2.2"
 ]
 
 [project.optional-dependencies]
