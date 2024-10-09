@@ -24,6 +24,7 @@ from garak import _config
 import garak._plugins
 import garak.attempt
 from garak.probes.base import Probe
+from garak.translator import SimpleTranslator, LocalTranslator
 
 TEMPLATE_PLACEHOLDER = "[query]"
 
@@ -139,54 +140,57 @@ class Tox(Probe):
                         challenge = re.sub(
                             self.red_team_postproc_rm_regex, "", challenge
                         ).strip()
+                    challenges = self._translate([challenge])
 
                 if not output_is_conversation:
                     t.update()
-                turn = ("probe", challenge)
+                
+                for challenge in challenges:
+                    turn = ("probe", challenge)
 
-                if len(turns) == 0:
-                    this_attempt.prompt = challenge
-                    this_attempt._expand_prompt_to_histories(1)
-                else:
-                    this_attempt._add_turn("user", [challenge])
+                    if len(turns) == 0:
+                        this_attempt.prompt = challenge
+                        this_attempt._expand_prompt_to_histories(1)
+                    else:
+                        this_attempt._add_turn("user", [challenge])
 
-                turns.append(turn)
-                logging.debug("atkgen: probe: %s", turn)
-                if output_is_conversation:
-                    probe_text = re.sub(r"[\r\n]+", "\n", turn[1]).strip()
-                    print(
-                        f"atkgen: 🔴 probe: {Fore.LIGHTYELLOW_EX}{probe_text}{Style.RESET_ALL}"
-                    )
-                else:
-                    t.set_description(
-                        f" turn {t.n:02}: waiting for [{generator.name[:10]:<10}]"
-                    )
-                # send the challenge and get the response
-                response = generator.generate(challenge)
-                if response is None or len(response) == 0:
-                    response = ""
-                else:
-                    response = response[0].strip() if response[0] is not None else ""
+                    turns.append(turn)
+                    logging.debug("atkgen: probe: %s", turn)
+                    if output_is_conversation:
+                        probe_text = re.sub(r"[\r\n]+", "\n", turn[1]).strip()
+                        print(
+                            f"atkgen: 🔴 probe: {Fore.LIGHTYELLOW_EX}{probe_text}{Style.RESET_ALL}"
+                        )
+                    else:
+                        t.set_description(
+                            f" turn {t.n:02}: waiting for [{generator.name[:10]:<10}]"
+                        )
+                    # send the challenge and get the response
+                    response = generator.generate(challenge)
+                    if response is None or len(response) == 0:
+                        response = ""
+                    else:
+                        response = response[0].strip() if response[0] is not None else ""
 
-                # log the response
-                turn = ("model", response)
-                this_attempt._add_turn("assistant", [response])
-                turns.append(turn)
-                logging.debug("atkgen: model: %s", turn)
-                if output_is_conversation:
-                    print(f"atkgen: 🦜 model: {Style.BRIGHT}{turn[1]}{Style.RESET_ALL}")
-                else:
-                    t.update()
-                # increment calls_made
-                calls_made += 1
-                # check if the resp is empty or if it matches the previous resp
-                if not len(response) and not self.constructive_tension:
-                    keep_going = False
-                if response == last_response:
-                    keep_going = False
-                # update last_response
-                last_response = response.replace("\n", " ").strip()
-                self.redteamer.max_new_tokens = 170  # after first iter, give a limit
+                    # log the response
+                    turn = ("model", response)
+                    this_attempt._add_turn("assistant", [response])
+                    turns.append(turn)
+                    logging.debug("atkgen: model: %s", turn)
+                    if output_is_conversation:
+                        print(f"atkgen: 🦜 model: {Style.BRIGHT}{turn[1]}{Style.RESET_ALL}")
+                    else:
+                        t.update()
+                    # increment calls_made
+                    calls_made += 1
+                    # check if the resp is empty or if it matches the previous resp
+                    if not len(response) and not self.constructive_tension:
+                        keep_going = False
+                    if response == last_response:
+                        keep_going = False
+                    # update last_response
+                    last_response = response.replace("\n", " ").strip()
+                    self.redteamer.max_new_tokens = 170  # after first iter, give a limit
 
             if not output_is_conversation:
                 t.close()
@@ -234,3 +238,11 @@ class Tox(Probe):
             msg = f"No query placeholder {TEMPLATE_PLACEHOLDER} in {self.__class__.__name__} prompt template {self.red_team_prompt_template}"
             logging.critical(msg)
             raise ValueError(msg)
+        translation_service = ""
+        if hasattr(config_root, 'run'):
+            if hasattr(config_root.run, 'translation_service'):
+                translation_service = config_root.run.translation_service
+        if translation_service == "local":
+            self.translator = LocalTranslator(config_root)
+        else:
+            self.translator = SimpleTranslator(config_root)

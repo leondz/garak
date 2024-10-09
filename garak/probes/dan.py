@@ -595,6 +595,7 @@ class AutoDAN(Probe):
 
         if autodan_outputs:
             self.prompts = autodan_outputs
+            self.prompts = self._translate(self.prompts)
 
             # build list of attempts
             attempts_todo = []

@@ -10,6 +10,10 @@ import garak.attempt
 import garak.generators
 import garak.probes.atkgen
 import garak.probes.base
+import pytest
+from garak import _config, _plugins
+from garak._config import transient
+from garak.probes.atkgen import TEMPLATE_PLACEHOLDER
 
 
 def test_atkgen_tox_load():
@@ -104,3 +108,62 @@ def test_atkgen_custom_model():
         p.redteamer.name == red_team_model_type.split(".")[-1]
     ), "loaded red team model name should match configured name"
     assert p.redteamer.fullname == red_team_model_type.replace(".", ":").title()
+
+
+@pytest.mark.parametrize("classname", [
+    "probes.atkgen.Tox"
+])
+def test_atkgen_initialization(classname):
+    plugin_name_parts = classname.split(".")
+    module_name = "garak." + ".".join(plugin_name_parts[:-1])
+    class_name = plugin_name_parts[-1]
+    mod = importlib.import_module(module_name)
+    atkgen_class = getattr(mod, class_name)
+    atkgen_instance = atkgen_class(config_root=_config)
+    assert isinstance(atkgen_instance, atkgen_class), f"{classname} initialization failed"
+
+
+@pytest.mark.parametrize("classname", [
+    "probes.atkgen.Tox" 
+])
+def test_atkgen_translation(classname):
+    plugin_name_parts = classname.split(".")
+    module_name = "garak." + ".".join(plugin_name_parts[:-1])
+    class_name = plugin_name_parts[-1]
+    mod = importlib.import_module(module_name)
+    atkgen_class = getattr(mod, class_name)
+    _config.run.translation_service = 'local'
+    _config.run.lang_spec = 'jap'
+    _config.run.seed = 42
+    atkgen_instance = atkgen_class(config_root=_config)
+    if hasattr(atkgen_instance, '_translate'):
+        translated_prompts = atkgen_instance._translate([TEMPLATE_PLACEHOLDER])
+        assert isinstance(translated_prompts, list)
+        assert len(translated_prompts) > 0
+        assert translated_prompts[1] != TEMPLATE_PLACEHOLDER
+
+
+@pytest.mark.parametrize("classname", [
+    "probes.atkgen.Tox"  # Replace with actual class names if needed
+])
+def test_atkgen_probe(classname):
+    plugin_name_parts = classname.split(".")
+    module_name = "garak." + ".".join(plugin_name_parts[:-1])
+    class_name = plugin_name_parts[-1]
+    mod = importlib.import_module(module_name)
+    atkgen_class = getattr(mod, class_name)
+    _config.system.verbose = 1
+    _config.system.parallel_requests = 1
+    with tempfile.NamedTemporaryFile(mode="w+") as temp_report_file:
+        _config.transient.reportfile = temp_report_file
+        _config.transient.report_filename = temp_report_file.name
+        atkgen_instance = atkgen_class(config_root=_config)
+        generator = _plugins.load_plugin("generators.test.Repeat", config_root=_config)  # Replace with an actual generator instance if available
+        attempts = atkgen_instance.probe(generator)
+        assert isinstance(attempts, list), "probe method should return a list of attempts"
+        assert len(attempts) > 0, "probe method should return at least one attempt"
+        assert isinstance(attempts[0], garak.attempt.Attempt), "probe results should be a list of attempt.Attempt"
+        assert "turns" in attempts[0].notes, "atkgen attempts should have a list of turns"
+        assert isinstance(attempts[0].notes["turns"], list), "atkgen attempts should have a list of turns"
+        assert attempts[0].notes["turns"][0][0] == "probe", "probe takes the first turn in atkgen"
+        assert len(attempts[0].notes["turns"][0][1]) > 0, "atkgen probe first turn should not be blank"
