@@ -9,6 +9,7 @@ garak.detectors
    garak.detectors.always
    garak.detectors.continuation
    garak.detectors.dan
+   garak.detectors.divergence
    garak.detectors.encoding
    garak.detectors.fileformats
    garak.detectors.goodside
@@ -22,7 +23,6 @@ garak.detectors
    garak.detectors.perspective
    garak.detectors.promptinject
    garak.detectors.productkey
-   garak.detectors.replay
    garak.detectors.riskywords
    garak.detectors.snowball
    garak.detectors.specialwords

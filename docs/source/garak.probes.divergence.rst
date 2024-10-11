@@ -1,7 +1,7 @@
-garak.probes.replay
-===================
+garak.probes.divergence
+=======================
 
-.. automodule:: garak.probes.replay
+.. automodule:: garak.probes.divergence
    :members:
    :undoc-members:
    :show-inheritance:   

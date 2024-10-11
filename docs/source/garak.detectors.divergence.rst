@@ -1,7 +1,7 @@
-garak.detectors.replay
-======================
+garak.detectors.divergence
+==========================
 
-.. automodule:: garak.detectors.replay
+.. automodule:: garak.detectors.divergence
    :members:
    :undoc-members:
    :show-inheritance:   
