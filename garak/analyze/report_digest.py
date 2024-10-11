@@ -7,6 +7,7 @@ import importlib
 import json
 import markdown
 import os
+import pprint
 import re
 import sys
 
@@ -14,7 +15,9 @@ import jinja2
 import sqlite3
 
 from garak import _config
+from garak.data import path as data_path
 import garak.analyze.calibration
+
 
 if not _config.loaded:
     _config.load_config()
@@ -33,9 +36,7 @@ end_module = templateEnv.get_template("digest_end_module.jinja")
 about_z_template = templateEnv.get_template("digest_about_z.jinja")
 
 
-misp_resource_file = (
-    _config.transient.package_dir / "resources" / "misp_descriptions.tsv"
-)
+misp_resource_file = data_path / "misp_descriptions.tsv"
 misp_descriptions = {}
 if os.path.isfile(misp_resource_file):
     with open(misp_resource_file, "r", encoding="utf-8") as f:
@@ -63,6 +64,7 @@ def plugin_docstring_to_description(docstring):
 
 def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
     evals = []
+    payloads = []
     setup = defaultdict(str)
     with open(report_path, "r", encoding="utf-8") as reportfile:
         for line in reportfile:
@@ -75,6 +77,12 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
                 run_uuid = record["run"]
             elif record["entry_type"] == "start_run setup":
                 setup = record
+            elif record["entry_type"] == "payload_init":
+                payloads.append(
+                    record["payload_name"]
+                    + "  "
+                    + pprint.pformat(record, sort_dicts=True, width=60)
+                )
 
     calibration = garak.analyze.calibration.Calibration()
     calibration_used = False
@@ -85,10 +93,11 @@ def compile_digest(report_path, taxonomy=_config.reporting.taxonomy):
             "garak_version": garak_version,
             "start_time": start_time,
             "run_uuid": run_uuid,
-            "setup": repr(setup),
+            "setup": pprint.pformat(setup, sort_dicts=True, width=60),
             "probespec": setup["plugins.probe_spec"],
             "model_type": setup["plugins.model_type"],
             "model_name": setup["plugins.model_name"],
+            "payloads": payloads,
         }
     )
 

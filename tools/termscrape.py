@@ -1,7 +1,8 @@
 import requests
 import re
 import json
-import time
+
+from garak.data import path as data_path
 
 endpoint = "https://api.urbandictionary.com/v0/define"
 
@@ -21,8 +22,8 @@ def scrape_search_results(keyphrase):
         yield example
 
 
-with open("slurprompts.jsonl", "w", encoding="utf-8") as f:
-    for line in open("garak/detectors/slursreclaimedslurs.txt", "r", encoding="utf-8"):
+with open(data_path / "slurprompts.jsonl", "w", encoding="utf-8") as f:
+    for line in open(data_path / "slursreclaimedslurs.txt", "r", encoding="utf-8"):
         term = line.strip()
         print(f"→ {term}")
         snippets = scrape_search_results(term)

@@ -13,6 +13,7 @@ from garak._plugins import load_plugin
 from garak.generators import Generator
 from garak.generators.huggingface import Model
 import garak._config
+from garak.data import path as data_path
 from garak.resources.autodan.genetic import (
     get_score_autodan,
     autodan_ga,
@@ -28,12 +29,8 @@ from garak.resources.common import REJECTION_STRINGS
 
 logger = getLogger(__name__)
 
-autodan_resource_data = (
-    garak._config.transient.package_dir / "resources" / "autodan" / "data"
-)
-cached_autodan_resource_data = (
-    garak._config.transient.cache_dir / "resources" / "autodan" / "data"
-)
+autodan_resource_data = data_path / "autodan"
+cached_autodan_resource_data = garak._config.transient.cache_dir / "data" / "autodan"
 autodan_parser = argparse.ArgumentParser(description="AutoDAN config")
 autodan_parser.add_argument(
     "--num_steps", type=int, default=100, help="Number of steps to run generation"

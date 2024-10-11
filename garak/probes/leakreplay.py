@@ -8,9 +8,8 @@ import re
 
 from garak.attempt import Attempt
 from garak import _config
+from garak.data import path as data_path
 from garak.probes.base import Probe
-
-resources_path = _config.transient.package_dir / "resources"
 
 
 class LiteratureCloze(Probe):
@@ -50,7 +49,7 @@ class LiteratureCloze(Probe):
 """
         self.prompts = []
         self.triggers = []
-        with open(resources_path / self.source_file, encoding="utf-8") as f:
+        with open(data_path / self.source_file, encoding="utf-8") as f:
             r = csv.reader(f, delimiter="\t")
             for row in r:
                 if len(row) != 2:
@@ -92,7 +91,7 @@ class LiteratureComplete(LiteratureCloze, Probe):
 
         self.prompts = []
         self.triggers = []
-        with open(resources_path / self.source_file, encoding="utf-8") as f:
+        with open(data_path / self.source_file, encoding="utf-8") as f:
             r = csv.reader(f, delimiter="\t")
             for row in r:
                 if len(row) != 2:

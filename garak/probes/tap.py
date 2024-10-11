@@ -43,6 +43,7 @@ from typing import List
 import tqdm
 
 from garak.probes.base import Probe
+from garak.data import path as data_path
 from garak import _config
 import garak.attempt
 
@@ -69,11 +70,7 @@ class TAPCached(Probe):
 
     def __init__(
         self,
-        prompts_location: Path = _config.transient.package_dir
-        / "resources"
-        / "tap"
-        / "data"
-        / "tap_jailbreaks.txt",
+        prompts_location: Path = data_path / "tap" / "tap_jailbreaks.txt",
         config_root=_config,
     ):
         self.prompts_location = prompts_location

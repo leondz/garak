@@ -46,6 +46,7 @@ Guides to writing plugins
 Here are our tutorials on plugin writing:
 
 * :doc:`Building a garak generator <contributing.generator>` -- step-by-step guide to building an interface for a real API-based model service
+* :doc:`Building a garak probe <contributing.probe>` -- A guide to writing your own custom probes
 
 
 Describing your code changes

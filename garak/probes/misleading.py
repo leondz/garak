@@ -7,6 +7,7 @@ deny, refute, or contradict.
 """
 
 from garak import _config
+from garak.data import path as data_path
 from garak.probes.base import Probe
 
 
@@ -42,9 +43,7 @@ class FalseAssertion50(Probe):
 
         for prefix in prefixes:
             with open(
-                _config.transient.package_dir
-                / "resources"
-                / "truefalse_falseclaims_50.txt",
+                data_path / "truefalse_falseclaims_50.txt",
                 "r",
                 encoding="utf-8",
             ) as assertions:

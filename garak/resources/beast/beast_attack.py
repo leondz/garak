@@ -18,7 +18,7 @@ SYSTEM_PROMPT = (
     "A chat between a curious user and an artificial intelligence assistant. "
     "The assistant gives helpful, detailed, and polite answers to the user's questions."
 )
-beast_resource_data = garak._config.transient.cache_dir / "resources" / "beast" / "data"
+beast_resource_data = garak._config.transient.cache_dir / "data" / "beast"
 
 
 def _format_chat(generator: Generator, prompt: str):

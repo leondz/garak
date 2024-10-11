@@ -23,7 +23,7 @@ class PluginConfigurationError(GarakException):
 
 
 class BadGeneratorException(PluginConfigurationError):
-    """Generator config/description is not usable"""
+    """Generator invocation requested is not usable"""
 
 
 class RateLimitHit(Exception):
@@ -32,3 +32,7 @@ class RateLimitHit(Exception):
 
 class ConfigFailure(GarakException):
     """Raised when plugin configuration fails"""
+
+
+class PayloadFailure(GarakException):
+    """Problem instantiating/using payloads"""

@@ -7,11 +7,12 @@ from collections import defaultdict
 import csv
 
 from garak import _config
+from garak.data import path as data_path
 from garak.detectors.base import StringDetector
 
 surge_list = defaultdict(list)
 with open(
-    _config.transient.package_dir / "resources" / "profanity_en.csv",
+    data_path / "profanity_en.csv",
     "r",
     encoding="utf-8",
 ) as csvfile:
@@ -26,7 +27,7 @@ with open(
 MIN_OFCOM_STRENGTH = 2
 ofcom_list = defaultdict(list)
 with open(
-    _config.transient.package_dir / "resources" / "ofcom-potentially-offensive.txt",
+    data_path / "ofcom-potentially-offensive.txt",
     "r",
     encoding="utf-8",
 ) as csvfile:
@@ -40,8 +41,11 @@ with open(
 class SurgeProfanitySexual(StringDetector):
     """Surge AI list: sexual anatomy / sexual acts"""
 
+    DEFAULT_PARAMS = StringDetector.DEFAULT_PARAMS | {
+        "matchtype": "word",
+    }
+
     bcp47 = "en"
-    matchtype = "word"
     tags = ["avid-effect:performance:P0401"]
 
     def __init__(self, config_root=_config):
@@ -52,8 +56,11 @@ class SurgeProfanitySexual(StringDetector):
 class SurgeProfanityBodilyFluids(StringDetector):
     """Surge AI list: bodily fluids / excrement"""
 
+    DEFAULT_PARAMS = StringDetector.DEFAULT_PARAMS | {
+        "matchtype": "word",
+    }
+
     bcp47 = "en"
-    matchtype = "word"
     tags = ["avid-effect:performance:P0401"]
 
     def __init__(self, config_root=_config):
@@ -64,8 +71,11 @@ class SurgeProfanityBodilyFluids(StringDetector):
 class SurgeProfanitySexualOrientationGender(StringDetector):
     """Surge AI list: sexual orientation / gender"""
 
+    DEFAULT_PARAMS = StringDetector.DEFAULT_PARAMS | {
+        "matchtype": "word",
+    }
+
     bcp47 = "en"
-    matchtype = "word"
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
@@ -80,8 +90,11 @@ class SurgeProfanitySexualOrientationGender(StringDetector):
 class SurgeProfanityRacialEthnic(StringDetector):
     """Surge AI list: racial / ethnic"""
 
+    DEFAULT_PARAMS = StringDetector.DEFAULT_PARAMS | {
+        "matchtype": "word",
+    }
+
     bcp47 = "en"
-    matchtype = "word"
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
@@ -96,8 +109,11 @@ class SurgeProfanityRacialEthnic(StringDetector):
 class SurgeProfanityMentalDisability(StringDetector):
     """Surge AI list: mental disability"""
 
+    DEFAULT_PARAMS = StringDetector.DEFAULT_PARAMS | {
+        "matchtype": "word",
+    }
+
     bcp47 = "en"
-    matchtype = "word"
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
@@ -112,8 +128,11 @@ class SurgeProfanityMentalDisability(StringDetector):
 class SurgeProfanityPhysicalDisability(StringDetector):
     """Surge AI list: physical disability"""
 
+    DEFAULT_PARAMS = StringDetector.DEFAULT_PARAMS | {
+        "matchtype": "word",
+    }
+
     bcp47 = "en"
-    matchtype = "word"
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
@@ -128,8 +147,11 @@ class SurgeProfanityPhysicalDisability(StringDetector):
 class SurgeProfanityPhysicalAttributes(StringDetector):
     """Surge AI list: physical attributes"""
 
+    DEFAULT_PARAMS = StringDetector.DEFAULT_PARAMS | {
+        "matchtype": "word",
+    }
+
     bcp47 = "en"
-    matchtype = "word"
     tags = ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"]
 
     def __init__(self, config_root=_config):
@@ -140,8 +162,11 @@ class SurgeProfanityPhysicalAttributes(StringDetector):
 class SurgeProfanityAnimalReferences(StringDetector):
     """Surge AI list: animal references"""
 
+    DEFAULT_PARAMS = StringDetector.DEFAULT_PARAMS | {
+        "matchtype": "word",
+    }
+
     bcp47 = "en"
-    matchtype = "word"
     tags = ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"]
 
     def __init__(self, config_root=_config):
@@ -152,8 +177,11 @@ class SurgeProfanityAnimalReferences(StringDetector):
 class SurgeProfanityReligious(StringDetector):
     """Surge AI list: religious offense"""
 
+    DEFAULT_PARAMS = StringDetector.DEFAULT_PARAMS | {
+        "matchtype": "word",
+    }
+
     bcp47 = "en"
-    matchtype = "word"
     tags = ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"]
 
     def __init__(self, config_root=_config):
@@ -164,8 +192,11 @@ class SurgeProfanityReligious(StringDetector):
 class SurgeProfanityPolitical(StringDetector):
     """Surge AI list: political"""
 
+    DEFAULT_PARAMS = StringDetector.DEFAULT_PARAMS | {
+        "matchtype": "word",
+    }
+
     bcp47 = "en"
-    matchtype = "word"
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
@@ -181,9 +212,12 @@ class SurgeProfanityPolitical(StringDetector):
 class OfcomOffensiveGeneral(StringDetector):
     """UK OFCOM potentially offensive list: general"""
 
+    DEFAULT_PARAMS = StringDetector.DEFAULT_PARAMS | {
+        "matchtype": "word",
+    }
+
     term = "general"
     bcp47 = "en"
-    matchtype = "word"
     tags = ["avid-effect:ethics:E0301", "avid-effect:performance:P0401"]
 
     def __init__(self, config_root=_config):
@@ -194,9 +228,12 @@ class OfcomOffensiveGeneral(StringDetector):
 class OfcomOffensiveSexual(StringDetector):
     """UK OFCOM potentially offensive list: sexual"""
 
+    DEFAULT_PARAMS = StringDetector.DEFAULT_PARAMS | {
+        "matchtype": "word",
+    }
+
     term = "sexual"
     bcp47 = "en"
-    matchtype = "word"
     tags = ["avid-effect:performance:P0401"]
 
     def __init__(self, config_root=_config):
@@ -207,9 +244,12 @@ class OfcomOffensiveSexual(StringDetector):
 class OfcomOffensiveDiscriminatory(StringDetector):
     """UK OFCOM potentially offensive list: discriminatory"""
 
+    DEFAULT_PARAMS = StringDetector.DEFAULT_PARAMS | {
+        "matchtype": "word",
+    }
+
     term = "discriminatory"
     bcp47 = "en"
-    matchtype = "word"
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
@@ -224,9 +264,12 @@ class OfcomOffensiveDiscriminatory(StringDetector):
 class OfcomOffensiveSexGender(StringDetector):
     """UK OFCOM potentially offensive list: sex & gender"""
 
+    DEFAULT_PARAMS = StringDetector.DEFAULT_PARAMS | {
+        "matchtype": "word",
+    }
+
     term = "sexgender"
     bcp47 = "en"
-    matchtype = "word"
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
@@ -241,9 +284,12 @@ class OfcomOffensiveSexGender(StringDetector):
 class OfcomOffensiveMentalHealth(StringDetector):
     """UK OFCOM potentially offensive list: mental health"""
 
+    DEFAULT_PARAMS = StringDetector.DEFAULT_PARAMS | {
+        "matchtype": "word",
+    }
+
     term = "mentalhealth"
     bcp47 = "en"
-    matchtype = "word"
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
@@ -258,9 +304,12 @@ class OfcomOffensiveMentalHealth(StringDetector):
 class OfcomOffensiveRaceEthnic(StringDetector):
     """UK OFCOM potentially offensive list: race / ethnic"""
 
+    DEFAULT_PARAMS = StringDetector.DEFAULT_PARAMS | {
+        "matchtype": "word",
+    }
+
     term = "raceethnic"
     bcp47 = "en"
-    matchtype = "word"
     tags = [
         "avid-effect:ethics:E0101",
         "avid-effect:ethics:E0301",
@@ -285,7 +334,7 @@ class LDNOOBW(StringDetector):
     def __init__(self, config_root=_config):
         substrings = []
         with open(
-            _config.transient.package_dir / "resources" / "ldnoobw-en.txt",
+            data_path / "ldnoobw-en.txt",
             "r",
             encoding="utf-8",
         ) as wordlist:

@@ -9,6 +9,7 @@ import json
 
 from garak import _config
 from garak.attempt import Attempt
+from garak.data import path as data_path
 from garak.probes.base import Probe
 
 
@@ -43,7 +44,7 @@ class ContinueSlursReclaimedSlurs(Probe):
         # append these to each of the prefixes for that term
         self._slur_prefixes = []
         with open(
-            _config.transient.package_dir / "resources" / self.source_resource_filename,
+            data_path / self.source_resource_filename,
             "r",
             encoding="utf-8",
         ) as slurfile:
