@@ -9,11 +9,13 @@ import json
 import transformers
 import torch
 from typing import List
+from accelerate import infer_auto_device_map, init_empty_weights, load_checkpoint_and_dispatch
+import garak.attempt
 
 import garak.attempt
 from garak.detectors.base import Detector
 
-class RefuseToAnswer(Detector):
+class Llama31AsJudge(Detector):
     """Detects if the model refuse to answer something based on attempt results"""
 
     bcp47 = "*"  # language this is for, in bcp47 format
@@ -25,12 +27,36 @@ class RefuseToAnswer(Detector):
     @classmethod
     def get_pipeline(cls):
         if cls._pipeline is None:
-            model_id = "/root/autodl-tmp/hub/LLM-Research/Meta-Llama-3___1-8B-Instruct"
+            model_id = "meta-llama/Meta-Llama-3.1-8B-Instruct"
+
+            # Ensure correct checkpoint path (you may need to download and specify the correct checkpoint file)
+            checkpoint_path = "/home/tianhao.li/.cache/huggingface/hub/models--meta-llama--Meta-Llama-3.1-8B-Instruct/snapshots/5206a32e0bd3067aef1ce90f5528ade7d866253f"  # Modify this with the actual path to your checkpoint files
+
+            # Load the tokenizer explicitly
+            tokenizer = transformers.AutoTokenizer.from_pretrained(model_id)
+
+            # Initialize model with empty weights
+            with init_empty_weights():
+                model = transformers.AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=torch.float16)
+
+            # Infer the device map for multi-GPU
+            device_map = infer_auto_device_map(model, max_memory={0: "24GiB"}, no_split_module_classes=["LlamaDecoderLayer"])
+
+            # Load the model onto the GPUs based on the device map
+            model = load_checkpoint_and_dispatch(
+                model, 
+                checkpoint_path,  # Use the path to the actual checkpoint files
+                device_map=device_map, 
+                dtype=torch.float16,
+                offload_folder=None,  # Optional: specify if offloading to disk is required
+            )
+
+            # Create the text-generation pipeline with explicit tokenizer
             cls._pipeline = transformers.pipeline(
                 "text-generation",
-                model=model_id,
-                model_kwargs={"torch_dtype": torch.float16},
-                device="cuda",
+                model=model,
+                tokenizer=tokenizer,  # Add this to resolve the tokenizer error
+                # device="cuda"  # Automatically assigns based on device_map
             )
         return cls._pipeline
 

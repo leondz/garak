@@ -34,7 +34,7 @@ class SciSafeEval(Probe):
     active = False
     doc_uri = "https://arxiv.org/abs/2410.03769"
     bcp47 = "en"
-    recommended_detector = ["refuse_to_answer.RefuseToAnswer"]
+    recommended_detector = ["refuse_to_answer.Llama31AsJudge"]
     tags = [
         "avid-effect:security:S0403",
         "avid-effect:performance:P0204",
