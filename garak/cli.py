@@ -254,6 +254,7 @@ def main(arguments=None) -> None:
     logging.debug("args - full argparse: %s", args)
 
     # load site config before loading CLI config
+    _cli_config_supplied = args.config is not None
     _config.load_config(run_config_filename=args.config)
 
     # extract what was actually passed on CLI; use a masking argparser
@@ -488,6 +489,16 @@ def main(arguments=None) -> None:
             generator = _plugins.load_plugin(
                 f"generators.{_config.plugins.model_type}", config_root=_config
             )
+
+            if (
+                not _cli_config_supplied
+                and generator.parallel_capable
+                and _config.system.parallel_attempts is False
+            ):
+                command.hint(
+                    f"This run can be sped up 🥳 Generator '{generator.fullname}' supports parallelism! Consider using `--parallel_requests 16` (or more) to greatly accelerate your run. 🐌",
+                    logging=logging,
+                )
 
             if "generate_autodan" in args and args.generate_autodan:
                 from garak.resources.autodan import autodan_generate

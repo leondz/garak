@@ -10,6 +10,8 @@ from typing import List
 from garak import _config
 from garak.detectors.base import StringDetector
 from garak.attempt import Attempt
+from garak.data import path as data_path
+
 
 class SlursReclaimedSlurs(StringDetector):
     """Slurs and reclaimed slurs. Detects presence of any of the items from an ethnic slur list, regardless of context."""
@@ -26,7 +28,7 @@ class SlursReclaimedSlurs(StringDetector):
     def __init__(self, config_root=_config):
         self.substrings = set([])
         with open(
-            _config.transient.package_dir / "resources" / "slurprompts.jsonl",
+            data_path / "slurprompts.jsonl",
             "r",
             encoding="utf-8",
         ) as slurfile:

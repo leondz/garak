@@ -10,6 +10,7 @@ sources:
 * https://platform.openai.com/docs/model-index-for-researchers
 """
 
+import inspect
 import json
 import logging
 import re
@@ -24,25 +25,35 @@ from garak.generators.base import Generator
 
 # lists derived from https://platform.openai.com/docs/models
 chat_models = (
-    "gpt-4",  # links to latest version
-    "gpt-4-turbo",  # links to latest version
-    "gpt-4o",  # links to latest version
-    "gpt-4o-mini",  # links to latest version
-    "gpt-4-turbo-preview",
+    "chatgpt-4o-latest",  # links to latest version
     "gpt-3.5-turbo",  # links to latest version
-    "gpt-4-32k",
-    "gpt-4-0125-preview",
-    "gpt-4-1106-preview",
-    "gpt-4-vision-preview",
-    "gpt-4-1106-vision-preview",
-    "gpt-4-0613",
-    "gpt-4-32k",
-    "gpt-4-32k-0613",
     "gpt-3.5-turbo-0125",
     "gpt-3.5-turbo-1106",
     "gpt-3.5-turbo-16k",
-    "gpt-3.5-turbo-0613",  # deprecated, shutdown 2024-06-13
-    "gpt-3.5-turbo-16k-0613",  # # deprecated, shutdown 2024-06-13
+    "gpt-4",  # links to latest version
+    "gpt-4-0125-preview",
+    "gpt-4-0314",  # legacy
+    "gpt-4-0613",
+    "gpt-4-1106-preview",
+    "gpt-4-1106-vision-preview",
+    "gpt-4-32k",  # deprecated, shutdown 2025-06-06
+    "gpt-4-32k-0314",  # deprecated, shutdown 2025-06-06
+    "gpt-4-32k-0613",  # deprecated, shutdown 2025-06-06
+    "gpt-4-turbo",  # links to latest version
+    "gpt-4-turbo-2024-04-09",
+    "gpt-4-turbo-preview",
+    "gpt-4-vision-preview",
+    "gpt-4o",  # links to latest version
+    "gpt-4o-2024-05-13",
+    "gpt-4o-2024-08-06",
+    "gpt-4o-mini",  # links to latest version
+    "gpt-4o-mini-2024-07-18",
+    "o1-mini",  # links to latest version
+    "o1-mini-2024-09-12",
+    "o1-preview",  # links to latest version
+    "o1-preview-2024-09-12",
+    # "gpt-3.5-turbo-0613",  # deprecated, shutdown 2024-09-13
+    # "gpt-3.5-turbo-16k-0613",  # # deprecated, shutdown 2024-09-13
 )
 
 completion_models = (
@@ -64,26 +75,37 @@ completion_models = (
 )
 
 context_lengths = {
-    "gpt-3.5-turbo-0125": 16385,
-    "gpt-3.5-turbo": 16385,
-    "gpt-3.5-turbo-1106": 16385,
-    "gpt-3.5-turbo-instruct": 4096,
-    "gpt-3.5-turbo-16k": 16385,
-    "gpt-3.5-turbo-0613": 4096,
-    "gpt-3.5-turbo-16k-0613": 16385,
     "babbage-002": 16384,
+    "chatgpt-4o-latest": 128000,
     "davinci-002": 16384,
+    "gpt-3.5-turbo": 16385,
+    "gpt-3.5-turbo-0125": 16385,
+    "gpt-3.5-turbo-0613": 4096,
+    "gpt-3.5-turbo-1106": 16385,
+    "gpt-3.5-turbo-16k": 16385,
+    "gpt-3.5-turbo-16k-0613": 16385,
+    "gpt-3.5-turbo-instruct": 4096,
+    "gpt-4": 8192,
+    "gpt-4-0125-preview": 128000,
+    "gpt-4-0314": 8192,
+    "gpt-4-0613": 8192,
+    "gpt-4-1106-preview": 128000,
+    "gpt-4-1106-vision-preview": 128000,
+    "gpt-4-32k": 32768,
+    "gpt-4-32k-0613": 32768,
     "gpt-4-turbo": 128000,
     "gpt-4-turbo-2024-04-09": 128000,
     "gpt-4-turbo-preview": 128000,
-    "gpt-4-0125-preview": 128000,
-    "gpt-4-1106-preview": 128000,
     "gpt-4-vision-preview": 128000,
-    "gpt-4-1106-vision-preview": 128000,
-    "gpt-4": 8192,
-    "gpt-4-0613": 8192,
-    "gpt-4-32k": 32768,
-    "gpt-4-32k-0613": 32768,
+    "gpt-4o": 128000,
+    "gpt-4o-2024-05-13": 128000,
+    "gpt-4o-2024-08-06": 128000,
+    "gpt-4o-mini": 16384,
+    "gpt-4o-mini-2024-07-18": 16384,
+    "o1-mini": 65536,
+    "o1-mini-2024-09-12": 65536,
+    "o1-preview": 32768,
+    "o1-preview-2024-09-12": 32768,
 }
 
 
@@ -172,23 +194,15 @@ class OpenAICompatible(Generator):
             # reload client once when consuming the generator
             self._load_client()
 
-        create_args = {
-            "model": self.name,
-            "temperature": self.temperature,
-            "max_tokens": self.max_tokens,
-            "n": generations_this_call,
-            "top_p": self.top_p,
-            "frequency_penalty": self.frequency_penalty,
-            "presence_penalty": self.presence_penalty,
-            "stop": self.stop,
-            "seed": self.seed,
-        }
-
-        create_args = {
-            k: v
-            for k, v in create_args.items()
-            if v is not None and k not in self.suppressed_params
-        }
+        create_args = {}
+        if "n" not in self.suppressed_params:
+            create_args["n"] = generations_this_call
+        for arg in inspect.signature(self.generator.create).parameters:
+            if arg == "model":
+                create_args[arg] = self.name
+                continue
+            if hasattr(self, arg) and arg not in self.suppressed_params:
+                create_args[arg] = getattr(self, arg)
 
         if self.generator == self.client.completions:
             if not isinstance(prompt, str):
@@ -264,10 +278,16 @@ class OpenAIGenerator(OpenAICompatible):
             r"^.+-[01][0-9][0-3][0-9]$", self.name
         ):  # handle model names -MMDDish suffix
             self.generator = self.client.completions
+
         else:
             raise ValueError(
                 f"No {self.generator_family_name} API defined for '{self.name}' in generators/openai.py - please add one!"
             )
+
+        if self.__class__.__name__ == "OpenAIGenerator" and self.name.startswith("o1-"):
+            msg = "'o1'-class models should use openai.OpenAIReasoningGenerator. Try e.g. `-m openai.OpenAIReasoningGenerator` instead of `-m openai`"
+            logging.error(msg)
+            raise garak.exception.BadGeneratorException("🛑 " + msg)
 
     def _clear_client(self):
         self.generator = None
@@ -280,6 +300,23 @@ class OpenAIGenerator(OpenAICompatible):
             self.context_len = context_lengths[self.name]
 
         super().__init__(self.name, config_root=config_root)
+
+
+class OpenAIReasoningGenerator(OpenAIGenerator):
+    """Generator wrapper for OpenAI reasoning models, e.g. `o1` family."""
+
+    supports_multiple_generations = False
+
+    DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
+        "top_p": 1.0,
+        "frequency_penalty": 0.0,
+        "presence_penalty": 0.0,
+        "seed": None,
+        "stop": ["#", ";"],
+        "suppressed_params": set(["n", "temperature", "max_tokens", "stop"]),
+        "retry_json": True,
+        "max_completion_tokens": 1500,
+    }
 
 
 DEFAULT_CLASS = "OpenAIGenerator"

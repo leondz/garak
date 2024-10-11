@@ -37,54 +37,7 @@ import garak._config
 
 logger = getLogger(__name__)
 
-resource_data = garak._config.transient.package_dir / "resources"
-gcg_resource_data = garak._config.transient.cache_dir / "resources" / "gcg" / "data"
-
-# GCG parser used by interactive mode
-gcg_parser = ArgumentParser()
-gcg_parser.add_argument("--model_names", nargs="+", help="Model names for generation")
-gcg_parser.add_argument(
-    "--transfer", action="store_true", help="Whether to generate attack for transfer"
-)
-gcg_parser.add_argument(
-    "--progressive", action="store_true", help="Use progressive goals"
-)
-gcg_parser.add_argument("--stop_success", action="store_true", help="Stop on success")
-gcg_parser.add_argument(
-    "--train_data",
-    type=str,
-    default=resource_data / "advbench" / "harmful_behaviors.csv",
-    help="Path to training data",
-)
-gcg_parser.add_argument(
-    "--n_train", type=int, default=50, help="Number of training samples to use"
-)
-gcg_parser.add_argument(
-    "--n_test", type=int, default=0, help="Number of test samples to use"
-)
-gcg_parser.add_argument(
-    "--outfile",
-    type=str,
-    default=gcg_resource_data / "gcg_prompts.txt",
-    help="Location to write GCG attack output",
-)
-gcg_parser.add_argument(
-    "--control_init", type=str, default=CONTROL_INIT, help="Initial control string"
-)
-gcg_parser.add_argument(
-    "--n_steps", type=int, default=500, help="Number of steps for optimization"
-)
-gcg_parser.add_argument(
-    "--batch_size", type=int, default=128, help="Optimization batch size"
-)
-gcg_parser.add_argument(
-    "--allow_non_ascii",
-    action="store_true",
-    help="Allow non-ASCII characters in control string",
-)
-gcg_parser.add_argument(
-    "--save_logs", action="store_true", help="Keep detailed GCG generation logs"
-)
+gcg_cache_data = garak._config.transient.cache_dir / "data" / "gcg"
 
 
 def run_gcg(
@@ -96,7 +49,7 @@ def run_gcg(
     train_data: Union[str, None] = None,
     n_train: int = 50,
     n_test: int = 0,
-    outfile: Path = gcg_resource_data / "gcg.txt",
+    outfile: Path = gcg_cache_data / "gcg.txt",
     control_init: str = CONTROL_INIT,
     deterministic: bool = True,
     n_steps: int = 500,
@@ -170,13 +123,13 @@ def run_gcg(
             msg = "You must specify either a target generator or a list of model names to run GCG!"
             logger.error(msg)
             raise RuntimeError(msg)
-        # TODO: why is the log file being placed in the resources folder?
+        # TODO: why is the log file being placed in the cache folder?
         if garak._config.transient.run_id is not None:
             run_id = garak._config.transient.run_id
-            logfile = gcg_resource_data / "logs" / f"{run_id}_{model_string}.json"
+            logfile = gcg_cache_data / "logs" / f"{run_id}_{model_string}.json"
         else:
             timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
-            logfile = gcg_resource_data / "logs" f"{timestamp}_{model_string}.json"
+            logfile = gcg_cache_data / "logs" f"{timestamp}_{model_string}.json"
 
     # Create logfile directory
     p = logfile.parent

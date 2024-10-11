@@ -7,6 +7,7 @@ import pytest
 
 import openai
 
+import garak.exception
 from garak.generators.openai import OpenAIGenerator
 
 
@@ -90,3 +91,11 @@ def test_openai_chat():
     for item in output:
         assert isinstance(item, str)
     print("test passed!")
+
+
+@pytest.mark.usefixtures("set_fake_env")
+def test_reasoning_switch():
+    with pytest.raises(garak.exception.BadGeneratorException):
+        generator = OpenAIGenerator(
+            name="o1-mini"
+        )  # o1 models should use ReasoningGenerator
