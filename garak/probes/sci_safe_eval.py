@@ -4,11 +4,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 """
-Title: SCISAFEEVAL: A COMPREHENSIVE BENCHMARK FOR SAFETY ALIGNMENT OF SCIENTIFIC LARGE LANGUAGE MODELS
-Paper: <arxiv link>
+Title: SciSafeEval: A Comprehensive Benchmark for Safety Alignment of Large Language Models in Scientific Tasks
+Paper: https://arxiv.org/abs/2410.03769
 Code: https://github.com/DavidLee528/SciSafeEval
-Dataset: <huggingface link>
-Reference: <reference>
+Dataset: https://huggingface.co/datasets/Tianhao0x01/SciSafeEval
+Reference: Li, Tianhao, et al. "SciSafeEval: A Comprehensive Benchmark for Safety Alignment of Large Language Models in Scientific Tasks." arXiv preprint arXiv:2410.03769 (2024).
 """
 
 import os
@@ -22,18 +22,17 @@ from garak import _config
 from garak.probes.base import Probe
 from garak.generators.base import Generator
 
-
 class SciSafeEval(Probe):
     """
-    Title: SCISAFEEVAL: A COMPREHENSIVE BENCHMARK FOR SAFETY ALIGNMENT OF SCIENTIFIC LARGE LANGUAGE MODELS
-    Paper: <arxiv link>
+    Title: SciSafeEval: A Comprehensive Benchmark for Safety Alignment of Large Language Models in Scientific Tasks
+    Paper: https://arxiv.org/abs/2410.03769
     Code: https://github.com/DavidLee528/SciSafeEval
-    Dataset: <huggingface link>
-    Reference: <reference>
+    Dataset: https://huggingface.co/datasets/Tianhao0x01/SciSafeEval
+    Reference: Li, Tianhao, et al. "SciSafeEval: A Comprehensive Benchmark for Safety Alignment of Large Language Models in Scientific Tasks." arXiv preprint arXiv:2410.03769 (2024).
     """
 
-    active = True
-    doc_uri = "<arxiv link>"
+    active = False
+    doc_uri = "https://arxiv.org/abs/2410.03769"
     bcp47 = "en"
     recommended_detector = ["refuse_to_answer.RefuseToAnswer"]
     tags = [
@@ -43,24 +42,76 @@ class SciSafeEval(Probe):
         "quality:Security:PromptStability",
         "payload:jailbreak",
     ]
-    goal = "Let LLMs answer malicious scientific querys."
-
+    goal = "Let LLMs answer malicious scientific queries."
     prompts = []
-
     modality: dict = {"in": {"text"}}
-
-    scisafeeval_dataset_catalog = (
-        _config.transient.package_dir / "resources" / "scisafeeval_filenames.txt"
-    )
-
-    scisafeeval_dataset_filenames = []
-
-    # We should concatenate `hf_raw_base_url` before `hf_raw_filename` to get a final subdataset url
     hf_raw_base_url: str = "https://huggingface.co/datasets/Tianhao0x01/SciSafeEval/raw/main/"
 
-    def __init__(self, config_root=_config):                                        
+    placeholders = []
+    data_keys = []
+    use_smiles = True  # default value
+
+    def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
-        self._load_SciSafeEval()
+        self._load_SciSafeEval(config_root)
+
+    def read_sci_safe_eval(self, file_path, combine=True):
+        data = []
+        try:
+            with open(file_path, 'r', encoding='utf-8', errors='ignore') as file:
+                for line in file:
+                    json_obj = json.loads(line.strip())
+                    if combine:
+                        if self.placeholders and self.data_keys:
+                            prompt = json_obj['instruction']
+                            for placeholder, data_key in zip(self.placeholders, self.data_keys):
+                                if data_key == 'smiles/selfies':
+                                    data_value = json_obj['smiles'] if self.use_smiles else json_obj['selfies']
+                                else:
+                                    data_value = json_obj.get(data_key, '')
+                                prompt = prompt.replace(placeholder, data_value)
+                        else:
+                            prompt = json_obj['instruction']
+                        data.append({
+                            "idx": json_obj['idx'],
+                            "prompt": prompt,
+                            "few-shot": json_obj.get('few-shot', []),
+                            "cot": json_obj.get('cot', None),
+                            "jailbreak": json_obj.get('jailbreak', None),
+                            "tags": json_obj.get('tags', [])
+                        })
+                    else:
+                        data.append({
+                            "idx": json_obj['idx'],
+                            "instruction": json_obj['instruction'],
+                            "few-shot": json_obj.get('few-shot', []),
+                            "cot": json_obj.get('cot', None),
+                            "jailbreak": json_obj.get('jailbreak', None),
+                            "tags": json_obj.get('tags', [])
+                        })
+            return data
+        except FileNotFoundError:
+            print(f"File not found: {file_path}")
+            return None
+        except json.JSONDecodeError:
+            print(f"Error decoding JSON in file: {file_path}")
+            return None
+
+    def _load_SciSafeEval(self, config_root):
+        scisafeeval_data_dir = (
+            config_root.transient.cache_dir / "resources" / "SciSafeEval" / "SciSafeEval"
+        )
+        scisafeeval_data_dir.mkdir(parents=True, exist_ok=True)
+        hf_local_filepath = scisafeeval_data_dir / self.hf_raw_filename
+        if not hf_local_filepath.exists():
+            hf_subdataset_url: str = self.hf_raw_base_url + self.hf_raw_filename
+            response = requests.get(hf_subdataset_url)
+            response.raise_for_status()
+            with open(hf_local_filepath, 'wb') as f:
+                f.write(response.content)
+        data = self.read_sci_safe_eval(hf_local_filepath)
+        if data:
+            self.prompts = [item['prompt'] for item in data if 'prompt' in item]
 
     def probe(self, generator):
         if not isinstance(generator, Generator):
@@ -69,885 +120,140 @@ class SciSafeEval(Probe):
             raise ValueError(
                 f"Incorrect generator input modality {generator.modality['in']}, expect {self.modality['in']} for this probe."
             )
-
         return super().probe(generator)
 
-class ChemistryMoleculeGeneration(SciSafeEval, Probe):
-    # We should concatenate `hf_raw_filename` after `hf_raw_base_url` to get a final subdataset url
-    hf_raw_filename: str = "chemistry_molecule-generation.jsonl"
 
-    def read_sci_safe_eval(self, file_path, combine=True, use_smiles=True):
-        """
-        Reads JSONL data from a file and returns the processed data based on the combine option.
-        
-        Args:
-            file_path (str): The path to the JSONL file.
-            combine (bool): If True, replaces placeholders ('<name>', '<smiles/selfies>') in 'instruction'
-                            with the corresponding data to form 'prompt'.
-            use_smiles (bool): If True, '<smiles/selfies>' will be replaced with 'smiles' data, otherwise 'selfies'.
-        
-        Returns:
-            list: A list of dictionaries containing either the combined 'prompt' or just the instruction.
-        """
-        data = []
-        try:
-            with open(file_path, 'r') as file:
-                for line in file:
-                    json_obj = json.loads(line.strip())
-                    
-                    if combine:
-                        # Replace placeholders with actual data
-                        smiles_or_selfies = json_obj['smiles'] if use_smiles else json_obj['selfies']
-                        prompt = json_obj['instruction'].replace('<name>', json_obj['name']).replace('<smiles/selfies>', smiles_or_selfies)
-                        data.append({
-                            "idx": json_obj['idx'],
-                            "prompt": prompt,
-                            "few-shot": json_obj.get('few-shot', []),
-                            "cot": json_obj.get('cot', None),
-                            "jailbreak": json_obj.get('jailbreak', None),
-                            "tags": json_obj.get('tags', [])
-                        })
-                    else:
-                        # Only return the instruction as is
-                        data.append({
-                            "idx": json_obj['idx'],
-                            "instruction": json_obj['instruction'],
-                            "few-shot": json_obj.get('few-shot', []),
-                            "cot": json_obj.get('cot', None),
-                            "jailbreak": json_obj.get('jailbreak', None),
-                            "tags": json_obj.get('tags', [])
-                        })
-            
-            return data
-        except FileNotFoundError:
-            print(f"File not found: {file_path}")
-            return None
-        except json.JSONDecodeError:
-            print(f"Error decoding JSON in file: {file_path}")
-            return None
-    
-    def _load_SciSafeEval(self):
-        scisafeeval_data_dir = (
-            _config.transient.cache_dir / "resources" / "SciSafeEval" / "SciSafeEval"
-        )
-        if not os.path.exists(scisafeeval_data_dir):
-            # Make the directory if it doesn't exist
-            os.makedirs(scisafeeval_data_dir)
-        
-        # Full path where the dataset should be saved
-        hf_local_filepath = scisafeeval_data_dir / self.hf_raw_filename
-        
-        # Do the download if the file doesn't already exist
-        if not os.path.exists(hf_local_filepath):
-            hf_subdataset_url: str = self.hf_raw_base_url + self.hf_raw_filename
-            response = requests.get(hf_subdataset_url)
-            
-            # Save the file to the specified location
-            with open(hf_local_filepath, 'wb') as f:
-                f.write(response.content)
-        
-        # Read the downloaded JSONL file and extract the prompts
-        self.prompts = [
-            prompt['prompt']
-            for prompt in self.read_sci_safe_eval(hf_local_filepath)
-        ]
+class ChemistryMoleculeGeneration(SciSafeEval, Probe):
+    active = False  # default to use tiny version below
+    hf_raw_filename = "chemistry_molecule-generation.jsonl"
+    placeholders = ['<name>', '<smiles/selfies>']
+    data_keys = ['name', 'smiles/selfies']
+    use_smiles = True
+
+class ChemistryMoleculeGenerationTiny(ChemistryMoleculeGeneration, SciSafeEval, Probe):
+    active = True
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
+        self.prompts = self.prompts[:80]
 
 class ChemistryPropertyPrediction(SciSafeEval, Probe):
-    # We should concatenate `hf_raw_filename` after `hf_raw_base_url` to get a final subdataset url
-    hf_raw_filename: str = "chemistry_property-prediction.jsonl"
+    active = False  # default to use tiny version below
+    hf_raw_filename = "chemistry_property-prediction.jsonl"
+    placeholders = ['<name>', '<smiles/selfies>']
+    data_keys = ['name', 'smiles/selfies']
+    use_smiles = True
 
-    def read_sci_safe_eval(self, file_path, combine=True, use_smiles=True):
-        """
-        Reads JSONL data from a file and returns the processed data based on the combine option.
-        
-        Args:
-            file_path (str): The path to the JSONL file.
-            combine (bool): If True, replaces placeholders ('<name>', '<smiles/selfies>') in 'instruction'
-                            with the corresponding data to form 'prompt'.
-            use_smiles (bool): If True, '<smiles/selfies>' will be replaced with 'smiles' data, otherwise 'selfies'.
-        
-        Returns:
-            list: A list of dictionaries containing either the combined 'prompt' or just the instruction.
-        """
-        data = []
-        try:
-            with open(file_path, 'r') as file:
-                for line in file:
-                    json_obj = json.loads(line.strip())
-                    
-                    if combine:
-                        # Replace placeholders with actual data
-                        smiles_or_selfies = json_obj['smiles'] if use_smiles else json_obj['selfies']
-                        prompt = json_obj['instruction'].replace('<name>', json_obj['name']).replace('<smiles/selfies>', smiles_or_selfies)
-                        data.append({
-                            "idx": json_obj['idx'],
-                            "prompt": prompt,
-                            "few-shot": json_obj.get('few-shot', []),
-                            "cot": json_obj.get('cot', None),
-                            "jailbreak": json_obj.get('jailbreak', None),
-                            "tags": json_obj.get('tags', [])
-                        })
-                    else:
-                        # Only return the instruction as is
-                        data.append({
-                            "idx": json_obj['idx'],
-                            "instruction": json_obj['instruction'],
-                            "few-shot": json_obj.get('few-shot', []),
-                            "cot": json_obj.get('cot', None),
-                            "jailbreak": json_obj.get('jailbreak', None),
-                            "tags": json_obj.get('tags', [])
-                        })
-            
-            return data
-        except FileNotFoundError:
-            print(f"File not found: {file_path}")
-            return None
-        except json.JSONDecodeError:
-            print(f"Error decoding JSON in file: {file_path}")
-            return None
-    
-    def _load_SciSafeEval(self):
-        scisafeeval_data_dir = (
-            _config.transient.cache_dir / "resources" / "SciSafeEval" / "SciSafeEval"
-        )
-        if not os.path.exists(scisafeeval_data_dir):
-            # Make the directory if it doesn't exist
-            os.makedirs(scisafeeval_data_dir)
-        
-        # Full path where the dataset should be saved
-        hf_local_filepath = scisafeeval_data_dir / self.hf_raw_filename
-        
-        # Do the download if the file doesn't already exist
-        if not os.path.exists(hf_local_filepath):
-            hf_subdataset_url: str = self.hf_raw_base_url + self.hf_raw_filename
-            response = requests.get(hf_subdataset_url)
-            
-            # Save the file to the specified location
-            with open(hf_local_filepath, 'wb') as f:
-                f.write(response.content)
-        
-        # Read the downloaded JSONL file and extract the prompts
-        self.prompts = [
-            prompt['prompt']
-            for prompt in self.read_sci_safe_eval(hf_local_filepath)
-        ]
+class ChemistryPropertyPredictionTiny(ChemistryPropertyPrediction, SciSafeEval, Probe):
+    active = True
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
+        self.prompts = self.prompts[:80]
 
 class ChemistryReactionPrediction(SciSafeEval, Probe):
-    # We should concatenate `hf_raw_filename` after `hf_raw_base_url` to get a final subdataset url
-    hf_raw_filename: str = "chemistry_reaction-prediction.jsonl"
+    active = False  # default to use tiny version below
+    hf_raw_filename = "chemistry_reaction-prediction.jsonl"
+    placeholders = ['<name>', '<smiles/selfies>']
+    data_keys = ['name', 'smiles/selfies']
+    use_smiles = True
 
-    def read_sci_safe_eval(self, file_path, combine=True, use_smiles=True):
-        """
-        Reads JSONL data from a file and returns the processed data based on the combine option.
-        
-        Args:
-            file_path (str): The path to the JSONL file.
-            combine (bool): If True, replaces placeholders ('<name>', '<smiles/selfies>') in 'instruction'
-                            with the corresponding data to form 'prompt'.
-            use_smiles (bool): If True, '<smiles/selfies>' will be replaced with 'smiles' data, otherwise 'selfies'.
-        
-        Returns:
-            list: A list of dictionaries containing either the combined 'prompt' or just the instruction.
-        """
-        data = []
-        try:
-            with open(file_path, 'r') as file:
-                for line in file:
-                    json_obj = json.loads(line.strip())
-                    
-                    if combine:
-                        # Replace placeholders with actual data
-                        smiles_or_selfies = json_obj['smiles'] if use_smiles else json_obj['selfies']
-                        prompt = json_obj['instruction'].replace('<name>', json_obj['name']).replace('<smiles/selfies>', smiles_or_selfies)
-                        data.append({
-                            "idx": json_obj['idx'],
-                            "prompt": prompt,
-                            "few-shot": json_obj.get('few-shot', []),
-                            "cot": json_obj.get('cot', None),
-                            "jailbreak": json_obj.get('jailbreak', None),
-                            "tags": json_obj.get('tags', [])
-                        })
-                    else:
-                        # Only return the instruction as is
-                        data.append({
-                            "idx": json_obj['idx'],
-                            "instruction": json_obj['instruction'],
-                            "few-shot": json_obj.get('few-shot', []),
-                            "cot": json_obj.get('cot', None),
-                            "jailbreak": json_obj.get('jailbreak', None),
-                            "tags": json_obj.get('tags', [])
-                        })
-            
-            return data
-        except FileNotFoundError:
-            print(f"File not found: {file_path}")
-            return None
-        except json.JSONDecodeError:
-            print(f"Error decoding JSON in file: {file_path}")
-            return None
-    
-    def _load_SciSafeEval(self):
-        scisafeeval_data_dir = (
-            _config.transient.cache_dir / "resources" / "SciSafeEval" / "SciSafeEval"
-        )
-        if not os.path.exists(scisafeeval_data_dir):
-            # Make the directory if it doesn't exist
-            os.makedirs(scisafeeval_data_dir)
-        
-        # Full path where the dataset should be saved
-        hf_local_filepath = scisafeeval_data_dir / self.hf_raw_filename
-        
-        # Do the download if the file doesn't already exist
-        if not os.path.exists(hf_local_filepath):
-            hf_subdataset_url: str = self.hf_raw_base_url + self.hf_raw_filename
-            response = requests.get(hf_subdataset_url)
-            
-            # Save the file to the specified location
-            with open(hf_local_filepath, 'wb') as f:
-                f.write(response.content)
-        
-        # Read the downloaded JSONL file and extract the prompts
-        self.prompts = [
-            prompt['prompt']
-            for prompt in self.read_sci_safe_eval(hf_local_filepath)
-        ]
+class ChemistryReactionPredictionTiny(ChemistryReactionPrediction, SciSafeEval, Probe):
+    active = True
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
+        self.prompts = self.prompts[:80]
 
 class BiologyProteinFunctionPrediction(SciSafeEval, Probe):
-    # We should concatenate `hf_raw_filename` after `hf_raw_base_url` to get a final subdataset url
-    hf_raw_filename: str = "biology_protein-function-prediction.jsonl"
+    active = False  # default to use tiny version below
+    hf_raw_filename = "biology_protein-function-prediction.jsonl"
+    placeholders = ['<name>', '<sequence>']
+    data_keys = ['name', 'sequence']
 
-    def read_sci_safe_eval(self, file_path, combine=True):
-        """
-        Reads JSONL data from a file and returns the processed data based on the combine option.
-        
-        Args:
-            file_path (str): The path to the JSONL file.
-            combine (bool): If True, replaces placeholders ('<name>', '<sequence>') in 'instruction'
-                            with the corresponding data to form 'prompt'.
-            
-        Returns:
-            list: A list of dictionaries containing either the combined 'prompt' or just the instruction.
-        """
-        data = []
-        try:
-            with open(file_path, 'r') as file:
-                for line in file:
-                    json_obj = json.loads(line.strip())
-                    
-                    if combine:
-                        # Replace placeholders with actual data
-                        prompt = (json_obj['instruction']
-                                .replace('<name>', json_obj['name'])
-                                .replace('<sequence>', json_obj['sequence']))
-                        
-                        data.append({
-                            "idx": json_obj['idx'],
-                            "prompt": prompt,
-                            "few-shot": json_obj.get('few-shot', []),
-                            "cot": json_obj.get('cot', None),
-                            "jailbreak": json_obj.get('jailbreak', None),
-                            "tags": json_obj.get('tags', [])
-                        })
-                    else:
-                        # Only return the instruction as is
-                        data.append({
-                            "idx": json_obj['idx'],
-                            "instruction": json_obj['instruction'],
-                            "few-shot": json_obj.get('few-shot', []),
-                            "cot": json_obj.get('cot', None),
-                            "jailbreak": json_obj.get('jailbreak', None),
-                            "tags": json_obj.get('tags', [])
-                        })
-            
-            return data
-        except FileNotFoundError:
-            print(f"File not found: {file_path}")
-            return None
-        except json.JSONDecodeError:
-            print(f"Error decoding JSON in file: {file_path}")
-            return None
-    
-    def _load_SciSafeEval(self):
-        scisafeeval_data_dir = (
-            _config.transient.cache_dir / "resources" / "SciSafeEval" / "SciSafeEval"
-        )
-        if not os.path.exists(scisafeeval_data_dir):
-            # Make the directory if it doesn't exist
-            os.makedirs(scisafeeval_data_dir)
-        
-        # Full path where the dataset should be saved
-        hf_local_filepath = scisafeeval_data_dir / self.hf_raw_filename
-        
-        # Do the download if the file doesn't already exist
-        if not os.path.exists(hf_local_filepath):
-            hf_subdataset_url: str = self.hf_raw_base_url + self.hf_raw_filename
-            response = requests.get(hf_subdataset_url)
-            
-            # Save the file to the specified location
-            with open(hf_local_filepath, 'wb') as f:
-                f.write(response.content)
-        
-        # Read the downloaded JSONL file and extract the prompts
-        self.prompts = [
-            prompt['prompt']
-            for prompt in self.read_sci_safe_eval(hf_local_filepath)
-        ]
+class BiologyProteinFunctionPredictionTiny(BiologyProteinFunctionPrediction, SciSafeEval, Probe):
+    active = True
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
+        self.prompts = self.prompts[:80]
 
-class BiologyProteinStructureGeneration(SciSafeEval, Probe):
-    # We should concatenate `hf_raw_filename` after `hf_raw_base_url` to get a final subdataset url
-    hf_raw_filename: str = "biology_protein-structure-generation.jsonl"
+class BiologyProteinSequenceGeneration(SciSafeEval, Probe):
+    active = False  # default to use tiny version below
+    hf_raw_filename = "biology_protein-sequence-generation.jsonl"
+    placeholders = ['<name>', '<sequence>']
+    data_keys = ['name', 'sequence']
 
-    def read_sci_safe_eval(self, file_path, combine=True):
-        """
-        Reads JSONL data from a file and returns the processed data based on the combine option.
-        
-        Args:
-            file_path (str): The path to the JSONL file.
-            combine (bool): If True, replaces placeholders ('<name>', '<sequence>') in 'instruction'
-                            with the corresponding data to form 'prompt'.
-            
-        Returns:
-            list: A list of dictionaries containing either the combined 'prompt' or just the instruction.
-        """
-        data = []
-        try:
-            with open(file_path, 'r') as file:
-                for line in file:
-                    json_obj = json.loads(line.strip())
-                    
-                    if combine:
-                        # Replace placeholders with actual data
-                        prompt = (json_obj['instruction']
-                                .replace('<name>', json_obj['name'])
-                                .replace('<sequence>', json_obj['sequence']))
-                        
-                        data.append({
-                            "idx": json_obj['idx'],
-                            "prompt": prompt,
-                            "few-shot": json_obj.get('few-shot', []),
-                            "cot": json_obj.get('cot', None),
-                            "jailbreak": json_obj.get('jailbreak', None),
-                            "tags": json_obj.get('tags', [])
-                        })
-                    else:
-                        # Only return the instruction as is
-                        data.append({
-                            "idx": json_obj['idx'],
-                            "instruction": json_obj['instruction'],
-                            "few-shot": json_obj.get('few-shot', []),
-                            "cot": json_obj.get('cot', None),
-                            "jailbreak": json_obj.get('jailbreak', None),
-                            "tags": json_obj.get('tags', [])
-                        })
-            
-            return data
-        except FileNotFoundError:
-            print(f"File not found: {file_path}")
-            return None
-        except json.JSONDecodeError:
-            print(f"Error decoding JSON in file: {file_path}")
-            return None
-    
-    def _load_SciSafeEval(self):
-        scisafeeval_data_dir = (
-            _config.transient.cache_dir / "resources" / "SciSafeEval" / "SciSafeEval"
-        )
-        if not os.path.exists(scisafeeval_data_dir):
-            # Make the directory if it doesn't exist
-            os.makedirs(scisafeeval_data_dir)
-        
-        # Full path where the dataset should be saved
-        hf_local_filepath = scisafeeval_data_dir / self.hf_raw_filename
-        
-        # Do the download if the file doesn't already exist
-        if not os.path.exists(hf_local_filepath):
-            hf_subdataset_url: str = self.hf_raw_base_url + self.hf_raw_filename
-            response = requests.get(hf_subdataset_url)
-            
-            # Save the file to the specified location
-            with open(hf_local_filepath, 'wb') as f:
-                f.write(response.content)
-        
-        # Read the downloaded JSONL file and extract the prompts
-        self.prompts = [
-            prompt['prompt']
-            for prompt in self.read_sci_safe_eval(hf_local_filepath)
-        ]
+class BiologyProteinSequenceGenerationTiny(BiologyProteinSequenceGeneration, SciSafeEval, Probe):
+    active = True
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
+        self.prompts = self.prompts[:80]
 
 class BiologyProteinStructurePrediction(SciSafeEval, Probe):
-    # We should concatenate `hf_raw_filename` after `hf_raw_base_url` to get a final subdataset url
-    hf_raw_filename: str = "biology_protein-structure-prediction.jsonl"
+    active = False  # default to use tiny version below
+    hf_raw_filename = "biology_protein-structure-prediction.jsonl"
+    placeholders = ['<name>', '<sequence>']
+    data_keys = ['name', 'sequence']
 
-    def read_sci_safe_eval(self, file_path, combine=True):
-        """
-        Reads JSONL data from a file and returns the processed data based on the combine option.
-        
-        Args:
-            file_path (str): The path to the JSONL file.
-            combine (bool): If True, replaces placeholders ('<name>', '<sequence>') in 'instruction'
-                            with the corresponding data to form 'prompt'.
-            
-        Returns:
-            list: A list of dictionaries containing either the combined 'prompt' or just the instruction.
-        """
-        data = []
-        try:
-            with open(file_path, 'r') as file:
-                for line in file:
-                    json_obj = json.loads(line.strip())
-                    
-                    if combine:
-                        # Replace placeholders with actual data
-                        prompt = (json_obj['instruction']
-                                .replace('<name>', json_obj['name'])
-                                .replace('<sequence>', json_obj['sequence']))
-                        
-                        data.append({
-                            "idx": json_obj['idx'],
-                            "prompt": prompt,
-                            "few-shot": json_obj.get('few-shot', []),
-                            "cot": json_obj.get('cot', None),
-                            "jailbreak": json_obj.get('jailbreak', None),
-                            "tags": json_obj.get('tags', [])
-                        })
-                    else:
-                        # Only return the instruction as is
-                        data.append({
-                            "idx": json_obj['idx'],
-                            "instruction": json_obj['instruction'],
-                            "few-shot": json_obj.get('few-shot', []),
-                            "cot": json_obj.get('cot', None),
-                            "jailbreak": json_obj.get('jailbreak', None),
-                            "tags": json_obj.get('tags', [])
-                        })
-            
-            return data
-        except FileNotFoundError:
-            print(f"File not found: {file_path}")
-            return None
-        except json.JSONDecodeError:
-            print(f"Error decoding JSON in file: {file_path}")
-            return None
-    
-    def _load_SciSafeEval(self):
-        scisafeeval_data_dir = (
-            _config.transient.cache_dir / "resources" / "SciSafeEval" / "SciSafeEval"
-        )
-        if not os.path.exists(scisafeeval_data_dir):
-            # Make the directory if it doesn't exist
-            os.makedirs(scisafeeval_data_dir)
-        
-        # Full path where the dataset should be saved
-        hf_local_filepath = scisafeeval_data_dir / self.hf_raw_filename
-        
-        # Do the download if the file doesn't already exist
-        if not os.path.exists(hf_local_filepath):
-            hf_subdataset_url: str = self.hf_raw_base_url + self.hf_raw_filename
-            response = requests.get(hf_subdataset_url)
-            
-            # Save the file to the specified location
-            with open(hf_local_filepath, 'wb') as f:
-                f.write(response.content)
-        
-        # Read the downloaded JSONL file and extract the prompts
-        self.prompts = [
-            prompt['prompt']
-            for prompt in self.read_sci_safe_eval(hf_local_filepath)
-        ]
+class BiologyProteinStructurePredictionTiny(BiologyProteinStructurePrediction, SciSafeEval, Probe):
+    active = True
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
+        self.prompts = self.prompts[:80]
 
 class BiologyGeneClassification(SciSafeEval, Probe):
-    # We should concatenate `hf_raw_filename` after `hf_raw_base_url` to get a final subdataset url
-    hf_raw_filename: str = "biology_gene-classification.jsonl"
+    active = False  # default to use tiny version below
+    hf_raw_filename = "biology_gene-classification.jsonl"
+    placeholders = ['<name>', '<sequence>']
+    data_keys = ['name', 'sequence']
 
-    def read_sci_safe_eval(self, file_path, combine=True):
-        """
-        Reads JSONL data from a file and returns the processed data based on the combine option.
-        
-        Args:
-            file_path (str): The path to the JSONL file.
-            combine (bool): If True, replaces placeholders ('<name>', '<sequence>') in 'instruction'
-                            with the corresponding data to form 'prompt'.
-            
-        Returns:
-            list: A list of dictionaries containing either the combined 'prompt' or just the instruction.
-        """
-        data = []
-        try:
-            with open(file_path, 'r') as file:
-                for line in file:
-                    json_obj = json.loads(line.strip())
-                    
-                    if combine:
-                        # Replace placeholders with actual data
-                        prompt = (json_obj['instruction']
-                                .replace('<name>', json_obj['name'])
-                                .replace('<sequence>', json_obj['sequence']))
-                        
-                        data.append({
-                            "idx": json_obj['idx'],
-                            "prompt": prompt,
-                            "few-shot": json_obj.get('few-shot', []),
-                            "cot": json_obj.get('cot', None),
-                            "jailbreak": json_obj.get('jailbreak', None),
-                            "tags": json_obj.get('tags', [])
-                        })
-                    else:
-                        # Only return the instruction as is
-                        data.append({
-                            "idx": json_obj['idx'],
-                            "instruction": json_obj['instruction'],
-                            "few-shot": json_obj.get('few-shot', []),
-                            "cot": json_obj.get('cot', None),
-                            "jailbreak": json_obj.get('jailbreak', None),
-                            "tags": json_obj.get('tags', [])
-                        })
-            
-            return data
-        except FileNotFoundError:
-            print(f"File not found: {file_path}")
-            return None
-        except json.JSONDecodeError:
-            print(f"Error decoding JSON in file: {file_path}")
-            return None
-    
-    def _load_SciSafeEval(self):
-        scisafeeval_data_dir = (
-            _config.transient.cache_dir / "resources" / "SciSafeEval" / "SciSafeEval"
-        )
-        if not os.path.exists(scisafeeval_data_dir):
-            # Make the directory if it doesn't exist
-            os.makedirs(scisafeeval_data_dir)
-        
-        # Full path where the dataset should be saved
-        hf_local_filepath = scisafeeval_data_dir / self.hf_raw_filename
-        
-        # Do the download if the file doesn't already exist
-        if not os.path.exists(hf_local_filepath):
-            hf_subdataset_url: str = self.hf_raw_base_url + self.hf_raw_filename
-            response = requests.get(hf_subdataset_url)
-            
-            # Save the file to the specified location
-            with open(hf_local_filepath, 'wb') as f:
-                f.write(response.content)
-        
-        # Read the downloaded JSONL file and extract the prompts
-        self.prompts = [
-            prompt['prompt']
-            for prompt in self.read_sci_safe_eval(hf_local_filepath)
-        ]
+class BiologyGeneClassificationTiny(BiologyGeneClassification, SciSafeEval, Probe):
+    active = True
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
+        self.prompts = self.prompts[:80]
 
 class BiologyGeneGeneration(SciSafeEval, Probe):
-    # We should concatenate `hf_raw_filename` after `hf_raw_base_url` to get a final subdataset url
-    hf_raw_filename: str = "biology_gene-generation.jsonl"
+    active = False  # default to use tiny version below
+    hf_raw_filename = "biology_gene-generation.jsonl"
+    placeholders = ['<name>', '<sequence>']
+    data_keys = ['name', 'sequence']
 
-    def read_sci_safe_eval(self, file_path, combine=True):
-        """
-        Reads JSONL data from a file and returns the processed data based on the combine option.
-        
-        Args:
-            file_path (str): The path to the JSONL file.
-            combine (bool): If True, replaces placeholders ('<name>', '<sequence>') in 'instruction'
-                            with the corresponding data to form 'prompt'.
-            
-        Returns:
-            list: A list of dictionaries containing either the combined 'prompt' or just the instruction.
-        """
-        data = []
-        try:
-            with open(file_path, 'r') as file:
-                for line in file:
-                    json_obj = json.loads(line.strip())
-                    
-                    if combine:
-                        # Replace placeholders with actual data
-                        prompt = (json_obj['instruction']
-                                .replace('<name>', json_obj['name'])
-                                .replace('<sequence>', json_obj['sequence']))
-                        
-                        data.append({
-                            "idx": json_obj['idx'],
-                            "prompt": prompt,
-                            "few-shot": json_obj.get('few-shot', []),
-                            "cot": json_obj.get('cot', None),
-                            "jailbreak": json_obj.get('jailbreak', None),
-                            "tags": json_obj.get('tags', [])
-                        })
-                    else:
-                        # Only return the instruction as is
-                        data.append({
-                            "idx": json_obj['idx'],
-                            "instruction": json_obj['instruction'],
-                            "few-shot": json_obj.get('few-shot', []),
-                            "cot": json_obj.get('cot', None),
-                            "jailbreak": json_obj.get('jailbreak', None),
-                            "tags": json_obj.get('tags', [])
-                        })
-            
-            return data
-        except FileNotFoundError:
-            print(f"File not found: {file_path}")
-            return None
-        except json.JSONDecodeError:
-            print(f"Error decoding JSON in file: {file_path}")
-            return None
-    
-    def _load_SciSafeEval(self):
-        scisafeeval_data_dir = (
-            _config.transient.cache_dir / "resources" / "SciSafeEval" / "SciSafeEval"
-        )
-        if not os.path.exists(scisafeeval_data_dir):
-            # Make the directory if it doesn't exist
-            os.makedirs(scisafeeval_data_dir)
-        
-        # Full path where the dataset should be saved
-        hf_local_filepath = scisafeeval_data_dir / self.hf_raw_filename
-        
-        # Do the download if the file doesn't already exist
-        if not os.path.exists(hf_local_filepath):
-            hf_subdataset_url: str = self.hf_raw_base_url + self.hf_raw_filename
-            response = requests.get(hf_subdataset_url)
-            
-            # Save the file to the specified location
-            with open(hf_local_filepath, 'wb') as f:
-                f.write(response.content)
-        
-        # Read the downloaded JSONL file and extract the prompts
-        self.prompts = [
-            prompt['prompt']
-            for prompt in self.read_sci_safe_eval(hf_local_filepath)
-        ]
+class BiologyGeneGenerationTiny(BiologyGeneGeneration, SciSafeEval, Probe):
+    active = True
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
+        self.prompts = self.prompts[:80]
 
 class MedicineInferenceReasoning(SciSafeEval, Probe):
-    # We should concatenate `hf_raw_filename` after `hf_raw_base_url` to get a final subdataset url
-    hf_raw_filename: str = "medicine_inference-reasoning.jsonl"
+    active = False  # default to use tiny version below
+    hf_raw_filename = "medicine_inference-reasoning.jsonl"
+    placeholders = ['<content>']
+    data_keys = ['content']
 
-    def read_sci_safe_eval(self, file_path, combine=True):
-        """
-        Reads JSONL data from a file and returns the processed data based on the combine option.
-        
-        Args:
-            file_path (str): The path to the JSONL file.
-            combine (bool): If True, replaces placeholders ('<content>') in 'instruction' 
-                            with the corresponding 'content' value to form 'prompt'.
-            
-        Returns:
-            list: A list of dictionaries containing either the combined 'prompt' or just the instruction.
-        """
-        data = []
-        try:
-            with open(file_path, 'r') as file:
-                for line in file:
-                    json_obj = json.loads(line.strip())
-                    
-                    if combine:
-                        # Replace '<content>' placeholder with actual 'content' data
-                        prompt = json_obj['instruction'].replace('<content>', json_obj['content'])
-                        
-                        data.append({
-                            "idx": json_obj['idx'],
-                            "prompt": prompt,
-                            "few-shot": json_obj.get('few-shot', []),
-                            "cot": json_obj.get('cot', None),
-                            "jailbreak": json_obj.get('jailbreak', None),
-                            "tags": json_obj.get('tags', [])
-                        })
-                    else:
-                        # Only return the instruction as is
-                        data.append({
-                            "idx": json_obj['idx'],
-                            "instruction": json_obj['instruction'],
-                            "few-shot": json_obj.get('few-shot', []),
-                            "cot": json_obj.get('cot', None),
-                            "jailbreak": json_obj.get('jailbreak', None),
-                            "tags": json_obj.get('tags', [])
-                        })
-            
-            return data
-        except FileNotFoundError:
-            print(f"File not found: {file_path}")
-            return None
-        except json.JSONDecodeError:
-            print(f"Error decoding JSON in file: {file_path}")
-            return None
-    
-    def _load_SciSafeEval(self):
-        scisafeeval_data_dir = (
-            _config.transient.cache_dir / "resources" / "SciSafeEval" / "SciSafeEval"
-        )
-        if not os.path.exists(scisafeeval_data_dir):
-            # Make the directory if it doesn't exist
-            os.makedirs(scisafeeval_data_dir)
-        
-        # Full path where the dataset should be saved
-        hf_local_filepath = scisafeeval_data_dir / self.hf_raw_filename
-        
-        # Do the download if the file doesn't already exist
-        if not os.path.exists(hf_local_filepath):
-            hf_subdataset_url: str = self.hf_raw_base_url + self.hf_raw_filename
-            response = requests.get(hf_subdataset_url)
-            
-            # Save the file to the specified location
-            with open(hf_local_filepath, 'wb') as f:
-                f.write(response.content)
-        
-        # Read the downloaded JSONL file and extract the prompts
-        self.prompts = [
-            prompt['prompt']
-            for prompt in self.read_sci_safe_eval(hf_local_filepath)
-        ]
+class MedicineInferenceReasoningTiny(MedicineInferenceReasoning, SciSafeEval, Probe):
+    active = True
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
+        self.prompts = self.prompts[:80]
 
-class MedicineKnowledgeRetrival(SciSafeEval, Probe):
-    # We should concatenate `hf_raw_filename` after `hf_raw_base_url` to get a final subdataset url
-    hf_raw_filename: str = "medicine_knowledge-retrieval.jsonl"
+class MedicineKnowledgeRetrieval(SciSafeEval, Probe):
+    active = False  # default to use tiny version below
+    hf_raw_filename = "medicine_knowledge-retrieval.jsonl"
+    placeholders = ['<content>']
+    data_keys = ['content']
 
-    def read_sci_safe_eval(self, file_path, combine=True):
-        """
-        Reads JSONL data from a file and returns the processed data based on the combine option.
-        
-        Args:
-            file_path (str): The path to the JSONL file.
-            combine (bool): If True, replaces placeholders ('<content>') in 'instruction' 
-                            with the corresponding 'content' value to form 'prompt'.
-            
-        Returns:
-            list: A list of dictionaries containing either the combined 'prompt' or just the instruction.
-        """
-        data = []
-        try:
-            with open(file_path, 'r') as file:
-                for line in file:
-                    json_obj = json.loads(line.strip())
-                    
-                    if combine:
-                        # Replace '<content>' placeholder with actual 'content' data
-                        prompt = json_obj['instruction'].replace('<content>', json_obj['content'])
-                        
-                        data.append({
-                            "idx": json_obj['idx'],
-                            "prompt": prompt,
-                            "few-shot": json_obj.get('few-shot', []),
-                            "cot": json_obj.get('cot', None),
-                            "jailbreak": json_obj.get('jailbreak', None),
-                            "tags": json_obj.get('tags', [])
-                        })
-                    else:
-                        # Only return the instruction as is
-                        data.append({
-                            "idx": json_obj['idx'],
-                            "instruction": json_obj['instruction'],
-                            "few-shot": json_obj.get('few-shot', []),
-                            "cot": json_obj.get('cot', None),
-                            "jailbreak": json_obj.get('jailbreak', None),
-                            "tags": json_obj.get('tags', [])
-                        })
-            
-            return data
-        except FileNotFoundError:
-            print(f"File not found: {file_path}")
-            return None
-        except json.JSONDecodeError:
-            print(f"Error decoding JSON in file: {file_path}")
-            return None
-    
-    def _load_SciSafeEval(self):
-        scisafeeval_data_dir = (
-            _config.transient.cache_dir / "resources" / "SciSafeEval" / "SciSafeEval"
-        )
-        if not os.path.exists(scisafeeval_data_dir):
-            # Make the directory if it doesn't exist
-            os.makedirs(scisafeeval_data_dir)
-        
-        # Full path where the dataset should be saved
-        hf_local_filepath = scisafeeval_data_dir / self.hf_raw_filename
-        
-        # Do the download if the file doesn't already exist
-        if not os.path.exists(hf_local_filepath):
-            hf_subdataset_url: str = self.hf_raw_base_url + self.hf_raw_filename
-            response = requests.get(hf_subdataset_url)
-            
-            # Save the file to the specified location
-            with open(hf_local_filepath, 'wb') as f:
-                f.write(response.content)
-        
-        # Read the downloaded JSONL file and extract the prompts
-        self.prompts = [
-            prompt['prompt']
-            for prompt in self.read_sci_safe_eval(hf_local_filepath)
-        ]
+class MedicineKnowledgeRetrievalTiny(MedicineKnowledgeRetrieval, SciSafeEval, Probe):
+    active = True
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
+        self.prompts = self.prompts[:80]
 
-class PhysicsKnowledgeRetrival(SciSafeEval, Probe):
-    # We should concatenate `hf_raw_filename` after `hf_raw_base_url` to get a final subdataset url
-    hf_raw_filename: str = "physics_knowledge-retrieval.jsonl"
+class PhysicsKnowledgeRetrieval(SciSafeEval, Probe):
+    active = False  # default to use tiny version below
+    hf_raw_filename = "physics_knowledge-retrieval.jsonl"
+    placeholders = []
+    data_keys = []
 
-    def read_sci_safe_eval(self, file_path, combine=True):
-        """
-        Reads JSONL data from a file and returns the processed data based on the combine option.
-        
-        Args:
-            file_path (str): The path to the JSONL file.
-            combine (bool): If True, returns a list of dictionaries with 'instruction', 'few-shot', 'cot',
-                            'jailbreak', and other fields to form a 'prompt'.
-            
-        Returns:
-            list: A list of dictionaries containing either the full 'prompt' or just the 'instruction' and related fields.
-        """
-        data = []
-        try:
-            with open(file_path, 'r') as file:
-                for line in file:
-                    json_obj = json.loads(line.strip())
-                    
-                    if combine:
-                        # In this case, we directly use the instruction since there are no placeholders to replace
-                        prompt = json_obj['instruction']
-                        
-                        data.append({
-                            "idx": json_obj['idx'],
-                            "prompt": prompt,
-                            "few-shot": json_obj.get('few-shot', []),
-                            "cot": json_obj.get('cot', None),
-                            "jailbreak": json_obj.get('jailbreak', None)
-                        })
-                    else:
-                        # Only return the instruction and additional fields
-                        data.append({
-                            "idx": json_obj['idx'],
-                            "instruction": json_obj['instruction'],
-                            "few-shot": json_obj.get('few-shot', []),
-                            "cot": json_obj.get('cot', None),
-                            "jailbreak": json_obj.get('jailbreak', None)
-                        })
-            
-            return data
-        except FileNotFoundError:
-            print(f"File not found: {file_path}")
-            return None
-        except json.JSONDecodeError:
-            print(f"Error decoding JSON in file: {file_path}")
-            return None
-    
-    def _load_SciSafeEval(self):
-        scisafeeval_data_dir = (
-            _config.transient.cache_dir / "resources" / "SciSafeEval" / "SciSafeEval"
-        )
-        if not os.path.exists(scisafeeval_data_dir):
-            # Make the directory if it doesn't exist
-            os.makedirs(scisafeeval_data_dir)
-        
-        # Full path where the dataset should be saved
-        hf_local_filepath = scisafeeval_data_dir / self.hf_raw_filename
-        
-        # Do the download if the file doesn't already exist
-        if not os.path.exists(hf_local_filepath):
-            hf_subdataset_url: str = self.hf_raw_base_url + self.hf_raw_filename
-            response = requests.get(hf_subdataset_url)
-            
-            # Save the file to the specified location
-            with open(hf_local_filepath, 'wb') as f:
-                f.write(response.content)
-        
-        # Read the downloaded JSONL file and extract the prompts
-        self.prompts = [
-            prompt['prompt']
-            for prompt in self.read_sci_safe_eval(hf_local_filepath)
-        ]
+class PhysicsKnowledgeRetrievalTiny(PhysicsKnowledgeRetrieval, SciSafeEval, Probe):
+    active = True
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
+        self.prompts = self.prompts[:80]
