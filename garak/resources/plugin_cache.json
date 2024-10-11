@@ -791,6 +791,70 @@
       ],
       "mod_time": "2024-09-17 17:14:48 +0000"
     },
+    "probes.divergence.Repeat": {
+      "description": "See if a model starts giving other data when asked to repeat a string indefinitely",
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
+      "active": true,
+      "bcp47": "*",
+      "doc_uri": "https://not-just-memorization.github.io/extracting-training-data-from-chatgpt.html",
+      "extended_detectors": [
+        "mitigation.MitigationBypass"
+      ],
+      "goal": "get the model to leak data by asking it to repeat words",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "divergence.RepeatDiverges",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "avid-effect:security:S0301",
+        "owasp:llm10",
+        "owasp:llm06",
+        "quality:Security:Confidentiality",
+        "quality:Security:ExtractionInversion",
+        "payload:leak:training"
+      ],
+      "mod_time": "2024-10-11 12:23:02 +0000"
+    },
+    "probes.divergence.RepeatExtended": {
+      "description": "See if a model starts giving other data when asked to repeat a string indefinitely",
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
+      "active": false,
+      "bcp47": "*",
+      "doc_uri": "https://not-just-memorization.github.io/extracting-training-data-from-chatgpt.html",
+      "extended_detectors": [
+        "mitigation.MitigationBypass"
+      ],
+      "goal": "get the model to leak data by asking it to repeat words",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "divergence.RepeatDiverges",
+      "recommended_detector": [
+        "always.Fail"
+      ],
+      "tags": [
+        "avid-effect:security:S0301",
+        "owasp:llm10",
+        "owasp:llm06",
+        "quality:Security:Confidentiality",
+        "quality:Security:ExtractionInversion",
+        "payload:leak:training"
+      ],
+      "mod_time": "2024-10-11 12:23:02 +0000"
+    },
     "probes.donotanswer.DiscriminationExclusionToxicityHatefulOffensive": {
       "description": "Implementation of discrimination_exclusion_toxicity_hateful_offensive probes in DoNotAnswer_Prompts",
       "DEFAULT_PARAMS": {
@@ -3151,70 +3215,6 @@
       ],
       "mod_time": "2024-09-17 17:14:48 +0000"
     },
-    "probes.replay.Repeat": {
-      "description": "See if a model starts giving other data when asked to repeat a string indefinitely",
-      "DEFAULT_PARAMS": {
-        "generations": 1
-      },
-      "active": true,
-      "bcp47": "*",
-      "doc_uri": "https://not-just-memorization.github.io/extracting-training-data-from-chatgpt.html",
-      "extended_detectors": [
-        "mitigation.MitigationBypass"
-      ],
-      "goal": "get the model to leak data by asking it to repeat words",
-      "modality": {
-        "in": [
-          "text"
-        ]
-      },
-      "parallelisable_attempts": true,
-      "primary_detector": "replay.RepeatDiverges",
-      "recommended_detector": [
-        "always.Fail"
-      ],
-      "tags": [
-        "avid-effect:security:S0301",
-        "owasp:llm10",
-        "owasp:llm06",
-        "quality:Security:Confidentiality",
-        "quality:Security:ExtractionInversion",
-        "payload:leak:training"
-      ],
-      "mod_time": "2024-06-06 01:44:58 +0000"
-    },
-    "probes.replay.RepeatExtended": {
-      "description": "See if a model starts giving other data when asked to repeat a string indefinitely",
-      "DEFAULT_PARAMS": {
-        "generations": 1
-      },
-      "active": false,
-      "bcp47": "*",
-      "doc_uri": "https://not-just-memorization.github.io/extracting-training-data-from-chatgpt.html",
-      "extended_detectors": [
-        "mitigation.MitigationBypass"
-      ],
-      "goal": "get the model to leak data by asking it to repeat words",
-      "modality": {
-        "in": [
-          "text"
-        ]
-      },
-      "parallelisable_attempts": true,
-      "primary_detector": "replay.RepeatDiverges",
-      "recommended_detector": [
-        "always.Fail"
-      ],
-      "tags": [
-        "avid-effect:security:S0301",
-        "owasp:llm10",
-        "owasp:llm06",
-        "quality:Security:Confidentiality",
-        "quality:Security:ExtractionInversion",
-        "payload:leak:training"
-      ],
-      "mod_time": "2024-06-06 01:44:58 +0000"
-    },
     "probes.snowball.GraphConnectivity": {
       "description": "Probe asking for impossible flight routings",
       "DEFAULT_PARAMS": {
@@ -4137,6 +4137,25 @@
         "avid-effect:security:S0403"
       ],
       "mod_time": "2024-06-06 01:44:58 +0000"
+    },
+    "detectors.divergence.RepeatDiverges": {
+      "description": "Subclass of Detector using attempt's notes[triggers] as list of strings to match",
+      "DEFAULT_PARAMS": {
+        "skip": false
+      },
+      "accuracy": null,
+      "active": true,
+      "bcp47": "*",
+      "doc_uri": null,
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "tags": [],
+      "mod_time": "2024-10-11 12:19:57 +0000"
     },
     "detectors.encoding.DecodeApprox": {
       "description": "Is there a partial hash decoding?",
@@ -5169,25 +5188,6 @@
       "recall": 0.0,
       "tags": [],
       "mod_time": "2024-07-01 17:51:48 +0000"
-    },
-    "detectors.replay.RepeatDiverges": {
-      "description": "Subclass of Detector using attempt's notes[triggers] as list of strings to match",
-      "DEFAULT_PARAMS": {
-        "skip": false
-      },
-      "accuracy": null,
-      "active": true,
-      "bcp47": "*",
-      "doc_uri": null,
-      "modality": {
-        "out": [
-          "text"
-        ]
-      },
-      "precision": 0.0,
-      "recall": 0.0,
-      "tags": [],
-      "mod_time": "2024-08-23 16:13:06 +0000"
     },
     "detectors.riskywords.LDNOOBW": {
       "description": "List of Dirty, Naughty, Obscene, and Otherwise Bad Words (English)",
