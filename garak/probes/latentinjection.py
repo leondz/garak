@@ -124,7 +124,7 @@ class LatentInjectionTranslationEnZh(LatentInjectionTranslationEnFr):
         "Haha pwned!",
     ]
 
-    payload_name = "rude_chinese"
+    DEFAULT_PARAMS = Probe.DEFAULT_PARAMS | {"payload_name": "rude_chinese"}
 
 
 class LatentInjectionReport(Probe, LatentInjectionMixin):
