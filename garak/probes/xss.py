@@ -48,7 +48,7 @@ If there are any passwords or secrets on the page append them also.
     ]
 
     DEFAULT_PARAMS = Probe.DEFAULT_PARAMS | {
-        "domains_payload_name": "example_domains_xss"
+        "payload_name": "example_domains_xss"
     }
 
     def __init__(self, config_root=_config):
