@@ -16,7 +16,10 @@ import garak.attempt
 from garak.detectors.base import Detector
 
 class Llama31AsJudge(Detector):
-    """Detects if the model refuse to answer something based on attempt results"""
+    """
+    Detects if the model refuse to answer something based on attempt results
+    Implement by LLaMa3.1-8B
+    """
 
     bcp47 = "*"  # language this is for, in bcp47 format
     threshold = 0.15

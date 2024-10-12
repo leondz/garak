@@ -124,6 +124,9 @@ class SciSafeEval(Probe):
 
 
 class ChemistryMoleculeGeneration(SciSafeEval, Probe):
+    """
+    SciSafeEval Subset: ChemistryMoleculeGeneration
+    """
     active = False  # default to use tiny version below
     hf_raw_filename = "chemistry_molecule-generation.jsonl"
     placeholders = ['<name>', '<smiles/selfies>']
@@ -131,12 +134,18 @@ class ChemistryMoleculeGeneration(SciSafeEval, Probe):
     use_smiles = True
 
 class ChemistryMoleculeGenerationTiny(ChemistryMoleculeGeneration, SciSafeEval, Probe):
+    """
+    SciSafeEval Subset: ChemistryMoleculeGeneration (Tiny)
+    """
     active = True
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
         self.prompts = self.prompts[:80]
 
 class ChemistryPropertyPrediction(SciSafeEval, Probe):
+    """
+    SciSafeEval Subset: ChemistryPropertyPrediction
+    """
     active = False  # default to use tiny version below
     hf_raw_filename = "chemistry_property-prediction.jsonl"
     placeholders = ['<name>', '<smiles/selfies>']
@@ -144,12 +153,18 @@ class ChemistryPropertyPrediction(SciSafeEval, Probe):
     use_smiles = True
 
 class ChemistryPropertyPredictionTiny(ChemistryPropertyPrediction, SciSafeEval, Probe):
+    """
+    SciSafeEval Subset: ChemistryPropertyPrediction (Tiny)
+    """
     active = True
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
         self.prompts = self.prompts[:80]
 
 class ChemistryReactionPrediction(SciSafeEval, Probe):
+    """
+    SciSafeEval Subset: ChemistryReactionPrediction
+    """
     active = False  # default to use tiny version below
     hf_raw_filename = "chemistry_reaction-prediction.jsonl"
     placeholders = ['<name>', '<smiles/selfies>']
@@ -157,102 +172,153 @@ class ChemistryReactionPrediction(SciSafeEval, Probe):
     use_smiles = True
 
 class ChemistryReactionPredictionTiny(ChemistryReactionPrediction, SciSafeEval, Probe):
+    """
+    SciSafeEval Subset: ChemistryReactionPrediction (Tiny)
+    """
     active = True
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
         self.prompts = self.prompts[:80]
 
 class BiologyProteinFunctionPrediction(SciSafeEval, Probe):
+    """
+    SciSafeEval Subset: BiologyProteinFunctionPrediction
+    """
     active = False  # default to use tiny version below
     hf_raw_filename = "biology_protein-function-prediction.jsonl"
     placeholders = ['<name>', '<sequence>']
     data_keys = ['name', 'sequence']
 
 class BiologyProteinFunctionPredictionTiny(BiologyProteinFunctionPrediction, SciSafeEval, Probe):
+    """
+    SciSafeEval Subset: BiologyProteinFunctionPrediction (Tiny)
+    """
     active = True
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
         self.prompts = self.prompts[:80]
 
 class BiologyProteinSequenceGeneration(SciSafeEval, Probe):
+    """
+    SciSafeEval Subset: BiologyProteinSequenceGeneration
+    """
     active = False  # default to use tiny version below
     hf_raw_filename = "biology_protein-sequence-generation.jsonl"
     placeholders = ['<name>', '<sequence>']
     data_keys = ['name', 'sequence']
 
 class BiologyProteinSequenceGenerationTiny(BiologyProteinSequenceGeneration, SciSafeEval, Probe):
+    """
+    SciSafeEval Subset: BiologyProteinSequenceGeneration (Tiny)
+    """
     active = True
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
         self.prompts = self.prompts[:80]
 
 class BiologyProteinStructurePrediction(SciSafeEval, Probe):
+    """
+    SciSafeEval Subset: BiologyProteinStructurePrediction
+    """
     active = False  # default to use tiny version below
     hf_raw_filename = "biology_protein-structure-prediction.jsonl"
     placeholders = ['<name>', '<sequence>']
     data_keys = ['name', 'sequence']
 
 class BiologyProteinStructurePredictionTiny(BiologyProteinStructurePrediction, SciSafeEval, Probe):
+    """
+    SciSafeEval Subset: BiologyProteinStructurePrediction (Tiny)
+    """
     active = True
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
         self.prompts = self.prompts[:80]
 
 class BiologyGeneClassification(SciSafeEval, Probe):
+    """
+    SciSafeEval Subset: BiologyGeneClassification
+    """
     active = False  # default to use tiny version below
     hf_raw_filename = "biology_gene-classification.jsonl"
     placeholders = ['<name>', '<sequence>']
     data_keys = ['name', 'sequence']
 
 class BiologyGeneClassificationTiny(BiologyGeneClassification, SciSafeEval, Probe):
+    """
+    SciSafeEval Subset: BiologyGeneClassification (Tiny)
+    """
     active = True
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
         self.prompts = self.prompts[:80]
 
 class BiologyGeneGeneration(SciSafeEval, Probe):
+    """
+    SciSafeEval Subset: BiologyGeneGeneration
+    """
     active = False  # default to use tiny version below
     hf_raw_filename = "biology_gene-generation.jsonl"
     placeholders = ['<name>', '<sequence>']
     data_keys = ['name', 'sequence']
 
 class BiologyGeneGenerationTiny(BiologyGeneGeneration, SciSafeEval, Probe):
+    """
+    SciSafeEval Subset: BiologyGeneGeneration (Tiny)
+    """
     active = True
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
         self.prompts = self.prompts[:80]
 
 class MedicineInferenceReasoning(SciSafeEval, Probe):
+    """
+    SciSafeEval Subset: MedicineInferenceReasoning
+    """
     active = False  # default to use tiny version below
     hf_raw_filename = "medicine_inference-reasoning.jsonl"
     placeholders = ['<content>']
     data_keys = ['content']
 
 class MedicineInferenceReasoningTiny(MedicineInferenceReasoning, SciSafeEval, Probe):
+    """
+    SciSafeEval Subset: MedicineInferenceReasoning (Tiny)
+    """
     active = True
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
         self.prompts = self.prompts[:80]
 
 class MedicineKnowledgeRetrieval(SciSafeEval, Probe):
+    """
+    SciSafeEval Subset: MedicineKnowledgeRetrieval
+    """
     active = False  # default to use tiny version below
     hf_raw_filename = "medicine_knowledge-retrieval.jsonl"
     placeholders = ['<content>']
     data_keys = ['content']
 
 class MedicineKnowledgeRetrievalTiny(MedicineKnowledgeRetrieval, SciSafeEval, Probe):
+    """
+    SciSafeEval Subset: MedicineKnowledgeRetrieval (Tiny)
+    """
     active = True
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
         self.prompts = self.prompts[:80]
 
 class PhysicsKnowledgeRetrieval(SciSafeEval, Probe):
+    """
+    SciSafeEval Subset: PhysicsKnowledgeRetrieval
+    """
     active = False  # default to use tiny version below
     hf_raw_filename = "physics_knowledge-retrieval.jsonl"
     placeholders = []
     data_keys = []
 
 class PhysicsKnowledgeRetrievalTiny(PhysicsKnowledgeRetrieval, SciSafeEval, Probe):
+    """
+    SciSafeEval Subset: PhysicsKnowledgeRetrieval (Tiny)
+    """
     active = True
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
