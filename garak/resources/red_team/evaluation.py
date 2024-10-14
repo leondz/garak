@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+import re
 import tiktoken
 
 from . import conversation
@@ -67,11 +68,15 @@ class EvaluationJudge:
     Mixin of this class requires instance attributes for:
     - evaluation_generator : Generator
     - evaluator_token_limit : int
+    - system_prompt_judge: str
+    - system_prompt_on_topic: str
     """
 
     def _create_conv(self, full_prompt, system_prompt=None):
         if system_prompt is None:
-            raise ValueError("A system prompt must be provided.")
+            system_prompt = self.system_prompt_judge
+            if self.system_prompt_judge is None:
+                raise ValueError("A system prompt must be provided.")
 
         conv = conversation.get_template(self.evaluation_generator.name)
         conv.set_system_message(system_prompt)
@@ -108,13 +113,10 @@ class EvaluationJudge:
 
         return conv.to_openai_api_messages()
 
-    def judge_score(self, attempt, probe_system_prompt):
+    def judge_score(self, attack_prompt_list, target_response_list):
         convs_list = [
-            self.create_conv(
-                get_evaluator_prompt(attempt.prompt, response),
-                system_prompt=probe_system_prompt,
-            )
-            for response in attempt.all_outputs
+            self._create_conv(get_evaluator_prompt(prompt, response))
+            for prompt, response in zip(attack_prompt_list, target_response_list)
         ]
         raw_outputs = [
             self.evaluation_generator.generate(conv)[0] for conv in convs_list
@@ -122,13 +124,13 @@ class EvaluationJudge:
         outputs = [process_output_judge_score(raw_output) for raw_output in raw_outputs]
         return outputs
 
-    def on_topic_score(self, attempt):
+    def on_topic_score(self, attempt_list):
         convs_list = [
-            self.create_conv(
+            self._create_conv(
                 get_evaluator_prompt_on_topic(prompt),
-                system_prompt=system_prompts.on_topic_prompt(attempt.prompt),
+                system_prompt=self.system_prompt_on_topic,
             )
-            for prompt in attempt.all_outputs
+            for prompt in attempt_list
         ]
         raw_outputs = [
             self.evaluation_generator.generate(conv)[0] for conv in convs_list
