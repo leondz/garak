@@ -19,12 +19,8 @@ from ..red_team.conversation import (
     extract_json,
 )
 from ..red_team.evaluation import (
-    token_count,
     get_token_limit,
-    get_evaluator_prompt,
-    get_evaluator_prompt_on_topic,
-    process_output_judge_score,
-    process_output_on_topic_score,
+    EvaluationJudge,
 )
 from ..red_team.system_prompts import (
     attacker_system_prompt,
@@ -49,7 +45,7 @@ resources_tap_data_file = (
 )
 
 
-class AttackManager:
+class AttackManager(EvaluationJudge):
     def __init__(
         self,
         goal: str,
@@ -74,13 +70,8 @@ class AttackManager:
         self.attack_generator = attack_generator
         self.target_generator = target_generator
         self.evaluation_generator = evaluation_generator
-        # self.attack_max_tokens = attack_max_tokens
         self.attack_max_attempts = attack_max_attempts
         self.max_parallel_streams = max_parallel_streams
-        # self.target_max_tokens = target_max_tokens
-        # why is max_tokens here passed in it does not look to be used?
-        # self.evaluator_max_tokens = evaluator_max_tokens
-        # self.evaluator_temperature = evaluator_temperature
         self.evaluator_token_limit = get_token_limit(evaluation_generator.name)
         self.system_prompt_judge = judge_system_prompt(goal)
         self.system_prompt_on_topic = on_topic_prompt(goal)
@@ -216,72 +207,6 @@ class AttackManager:
             for full_prompt in full_prompts[left:right]:
                 outputs_list.append(self.target_generator.generate(full_prompt)[0])
         return outputs_list
-
-    def create_conv(self, full_prompt, system_prompt=None):
-        if system_prompt is None:
-            system_prompt = self.system_prompt_judge
-
-        conv = get_template(self.evaluation_generator.name)
-        conv.set_system_message(system_prompt)
-        # Avoid sending overly long prompts.
-        # Crude and fast heuristic -- 100 tokens is about 75 words
-        if len(full_prompt.split()) / 0.75 > self.evaluator_token_limit:
-            # More expensive check yielding actual information -- add 100 token buffer to prompt
-            judge_system_prompt_tokens = token_count(
-                system_prompt, self.evaluation_generator.name
-            )
-            prompt_tokens = 100 + token_count(
-                full_prompt, self.evaluation_generator.name
-            )
-            # Iteratively reduce the prompt length
-            while (
-                judge_system_prompt_tokens + prompt_tokens >= self.evaluator_token_limit
-            ):
-                excess_tokens = (
-                    judge_system_prompt_tokens
-                    + prompt_tokens
-                    - self.evaluator_token_limit
-                )
-                if excess_tokens > 0:
-                    # Truncate excess text
-                    excess_words = int(excess_tokens / 0.75)
-                    full_prompt = full_prompt[excess_words:]
-                    prompt_tokens = 100 + token_count(
-                        full_prompt, self.evaluation_generator.name
-                    )
-                else:
-                    break
-
-        conv.append_message(conv.roles[0], full_prompt)
-
-        return conv.to_openai_api_messages()
-
-    def judge_score(self, attack_prompt_list, target_response_list):
-        convs_list = [
-            self.create_conv(get_evaluator_prompt(prompt, response))
-            for prompt, response in zip(attack_prompt_list, target_response_list)
-        ]
-        raw_outputs = [
-            self.evaluation_generator.generate(conv)[0] for conv in convs_list
-        ]
-        outputs = [process_output_judge_score(raw_output) for raw_output in raw_outputs]
-        return outputs
-
-    def on_topic_score(self, attack_prompt_list):
-        convs_list = [
-            self.create_conv(
-                get_evaluator_prompt_on_topic(prompt),
-                system_prompt=self.system_prompt_on_topic,
-            )
-            for prompt in attack_prompt_list
-        ]
-        raw_outputs = [
-            self.evaluation_generator.generate(conv)[0] for conv in convs_list
-        ]
-        outputs = [
-            process_output_on_topic_score(raw_output) for raw_output in raw_outputs
-        ]
-        return outputs
 
 
 def run_tap(

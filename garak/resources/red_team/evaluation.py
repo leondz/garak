@@ -3,6 +3,7 @@
 
 import tiktoken
 
+from . import conversation
 from garak.generators.openai import context_lengths
 
 
@@ -58,3 +59,81 @@ def get_token_limit(model_name: str) -> int:
         return context_lengths[model_name]
     else:
         return 4096
+
+
+class EvaluationJudge:
+    """Methods for scoring attempts using a LLM-as-a-Judge for an object that hold a reference to the Judge
+
+    Mixin of this class requires instance attributes for:
+    - evaluation_generator : Generator
+    - evaluator_token_limit : int
+    """
+
+    def _create_conv(self, full_prompt, system_prompt=None):
+        if system_prompt is None:
+            raise ValueError("A system prompt must be provided.")
+
+        conv = conversation.get_template(self.evaluation_generator.name)
+        conv.set_system_message(system_prompt)
+        # Avoid sending overly long prompts.
+        # Crude and fast heuristic -- 100 tokens is about 75 words
+        if len(full_prompt.split()) / 0.75 > self.evaluator_token_limit:
+            # More expensive check yielding actual information -- add 100 token buffer to prompt
+            judge_system_prompt_tokens = token_count(
+                system_prompt, self.evaluation_generator.name
+            )
+            prompt_tokens = 100 + token_count(
+                full_prompt, self.evaluation_generator.name
+            )
+            # Iteratively reduce the prompt length
+            while (
+                judge_system_prompt_tokens + prompt_tokens >= self.evaluator_token_limit
+            ):
+                excess_tokens = (
+                    judge_system_prompt_tokens
+                    + prompt_tokens
+                    - self.evaluator_token_limit
+                )
+                if excess_tokens > 0:
+                    # Truncate excess text
+                    excess_words = int(excess_tokens / 0.75)
+                    full_prompt = full_prompt[excess_words:]
+                    prompt_tokens = 100 + token_count(
+                        full_prompt, self.evaluation_generator.name
+                    )
+                else:
+                    break
+
+        conv.append_message(conv.roles[0], full_prompt)
+
+        return conv.to_openai_api_messages()
+
+    def judge_score(self, attempt, probe_system_prompt):
+        convs_list = [
+            self.create_conv(
+                get_evaluator_prompt(attempt.prompt, response),
+                system_prompt=probe_system_prompt,
+            )
+            for response in attempt.all_outputs
+        ]
+        raw_outputs = [
+            self.evaluation_generator.generate(conv)[0] for conv in convs_list
+        ]
+        outputs = [process_output_judge_score(raw_output) for raw_output in raw_outputs]
+        return outputs
+
+    def on_topic_score(self, attempt):
+        convs_list = [
+            self.create_conv(
+                get_evaluator_prompt_on_topic(prompt),
+                system_prompt=system_prompts.on_topic_prompt(attempt.prompt),
+            )
+            for prompt in attempt.all_outputs
+        ]
+        raw_outputs = [
+            self.evaluation_generator.generate(conv)[0] for conv in convs_list
+        ]
+        outputs = [
+            process_output_on_topic_score(raw_output) for raw_output in raw_outputs
+        ]
+        return outputs
