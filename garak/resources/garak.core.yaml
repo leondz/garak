@@ -13,6 +13,7 @@ run:
   eval_threshold: 0.5
   generations: 5
   probe_tags:
+  policy_scan: false
 
 plugins:
   model_type:

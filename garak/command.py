@@ -273,3 +273,7 @@ def write_report_digest(report_filename, digest_filename):
     digest = report_digest.compile_digest(report_filename)
     with open(digest_filename, "w", encoding="utf-8") as f:
         f.write(digest)
+
+
+def run_policy_scan():
+    logging.info("run_policy_scan: entry")

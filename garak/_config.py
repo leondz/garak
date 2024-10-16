@@ -28,7 +28,7 @@ version = -1  # eh why this is here? hm. who references it
 system_params = (
     "verbose narrow_output parallel_requests parallel_attempts skip_unknown".split()
 )
-run_params = "seed deprefix eval_threshold generations probe_tags interactive".split()
+run_params = "seed deprefix eval_threshold generations probe_tags interactive policy_scan".split()
 plugins_params = "model_type model_name extended_detectors".split()
 reporting_params = "taxonomy report_prefix".split()
 project_dir_name = "garak"

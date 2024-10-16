@@ -107,6 +107,12 @@ def main(arguments=None) -> None:
     parser.add_argument(
         "--config", type=str, default=None, help="YAML config file for this run"
     )
+    parser.add_argument(
+        "--policy_scan",
+        action="store_true",
+        default=_config.run.policy_scan,
+        help="determine model's behavior policy before scanning",
+    )
 
     ## PLUGINS
     # generator
@@ -425,6 +431,7 @@ def main(arguments=None) -> None:
 
             print(f"📜 logging to {log_filename}")
 
+            # set up generator
             conf_root = _config.plugins.generators
             for part in _config.plugins.model_type.split("."):
                 if not part in conf_root:
@@ -447,6 +454,7 @@ def main(arguments=None) -> None:
                 logging.error(message)
                 raise ValueError(message)
 
+            # validate main run config
             parsable_specs = ["probe", "detector", "buff"]
             parsed_specs = {}
             for spec_type in parsable_specs:
@@ -470,20 +478,7 @@ def main(arguments=None) -> None:
                         msg_list = ",".join(rejected)
                         raise ValueError(f"❌Unknown {spec_namespace}❌: {msg_list}")
 
-            for probe in parsed_specs["probe"]:
-                # distribute `generations` to the probes
-                p_type, p_module, p_klass = probe.split(".")
-                if (
-                    hasattr(_config.run, "generations")
-                    and _config.run.generations
-                    is not None  # garak.core.yaml always provides run.generations
-                ):
-                    _config.plugins.probes[p_module][p_klass][
-                        "generations"
-                    ] = _config.run.generations
-
-            evaluator = garak.evaluators.ThresholdEvaluator(_config.run.eval_threshold)
-
+            # generator init
             from garak import _plugins
 
             generator = _plugins.load_plugin(
@@ -500,6 +495,30 @@ def main(arguments=None) -> None:
                     logging=logging,
                 )
 
+            # looks like we might get something to report, so fire that up
+            command.start_run()  # start the run now that all config validation is complete
+            print(f"📜 reporting to {_config.transient.report_filename}")
+
+            # do policy run
+            if _config.run.policy_scan:
+                command.run_policy_scan()
+
+            # prepare main run config: generations
+            for probe in parsed_specs["probe"]:
+                # distribute `generations` to the probes
+                p_type, p_module, p_klass = probe.split(".")
+                if (
+                    hasattr(_config.run, "generations")
+                    and _config.run.generations
+                    is not None  # garak.core.yaml always provides run.generations
+                ):
+                    _config.plugins.probes[p_module][p_klass][
+                        "generations"
+                    ] = _config.run.generations
+
+            # set up plugins for main run
+            evaluator = garak.evaluators.ThresholdEvaluator(_config.run.eval_threshold)
+
             if "generate_autodan" in args and args.generate_autodan:
                 from garak.resources.autodan import autodan_generate
 
@@ -512,9 +531,6 @@ def main(arguments=None) -> None:
                         "string"
                     )
                 autodan_generate(generator=generator, prompt=prompt, target=target)
-
-            command.start_run()  # start the run now that all config validation is complete
-            print(f"📜 reporting to {_config.transient.report_filename}")
 
             if parsed_specs["detector"] == []:
                 command.probewise_run(

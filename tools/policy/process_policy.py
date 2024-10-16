@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Portions Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 import re
 import json
@@ -19,4 +21,4 @@ for line in open("policy_typology.txt"):
     else:
         policy_points[code]["descr"] += line
 
-print(json.dumps(policy_points, indent = 4))
+print(json.dumps(policy_points, indent=4))
