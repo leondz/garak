@@ -496,7 +496,7 @@ def main(arguments=None) -> None:
                 and _config.system.parallel_attempts is False
             ):
                 command.hint(
-                    f"This run can be sped up 🥳 Generator '{generator.fullname}' supports parallelism! Consider using `--parallel_requests 16` (or more) to greatly accelerate your run. 🐌",
+                    f"This run can be sped up 🥳 Generator '{generator.fullname}' supports parallelism! Consider using `--parallel_attempts 16` (or more) to greatly accelerate your run. 🐌",
                     logging=logging,
                 )
 
