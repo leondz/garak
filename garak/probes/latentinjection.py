@@ -570,6 +570,7 @@ class LatentWhois(Probe, LatentInjectionMixin):
     """Latent prompt injections in whois probe reports
 
     Place injections in whois reports of known-malicious domains that declare the domain not malicious
+    Domain whois records taken from sampling https://github.com/stamparm/blackbook 2024.10
     """
 
     tags = LatentInjectionMixin.tags
@@ -638,7 +639,8 @@ class LatentWhoisSnippet(LatentInjectionFactSnippetEiffel):
         self.contexts = []
         perms = list(itertools.permutations(self.paragraphs))
         random.shuffle(perms)
-        perms = perms[:32]
+        context_cap = 8 * self.generations
+        perms = perms[:context_cap]
         for perm in perms:
             injected = random.randint(0, len(self.paragraphs) - 1)
             perm = list(perm)
@@ -650,6 +652,7 @@ class LatentWhoisSnippet(LatentInjectionFactSnippetEiffel):
             self.contexts.append(context)
 
         self._build_prompts_triggers()
+        self.generations = 1  # overriding generations with more varied context
 
     def _attempt_prestore_hook(self, attempt: Attempt, seq: int) -> Attempt:
         return LatentInjectionMixin._attempt_prestore_hook(self, attempt, seq)
