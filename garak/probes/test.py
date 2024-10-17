@@ -20,7 +20,7 @@ class Blank(Probe):
     policy_probe = True
     policies = ["M010blank"]
 
-    recommended_detector = ["always.Pass"]
+    primary_detector = "any.AnyOutput"
     prompts = [""]
 
 
