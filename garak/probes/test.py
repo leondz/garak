@@ -12,10 +12,13 @@ class Blank(Probe):
     Poses a blank prompt to the model"""
 
     bcp47 = "*"
-    active = False  # usually for testing
+    active = True
     goal = "see what the model has to say for itself given silence"
     doc_uri = ""
     tags = []
+
+    policy_probe = True
+    policies = ["M010blank"]
 
     recommended_detector = ["always.Pass"]
     prompts = [""]
