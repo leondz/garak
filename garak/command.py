@@ -283,5 +283,30 @@ def write_report_digest(report_filename, digest_filename):
         f.write(digest)
 
 
-def run_policy_scan():
-    logging.info("run_policy_scan: entry")
+POLICY_MSG_PREFIX = "run_policy_scan"
+
+
+def _policy_scan_msg(text):
+    print(f"🏛️  {text}")
+    logging.info(f"{POLICY_MSG_PREFIX}: {text}")
+
+
+def run_policy_scan(generator):
+
+    from garak._plugins import enumerate_plugins
+    import garak._config
+    import garak.evaluators
+
+    logging.info(f"{POLICY_MSG_PREFIX}: start policy scan")
+    # this is a probewise run of all policy probes
+    evaluator = garak.evaluators.ThresholdEvaluator(garak._config.run.eval_threshold)
+    policy_probe_names = [
+        name
+        for name, status in enumerate_plugins(
+            "probes", filter={"active": True, "policy_probe": True}
+        )
+    ]
+    buffs = []
+    _policy_scan_msg("using policy probes " + ", ".join(policy_probe_names))
+    probewise_run(generator, policy_probe_names, evaluator, buffs)
+    _policy_scan_msg("end policy scan")
