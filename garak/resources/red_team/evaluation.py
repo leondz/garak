@@ -72,6 +72,10 @@ class EvaluationJudge:
     - system_prompt_on_topic: str
     """
 
+    # Crude and fast heuristic -- 100 tokens is about 75 words
+    BASE_TOKENS = 100
+    TOKEN_SCALER = 0.75
+
     def _create_conv(self, full_prompt, system_prompt=None):
         if system_prompt is None:
             system_prompt = self.system_prompt_judge
@@ -81,13 +85,12 @@ class EvaluationJudge:
         conv = conversation.get_template(self.evaluation_generator.name)
         conv.set_system_message(system_prompt)
         # Avoid sending overly long prompts.
-        # Crude and fast heuristic -- 100 tokens is about 75 words
-        if len(full_prompt.split()) / 0.75 > self.evaluator_token_limit:
-            # More expensive check yielding actual information -- add 100 token buffer to prompt
+        if len(full_prompt.split()) / self.TOKEN_SCALER > self.evaluator_token_limit:
+            # More expensive check yielding actual information -- add BASE_TOKENS token buffer to prompt
             judge_system_prompt_tokens = token_count(
                 system_prompt, self.evaluation_generator.name
             )
-            prompt_tokens = 100 + token_count(
+            prompt_tokens = self.BASE_TOKENS + token_count(
                 full_prompt, self.evaluation_generator.name
             )
             # Iteratively reduce the prompt length
@@ -101,9 +104,9 @@ class EvaluationJudge:
                 )
                 if excess_tokens > 0:
                     # Truncate excess text
-                    excess_words = int(excess_tokens / 0.75)
+                    excess_words = int(excess_tokens / self.TOKEN_SCALER)
                     full_prompt = full_prompt[excess_words:]
-                    prompt_tokens = 100 + token_count(
+                    prompt_tokens = self.BASE_TOKENS + token_count(
                         full_prompt, self.evaluation_generator.name
                     )
                 else:
