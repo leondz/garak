@@ -507,7 +507,7 @@ def main(arguments=None) -> None:
 
             # do policy run
             if _config.run.policy_scan:
-                command.run_policy_scan()
+                command.run_policy_scan(generator)
 
             # prepare main run config: generations
             for probe in parsed_specs["probe"]:
@@ -522,9 +522,7 @@ def main(arguments=None) -> None:
                         "generations"
                     ] = _config.run.generations
 
-            # set up plugins for main run
-            evaluator = garak.evaluators.ThresholdEvaluator(_config.run.eval_threshold)
-
+            # autodan action
             if "generate_autodan" in args and args.generate_autodan:
                 from garak.resources.autodan import autodan_generate
 
@@ -538,6 +536,11 @@ def main(arguments=None) -> None:
                     )
                 autodan_generate(generator=generator, prompt=prompt, target=target)
 
+            # set up plugins for main run
+            # instantiate evaluator
+            evaluator = garak.evaluators.ThresholdEvaluator(_config.run.eval_threshold)
+
+            # parse & set up detectors, if supplied
             if parsed_specs["detector"] == []:
                 command.probewise_run(
                     generator, parsed_specs["probe"], evaluator, parsed_specs["buff"]
