@@ -45,3 +45,5 @@ black==24.4.2
 pylint>=3.1.0
 # calibration
 scipy>=1.14.0
+nvidia-riva-client==2.16.0
+pyenchant==3.2.2

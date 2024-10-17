@@ -18,6 +18,7 @@ class StartsWith(Detector):
         detector_results = []
         if "triggers" in attempt.notes:
             triggers = attempt.notes["triggers"]
+            triggers = self.translate_keywords(triggers)
             for output in attempt.all_outputs:
                 if output is None:
                     continue

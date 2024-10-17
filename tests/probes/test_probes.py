@@ -6,6 +6,7 @@ import pytest
 import re
 
 from garak import _config, _plugins
+import garak
 
 PROBES = [classname for (classname, active) in _plugins.enumerate_plugins("probes")]
 
@@ -126,3 +127,23 @@ def test_tag_format(classname):
             assert re.match(r"^[A-Za-z0-9_\-]+$", part)
         if tag.split(":")[0] != "payload":
             assert tag in MISP_TAGS
+
+
+@pytest.mark.parametrize("classname", PROBES)
+def test_probe_translation(classname):
+    plugin_name_parts = classname.split(".")
+    module_name = "garak." + ".".join(plugin_name_parts[:-1])
+    class_name = plugin_name_parts[-1]
+    mod = importlib.import_module(module_name)
+    probe_class = getattr(mod, class_name)
+    _config.run.translation_service = 'local'
+    _config.run.lang_spec = 'jap'
+    _config.run.seed = 42
+    probe_instance = probe_class(config_root=_config)
+    if hasattr(probe_instance, '_translator'):
+        assert hasattr(probe_instance, 'translator'), f"{classname} does not have a translator attribute"
+        translated_prompts = probe_instance._translate(probe_instance.prompts)
+        assert isinstance(translated_prompts, list)
+        assert len(translated_prompts) > 0
+        for index, prompt in enumerate(probe_instance.prompts):
+            assert translated_prompts[len(probe_instance.prompts) + index] != probe_instance.prompts[index]

@@ -20,6 +20,8 @@ from garak.configurable import Configurable
 from garak.exception import PluginConfigurationError
 import garak.attempt
 import garak.resources.theme
+from garak.translator import SimpleTranslator, EncodingTranslator, GoodsideTranslator, DanTranslator
+from garak.translator import LocalDanTranslator, LocalTranslator, LocalEncodingTranslator, LocalGoodsideTranslator, is_english 
 
 
 class Probe(Configurable):
@@ -75,6 +77,48 @@ class Probe(Configurable):
                 self.description = self.__doc__.split("\n", maxsplit=1)[0]
             else:
                 self.description = ""
+        probename = self.probename.split(".")[2]
+        translation_service = ""
+        if hasattr(config_root, 'run'):
+            if hasattr(config_root.run, 'translation_service'):
+                translation_service = config_root.run.translation_service
+        if translation_service == "local":
+            if probename == "encoding":
+                self.translator = LocalEncodingTranslator(config_root)
+            elif probename == "goodside":
+                self.translator = LocalGoodsideTranslator(config_root)
+            elif probename == "dan":
+                self.translator = LocalDanTranslator(config_root)
+            else:
+                self.translator = LocalTranslator(config_root)
+        elif translation_service == "deepl" or translation_service == "nim":
+            if probename == "encoding":
+                self.translator = EncodingTranslator(config_root)
+            elif probename == "goodside":
+                self.translator = GoodsideTranslator(config_root)
+            elif probename == "dan":
+                self.translator = DanTranslator(config_root)
+            else:
+                self.translator = SimpleTranslator(config_root)
+        
+        if hasattr(config_root, 'run'):
+            if hasattr(config_root.run, 'lang_spec'):
+                self.target_lang = config_root.run.lang_spec
+        
+        if hasattr(self, 'triggers') and len(self.triggers) > 0:
+            if self.is_nested_list(self.triggers):
+                trigger_list = []
+                for trigger in self.triggers:
+                    trigger_words = self._translate(trigger)
+                    for word in trigger_words:
+                        trigger_list.append([word])
+                self.triggers = trigger_list 
+            else:
+                self.triggers = self._translate(self.triggers)
+    
+    def is_nested_list(self, lst: list) -> bool:
+        """Check if the given list is a nested list."""
+        return any(isinstance(i, list) for i in lst)
 
     def _attempt_prestore_hook(
         self, attempt: garak.attempt.Attempt, seq: int
@@ -199,6 +243,24 @@ class Probe(Configurable):
                 attempts_completed.append(result)
         return attempts_completed
 
+    def _translate(self, prompts):
+        if hasattr(self, 'target_lang') is False or self.bcp47 == "*":
+            return prompts 
+        translated_prompts = []
+        for lang in self.target_lang.split(","):
+            if self.bcp47 == lang:
+                continue 
+            for prompt in prompts:
+                mean_word_judge = is_english(prompt)
+                if mean_word_judge:
+                    translate_prompt = self.translator._get_response(prompt, self.bcp47, lang)
+                    translated_prompts.append(translate_prompt)
+                else:
+                    translated_prompts.append(prompt)
+        prompts = list(prompts)
+        prompts.extend(translated_prompts)
+        return prompts
+
     def probe(self, generator) -> Iterable[garak.attempt.Attempt]:
         """attempt to exploit the target generator, returning a list of results"""
         logging.debug("probe execute: %s", self)
@@ -208,6 +270,7 @@ class Probe(Configurable):
         # build list of attempts
         attempts_todo: Iterable[garak.attempt.Attempt] = []
         prompts = list(self.prompts)
+        prompts = self._translate(prompts)
         for seq, prompt in enumerate(prompts):
             attempts_todo.append(self._mint_attempt(prompt, seq))
 
