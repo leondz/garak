@@ -179,6 +179,7 @@ TESTABLE_GENERATORS = [
     for classname in GENERATORS
     if classname
     not in [
+        "generators.azure.AzureOpenAIGenerator",  # requires additional env variables tested in own test class
         "generators.function.Multiple",  # requires mock local function not implemented here
         "generators.function.Single",  # requires mock local function not implemented here
         "generators.ggml.GgmlGenerator",  # validates files on disk tested in own test class
