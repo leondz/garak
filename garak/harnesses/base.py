@@ -64,7 +64,7 @@ class Harness(Configurable):
                     logging.warning(err_msg)
                     continue
 
-    def run(self, model, probes, detectors, evaluator, announce_probe=True) -> None:
+    def run(self, model, probes, detectors, evaluator):
         """Core harness method
 
         :param model: an instantiated generator providing an interface to the model to be examined
@@ -75,8 +75,6 @@ class Harness(Configurable):
         :type detectors: List[garak.detectors.base.Detector]
         :param evaluator: an instantiated evaluator for judging detector results
         :type evaluator: garak.evaluators.base.Evaluator
-        :param announce_probe: Should we print probe loading messages?
-        :type announce_probe: bool, optional
         """
         if not detectors:
             msg = "No detectors, nothing to do"
@@ -133,6 +131,6 @@ class Harness(Configurable):
                     detector_probe_name,
                 )
             else:
-                yield evaluator.evaluate(attempt_results)
+                evaluator.evaluate(attempt_results)
 
         logging.debug("harness: probe list iteration completed")

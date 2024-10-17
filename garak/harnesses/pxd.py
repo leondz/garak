@@ -58,5 +58,5 @@ class PxD(Harness):
                     print(msg)
                     logging.error(msg)
             h = Harness()
-            h.run(model, [probe], detectors, evaluator, announce_probe=False)
+            h.run(model, [probe], detectors, evaluator)
             # del probe, h, detectors
