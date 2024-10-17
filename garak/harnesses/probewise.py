@@ -104,5 +104,5 @@ class ProbewiseHarness(Harness):
                         detectors.append(d)
 
             h = Harness()
-            h.run(model, [probe], detectors, evaluator, announce_probe=False)
+            return h.run(model, [probe], detectors, evaluator, announce_probe=False)
             # del probe, h, detectors
