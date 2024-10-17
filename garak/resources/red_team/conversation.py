@@ -37,7 +37,7 @@ def get_template(model_name, self_id=None, parent_id=None):
     if template.name == "llama-2":
         template.sep2 = template.sep2.strip()
 
-    # IDs of self and parent in the tree of thougtht
+    # IDs of self and parent in the tree of thought
     template.self_id = self_id
     template.parent_id = parent_id
 
