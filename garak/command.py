@@ -56,7 +56,7 @@ def start_run():
 
     logging.info("run started at %s", _config.transient.starttime_iso)
     # print("ASSIGN UUID", args)
-    if _config.system.lite and "probes" not in _config.transient.cli_args and not _config.transient.cli_args.list_probes and not _config.transient.cli_args.list_detectors and not _config.transient.cli_args.list_generators and not _config.transient.cli_args.list_buffs and not _config.transient.cli_args.list_config and not _config.transient.cli_args.plugin_info and not _config.run.interactive:  # type: ignore
+    if _config.system.lite and "probes" not in _config.transient.cli_args and not _config.transient.cli_args.list_probes and not _config.transient.cli_args.list_policy_probes and not _config.transient.cli_args.list_detectors and not _config.transient.cli_args.list_generators and not _config.transient.cli_args.list_buffs and not _config.transient.cli_args.list_config and not _config.transient.cli_args.plugin_info and not _config.run.interactive:  # type: ignore
         hint(
             "The current/default config is optimised for speed rather than thoroughness. Try e.g. --config full for a stronger test, or specify some probes.",
             logging=logging,
@@ -160,12 +160,14 @@ def end_run():
     logging.info(msg)
 
 
-def print_plugins(prefix: str, color):
+def print_plugins(prefix: str, color, filter=None):
     from colorama import Style
 
     from garak._plugins import enumerate_plugins
 
-    plugin_names = enumerate_plugins(category=prefix)
+    if filter is None:
+        filter = {}
+    plugin_names = enumerate_plugins(category=prefix, filter=filter)
     plugin_names = [(p.replace(f"{prefix}.", ""), a) for p, a in plugin_names]
     module_names = set([(m.split(".")[0], True) for m, a in plugin_names])
     plugin_names += module_names
@@ -182,7 +184,13 @@ def print_plugins(prefix: str, color):
 def print_probes():
     from colorama import Fore
 
-    print_plugins("probes", Fore.LIGHTYELLOW_EX)
+    print_plugins("probes", Fore.LIGHTYELLOW_EX, filter={"policy_probe": False})
+
+
+def print_policy_probes():
+    from colorama import Fore
+
+    print_plugins("probes", Fore.LIGHTYELLOW_EX, filter={"policy_probe": True})
 
 
 def print_detectors():

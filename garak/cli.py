@@ -3,7 +3,7 @@
 
 """Flow for invoking garak from the command line"""
 
-command_options = "list_detectors list_probes list_generators list_buffs list_config plugin_info interactive report version".split()
+command_options = "list_detectors list_probes list_policy_probes list_generators list_buffs list_config plugin_info interactive report version".split()
 
 
 def main(arguments=None) -> None:
@@ -208,6 +208,9 @@ def main(arguments=None) -> None:
         "--list_probes", action="store_true", help="list available vulnerability probes"
     )
     parser.add_argument(
+        "--list_policy_probes", action="store_true", help="list available policy probes"
+    )
+    parser.add_argument(
         "--list_detectors", action="store_true", help="list available detectors"
     )
     parser.add_argument(
@@ -403,6 +406,9 @@ def main(arguments=None) -> None:
 
         elif args.list_probes:
             command.print_probes()
+
+        elif args.list_policy_probes:
+            command.print_policy_probes()
 
         elif args.list_detectors:
             command.print_detectors()
