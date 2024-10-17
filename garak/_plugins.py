@@ -331,7 +331,6 @@ def enumerate_plugins(
         if filter is not None:
             try:
                 for attrib, value in filter.items():
-                    print(v[attrib])
                     if attrib in v and v[attrib] != value:
                         raise StopIteration
             except StopIteration:
