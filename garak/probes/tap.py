@@ -37,13 +37,14 @@ probe is included for that specific subcase - this is the PAIR probe in this mod
 """
 
 import logging
-from pathlib import Path
+import os
 from typing import List
 
 import tqdm
 
 from garak.probes.base import Probe
 from garak.data import path as data_path
+from garak.exception import ConfigFailure, GarakException
 from garak import _config
 import garak.attempt
 
@@ -69,11 +70,17 @@ class TAPCached(Probe):
     doc_uri = "https://arxiv.org/abs/2312.02119"
 
     DEFAULT_PARAMS = Probe.DEFAULT_PARAMS | {
-        "prompts_location": data_path / "tap" / "tap_jailbreaks.txt",
+        "prompts_filename": os.path.join("tap", "tap_jailbreaks.txt"),
     }
 
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
+        try:
+            self.prompts_location = data_path / self.prompts_filename
+        except GarakException as e:
+            msg = f"The file specified was not found in data search paths: {self.prompts_filename}"
+            logging.error(msg)
+            raise ConfigFailure(msg) from e
         with open(self.prompts_location, "r", encoding="utf-8") as f:
             prompts = f.readlines()
         if not prompts:
