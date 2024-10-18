@@ -330,6 +330,15 @@ def main(arguments=None) -> None:
     if "buffs" in args:
         _config.plugins.buff_spec = args.buffs
 
+    # base config complete
+
+    if hasattr(_config.run, "seed") and isinstance(_config.run.seed, int):
+        import random
+
+        random.seed(
+            _config.run.seed
+        )  # setting seed persists across re-imports of random
+
     # startup
     import sys
     import json
