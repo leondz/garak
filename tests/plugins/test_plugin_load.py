@@ -29,6 +29,8 @@ def plugin_configuration(classname):
     plugin_conf[namespace][klass]["api_key"] = "fake"
     if category == "probes":
         plugin_conf[namespace][klass]["generations"] = random.randint(2, 12)
+    if category == "detectors":
+        plugin_conf[namespace][klass]["detector_model_config"] = {"api_key": "fake"}
     return (classname, _config)
 
 
