@@ -10,6 +10,9 @@ from typing import Callable
 
 class HFCompatible:
 
+    """Mixin class providing private utility methods for using Huggingface
+    transformers within garak"""
+
     def _set_hf_context_len(self, config):
         if hasattr(config, "n_ctx"):
             if isinstance(config.n_ctx, int):
