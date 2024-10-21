@@ -542,11 +542,11 @@ def main(arguments=None) -> None:
 
             # parse & set up detectors, if supplied
             if parsed_specs["detector"] == []:
-                command.probewise_run(
+                run_result = command.probewise_run(
                     generator, parsed_specs["probe"], evaluator, parsed_specs["buff"]
                 )
             else:
-                command.pxd_run(
+                run_result = command.pxd_run(
                     generator,
                     parsed_specs["probe"],
                     parsed_specs["detector"],

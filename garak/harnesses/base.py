@@ -134,6 +134,6 @@ class Harness(Configurable):
                     detector_probe_name,
                 )
             else:
-                yield evaluator.evaluate(attempt_results)
+                yield list(evaluator.evaluate(attempt_results))
 
         logging.debug("harness: probe list iteration completed")
