@@ -7,8 +7,8 @@ from collections.abc import Iterable
 
 import garak.attempt
 from garak import _config
-from garak.generators.huggingface import HFCompatible
 from garak.buffs.base import Buff
+from garak.resources.api.huggingface import HFCompatible
 
 
 class PegasusT5(Buff):
