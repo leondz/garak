@@ -104,5 +104,6 @@ class ProbewiseHarness(Harness):
                         detectors.append(d)
 
             h = Harness()
-            return h.run(model, [probe], detectors, evaluator)
-            # del probe, h, detectors
+            logging.debug("harness probewise: invoke base")
+            result = h.run(model, [probe], detectors, evaluator)
+            return list(result)  # ensure the generator is executed
