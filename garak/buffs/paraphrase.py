@@ -91,7 +91,6 @@ class Fast(Buff, HFCompatible):
         self.no_repeat_ngram_size = 2
         # self.temperature = 0.7
         self.max_length = 128
-        self.device = None
         self.tokenizer = None
         self.para_model = None
         super().__init__(config_root=config_root)
