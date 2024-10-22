@@ -34,11 +34,13 @@ class PegasusT5(Buff, HFCompatible):
         from transformers import PegasusForConditionalGeneration, PegasusTokenizer
 
         self.device = self._select_hf_device()
-
-        self.tokenizer = PegasusTokenizer.from_pretrained(self.para_model_name)
+        model_kwargs = self._gather_hf_params(
+            hf_constructor=PegasusForConditionalGeneration.from_pretrained
+        )  # will defer to device_map if device map was `auto` may not match self.device
         self.para_model = PegasusForConditionalGeneration.from_pretrained(
-            self.para_model_name
+            self.para_model_name, **model_kwargs
         ).to(self.device)
+        self.tokenizer = PegasusTokenizer.from_pretrained(self.para_model_name, **model_kwargs)
 
     def _get_response(self, input_text):
         if self.para_model is None:
