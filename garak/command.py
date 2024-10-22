@@ -300,7 +300,7 @@ def run_policy_scan(generator):
 
     main_reportfile = _config.transient.reportfile
     policy_report_filename = re.sub(
-        "\.jsonl$", ".policy.jsonl", _config.transient.report_filename
+        r"\.jsonl$", ".policy.jsonl", _config.transient.report_filename
     )
     _config.transient.reportfile = open(
         policy_report_filename, "w", buffering=1, encoding="utf-8"
