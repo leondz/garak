@@ -6,6 +6,7 @@
 import logging
 import json
 import random
+import re
 
 HINT_CHANCE = 0.25
 
@@ -293,9 +294,18 @@ def _policy_scan_msg(text):
 
 def run_policy_scan(generator):
 
+    from garak import _config
     from garak._plugins import enumerate_plugins
-    import garak._config
     import garak.evaluators
+
+    main_reportfile = _config.transient.reportfile
+    policy_report_filename = re.sub(
+        "\.jsonl$", ".policy.jsonl", _config.transient.report_filename
+    )
+    _config.transient.reportfile = open(
+        policy_report_filename, "w", buffering=1, encoding="utf-8"
+    )
+    _policy_scan_msg(f"policy report in {policy_report_filename}")
 
     logging.info(f"{POLICY_MSG_PREFIX}: start policy scan")
     # this is a probewise run of all policy probes
@@ -310,3 +320,6 @@ def run_policy_scan(generator):
     _policy_scan_msg("using policy probes " + ", ".join(policy_probe_names))
     probewise_run(generator, policy_probe_names, evaluator, buffs)
     _policy_scan_msg("end policy scan")
+
+    _config.transient.reportfile.close()
+    _config.transient.reportfile = main_reportfile
