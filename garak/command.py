@@ -243,7 +243,7 @@ def probewise_run(generator, probe_names, evaluator, buffs):
     import garak.harnesses.probewise
 
     probewise_h = garak.harnesses.probewise.ProbewiseHarness()
-    return probewise_h.run(generator, probe_names, evaluator, buffs)
+    return list(probewise_h.run(generator, probe_names, evaluator, buffs))
 
 
 def pxd_run(generator, probe_names, detector_names, evaluator, buffs):

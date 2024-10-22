@@ -71,7 +71,7 @@ class ProbewiseHarness(Harness):
             f"🕵️  queue of {Style.BRIGHT}{Fore.LIGHTYELLOW_EX}probes:{Style.RESET_ALL} "
             + ", ".join([name.replace("probes.", "") for name in probenames])
         )
-        logging.info("probe queue: %s", " ".join(probenames))
+        logging.info("harness probewise: probe queue: %s", " ".join(probenames))
         for probename in probenames:
             try:
                 probe = _plugins.load_plugin(probename)
@@ -106,4 +106,4 @@ class ProbewiseHarness(Harness):
             h = Harness()
             logging.debug("harness probewise: invoke base")
             result = h.run(model, [probe], detectors, evaluator)
-            return list(result)  # ensure the generator is executed
+            yield list(result)  # ensure the generator is executed
