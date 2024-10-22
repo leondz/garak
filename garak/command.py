@@ -302,10 +302,10 @@ def run_policy_scan(generator):
     policy_report_filename = re.sub(
         r"\.jsonl$", ".policy.jsonl", _config.transient.report_filename
     )
+    _policy_scan_msg(f"policy report in {policy_report_filename}")
     _config.transient.reportfile = open(
         policy_report_filename, "w", buffering=1, encoding="utf-8"
     )
-    _policy_scan_msg(f"policy report in {policy_report_filename}")
 
     logging.info(f"{POLICY_MSG_PREFIX}: start policy scan")
     # this is a probewise run of all policy probes
@@ -318,7 +318,7 @@ def run_policy_scan(generator):
     ]
     buffs = []
     _policy_scan_msg("using policy probes " + ", ".join(policy_probe_names))
-    probewise_run(generator, policy_probe_names, evaluator, buffs)
+    result = probewise_run(generator, policy_probe_names, evaluator, buffs)
     _policy_scan_msg("end policy scan")
 
     _config.transient.reportfile.close()
