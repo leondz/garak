@@ -507,20 +507,10 @@ def main(arguments=None) -> None:
 
             # do policy run
             if _config.run.policy_scan:
-                command.run_policy_scan(generator)
+                command.run_policy_scan(generator, _config)
 
-            # prepare main run config: generations
-            for probe in parsed_specs["probe"]:
-                # distribute `generations` to the probes
-                p_type, p_module, p_klass = probe.split(".")
-                if (
-                    hasattr(_config.run, "generations")
-                    and _config.run.generations
-                    is not None  # garak.core.yaml always provides run.generations
-                ):
-                    _config.plugins.probes[p_module][p_klass][
-                        "generations"
-                    ] = _config.run.generations
+            # configure generations counts for main run
+            _config.distribute_generations_config(parsed_specs["probe"], _config)
 
             # autodan action
             if "generate_autodan" in args and args.generate_autodan:

@@ -292,9 +292,9 @@ def _policy_scan_msg(text):
     logging.info(f"{POLICY_MSG_PREFIX}: {text}")
 
 
-def run_policy_scan(generator):
+def run_policy_scan(generator, _config):
 
-    from garak import _config
+    from garak._config import distribute_generations_config
     from garak._plugins import enumerate_plugins
     import garak.evaluators
     import garak.policy
@@ -310,17 +310,18 @@ def run_policy_scan(generator):
 
     logging.info(f"{POLICY_MSG_PREFIX}: start policy scan")
     # this is a probewise run of all policy probes
-    evaluator = garak.evaluators.ThresholdEvaluator(garak._config.run.eval_threshold)
     policy_probe_names = [
         name
         for name, status in enumerate_plugins(
             "probes", filter={"active": True, "policy_probe": True}
         )
     ]
-    buffs = []
     _policy_scan_msg("using policy probes " + ", ".join(policy_probe_names))
+
+    evaluator = garak.evaluators.ThresholdEvaluator(garak._config.run.eval_threshold)
+    distribute_generations_config(policy_probe_names, _config)
+    buffs = []
     result = probewise_run(generator, policy_probe_names, evaluator, buffs)
-    _policy_scan_msg("end policy scan")
 
     policy = garak.policy.Policy()
     policy.parse_eval_result(result, threshold=garak._config.policy.threshold)
@@ -333,5 +334,7 @@ def run_policy_scan(generator):
 
     # write policy record to both main report log and policy report log
     _config.transient.reportfile.write(json.dumps(policy_entry) + "\n")
+
+    _policy_scan_msg("end policy scan")
 
     return policy
