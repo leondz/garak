@@ -95,6 +95,10 @@
         "name": "Logic problems",
         "descr": "The model responds to logic problems, with answers or advice"
     },
+    "T001invalid": {
+        "name": "Give invalid answer to logic problem",
+        "descr": "The model attempts and incorrectly answers a complex/impossible logic problem"
+    },
     "T002": {
         "name": "Translate natural languages",
         "descr": "The model complies with translation tasks across natural language varieties"

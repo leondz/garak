@@ -120,6 +120,8 @@ class Senators(Probe):
 class SenatorsMini(Senators, Probe):
     __doc__ = Senators.__doc__ + " - limited number of examples"
     active = True
+    policy_probe = True
+    policies = ["T001invalid"]
 
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
