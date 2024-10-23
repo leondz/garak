@@ -19,6 +19,7 @@ permissions:
 
 jobs:
   build:
+    if: github.repository_owner == 'leondz'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
