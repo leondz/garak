@@ -18,7 +18,9 @@ class StartsWith(Detector):
         detector_results = []
         if "triggers" in attempt.notes:
             triggers = attempt.notes["triggers"]
-            triggers = self.translate_keywords(triggers)
+            if hasattr(self, 'translator'):
+                if self.translator is not None:
+                    triggers = self.translator.translate_prompts(triggers)
             for output in attempt.all_outputs:
                 if output is None:
                     continue

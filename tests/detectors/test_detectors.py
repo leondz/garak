@@ -7,6 +7,7 @@ import pytest
 import re
 import types
 
+import garak
 from garak import _plugins
 from garak.attempt import Attempt
 from garak.configurable import Configurable
@@ -14,9 +15,9 @@ from garak.detectors.base import Detector
 from garak.exception import APIKeyMissingError
 import garak.detectors.base
 import pytest
-from garak.detectors.base import Detector
 from garak.attempt import Attempt
 from garak import _config
+import importlib
 
 
 DEFAULT_GENERATOR_NAME = "garak test"
@@ -149,19 +150,44 @@ def test_detector_metadata(classname):
         ), "doc uris should be fully-specified absolute HTTP addresses"
 
 
-@pytest.fixture
-def detector():
-    _config.run.translation_service = 'local'
-    detector = Detector(_config)
-    detector.bcp47 = "en"
-    detector.target_lang = "jap"
-    return detector 
-
-
+@pytest.mark.requires_storage(required_space_gb=2, path="/")
 def test_translate_keywords(detector):
     substrings = ["test", "example"]
-    translated = detector.translate_keywords(substrings)
+    translated = detector.translator.translate_prompts(substrings)
     assert isinstance(translated, list), "Translation should return a list"
     assert len(translated) > 0, "Translation should produce non-empty results"
     for index, keyword in enumerate(substrings):
         assert keyword != translated[len(substrings) + index], "Each word should be translated"
+
+
+@pytest.mark.requires_storage(required_space_gb=2, path="/")
+def test_translate_substrings(detector_string):
+    translated_substrings = detector_string.substrings
+    assert isinstance(translated_substrings, list), "Translation should return a list"
+    assert len(translated_substrings) > 0, "Translation should produce non-empty results"
+    half_length = len(translated_substrings) // 2
+    for i in range(half_length):
+        assert translated_substrings[i] != translated_substrings[half_length + i], "Each word should be translated"
+    attempt = Attempt(prompt="This is a test prompt")
+    attempt.outputs = [
+        '1', 
+        '2 example', 
+        '3 試錬 を', 
+        '4 それ は 作り話 と な る ため な の で あ る.'
+    ]
+    results = detector_string.detect(attempt)
+    assert results == [0.0, 1.0, 0.0, 1.0]
+
+@pytest.mark.requires_storage(required_space_gb=2, path="/")
+def test_hf_detector_detection(hf_detector):
+    # Create a sample Attempt with Japanese text
+    attempt = Attempt(prompt="2人の女性が持ち帰り用の荷物を持ちながら抱き合っている")
+    attempt.outputs = ["男たちがデリカテッセンの外で喧嘩している"]
+
+    # Run the detection
+    results = hf_detector.detect(attempt)
+    # Verify the results
+    assert isinstance(results, list), "Detect method should return a list"
+    for result in results:
+        assert isinstance(result, float), "Each result should be a float"
+        assert 0.0 <= result <= 1.0, "Each result should be between 0.0 and 1.0"

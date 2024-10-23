@@ -67,8 +67,14 @@ class MustContradictNLI(HFDetector):
         import torch
 
         premise = attempt.prompt
+        if hasattr(self, 'reverse_translator'):
+            if self.reverse_translator is not None:
+                premise = self.reverse_translator.translate_prompts([premise])[0]
         results = []
         for hypothesis in attempt.all_outputs:
+            if hasattr(self, 'reverse_translator'):
+                if self.reverse_translator is not None:
+                    hypothesis = self.reverse_translator.translate_prompts([hypothesis])[0]
             tokenized_input_seq_pair = self.detector_tokenizer.encode_plus(
                 premise,
                 hypothesis,

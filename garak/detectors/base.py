@@ -62,38 +62,24 @@ class Detector(Configurable):
             )
 
         logging.info(f"detector init: {self}")
-        translation_service = ""
-        if hasattr(config_root.run, 'translation_service'):
-            translation_service = config_root.run.translation_service
-        if translation_service == "local":
-            self.translator = LocalTranslator(config_root)
-        else:
-            self.translator = SimpleTranslator(config_root)
-        if hasattr(config_root.run, 'lang_spec'):
-            self.target_lang = config_root.run.lang_spec
+        if hasattr(config_root, 'plugins'):
+            if hasattr(config_root.plugins, 'generators'):
+                if "translation_service" in config_root.plugins.generators.keys():
+                    translation_service = config_root.plugins.generators["translation_service"]
+                    self.translator = _config.load_translator(translation_service=translation_service, 
+                                                        classname="")
         if hasattr(self, 'substrings'):
-            self.substrings = self.translate_keywords(self.substrings)
-    
-    def _translate(self, words: List[str]) -> List[str]:
-        if hasattr(self, 'target_lang') is False or self.bcp47 == "*":
-            return words
-        translated_keywords = []
-        for lang in self.target_lang.split(","):
-            if self.bcp47 == lang:
-                continue 
-            for word in words:
-                mean_word_judge = is_english(word)
-                if mean_word_judge:
-                    translated_keywords.append(self.translator._get_response(word, self.bcp47, lang))
-                else:
-                    translated_keywords.append(word)
-        words = list(words)
-        words.extend(translated_keywords)
-        return words 
-
-    def translate_keywords(self, keywords: List[str]) -> List[str]:
-        return self._translate(keywords)
+            if hasattr(self, 'translator'):
+                if self.translator is not None:
+                    self.substrings = self.translator.translate_prompts(self.substrings)
         
+        if hasattr(config_root, 'plugins'):
+            if hasattr(config_root.plugins, 'generators'):
+                if "translation_service" in config_root.plugins.generators.keys():
+                    translation_service = config_root.plugins.generators["translation_service"]
+                    self.reverse_translator = _config.load_translator(translation_service=translation_service, 
+                                                    classname="reverse")
+    
     def detect(self, attempt: garak.attempt.Attempt) -> Iterable[float]:
         """Takes a list of Attempts; classifies them; returns a list of results
         in the range 0.0-1.0 where 0.0 represents no hit, 1.0 represents successful hit
@@ -158,6 +144,13 @@ class HFDetector(Detector, HFCompatible):
 
         self.graceful_fail = False
 
+        if hasattr(config_root, 'plugins'):
+            if hasattr(config_root.plugins, 'generators'):
+                if "translation_service" in config_root.plugins.generators.keys():
+                    translation_service = config_root.plugins.generators["translation_service"]
+                    self.reverse_translator = _config.load_translator(translation_service=translation_service, 
+                                                    classname="reverse")
+
     def detect(self, attempt: garak.attempt.Attempt) -> List[float]:
         # goal: skip None outputs
         # don't adjust attempt.outputs
@@ -165,6 +158,9 @@ class HFDetector(Detector, HFCompatible):
         non_none_outputs = [
             v for k, v in enumerate(attempt.all_outputs) if v is not None
         ]
+        if hasattr(self, 'reverse_translator'):
+            if self.reverse_translator is not None:
+                non_none_outputs = self.reverse_translator.translate_prompts(non_none_outputs)
         # non_none_offsets = [k for k,v in enumerate(attempt.all_outputs) if v is not None] # we'll want this when outputs+scores need to align
         try:
             detector_raw_results = self.detector(
@@ -201,7 +197,9 @@ class StringDetector(Detector):
     def __init__(self, substrings, config_root=_config):
         super().__init__(config_root=config_root)
         self.substrings = substrings
-        self.substrings = self.translate_keywords(self.substrings)
+        if hasattr(self, 'translator'):
+            if self.translator is not None:
+                self.substrings = self.translator.translate_prompts(self.substrings)
 
     def detect(
         self, attempt: garak.attempt.Attempt, case_sensitive=False
@@ -239,7 +237,6 @@ class TriggerListDetector(Detector):
         detector_results = []
         if "triggers" in attempt.notes:
             triggers = attempt.notes["triggers"]
-            triggers = self.translate_keywords(triggers)
             if isinstance(triggers, str):
                 triggers = [triggers]
             for output in attempt.all_outputs:
