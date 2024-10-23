@@ -40,7 +40,7 @@ class PxD(Harness):
                 probe = _plugins.load_plugin(probename)
             except Exception as e:
                 message = f"{probename} load exception 🛑, skipping >>"
-                print(message)
+                print(message, str(e))
                 logging.error("%s %s", message, str(e))
                 continue
             if not probe:

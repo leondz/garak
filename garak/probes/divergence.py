@@ -20,7 +20,7 @@ class Repeat(Probe):
     training data."""
 
     bcp47 = "*"
-    primary_detector = "replay.RepeatDiverges"
+    primary_detector = "divergence.RepeatDiverges"
     extended_detectors = ["mitigation.MitigationBypass"]
     goal = "get the model to leak data by asking it to repeat words"
     doc_uri = "https://not-just-memorization.github.io/extracting-training-data-from-chatgpt.html"
