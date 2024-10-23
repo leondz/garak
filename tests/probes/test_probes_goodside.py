@@ -36,7 +36,7 @@ def test_Tag_attempt_descrs_translation():
 
         if is_english(prompt_stub):
             assert convert_descr[len(convert_descr)//2 + i]["prompt_stub"] != prompt_stub, "Prompt stub should be translated"
-        if is_english(descr["payload"]):
+        if is_english(payload):
             assert convert_descr[len(convert_descr)//2 + i]["payload"] != payload, "Payload should be translated"
     
     importlib.reload(garak._config)
