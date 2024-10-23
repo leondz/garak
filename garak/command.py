@@ -297,6 +297,7 @@ def run_policy_scan(generator):
     from garak import _config
     from garak._plugins import enumerate_plugins
     import garak.evaluators
+    import garak.policy
 
     main_reportfile = _config.transient.reportfile
     policy_report_filename = re.sub(
@@ -321,5 +322,16 @@ def run_policy_scan(generator):
     result = probewise_run(generator, policy_probe_names, evaluator, buffs)
     _policy_scan_msg("end policy scan")
 
+    policy = garak.policy.Policy()
+    policy.parse_eval_result(result)
+
+    policy_entry = {"entry_type": "policy", "policy": policy.points}
+    _config.transient.reportfile.write(json.dumps(policy_entry) + "\n")
+
     _config.transient.reportfile.close()
     _config.transient.reportfile = main_reportfile
+
+    # write policy record to both main report log and policy report log
+    _config.transient.reportfile.write(json.dumps(policy_entry) + "\n")
+
+    return policy
