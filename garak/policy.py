@@ -45,7 +45,7 @@ class Policy:
 
         point_policy = self.points[point]
         if point_policy is None and self.none_inherits_parent:
-            return self.is_permitted(self.get_parent_name(point))
+            return self.is_permitted(get_parent_name(point))
 
         return point_policy
 
@@ -96,22 +96,24 @@ class Policy:
                 else:
                     pass
 
-    def get_parent_name(self, point):
-        # structure A 000 a+
-        # A is single-character toplevel entry
-        # 000 is optional three-digit subcategory
-        # a+ is text name of a subsubcategory
-        if len(point) > 4:
-            return point[:4]
-        if len(point) == 4:
-            return point[0]
-        if len(point) == 1:
-            return ""
-        else:
-            raise ValueError(
-                "Invalid policy name %s. Should be a letter, plus optionally 3 digits, plus optionally some letters",
-                point,
-            )
+    def propagate_up(self):
+        """propagate permissiveness upwards. if any child is True, and parent is None, set parent to True"""
+        # get bottom nodes
+        # get mid nodes
+        # skip four parents - they don't propagate up
+        # iterate in order :)
+
+        point_order = []
+        for bottom_node in filter(lambda x: len(x) > 4, self.points.keys()):
+            point_order.append(bottom_node)
+        for mid_node in filter(lambda x: len(x) == 4, self.points.keys()):
+            point_order.append(mid_node)
+
+        for point in point_order:
+            if self.points[point] == True:
+                parent = get_parent_name(point)
+                if self.points[parent] == None:
+                    self.points[parent] = True
 
 
 def _load_policy_descriptions(policy_data_path=None) -> dict:
@@ -120,7 +122,49 @@ def _load_policy_descriptions(policy_data_path=None) -> dict:
     else:
         policy_filepath = data_path / policy_data_path
     with open(policy_filepath, "r", encoding="utf-8") as policy_file:
-        return json.load(policy_file)
+        policy_object = json.load(policy_file)
+    if not _validate_policy_descriptions(policy_object):
+        logging.error(
+            "policy typology at %s didn't validate, returning blank policy def",
+            policy_filepath,
+        )
+        return dict()
+    else:
+        logging.debug("policy typology loaded and validated from %s", policy_filepath)
+        return policy_object
+
+
+def _validate_policy_descriptions(policy_object) -> bool:
+    policy_codes = list(policy_object.keys())
+
+    valid = True
+
+    if len(policy_codes) != len(set(policy_codes)):
+        logging.error("policy typology has duplicate keys")
+        valid = False
+
+    for code, data in policy_object.items():
+        if not re.match(r"^[A-Z]([0-9]{3}([a-z]+)?)?$", code):
+            logging.error("policy typology has invalid point name %s", code)
+            valid = False
+        parent_name = get_parent_name(code)
+        if parent_name != "" and parent_name not in policy_codes:
+            logging.error(
+                "policy typology point %s is missing parent %s", code, parent_name
+            )
+            valid = False
+        if "name" not in data:
+            logging.error("policy typology point %s has no name field", code)
+            valid = False
+        if "descr" not in data:
+            logging.error("policy typology point %s has no descr field", code)
+            valid = False
+        if len(data["name"]) == 0:
+            logging.error(
+                "policy typology point %s must have nonempty name field", code
+            )
+            valid = False
+    return valid
 
 
 def _flatten_nested_policy_list(structure):
@@ -129,3 +173,21 @@ def _flatten_nested_policy_list(structure):
             for item in inner:
                 assert isinstance(item, dict)
                 yield item
+
+
+def get_parent_name(point):
+    # structure A 000 a+
+    # A is single-character toplevel entry
+    # 000 is optional three-digit subcategory
+    # a+ is text name of a subsubcategory
+    if len(point) > 4:
+        return point[:4]
+    if len(point) == 4:
+        return point[0]
+    if len(point) == 1:
+        return ""
+    else:
+        raise ValueError(
+            "Invalid policy name %s. Should be a letter, plus optionally 3 digits, plus optionally some letters",
+            point,
+        )
