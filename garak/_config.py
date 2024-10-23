@@ -77,6 +77,7 @@ system = GarakSubConfig()
 run = GarakSubConfig()
 plugins = GarakSubConfig()
 reporting = GarakSubConfig()
+policy = GarakSubConfig()
 
 
 def _lock_config_as_dict():
@@ -144,12 +145,13 @@ def _load_yaml_config(settings_filenames) -> dict:
 
 
 def _store_config(settings_files) -> None:
-    global system, run, plugins, reporting
+    global system, run, plugins, reporting, policy
     settings = _load_yaml_config(settings_files)
     system = _set_settings(system, settings["system"])
     run = _set_settings(run, settings["run"])
     plugins = _set_settings(plugins, settings["plugins"])
     reporting = _set_settings(reporting, settings["reporting"])
+    policy = _set_settings(plugins, settings["policy"])
 
 
 def load_base_config() -> None:
