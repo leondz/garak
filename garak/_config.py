@@ -20,6 +20,8 @@ from xdg_base_dirs import (
     xdg_config_home,
     xdg_data_home,
 )
+from garak.translator import SimpleTranslator, EncodingTranslator, GoodsideTranslator, DanTranslator, ReverseTranslator
+from garak.translator import LocalDanTranslator, LocalTranslator, LocalEncodingTranslator, LocalGoodsideTranslator, LocalReverseTranslator
 
 DICT_CONFIG_AFTER_LOAD = False
 
@@ -253,3 +255,29 @@ def parse_plugin_spec(
             plugin_names.remove(plugin_to_skip)
 
     return plugin_names, unknown_plugins
+
+def load_translator(translation_service: str="", classname: str="") -> object:
+    translator = None
+    if translation_service == "local":
+        if classname == "encoding":
+            translator = LocalEncodingTranslator(plugins.generators)
+        elif classname == "goodside":
+            translator = LocalGoodsideTranslator(plugins.generators)
+        elif classname == "dan":
+            translator = LocalDanTranslator(plugins.generators)
+        elif classname == "reverse":
+            translator = LocalReverseTranslator(plugins.generators)
+        else:
+            translator = LocalTranslator(plugins.generators)
+    elif translation_service == "deepl" or translation_service == "nim":
+        if classname == "encoding":
+            translator = EncodingTranslator(plugins.generators)
+        elif classname == "goodside":
+            translator = GoodsideTranslator(plugins.generators)
+        elif classname == "dan":
+            translator = DanTranslator(plugins.generators)
+        elif classname == "reverse":
+            translator = ReverseTranslator(plugins.generators)
+        else:
+            translator = SimpleTranslator(plugins.generators)
+    return translator
