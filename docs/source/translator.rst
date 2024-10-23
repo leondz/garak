@@ -17,8 +17,8 @@ You can check the model vulnerability for multilingual languages.
 
 * limitation:
   - This function only supports for `bcp47` code is "en".
+  - Reverse translation using for Huggingface detector model and snowball probes.
   - Huggingface detector only supports English. You need to bring the target language NLI model for the detector.
-  - Some detectors only support English, such as the `snowball` detector.
   - If you fail to load probes or detectors, you need to choose a smaller translation model.
 
 pre-requirements
@@ -26,7 +26,7 @@ pre-requirements
 
 .. code-block:: bash
 
-    pip install nvidia-riva-client==2.16.0  pyenchant==3.2.2
+    pip install nvidia-riva-client==2.16.0 
 
 Support translation service
 ---------------------------
@@ -78,13 +78,18 @@ You can pass the translation service, source language, and target language by th
 
 * Note: The `Helsinki-NLP/opus-mt-en-{lang}` case uses different language formats. The language codes used to name models are inconsistent. Two-digit codes can usually be found here, while three-digit codes require a search such as “language code {code}". More details can be found `here <https://github.com/Helsinki-NLP/OPUS-MT-train/tree/master/models>`_.
 
-You can also configure this via a config file:
+The translator config writes to a file and the path passed, with 
+`--generator_option_file` as JSON. An example 
+is given in `Translator Config with JSON <translator_with_json>`_ below.
 
-.. code-block:: yaml
+.. code-block:: json 
 
-    run:
-      translation_service: {you choose translation service "nim" or "deepl", "local"}
-      lang_spec: {you choose language code}
+    {
+      "lang_spec": {you choose language code},
+      "translation_service": {you choose translation service "nim" or "deepl", "local"},
+      "local_model_name": {you choose loval model name},
+      "local_tokenizer_name": {you choose local tokenizer name}
+    }
 
 Examples for multilingual
 -------------------------
@@ -93,73 +98,58 @@ DeepL
 ~~~~~
 
 To use the translation option for garak, run the following command:
+You use the following JSON config.
+
+.. code-block:: json 
+
+    {
+      "lang_spec": "ja",
+      "translation_service": "deepl"
+    }
+
 
 .. code-block:: bash
 
     export DEEPL_API_KEY=xxxx
-    python3 -m garak --model_type nim --model_name meta/llama-3.1-8b-instruct --probes encoding --translation_service deepl --lang_spec ja
+    python3 -m garak --model_type nim --model_name meta/llama-3.1-8b-instruct --probes encoding --generator_option_file {path to your JSON config file} 
 
-If you save the config file as "garak/configs/simple_translate_config_deepl.yaml", use this command:
-
-.. code-block:: bash
-
-    export DEEPL_API_KEY=xxxx
-    python3 -m garak --model_type nim --model_name meta/llama-3.1-8b-instruct --probes encoding --config garak/configs/simple_translate_config_deepl.yaml
-
-Example config file:
-
-.. code-block:: yaml
-
-    run:
-      translation_service: "deepl"
-      lang_spec: "ja"
 
 NIM
 ~~~
 
 For NIM, run the following command:
+You use the following JSON config.
+
+.. code-block:: json 
+
+    {
+      "lang_spec": "ja",
+      "translation_service": "nim"
+    }
+
 
 .. code-block:: bash
 
     export NIM_API_KEY=xxxx
-    python3 -m garak --model_type nim --model_name meta/llama-3.1-8b-instruct --probes encoding --translation_service nim --lang_spec ja
+    python3 -m garak --model_type nim --model_name meta/llama-3.1-8b-instruct --probes encoding --generator_option_file {path to your JSON config file} 
 
-If you save the config file as "garak/configs/simple_translate_config_nim.yaml", use this command:
-
-.. code-block:: bash
-
-    export NIM_API_KEY=xxxx
-    python3 -m garak --model_type nim --model_name meta/llama-3.1-8b-instruct --probes encoding --config garak/configs/simple_translate_config_nim.yaml
-
-Example config file:
-
-.. code-block:: yaml
-
-    run:
-      translation_service: "nim"
-      lang_spec: "ja"
 
 Local
 ~~~~~
 
 For local translation, use the following command:
+You use the following JSON config.
+
+.. code-block:: json 
+
+    {
+      "lang_spec": "ja",
+      "translation_service": "local",
+      "local_model_name": "facebook/m2m100_418M",
+      "local_tokenizer_name": "facebook/m2m100_418M"
+    }
+
 
 .. code-block:: bash
 
-    python3 -m garak --model_type nim --model_name meta/llama-3.1-8b-instruct --probes encoding --translation_service local --lang_spec ja
-
-If you save the config file as "garak/configs/simple_translate_config_local.yaml", use this command:
-
-.. code-block:: bash
-
-    python3 -m garak --model_type nim --model_name meta/llama-3.1-8b-instruct --probes encoding --config garak/configs/simple_translate_config_local.yaml
-
-Example config file:
-
-.. code-block:: yaml
-
-    run:
-      translation_service: local
-      local_model_name: "facebook/m2m100_418M"
-      local_tokenizer_name: "facebook/m2m100_418M"
-      lang_spec: "ja"
+    python3 -m garak --model_type nim --model_name meta/llama-3.1-8b-instruct --probes encoding --generator_option_file {path to your JSON config file} 
