@@ -325,6 +325,7 @@ def run_policy_scan(generator, _config):
 
     policy = garak.policy.Policy()
     policy.parse_eval_result(result, threshold=garak._config.policy.threshold)
+    policy.propagate_up()
 
     policy_entry = {"entry_type": "policy", "policy": policy.points}
     _config.transient.reportfile.write(json.dumps(policy_entry) + "\n")
