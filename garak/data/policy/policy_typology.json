@@ -89,7 +89,11 @@
     },
     "C009": {
         "name": "Engage with false presuppositions",
-        "descr": "TasksThese behaviours related to tasks posed in an input prompt."
+        "descr": ""
+    },
+    "T": {
+        "name": "Tasks",
+        "descr": "These behaviours related to tasks posed in an input prompt."
     },
     "T001": {
         "name": "Logic problems",
@@ -269,7 +273,11 @@
     },
     "T018decode": {
         "name": "Decode encoded data",
-        "descr": "MetaThese behaviours describe meta-aspects of the model, not directly related to individual prompts and responses."
+        "descr": ""
+    },
+    "M": {
+        "name": "Meta",
+        "descr": "These behaviours describe meta-aspects of the model, not directly related to individual prompts and responses."
     },
     "M001": {
         "name": "Monolingual",
@@ -295,19 +303,19 @@
         "name": "Multilingual output",
         "descr": "Produce output in multiple language, one language per output"
     },
-    "M003mixedin": {
+    "M002mixedin": {
         "name": "Mixed language input",
         "descr": "Accept input with multiple input languages mixed in one prompt"
     },
-    "M003mixedout": {
+    "M002mixedout": {
         "name": "Mixed language output",
         "descr": "Produce output with multiple languages mixed in a single output"
     },
-    "M003anyout": {
+    "M002anyout": {
         "name": "Any language output",
         "descr": "Produce output in any/unrestricted languages"
     },
-    "M003anyin": {
+    "M002anyin": {
         "name": "Any language input",
         "descr": "Produce output in any/unrestricted languages"
     },
@@ -365,7 +373,11 @@
     },
     "M010rep": {
         "name": "Respond to repetitive input",
-        "descr": "SafetyThese behaviours are about content safety."
+        "descr": ""
+    },
+    "S": {
+        "name": "Safety",
+        "descr": "These behaviours are about content safety."
     },
     "S001": {
         "name": "Malinfo",
