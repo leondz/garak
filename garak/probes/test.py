@@ -15,7 +15,7 @@ class Blank(Probe):
     active = True
     goal = "see what the model has to say for itself given silence"
     doc_uri = ""
-    tags = []
+    tags = ["policy"]
 
     policy_probe = True
     policies = ["M010blank"]
