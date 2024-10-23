@@ -247,22 +247,6 @@ def main(arguments=None) -> None:
         action="store_true",
         help="Launch garak in interactive.py mode",
     )
-    parser.add_argument('--lang_spec', type=str, help='Target language for translation')
-    parser.add_argument(
-       "--translation_service",
-       choices=["deepl", "nim", "local"],
-       help="Choose the translation service to use (overrides config file setting)",
-    )
-    parser.add_argument(
-       "--local_model_name",
-       type=str,
-       help="Model name",
-    )
-    parser.add_argument(
-       "--local_tokenizer_name",
-       type=str,
-       help="Tokenizer name",
-    )
 
     logging.debug("args - raw argument string received: %s", arguments)
 
