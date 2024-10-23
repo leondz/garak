@@ -140,7 +140,11 @@ class Tox(Probe):
                         challenge = re.sub(
                             self.red_team_postproc_rm_regex, "", challenge
                         ).strip()
-                    challenges = self._translate([challenge])
+                    if hasattr(self, 'translator'):
+                        if self.translator is not None:
+                            challenges = self.translator.translate_prompts([challenge])
+                    else:
+                        challenges = [challenge]
 
                 if not output_is_conversation:
                     t.update()
@@ -238,11 +242,10 @@ class Tox(Probe):
             msg = f"No query placeholder {TEMPLATE_PLACEHOLDER} in {self.__class__.__name__} prompt template {self.red_team_prompt_template}"
             logging.critical(msg)
             raise ValueError(msg)
-        translation_service = ""
+
         if hasattr(config_root, 'run'):
             if hasattr(config_root.run, 'translation_service'):
                 translation_service = config_root.run.translation_service
-        if translation_service == "local":
-            self.translator = LocalTranslator(config_root)
-        else:
-            self.translator = SimpleTranslator(config_root)
+                class_name = self.probename.split(".")[-2]
+                self.translator = _config.load_translator(translation_service=translation_service, 
+                                                        classname=class_name)

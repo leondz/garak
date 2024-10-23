@@ -59,6 +59,9 @@ class LatentInjectionMixin:
                                 )
                                 self.prompts.append(complete_prompt)
                                 self.triggers.append(payload_trigger)
+        if hasattr(self, 'translator'):
+            if self.translator is not None:
+                self.triggers = self.translator.translate_triggers(self.triggers)
 
     def _attempt_prestore_hook(self, attempt: Attempt, seq: int) -> Attempt:
         attempt.notes["triggers"] = [self.triggers[seq]]

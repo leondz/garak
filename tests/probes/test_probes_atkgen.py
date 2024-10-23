@@ -14,6 +14,8 @@ import pytest
 from garak import _config, _plugins
 from garak._config import transient
 from garak.probes.atkgen import TEMPLATE_PLACEHOLDER
+import garak
+import importlib
 
 
 def test_atkgen_tox_load():
@@ -144,7 +146,7 @@ def test_atkgen_translation(classname):
 
 
 @pytest.mark.parametrize("classname", [
-    "probes.atkgen.Tox"  # Replace with actual class names if needed
+    "probes.atkgen.Tox" 
 ])
 def test_atkgen_probe(classname):
     plugin_name_parts = classname.split(".")
@@ -157,6 +159,7 @@ def test_atkgen_probe(classname):
     with tempfile.NamedTemporaryFile(mode="w+") as temp_report_file:
         _config.transient.reportfile = temp_report_file
         _config.transient.report_filename = temp_report_file.name
+        _config.plugins.generators = {}
         atkgen_instance = atkgen_class(config_root=_config)
         generator = _plugins.load_plugin("generators.test.Repeat", config_root=_config)  # Replace with an actual generator instance if available
         attempts = atkgen_instance.probe(generator)
@@ -167,3 +170,5 @@ def test_atkgen_probe(classname):
         assert isinstance(attempts[0].notes["turns"], list), "atkgen attempts should have a list of turns"
         assert attempts[0].notes["turns"][0][0] == "probe", "probe takes the first turn in atkgen"
         assert len(attempts[0].notes["turns"][0][1]) > 0, "atkgen probe first turn should not be blank"
+    importlib.reload(garak._config)
+    garak._config.load_base_config()

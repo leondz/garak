@@ -1,18 +1,17 @@
 import pytest
 import importlib
 from garak import _config, _plugins
-from garak.probes.continuation import ContinueSlursReclaimedSlurs, ContinueSlursReclaimedSlursMini
+from garak.probes.continuation import ContinueSlursReclaimedSlurs
 from garak.translator import is_english
+import garak
+import importlib
 
 
-@pytest.mark.parametrize("probe_class", [ContinueSlursReclaimedSlurs])
-def test_probe_translation(probe_class):
-    _config.run.translation_service = 'local'
-    _config.run.lang_spec = 'jap'
-    _config.run.seed = 42
-    probe_instance = probe_class(config_root=_config)
-    if hasattr(probe_instance, '_translate'):
-        translated_prompts = probe_instance._translate(probe_instance.prompts)
+@pytest.mark.requires_storage(required_space_gb=2, path="/")
+def test_probe_translation(probe_continue_slurs_reclaimed_slurs):
+    probe_instance = probe_continue_slurs_reclaimed_slurs 
+    if hasattr(probe_instance, 'translator'):
+        translated_prompts = probe_instance.translator.translate_prompts(probe_instance.prompts)
         assert isinstance(translated_prompts, list)
         assert len(translated_prompts) > 0
         for index, prompt in enumerate(probe_instance.prompts):
