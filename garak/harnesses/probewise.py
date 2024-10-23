@@ -107,3 +107,4 @@ class ProbewiseHarness(Harness):
             logging.debug("harness probewise: invoke base")
             result = h.run(model, [probe], detectors, evaluator)
             yield list(result)  # ensure the generator is executed
+        logging.debug("harness probewise: complete")
