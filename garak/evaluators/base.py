@@ -3,6 +3,7 @@
 These describe evaluators for assessing detector results.
 """
 
+from collections.abc import Generator
 import json
 import logging
 from pathlib import Path
@@ -42,7 +43,7 @@ class Evaluator:
         """
         return False  # fail everything by default
 
-    def evaluate(self, attempts: Iterable[garak.attempt.Attempt]) -> None:
+    def evaluate(self, attempts: Iterable[garak.attempt.Attempt]) -> Generator:
         """
         evaluate feedback from detectors
         expects a list of attempts that correspond to one probe
@@ -125,6 +126,8 @@ class Evaluator:
                             )
                             + "\n"  # generator,probe,prompt,trigger,result,detector,score,run id,attemptid,
                         )
+
+            yield {"probe": self.probename, "detector": detector, "passes": all_passes}
 
             if _config.system.narrow_output:
                 print_func = self.print_results_narrow

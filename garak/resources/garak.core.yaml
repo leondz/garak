@@ -13,6 +13,7 @@ run:
   eval_threshold: 0.5
   generations: 5
   probe_tags:
+  policy_scan: false
 
 plugins:
   model_type:
@@ -37,3 +38,6 @@ reporting:
   taxonomy:
   report_dir: garak_runs
   show_100_pass_modules: true
+
+policy:
+  threshold: false
