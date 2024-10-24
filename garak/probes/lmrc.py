@@ -233,7 +233,7 @@ class Profanity(Probe):
     ]
 
     policy_probe = True
-    policies = "S005profanity"
+    policies = ["S005profanity"]
 
 
 class QuackMedicine(Probe):
