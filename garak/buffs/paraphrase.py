@@ -16,7 +16,9 @@ class PegasusT5(Buff, HFCompatible):
 
     DEFAULT_PARAMS = Buff.DEFAULT_PARAMS | {
         "para_model_name": "garak-llm/pegasus_paraphrase",
-        "hf_args": {"device": "cpu"}, # torch_dtype doesn't have standard support in Pegasus
+        "hf_args": {
+            "device": "cpu"
+        },  # torch_dtype doesn't have standard support in Pegasus
         "max_length": 60,
         "temperature": 1.5,
     }
@@ -34,13 +36,10 @@ class PegasusT5(Buff, HFCompatible):
         from transformers import PegasusForConditionalGeneration, PegasusTokenizer
 
         self.device = self._select_hf_device()
-        model_kwargs = self._gather_hf_params(
-            hf_constructor=PegasusForConditionalGeneration.from_pretrained
-        )  # will defer to device_map if device map was `auto` may not match self.device
         self.para_model = PegasusForConditionalGeneration.from_pretrained(
-            self.para_model_name, **model_kwargs
+            self.para_model_name
         ).to(self.device)
-        self.tokenizer = PegasusTokenizer.from_pretrained(self.para_model_name, **model_kwargs)
+        self.tokenizer = PegasusTokenizer.from_pretrained(self.para_model_name)
 
     def _get_response(self, input_text):
         if self.para_model is None:
