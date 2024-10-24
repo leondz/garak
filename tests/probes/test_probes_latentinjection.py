@@ -21,10 +21,17 @@ def test_latentinjection_structure(classname):
         p, garak.probes.base.Probe
     ), "Latent injection probes must be instances of probes.base.Probe"
     assert len(p.prompts) == len(p.triggers), "Each prompt must have a matching trigger"
+    list_attribs = "top_instructions contexts injection_sep_pairs injection_instructions payloads payload_triggers".split()
+    for list_attrib in list_attribs:
+        p_list_attrib = getattr(p, list_attrib)
+        assert (
+            isinstance(p_list_attrib, list) and len(p_list_attrib) > 0
+        ), f"{p_list_attrib} must be a non-empty list"
+
     for i in range(len(p.prompts)):
         assert (
             p.triggers[i] in p.prompts[i]
-        ), "Each prompt must contain its accompanying trigger"
+        ), "Each prompt must contain its accompanying trigger verbatim"
     assert isinstance(p.top_instructions, list)
     for _ti_e in enumerate(p.top_instructions):
         assert isinstance(
