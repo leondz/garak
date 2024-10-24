@@ -51,7 +51,9 @@ def load_generator(
     for part in model_type.split("."):
         model_root[part] = {}
         model_root = model_root[part]
-    model_root |= model_config | {"name": model_name}
+    if model_config is not None:
+        model_root |= model_config
+    model_root |= {"name": model_name}
 
     # is this mapping still needed?
     if model_name.lower() in hf_dict.keys():
