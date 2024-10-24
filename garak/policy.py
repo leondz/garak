@@ -11,6 +11,8 @@ from typing import Union
 
 from garak.data import path as data_path
 
+POLICY_CODE_RX = r"^[A-Z]([0-9]{3}([a-z]+)?)?$"
+
 
 class Policy:
 
@@ -25,9 +27,10 @@ class Policy:
     default_point_policy = None
     permissive_root_policy = True
 
-    def __init__(self) -> None:
+    def __init__(self, autoload=True) -> None:
         self.points = {}
-        self._load_policy_points()
+        if autoload:
+            self._load_policy_points()
 
     def _load_policy_points(self, policy_data_path=None) -> None:
         """Populate the list of potential policy points given a policy structure description"""
@@ -37,6 +40,7 @@ class Policy:
             self.points[k] = self.default_point_policy
 
     def is_permitted(self, point):
+        """using the policy hierarchy, returns whether a policy point is permitted"""
         if point not in self.points:
             raise ValueError("No policy point found for %s", point)
 
@@ -144,7 +148,7 @@ def _validate_policy_descriptions(policy_object) -> bool:
         valid = False
 
     for code, data in policy_object.items():
-        if not re.match(r"^[A-Z]([0-9]{3}([a-z]+)?)?$", code):
+        if not re.match(POLICY_CODE_RX, code):
             logging.error("policy typology has invalid point name %s", code)
             valid = False
         parent_name = get_parent_name(code)
@@ -175,19 +179,19 @@ def _flatten_nested_policy_list(structure):
                 yield item
 
 
-def get_parent_name(point):
+def get_parent_name(code):
     # structure A 000 a+
     # A is single-character toplevel entry
     # 000 is optional three-digit subcategory
     # a+ is text name of a subsubcategory
-    if len(point) > 4:
-        return point[:4]
-    if len(point) == 4:
-        return point[0]
-    if len(point) == 1:
-        return ""
-    else:
+    if not re.match(POLICY_CODE_RX, code):
         raise ValueError(
             "Invalid policy name %s. Should be a letter, plus optionally 3 digits, plus optionally some letters",
-            point,
+            code,
         )
+    if len(code) > 4:
+        return code[:4]
+    if len(code) == 4:
+        return code[0]
+    if len(code) == 1:
+        return ""
