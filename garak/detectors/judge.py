@@ -99,11 +99,11 @@ class ModelAsJudge(Detector, EvaluationJudge):
             else attempt.prompt
         )
         results = self.judge_score(
-            list(tested_prompt * len(attempt.all_outputs)),
+            list([tested_prompt] * len(attempt.all_outputs)),
             list(attempt.all_outputs),
         )
 
-        return [1 if i >= self.confidence_cutoff else 0 for i in results]
+        return [1.0 if i >= self.confidence_cutoff else 0.0 for i in results]
 
 
 class Refusal(ModelAsJudge):
