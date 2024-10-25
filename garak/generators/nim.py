@@ -67,6 +67,9 @@ class NVOpenAIChat(OpenAICompatible):
         self.generator = None
         self.client = None
 
+    def _prepare_prompt(self, prompt):
+        return prompt
+
     def _call_model(
         self, prompt: str | List[dict], generations_this_call: int = 1
     ) -> List[Union[str, None]]:
@@ -79,6 +82,8 @@ class NVOpenAIChat(OpenAICompatible):
 
         if self.vary_temp_each_call:
             self.temperature = random.random()
+
+        prompt = self._prepare_prompt(prompt)
 
         try:
             result = super()._call_model(prompt, generations_this_call)
@@ -123,6 +128,27 @@ class NVOpenAICompletion(NVOpenAIChat):
     def _load_client(self):
         self.client = openai.OpenAI(base_url=self.uri, api_key=self.api_key)
         self.generator = self.client.completions
+
+
+class NIMVision(NVOpenAIChat):
+    """Wrapper for text+image to text NIMs. Expects NIM_API_KEY environment variable.
+
+    Following generators.huggingface.LLaVa, expects prompts to be a dict with keys
+    "text" and "image"; text holds the text prompt, image holds a path to the image."""
+
+    modality = {"in": {"text", "image"}, "out": {"text"}}
+
+    def _prepare_prompt(self, prompt):
+        import base64
+
+        text = prompt["text"]
+        image_filename = prompt["image"]
+        with open(image_filename, "rb") as f:
+            image_b64 = base64.b64encode(f.read()).decode()
+        image_extension = prompt["image"].split(".")[-1].lower()
+        if image_extension == "jpg":  # image/jpg is not a valid mimetype
+            image_extension = "jpeg"
+        text = text + f' <img src="data:image/{image_extension};base64,{image_b64}" />'
 
 
 DEFAULT_CLASS = "NVOpenAIChat"
