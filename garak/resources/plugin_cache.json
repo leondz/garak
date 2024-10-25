@@ -5853,6 +5853,40 @@
     }
   },
   "generators": {
+    "generators.azure.AzureOpenAIGenerator": {
+      "description": "Wrapper for Azure Open AI. Expects AZURE_API_KEY, AZURE_ENDPOINT and AZURE_MODEL_NAME environment variables.",
+      "DEFAULT_PARAMS": {
+        "max_tokens": 150,
+        "temperature": 0.7,
+        "top_k": null,
+        "context_len": null,
+        "top_p": 1.0,
+        "frequency_penalty": 0.0,
+        "presence_penalty": 0.0,
+        "seed": null,
+        "stop": [
+          "#",
+          ";"
+        ],
+        "suppressed_params": [],
+        "retry_json": true,
+        "model_name": null,
+        "uri": null
+      },
+      "active": true,
+      "generator_family_name": "Azure",
+      "modality": {
+        "in": [
+          "text"
+        ],
+        "out": [
+          "text"
+        ]
+      },
+      "parallel_capable": true,
+      "supports_multiple_generations": true,
+      "mod_time": "2024-08-30 14:12:10 +0000"
+    },
     "generators.base.Generator": {
       "description": "Base class for objects that wrap an LLM or other text-to-text service",
       "DEFAULT_PARAMS": {
