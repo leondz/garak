@@ -67,6 +67,7 @@ class RestGenerator(Generator):
         self.escape_function = self._json_escape
         self.retry_5xx = True
         self.key_env_var = self.ENV_VAR if hasattr(self, "ENV_VAR") else None
+        self.user_agent = _config.run.user_agent
 
         # load configuration since super.__init__ has not been called
         self._load_config(config_root)
@@ -187,6 +188,8 @@ class RestGenerator(Generator):
         # serialized as parameters, in general a method could be created to add
         # the prompt data to a request via params or data based on the action verb
         data_kw = "params" if self.http_function == requests.get else "data"
+        if "User-Agent" not in request_headers:
+            request_headers["User-Agent"] = self.user_agent
         req_kArgs = {
             data_kw: request_data,
             "headers": request_headers,

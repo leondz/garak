@@ -13,6 +13,7 @@ run:
   eval_threshold: 0.5
   generations: 5
   probe_tags:
+  user_agent: "garak LLM vulnerability scanner, v{version} https://garak.ai"
 
 plugins:
   model_type:

@@ -23,7 +23,9 @@ from xdg_base_dirs import (
 
 DICT_CONFIG_AFTER_LOAD = False
 
-version = -1  # eh why this is here? hm. who references it
+from garak import __version__
+
+version = __version__
 
 system_params = (
     "verbose narrow_output parallel_requests parallel_attempts skip_unknown".split()
@@ -144,10 +146,13 @@ def _load_yaml_config(settings_filenames) -> dict:
 
 
 def _store_config(settings_files) -> None:
+    import garak
+
     global system, run, plugins, reporting
     settings = _load_yaml_config(settings_files)
     system = _set_settings(system, settings["system"])
     run = _set_settings(run, settings["run"])
+    run.user_agent = run.user_agent.replace("{version}", garak.__version__)
     plugins = _set_settings(plugins, settings["plugins"])
     reporting = _set_settings(reporting, settings["reporting"])
 
@@ -193,6 +198,7 @@ def load_config(
 
     logging.debug("Loading configs from: %s", ",".join(settings_files))
     _store_config(settings_files=settings_files)
+
     if DICT_CONFIG_AFTER_LOAD:
         _lock_config_as_dict()
     loaded = True

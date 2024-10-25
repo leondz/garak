@@ -14,6 +14,7 @@ DEFAULT_TEXT_RESPONSE = "Here's your model response"
 
 @pytest.fixture
 def set_rest_config():
+    _config.run.user_agent = "test user agent, garak.ai"
     _config.plugins.generators["rest"] = {}
     _config.plugins.generators["rest"]["RestGenerator"] = {
         "name": DEFAULT_NAME,
