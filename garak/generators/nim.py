@@ -153,22 +153,28 @@ class NIMVision(NVOpenAIChat):
     def _prepare_prompt(self, prompt):
         import base64
 
+        if isinstance(prompt, str):
+            prompt = {"text": prompt, "image": None}
+
         text = prompt["text"]
         image_filename = prompt["image"]
-        with open(image_filename, "rb") as f:
-            image_b64 = base64.b64encode(f.read()).decode()
+        if image_filename is not None:
+            with open(image_filename, "rb") as f:
+                image_b64 = base64.b64encode(f.read()).decode()
 
-        if len(image_b64) > self.max_image_len:
-            logging.error(
-                "Image %s exceeds length limit. To upload larger images, use the assets API (not yet supported)",
-                image_filename,
+            if len(image_b64) > self.max_image_len:
+                logging.error(
+                    "Image %s exceeds length limit. To upload larger images, use the assets API (not yet supported)",
+                    image_filename,
+                )
+                return None
+
+            image_extension = prompt["image"].split(".")[-1].lower()
+            if image_extension == "jpg":  # image/jpg is not a valid mimetype
+                image_extension = "jpeg"
+            text = (
+                text + f' <img src="data:image/{image_extension};base64,{image_b64}" />'
             )
-            return None
-
-        image_extension = prompt["image"].split(".")[-1].lower()
-        if image_extension == "jpg":  # image/jpg is not a valid mimetype
-            image_extension = "jpeg"
-        text = text + f' <img src="data:image/{image_extension};base64,{image_b64}" />'
         return text
 
 

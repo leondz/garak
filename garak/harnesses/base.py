@@ -29,7 +29,9 @@ class Harness(Configurable):
 
     active = True
 
-    DEFAULT_PARAMS = {}
+    DEFAULT_PARAMS = {
+        "strict_modality_match": False,
+    }
 
     def __init__(self, config_root=_config):
         self._load_config(config_root)
@@ -96,8 +98,12 @@ class Harness(Configurable):
             logging.debug("harness: probe start for %s", probe.probename)
             if not probe:
                 continue
-            # TODO: refactor this to allow `compatible` probes instead of direct match
-            if probe.modality["in"] != model.modality["in"]:
+
+            modality_match = _modality_match(
+                probe.modality["in"], model.modality["in"], self.strict_modality_match
+            )
+
+            if not modality_match:
                 logging.warning(
                     "probe skipped due to modality mismatch: %s - model expects %s",
                     probe.probename,
@@ -136,3 +142,14 @@ class Harness(Configurable):
                 evaluator.evaluate(attempt_results)
 
         logging.debug("harness: probe list iteration completed")
+
+
+def _modality_match(probe_modality, generator_modality, strict):
+    if strict:
+        # must be perfect match
+        return probe_modality == generator_modality
+    else:
+        # everything probe wants must be accepted by model
+        return set(probe_modality).intersection(generator_modality) == set(
+            probe_modality
+        )
