@@ -85,7 +85,8 @@ class NVOpenAIChat(OpenAICompatible):
 
         prompt = self._prepare_prompt(prompt)
         if prompt is None:
-            return None  # if we didn't get a valid prompt, don't process & send NoneType downstream
+            # if we didn't get a valid prompt, don't process it, and send the NoneType(s) downstream
+            return [None] * generations_this_call
 
         try:
             result = super()._call_model(prompt, generations_this_call)
@@ -157,7 +158,7 @@ class NIMVision(NVOpenAIChat):
         with open(image_filename, "rb") as f:
             image_b64 = base64.b64encode(f.read()).decode()
 
-        if len(image_b64) < self.max_image_len:
+        if len(image_b64) > self.max_image_len:
             logging.error(
                 "Image %s exceeds length limit. To upload larger images, use the assets API (not yet supported)",
                 image_filename,
