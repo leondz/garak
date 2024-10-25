@@ -16,7 +16,6 @@ deal with things like authentication, loading, connection management,
 backoff, and all the behind-the-scenes things that need to happen
 to get that prompt/response interaction working.
 
-
 probes
 ------
 Each probe tries to exploit a weakness and elicit a failure. The probe
@@ -40,17 +39,28 @@ detectors
 ---------
 Each detector attempts to identify a single failure mode. This could be 
 for example some unsafe contact, or failure to refuse a request. Detectors
-do this by examining outputs that are stored in a prompt, 
+do this by examining outputs that are stored in a prompt, looking for a
+certain phenomenon. This could be a lack of refusal, or continuation of a
+string in a certain way, or decoding an encoded prompt, for example.
 
 
 buffs
 -----
+Buffs adjust prompts before they're sent to a generator. This could involve
+translating them to another language, or adding paraphrases for probes that
+have only a few, static prompts.
+
 
 evaluators
 ----------
+When detectors have added judgments to attempts, an evaluator converts the results
+to an object containing pass/fail data for a specific probe and detector pair.
 
 harnesses
 ---------
+The harnesses manage orchestration of a garak run. They select probes, then 
+detectors, and co-ordinate running probes, passing results to detectors, and 
+doing the final evaluation
 
 
 
