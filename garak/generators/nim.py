@@ -84,9 +84,15 @@ class NVOpenAIChat(OpenAICompatible):
             self.temperature = random.random()
 
         prompt = self._prepare_prompt(prompt)
+        if prompt is None:
+            return None  # if we didn't get a valid prompt, don't process & send NoneType downstream
 
         try:
             result = super()._call_model(prompt, generations_this_call)
+        except openai.UnprocessableEntityError as uee:
+            msg = "Model call didn't match endpoint expectations, see log"
+            logging.critical(msg, exc_info=uee)
+            raise GarakException(f"🛑 {msg}") from uee
         #        except openai.NotFoundError as oe:
         except Exception as oe:
             msg = "NIM endpoint not found. Is the model name spelled correctly?"
@@ -136,6 +142,11 @@ class NIMVision(NVOpenAIChat):
     Following generators.huggingface.LLaVa, expects prompts to be a dict with keys
     "text" and "image"; text holds the text prompt, image holds a path to the image."""
 
+    DEFAULT_PARAMS = NVOpenAIChat.DEFAULT_PARAMS | {
+        "suppressed_params": {"n", "frequency_penalty", "presence_penalty", "stop"},
+        "max_image_len": 180_000,
+    }
+
     modality = {"in": {"text", "image"}, "out": {"text"}}
 
     def _prepare_prompt(self, prompt):
@@ -145,10 +156,19 @@ class NIMVision(NVOpenAIChat):
         image_filename = prompt["image"]
         with open(image_filename, "rb") as f:
             image_b64 = base64.b64encode(f.read()).decode()
+
+        if len(image_b64) < self.max_image_len:
+            logging.error(
+                "Image %s exceeds length limit. To upload larger images, use the assets API (not yet supported)",
+                image_filename,
+            )
+            return None
+
         image_extension = prompt["image"].split(".")[-1].lower()
         if image_extension == "jpg":  # image/jpg is not a valid mimetype
             image_extension = "jpeg"
         text = text + f' <img src="data:image/{image_extension};base64,{image_b64}" />'
+        return text
 
 
 DEFAULT_CLASS = "NVOpenAIChat"
