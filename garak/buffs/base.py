@@ -1,12 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""Base classes for buffs.
-
-Buff plugins augment, constrain, or otherwise perturb the interaction
-between probes and a generator. Buffs must inherit this base class. 
-`Buff` serves as a template showing what expectations there are for
-implemented buffs. """
+"""Base classes for buffs. """
 
 from collections.abc import Iterable
 import logging
