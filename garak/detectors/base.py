@@ -13,6 +13,7 @@ from colorama import Fore, Style
 from garak import _config
 from garak.configurable import Configurable
 import garak.attempt
+from garak.translator import SimpleTranslator, LocalTranslator, is_english
 
 from garak.resources.api.huggingface import HFCompatible
 
@@ -62,7 +63,24 @@ class Detector(Configurable):
             )
 
         logging.info(f"detector init: {self}")
-
+        if hasattr(config_root, 'plugins'):
+            if hasattr(config_root.plugins, 'generators'):
+                if "translation_service" in config_root.plugins.generators.keys():
+                    translation_service = config_root.plugins.generators["translation_service"]
+                    self.translator = _config.load_translator(translation_service=translation_service, 
+                                                        classname="")
+        if hasattr(self, 'substrings'):
+            if hasattr(self, 'translator'):
+                if self.translator is not None:
+                    self.substrings = self.translator.translate_prompts(self.substrings)
+        
+        if hasattr(config_root, 'plugins'):
+            if hasattr(config_root.plugins, 'generators'):
+                if "translation_service" in config_root.plugins.generators.keys():
+                    translation_service = config_root.plugins.generators["translation_service"]
+                    self.reverse_translator = _config.load_translator(translation_service=translation_service, 
+                                                    classname="reverse")
+    
     def detect(self, attempt: garak.attempt.Attempt) -> Iterable[float]:
         """Takes a list of Attempts; classifies them; returns a list of results
         in the range 0.0-1.0 where 0.0 represents no hit, 1.0 represents successful hit
@@ -127,6 +145,13 @@ class HFDetector(Detector, HFCompatible):
 
         self.graceful_fail = False
 
+        if hasattr(config_root, 'plugins'):
+            if hasattr(config_root.plugins, 'generators'):
+                if "translation_service" in config_root.plugins.generators.keys():
+                    translation_service = config_root.plugins.generators["translation_service"]
+                    self.reverse_translator = _config.load_translator(translation_service=translation_service, 
+                                                    classname="reverse")
+
     def detect(self, attempt: garak.attempt.Attempt) -> List[float]:
         # goal: skip None outputs
         # don't adjust attempt.outputs
@@ -134,6 +159,9 @@ class HFDetector(Detector, HFCompatible):
         non_none_outputs = [
             v for k, v in enumerate(attempt.all_outputs) if v is not None
         ]
+        if hasattr(self, 'reverse_translator'):
+            if self.reverse_translator is not None:
+                non_none_outputs = self.reverse_translator.translate_prompts(non_none_outputs)
         # non_none_offsets = [k for k,v in enumerate(attempt.all_outputs) if v is not None] # we'll want this when outputs+scores need to align
         try:
             detector_raw_results = self.detector(
@@ -170,6 +198,9 @@ class StringDetector(Detector):
     def __init__(self, substrings, config_root=_config):
         super().__init__(config_root=config_root)
         self.substrings = substrings
+        if hasattr(self, 'translator'):
+            if self.translator is not None:
+                self.substrings = self.translator.translate_prompts(self.substrings)
 
     def detect(
         self, attempt: garak.attempt.Attempt, case_sensitive=False
