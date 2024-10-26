@@ -194,20 +194,20 @@ class RestGenerator(Generator):
         }
         resp = self.http_function(self.uri, **req_kArgs)
         if resp.status_code in self.ratelimit_codes:
-            raise RateLimitHit(f"Rate limited: {resp.status_code} - {resp.reason}")
+            raise RateLimitHit(f"Rate limited: {resp.status_code} - {resp.reason}, uri: {self.uri}")
 
         elif str(resp.status_code)[0] == "3":
             raise NotImplementedError(
-                f"REST URI redirection: {resp.status_code} - {resp.reason}"
+                f"REST URI redirection: {resp.status_code} - {resp.reason}, uri: {self.uri}"
             )
 
         elif str(resp.status_code)[0] == "4":
             raise ConnectionError(
-                f"REST URI client error: {resp.status_code} - {resp.reason}"
+                f"REST URI client error: {resp.status_code} - {resp.reason}, uri: {self.uri}"
             )
 
         elif str(resp.status_code)[0] == "5":
-            error_msg = f"REST URI server error: {resp.status_code} - {resp.reason}"
+            error_msg = f"REST URI server error: {resp.status_code} - {resp.reason}, uri: {self.uri}"
             if self.retry_5xx:
                 raise IOError(error_msg)
             else:
@@ -229,7 +229,10 @@ class RestGenerator(Generator):
             len(self.response_json_field) > 0
         ), "response_json_field needs to be complete if response_json is true; ValueError should have been raised in constructor"
         if self.response_json_field[0] != "$":
-            response = [response_object[self.response_json_field]]
+            if isinstance(response_object, list):
+                response = [item[self.response_json_field] for item in response_object]
+            else:
+                response = [response_object[self.response_json_field]]
         else:
             field_path_expr = jsonpath_ng.parse(self.response_json_field)
             responses = field_path_expr.find(response_object)
