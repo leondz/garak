@@ -40,6 +40,7 @@ class LocalDataPath(type(pathlib.Path())):
                 return self.relative_to(path)
 
     def _eval_paths(self, segment, next_call, relative):
+        print(f"segment: {segment}, relative: {relative}, next_call: {next_call}, search paths: {self.ORDERED_SEARCH_PATHS}")
         if self in self.ORDERED_SEARCH_PATHS and segment == relative:
             raise GarakException(
                 f"The requested resource does not refer to a valid path"
@@ -56,6 +57,7 @@ class LocalDataPath(type(pathlib.Path())):
                 projected = (path / prefix_removed).parent
             else:
                 current_path = path / prefix_removed
+                print(f"current_path: {current_path}")
                 projected = getattr(current_path, next_call)(segment)
             if projected.exists():
                 return LocalDataPath(projected)
