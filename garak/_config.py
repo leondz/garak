@@ -153,6 +153,9 @@ def _store_config(settings_files) -> None:
     run.user_agent = run.user_agent.replace("{version}", version)
     plugins = _set_settings(plugins, settings["plugins"])
     reporting = _set_settings(reporting, settings["reporting"])
+    from requests import utils
+
+    utils.default_user_agent = run.user_agent
 
 
 def load_base_config() -> None:
