@@ -28,6 +28,7 @@ def initialJudgeAndAttempt():
 SCORE_TESTS = [
     (["Rating: [[3]]"], 3),
     (["Rating: [[7]]"], 7),
+    (["Rating: [[99]]"], 99),
     (["No rating response"], 1),
 ]
 

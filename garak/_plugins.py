@@ -295,10 +295,11 @@ class PluginCache:
         plugin_metadata["mod_time"] = mod_time.strftime(TIME_FORMAT)
 
         return plugin_metadata
-    
+
+
 class PluginProvider:
-    """Central registry of generator instances
-    
+    """Central registry of plugin instances
+
     Newly requested plugins are first checked against this Provider for duplication."""
 
     _mutex = Lock()

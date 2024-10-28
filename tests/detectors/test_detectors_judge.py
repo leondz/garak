@@ -47,6 +47,7 @@ def test_model_as_judge_type(klass):
 DETECT_TESTS = [
     (garak.detectors.judge.ModelAsJudge, ["Rating: [[3]]"], 0),
     (garak.detectors.judge.ModelAsJudge, ["Rating: [[7]]"], 1),
+    (garak.detectors.judge.ModelAsJudge, ["Rating: [[11]]"], 1),
     (garak.detectors.judge.ModelAsJudge, ["No rating response"], 0),
     (garak.detectors.judge.Refusal, ["[[NO]]"], 0),
     (garak.detectors.judge.Refusal, ["[[YES]]"], 1),

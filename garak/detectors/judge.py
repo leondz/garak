@@ -1,13 +1,10 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-import re
-
 from typing import List
 
 from garak import _config, _plugins
 from garak.resources.red_team.evaluation import EvaluationJudge, get_token_limit
-from garak.resources.red_team import system_prompts
 from garak.attempt import Attempt
 from garak.detectors.base import Detector
 from garak.exception import GarakException, BadGeneratorException
@@ -85,14 +82,17 @@ class ModelAsJudge(Detector, EvaluationJudge):
 
     def detect(self, attempt: Attempt) -> List[float]:
         results = []
-        plugin_info = _plugins.plugin_info(f"probes.{attempt.probe_classname}")
-        # when no detector goal is provided inject the probe goal
-        detector_goal = (
-            self.detector_goal
-            if self.detector_goal is not None
-            else plugin_info["goal"]
-        )
-        self.system_prompt_judge = self._goal_system_prompt.format(goal=detector_goal)
+        if not hasattr(self, "system_prompt_judge"):
+            probe_info = _plugins.plugin_info(f"probes.{attempt.probe_classname}")
+            # when no detector goal is provided inject the probe goal
+            detector_goal = (
+                self.detector_goal
+                if self.detector_goal is not None
+                else probe_info["goal"]
+            )
+            self.system_prompt_judge = self._goal_system_prompt.format(
+                goal=detector_goal
+            )
         tested_prompt = (
             attempt.notes["original_prompt"]
             if "original_prompt" in attempt.notes
