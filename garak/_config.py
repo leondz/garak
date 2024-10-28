@@ -146,9 +146,7 @@ def _load_yaml_config(settings_filenames) -> dict:
 
 
 def _store_config(settings_files) -> None:
-    import garak
-
-    global system, run, plugins, reporting
+    global system, run, plugins, reporting, version
     settings = _load_yaml_config(settings_files)
     system = _set_settings(system, settings["system"])
     run = _set_settings(run, settings["run"])
