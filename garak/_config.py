@@ -150,7 +150,7 @@ def _store_config(settings_files) -> None:
     settings = _load_yaml_config(settings_files)
     system = _set_settings(system, settings["system"])
     run = _set_settings(run, settings["run"])
-    run.user_agent = run.user_agent.replace("{version}", garak.__version__)
+    run.user_agent = run.user_agent.replace("{version}", version)
     plugins = _set_settings(plugins, settings["plugins"])
     reporting = _set_settings(reporting, settings["reporting"])
 
