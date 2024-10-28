@@ -10,13 +10,12 @@ def main(arguments=None) -> None:
     """Main entry point for garak runs invoked from the CLI"""
     import datetime
 
-    from garak import __version__, __description__
+    from garak import __description__
     from garak import _config
     from garak.exception import GarakException
 
     _config.transient.starttime = datetime.datetime.now()
     _config.transient.starttime_iso = _config.transient.starttime.isoformat()
-    _config.version = __version__
 
     if arguments is None:
         arguments = []
