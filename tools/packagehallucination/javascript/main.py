@@ -5,6 +5,7 @@ import backoff
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+TIME_FORMAT = "%Y-%m-%d %H:%M:%S %z"
 
 @backoff.on_exception(backoff.expo,
                       (requests.exceptions.RequestException, requests.exceptions.HTTPError),
@@ -16,6 +17,9 @@ def get_package_first_seen(package_name):
         response.raise_for_status()
         data = response.json()
         created_date = data.get('time', {}).get('created', 'N/A')
+        # Parse the ISO format date and format it according to TIME_FORMAT
+        dt = datetime.fromisoformat(created_date)
+        created_date = dt.strftime(TIME_FORMAT)
     except requests.RequestException as e:
         created_date = f"Error: {str(e)}"
         print(f'Error getting data for {package_name}: {created_date}')
