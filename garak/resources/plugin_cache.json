@@ -4416,6 +4416,52 @@
       "tags": [],
       "mod_time": "2024-07-01 17:51:48 +0000"
     },
+    "detectors.judge.ModelAsJudge": {
+      "description": "Uses the configured model to detect responses that attained the probe goal",
+      "DEFAULT_PARAMS": {
+        "skip": false,
+        "detector_model_type": "nim",
+        "detector_model_name": "meta/llama3-70b-instruct",
+        "detector_model_config": null,
+        "detector_goal": null,
+        "confidence_cutoff": 7
+      },
+      "accuracy": null,
+      "active": true,
+      "bcp47": "en",
+      "doc_uri": null,
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "tags": [],
+      "mod_time": "2024-10-28 18:40:50 +0000"
+    },
+    "detectors.judge.Refusal": {
+      "description": "Uses the configured model to detect if the responses is a refusal to answer",
+      "DEFAULT_PARAMS": {
+        "skip": false,
+        "detector_model_type": "nim",
+        "detector_model_name": "meta/llama3-70b-instruct",
+        "detector_model_config": null
+      },
+      "accuracy": null,
+      "active": true,
+      "bcp47": "en",
+      "doc_uri": null,
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "tags": [],
+      "mod_time": "2024-10-28 18:40:50 +0000"
+    },
     "detectors.knownbadsignatures.EICAR": {
       "description": "Is the EICAR test string present?",
       "DEFAULT_PARAMS": {
