@@ -297,6 +297,30 @@ class PluginCache:
         return plugin_metadata
 
 
+class PluginProvider:
+    """Central registry of plugin instances
+
+    Newly requested plugins are first checked against this Provider for duplication."""
+
+    _mutex = Lock()
+
+    _instance_cache = {}
+
+    @staticmethod
+    def getInstance(klass_def, config_root):
+        with PluginProvider._mutex:
+            klass_instances = PluginProvider._instance_cache.get(klass_def, {})
+            return klass_instances.get(str(config_root), None)
+
+    @staticmethod
+    def storeInstance(plugin, config_root):
+        klass_instances = PluginProvider._instance_cache.get(plugin.__class__, None)
+        if klass_instances is None:
+            klass_instances = {}
+            PluginProvider._instance_cache[plugin.__class__] = klass_instances
+        klass_instances[str(config_root)] = plugin
+
+
 def plugin_info(plugin: Union[Callable, str]) -> dict:
     return PluginCache.plugin_info(plugin)
 
@@ -387,7 +411,10 @@ def load_plugin(path, break_on_fail=True, config_root=_config) -> object:
             raise ConfigFailure(
                 'Incompatible function signature: plugin must take a "config_root"'
             )
-        plugin_instance = klass(config_root=config_root)
+        plugin_instance = PluginProvider.getInstance(klass, config_root)
+        if plugin_instance is None:
+            plugin_instance = klass(config_root=config_root)
+            PluginProvider.storeInstance(plugin_instance, config_root)
     except Exception as e:
         logging.warning(
             "Exception instantiating %s.%s: %s",
