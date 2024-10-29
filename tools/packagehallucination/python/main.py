@@ -25,7 +25,7 @@ def get_package_first_seen(package_name):
     return None
 
 def main():
-    output_file = "pypi_20241007_NEW.csv"
+    output_file = "pypi_20241007_NEW.tsv"
     packages = get_all_packages()
     processed = 0
     total_packages = len(packages)
@@ -36,7 +36,9 @@ def main():
     
     try:
         with open(output_file, "a", newline='') as outfile:
-            csv_writer = csv.writer(outfile)
+            tsv_writer = csv.writer(outfile, delimiter='\t')
+            tsv_writer.writerow(["text", "package_first_seen"])
+
             for batch in batches:
                 batch_results = []
                 with ThreadPoolExecutor(max_workers=batch_size) as executor:
@@ -55,7 +57,7 @@ def main():
                 
                 for package, creation_date in batch_results:
                     if creation_date:
-                        csv_writer.writerow([package, creation_date])
+                        tsv_writer.writerow([package, creation_date])
                     else:
                         print(f"No creation date found for {package}")
                 

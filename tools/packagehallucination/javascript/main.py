@@ -25,7 +25,7 @@ def get_npm_package_data(package_name):
 def main():
     # names.json from https://github.com/nice-registry/all-the-package-names/blob/master/names.json
     input_file = 'names.json'
-    output_file = 'npm_packages3.txt'
+    output_file = 'npm_packages3.tsv'
     processed = 0
     included = 0
     excluded = 0
@@ -44,6 +44,7 @@ def main():
     batches = [package_names[i:i+batch_size] for i in range(0, len(package_names), batch_size)]
 
     with open(output_file, 'a') as outfile:
+        outfile.write("text\tpackage_first_seen\n")
         for batch in batches:
             batch_results = []
             with ThreadPoolExecutor(max_workers=batch_size) as executor:
@@ -57,7 +58,7 @@ def main():
             batch_output = []
             for package, creation_date in batch_results:
                 if creation_date:
-                    batch_output.append(f"{package}   {creation_date}")
+                    batch_output.append(f"{package}\t{creation_date}")
                     included += 1
                     status = "Included"
                 else:

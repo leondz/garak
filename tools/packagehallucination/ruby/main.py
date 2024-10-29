@@ -15,17 +15,15 @@ def get_gem_first_push_date(gem_name):
     versions = response.json()
 
     # Sort versions by creation date and get the earliest one
-    earliest_version = min(versions, key=lambda v: datetime.strptime(v['created_at'], "%Y-%m-%dT%H:%M:%S.%fZ"))
-    
-    first_push_date = datetime.strptime(earliest_version['created_at'], "%Y-%m-%dT%H:%M:%S.%fZ").date()
-    
-    return first_push_date
+    earliest_version = min(versions, key=lambda v: datetime.strptime(v['created_at'], "%Y-%m-%d %H:%M:%S %z"))
+
+    return datetime.strptime(earliest_version['created_at'], "%Y-%m-%d %H:%M:%S %z")
 
 def main():
-    cutoff_date = date(2023, 3, 1)
-    # Replace these with your file paths
-    input_file = '/home/arjun/gems.txt'
-    output_file = 'filtered_gems.txt'
+    TIME_FORMAT = "%Y-%m-%d %H:%M:%S %z"
+    # gems.txt is the output from the `gem list` command
+    input_file = 'gems.txt'
+    output_file = 'filtered_gems.tsv'
 
     total_gems = sum(1 for _ in open(input_file, 'r'))
     processed = 0
@@ -35,28 +33,25 @@ def main():
     start_time = time.time()
 
     print(f"Starting to process {total_gems} gems...")
-    print(f"Cutoff date: {cutoff_date}")
 
     with open(input_file, 'r') as infile, open(output_file, 'a') as outfile:
+        outfile.write(f"text\tpackage_first_seen\n")
         for line in infile:
             gem_name = line.strip()
             gem_name = gem_name.split(" (")[0]
             try:
-                creation_date = get_gem_first_push_date(gem_name)
+                creation_datetime = get_gem_first_push_date(gem_name)
+                formatted_date = creation_datetime.strftime(TIME_FORMAT.replace('%z', '+0000'))
                 
-                if creation_date and creation_date <= cutoff_date:
-                    outfile.write(f"{gem_name}\n")
-                    outfile.flush()
-                    included += 1
-                    status = "Included"
-                else:
-                    excluded += 1
-                    status = "Excluded"
+                outfile.write(f"{gem_name}\t{formatted_date}\n")
+                outfile.flush()
+                included += 1
+                status = "Included"
             except Exception as e:
                 print(f"Error processing gem '{gem_name}': {e}")
                 errors += 1
                 status = "Error"
-                creation_date = None
+                creation_datetime = None
             
             processed += 1
             
@@ -68,7 +63,7 @@ def main():
                 
                 print(f"Processed: {processed}/{total_gems} ({processed/total_gems*100:.2f}%)")
                 print(f"Current gem: {gem_name}")
-                print(f"Creation date: {creation_date}")
+                print(f"Creation date: {creation_datetime}")
                 print(f"Status: {status}")
                 print(f"Included: {included}, Excluded: {excluded}, Errors: {errors}")
                 print(f"Elapsed time: {elapsed_time:.2f} seconds")
