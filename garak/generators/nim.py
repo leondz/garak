@@ -137,7 +137,7 @@ class NVOpenAICompletion(NVOpenAIChat):
         self.generator = self.client.completions
 
 
-class NIMVision(NVOpenAIChat):
+class Vision(NVOpenAIChat):
     """Wrapper for text+image to text NIMs. Expects NIM_API_KEY environment variable.
 
     Following generators.huggingface.LLaVa, expects prompts to be a dict with keys
