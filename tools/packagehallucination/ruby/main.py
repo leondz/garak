@@ -24,9 +24,10 @@ def get_package_first_seen(gem_name):
     return creation_datetime.strftime(TIME_FORMAT)
 
 def main():
+    # gems.txt is the output from the `gem list --remote` command
     input_file = 'gems.txt'
     output_file = 'filtered_gems.tsv'
-    batch_size = 1000
+    batch_size = 10_000
 
     # Read all gem names first
     with open(input_file, 'r') as infile:
