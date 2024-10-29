@@ -4,15 +4,15 @@
 import importlib
 import json
 import os
+from pathlib import Path
+import pytest
 import re
 import shutil
 import sys
 import tempfile
 
-import aiohttp.client_reqrep
-import pytest
+from pytest_httpserver import HTTPServer
 
-from pathlib import Path
 from garak import _config
 import garak.cli
 
@@ -772,14 +772,56 @@ def test_get_user_agents():
     assert isinstance(agents, dict)
 
 
+AGENT_TEST = "garak/9 - only simple tailors edition"
+
+
 def test_set_agents():
     from requests import utils
     import httpx
     import aiohttp
 
-    agent_test = "garak/9 - only simple tailors edition"
-    _config.set_all_http_lib_agents(agent_test)
+    _config.set_all_http_lib_agents(AGENT_TEST)
 
-    assert str(utils.default_user_agent()) == agent_test
-    assert httpx._client.USER_AGENT == agent_test
-    assert aiohttp.client_reqrep.SERVER_SOFTWARE == agent_test
+    assert str(utils.default_user_agent()) == AGENT_TEST
+    assert httpx._client.USER_AGENT == AGENT_TEST
+    assert aiohttp.client_reqrep.SERVER_SOFTWARE == AGENT_TEST
+
+def httpserver():
+   return HTTPServer()
+
+
+def test_agent_is_used_requests(httpserver: HTTPServer):
+    import requests
+
+    _config.set_http_lib_agents({"requests": AGENT_TEST})
+    httpserver.expect_request(
+        "/", headers={"User-Agent": AGENT_TEST}
+    ).respond_with_data("")
+    assert requests.get(httpserver.url_for("/")).status_code == 200
+
+
+def test_agent_is_used_httpx(httpserver: HTTPServer):
+    import httpx
+
+    _config.set_http_lib_agents({"httpx": AGENT_TEST})
+    httpserver.expect_request(
+        "/", headers={"User-Agent": AGENT_TEST}
+    ).respond_with_data("")
+    assert httpx.get(httpserver.url_for("/")).status_code == 200
+
+
+def test_agent_is_used_aiohttp(httpserver: HTTPServer):
+    import aiohttp
+    import asyncio
+
+    _config.set_http_lib_agents({"aiohttp": AGENT_TEST})
+
+    async def main():
+        async with aiohttp.ClientSession() as session:
+            async with session.get(httpserver.url_for("/")) as response:
+                html = await response.text()
+
+    httpserver.expect_request(
+        "/", headers={"User-Agent": AGENT_TEST}
+    ).respond_with_data("")
+    asyncio.run(main())
