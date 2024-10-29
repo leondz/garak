@@ -520,7 +520,10 @@ class Model(Pipeline, HFCompatible):
 
 
 class LLaVA(Generator, HFCompatible):
-    """Get LLaVA ([ text + image ] -> text) generations"""
+    """Get LLaVA ([ text + image ] -> text) generations
+
+    NB. This should be use with strict modality matching - generate() doesn't
+    support text-only prompts."""
 
     DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
         "max_tokens": 4000,
@@ -570,6 +573,7 @@ class LLaVA(Generator, HFCompatible):
     def generate(
         self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
+
         text_prompt = prompt["text"]
         try:
             image_prompt = Image.open(prompt["image"])
