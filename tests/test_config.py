@@ -9,6 +9,7 @@ import shutil
 import sys
 import tempfile
 
+import aiohttp.client_reqrep
 import pytest
 
 from pathlib import Path
@@ -764,3 +765,21 @@ def test_nested():
 
     _config.plugins.generators["a"]["b"]["c"]["d"] = "e"
     assert _config.plugins.generators["a"]["b"]["c"]["d"] == "e"
+
+
+def test_get_user_agents():
+    agents = _config.get_http_lib_agents()
+    assert isinstance(agents, dict)
+
+
+def test_set_agents():
+    from requests import utils
+    import httpx
+    import aiohttp
+
+    agent_test = "garak/9 - only simple tailors edition"
+    _config.set_all_http_lib_agents(agent_test)
+
+    assert str(utils.default_user_agent()) == agent_test
+    assert httpx._client.USER_AGENT == agent_test
+    assert aiohttp.client_reqrep.SERVER_SOFTWARE == agent_test

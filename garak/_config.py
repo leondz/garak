@@ -153,9 +153,40 @@ def _store_config(settings_files) -> None:
     run.user_agent = run.user_agent.replace("{version}", version)
     plugins = _set_settings(plugins, settings["plugins"])
     reporting = _set_settings(reporting, settings["reporting"])
-    from requests import utils
 
-    utils.default_user_agent = run.user_agent
+
+def set_all_http_lib_agents(agent_string):
+    set_http_lib_agents(
+        {"requests": agent_string, "httpx": agent_string, "aiohttp": agent_string}
+    )
+
+
+def set_http_lib_agents(agent_strings: dict):
+    if "requests" in agent_strings:
+        from requests import utils
+
+        utils.default_user_agent = lambda x=None: agent_strings["requests"]
+    if "httpx" in agent_strings:
+        import httpx
+
+        httpx._client.USER_AGENT = agent_strings["httpx"]
+    if "aiohttp" in agent_strings:
+        import aiohttp
+
+        aiohttp.client_reqrep.SERVER_SOFTWARE = agent_strings["aiohttp"]
+
+
+def get_http_lib_agents():
+    from requests import utils
+    import httpx
+    import aiohttp
+
+    agent_strings = {}
+    agent_strings["requests"] = utils.default_user_agent
+    agent_strings["httpx"] = httpx._client.USER_AGENT
+    agent_strings["aiohttp"] = aiohttp.client_reqrep.SERVER_SOFTWARE
+
+    return agent_strings
 
 
 def load_base_config() -> None:
