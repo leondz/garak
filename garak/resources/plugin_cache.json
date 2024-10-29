@@ -5907,7 +5907,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-08-31 16:54:33 +0000"
+      "mod_time": "2024-10-25 11:31:50 +0000"
     },
     "generators.cohere.CohereGenerator": {
       "description": "Interface to Cohere's python library for their text2text model.",
@@ -6093,7 +6093,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2024-10-21 15:50:27 +0000"
+      "mod_time": "2024-10-25 12:11:40 +0000"
     },
     "generators.huggingface.InferenceAPI": {
       "description": "Get text generations from Hugging Face Inference API",
@@ -6118,7 +6118,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2024-10-21 15:50:27 +0000"
+      "mod_time": "2024-10-25 12:11:40 +0000"
     },
     "generators.huggingface.InferenceEndpoint": {
       "description": "Interface for Hugging Face private endpoints",
@@ -6143,7 +6143,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-10-21 15:50:27 +0000"
+      "mod_time": "2024-10-25 12:11:40 +0000"
     },
     "generators.huggingface.LLaVA": {
       "description": "Get LLaVA ([ text + image ] -> text) generations",
@@ -6171,7 +6171,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": false,
-      "mod_time": "2024-10-21 15:50:27 +0000"
+      "mod_time": "2024-10-25 12:11:40 +0000"
     },
     "generators.huggingface.Model": {
       "description": "Get text generations from a locally-run Hugging Face model",
@@ -6198,7 +6198,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2024-10-21 15:50:27 +0000"
+      "mod_time": "2024-10-25 12:11:40 +0000"
     },
     "generators.huggingface.OptimumPipeline": {
       "description": "Get text generations from a locally-run Hugging Face pipeline using NVIDIA Optimum",
@@ -6225,7 +6225,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2024-10-21 15:50:27 +0000"
+      "mod_time": "2024-10-25 12:11:40 +0000"
     },
     "generators.huggingface.Pipeline": {
       "description": "Get text generations from a locally-run Hugging Face pipeline",
@@ -6252,7 +6252,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": true,
-      "mod_time": "2024-10-21 15:50:27 +0000"
+      "mod_time": "2024-10-25 12:11:40 +0000"
     },
     "generators.langchain.LangChainLLMGenerator": {
       "description": "Class supporting LangChain LLM interfaces",
@@ -6400,7 +6400,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-09-03 10:59:40 +0000"
+      "mod_time": "2024-10-29 16:56:00 +0000"
     },
     "generators.nim.NVOpenAICompletion": {
       "description": "Wrapper for NVIDIA-hosted NIMs. Expects NIM_API_KEY environment variable.",
@@ -6439,7 +6439,49 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-09-03 10:59:40 +0000"
+      "mod_time": "2024-10-29 16:56:00 +0000"
+    },
+    "generators.nim.Vision": {
+      "description": "Wrapper for text+image to text NIMs. Expects NIM_API_KEY environment variable.",
+      "DEFAULT_PARAMS": {
+        "max_tokens": 150,
+        "temperature": 0.1,
+        "top_k": 0,
+        "context_len": null,
+        "top_p": 0.7,
+        "frequency_penalty": 0.0,
+        "presence_penalty": 0.0,
+        "seed": null,
+        "stop": [
+          "#",
+          ";"
+        ],
+        "suppressed_params": [
+          "frequency_penalty",
+          "n",
+          "presence_penalty",
+          "stop"
+        ],
+        "retry_json": true,
+        "uri": "https://integrate.api.nvidia.com/v1/",
+        "vary_seed_each_call": true,
+        "vary_temp_each_call": true,
+        "max_image_len": 180000
+      },
+      "active": true,
+      "generator_family_name": "NIM",
+      "modality": {
+        "in": [
+          "image",
+          "text"
+        ],
+        "out": [
+          "text"
+        ]
+      },
+      "parallel_capable": true,
+      "supports_multiple_generations": false,
+      "mod_time": "2024-10-29 16:56:00 +0000"
     },
     "generators.nvcf.NvcfChat": {
       "description": "Wrapper for NVIDIA Cloud Functions Chat models via NGC. Expects NVCF_API_KEY environment variable.",
@@ -6906,17 +6948,23 @@
   "harnesses": {
     "harnesses.base.Harness": {
       "description": "Class to manage the whole process of probing, detecting and evaluating",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "strict_modality_match": false
+      },
       "active": true,
-      "mod_time": "2024-08-16 10:24:53 +0000"
+      "mod_time": "2024-10-25 12:12:02 +0000"
     },
     "harnesses.probewise.ProbewiseHarness": {
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "strict_modality_match": false
+      },
       "active": true,
       "mod_time": "2024-06-12 10:04:47 +0000"
     },
     "harnesses.pxd.PxD": {
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "strict_modality_match": false
+      },
       "active": true,
       "mod_time": "2024-10-17 21:05:25 +0000"
     }
