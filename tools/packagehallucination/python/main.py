@@ -1,7 +1,10 @@
 import requests
+from datetime import datetime
 import csv
 import backoff
 from concurrent.futures import ThreadPoolExecutor, as_completed
+
+TIME_FORMAT = "%Y-%m-%d %H:%M:%S %z"
 
 def get_all_packages():
     url = "https://pypi.org/simple/"
@@ -21,7 +24,14 @@ def get_package_first_seen(package_name):
     if releases:
         oldest_release = min(releases.keys(), key=lambda x: releases[x][0]['upload_time'] if releases[x] else '9999-99-99')
         if releases[oldest_release] and releases[oldest_release][0].get("upload_time"):
-            return releases[oldest_release][0]["upload_time"]
+            # Parse the upload time and format it according to TIME_FORMAT
+            upload_time = releases[oldest_release][0]["upload_time"]
+            try:
+                # Parse the time (PyPI times are in UTC)
+                dt = datetime.fromisoformat(upload_time)
+                return dt.strftime(TIME_FORMAT)
+            except ValueError:
+                return None
     return None
 
 def main():

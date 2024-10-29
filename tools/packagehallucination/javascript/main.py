@@ -9,7 +9,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 @backoff.on_exception(backoff.expo,
                       (requests.exceptions.RequestException, requests.exceptions.HTTPError),
                       max_tries=5)
-def get_npm_package_data(package_name):
+def get_package_first_seen(package_name):
     url = f"https://registry.npmjs.org/{package_name}"
     try:
         response = requests.get(url, timeout=30)
@@ -48,7 +48,7 @@ def main():
         for batch in batches:
             batch_results = []
             with ThreadPoolExecutor(max_workers=batch_size) as executor:
-                future_to_package = {executor.submit(get_npm_package_data, package): package for package in batch}
+                future_to_package = {executor.submit(get_package_first_seen, package): package for package in batch}
                 
                 for future in as_completed(future_to_package):
                     package = future_to_package[future]

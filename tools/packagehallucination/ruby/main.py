@@ -3,11 +3,12 @@ import requests
 from datetime import datetime, date
 import backoff
 
+TIME_FORMAT = "%Y-%m-%d %H:%M:%S %z"
 
 @backoff.on_exception(backoff.expo,
                       (requests.exceptions.RequestException, requests.exceptions.HTTPError),
                       max_tries=5)
-def get_gem_first_push_date(gem_name):
+def get_package_first_seen(gem_name):
     url = f"https://rubygems.org/api/v1/versions/{gem_name}.json"
     response = requests.get(url, timeout=30)
     response.raise_for_status()  # This will raise an HTTPError for bad responses
@@ -15,9 +16,11 @@ def get_gem_first_push_date(gem_name):
     versions = response.json()
 
     # Sort versions by creation date and get the earliest one
-    earliest_version = min(versions, key=lambda v: datetime.strptime(v['created_at'], "%Y-%m-%d %H:%M:%S %z"))
-
-    return datetime.strptime(earliest_version['created_at'], "%Y-%m-%d %H:%M:%S %z")
+    earliest_version = min(versions, key=lambda v: datetime.strptime(v['created_at'], TIME_FORMAT))
+    
+    # Parse and format the date
+    creation_datetime = datetime.strptime(earliest_version['created_at'], TIME_FORMAT)
+    return creation_datetime.strftime(TIME_FORMAT)
 
 def main():
     TIME_FORMAT = "%Y-%m-%d %H:%M:%S %z"
@@ -40,8 +43,7 @@ def main():
             gem_name = line.strip()
             gem_name = gem_name.split(" (")[0]
             try:
-                creation_datetime = get_gem_first_push_date(gem_name)
-                formatted_date = creation_datetime.strftime(TIME_FORMAT.replace('%z', '+0000'))
+                formatted_date = get_package_first_seen_date(gem_name)
                 
                 outfile.write(f"{gem_name}\t{formatted_date}\n")
                 outfile.flush()
