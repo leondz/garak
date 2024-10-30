@@ -4,6 +4,8 @@
 
 `garak` checks if an LLM can be made to fail in a way we don't want. `garak` probes for hallucination, data leakage, prompt injection, misinformation, toxicity generation, jailbreaks, and many other weaknesses. If you know `nmap`, it's `nmap` for LLMs. 
 
+`garak` focuses on ways of making an LLM or dialog system fail. It combines static, dyanmic, and adaptive probes to explore this.
+
 `garak`'s a free tool. We love developing it and are always interested in adding functionality to support applications. 
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -249,6 +251,8 @@ For testing. This generator repeats back the prompt it received.
 * A hit log, detailing attempts that yielded a vulnerability (a 'hit')
 
 ## How is the code structured?
+
+Check out the [reference docs](https://reference.garak.ai/) for an authoritative guide to `garak` code structure.
 
 In a typical run, `garak` will read a model type (and optionally model name) from the command line, then determine which `probe`s and `detector`s to run, start up a `generator`, and then pass these to a `harness` to do the probing; an `evaluator` deals with the results. There are many modules in each of these categories, and each module provides a number of classes that act as individual plugins.
 
