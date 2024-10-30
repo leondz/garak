@@ -9,7 +9,7 @@ of exactly how each plugin behaves.
 Specifying custom configuration
 -------------------------------
 
-Garak can be configured in multiple ways:
+``garak`` can be configured in multiple ways:
 
 * Via command-line parameters
 * Using YAML configs

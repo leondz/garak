@@ -1,9 +1,9 @@
-Top-level concepts in garak
-===========================
+Top-level concepts in ``garak``
+===============================
 
 What are we doing here, and how does it all fit together?
 Our goal is to test the security of something that takes prompts 
-and returns text. garak has a few constructs used to simplify and 
+and returns text. ``garak`` has a few constructs used to simplify and 
 organise this process.
 
 
@@ -28,7 +28,7 @@ attempt
 Attempts represent one unique try at breaking the target. A probe wraps
 up each of its adversarial interactions in an attempt object, and passes this
 to the generator. The generator adds responses into the attempt and sends
-the attempt back. This is logged in garak reporting which contains (among other
+the attempt back. This is logged in ``garak`` reporting which contains (among other
 things) JSON dumps of attempts.
 
 Once the probe is done with the attempt and the generator has added its 
@@ -58,7 +58,7 @@ to an object containing pass/fail data for a specific probe and detector pair.
 
 harnesses
 ---------
-The harnesses manage orchestration of a garak run. They select probes, then 
+The harnesses manage orchestration of a ``garak`` run. They select probes, then 
 detectors, and co-ordinate running probes, passing results to detectors, and 
 doing the final evaluation
 

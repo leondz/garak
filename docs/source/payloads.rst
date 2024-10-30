@@ -2,7 +2,7 @@ garak.payloads
 ==============
 
 This module co-ordinates and provides for dynamic switching of "payloads"
-with garak. Payloads are items intended for inserting in prompts, that
+with ``garak``. Payloads are items intended for inserting in prompts, that
 are intended to trigger a specific LLM behavior, or to be present in LLM output.
 
 A payload can affect how we detect whether a probe was successful. For example,
