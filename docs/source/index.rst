@@ -38,7 +38,7 @@ Using garak
 
    how
    usage
-   `FAQ <https://github.com/leondz/garak/blob/main/FAQ.md>`_
+   FAQ <https://github.com/leondz/garak/blob/main/FAQ.md>
 
 Advanced usage
 ^^^^^^^^^^^^^^
