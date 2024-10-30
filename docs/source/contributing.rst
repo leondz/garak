@@ -10,6 +10,14 @@ You can use github's fork function to do this, which makes a copy of the ``garak
 In there, you can edit code and build.
 Once you're done, make a pull request to the main repo and describe what you've done -- and we'll take it from there!
 
+Checking your contribution is within scope
+------------------------------------------
+
+``garak`` is a security toolkit rather than a content safety or bias toolkit.
+The project scope relates primarily to LLM & dialog system security.
+This is a huge area, and you can get an idea of the kind of contributions that are in scope from our `FAQ <https://github.com/leondz/garak/blob/main/FAQ.md>_` and our `Github issues <https://github.com/leondz/garak/issues>`_ page.
+
+
 
 Connecting with the ``garak`` team & community
 ----------------------------------------------
