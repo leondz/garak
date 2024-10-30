@@ -176,18 +176,26 @@ def test_core_config_options_explained():
     core_config_file_name = (
         garak._config.transient.package_dir / "resources" / "garak.core.yaml"
     )
-    doc_nodes_to_check = []
+    l1_nodes_to_check = []
+    l2_nodes_to_check = []
+
     with open(core_config_file_name, encoding="utf-8") as settings_file:
         settings = yaml.safe_load(settings_file)
         for top_level_setting in settings:
-            doc_nodes_to_check.append(top_level_setting)
+            l1_nodes_to_check.append(top_level_setting)
             for second_level_setting in settings[top_level_setting]:
-                doc_nodes_to_check.append(second_level_setting)
+                l2_nodes_to_check.append(second_level_setting)
 
     configurable_rst = open(
         Path("docs") / "source" / "configurable.rst", "r", encoding="utf-8"
     ).read()
-    for doc_node_to_check in doc_nodes_to_check:
+
+    for l1_node in l1_nodes_to_check:
         assert (
-            f"``{doc_node_to_check}``" in configurable_rst
-        ), f"core config value '{doc_node_to_check}' must be documented in configurable.rst"
+            f"\n``{l1_node}`` config items\n" in configurable_rst
+        ), f"core config value '{l1_node}' must be documented in configurable.rst"
+
+    for l2_node in l2_nodes_to_check:
+        assert (
+            f"\n* ``{l2_node}`` - " in configurable_rst
+        ), f"core config value '{l2_node}' must be documented in configurable.rst"
