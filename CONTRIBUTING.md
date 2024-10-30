@@ -44,6 +44,8 @@ We will then take care of the issue as soon as possible.
 
 ## I Want To Contribute
 
+Check out our [guide to contributing garak code](https://reference.garak.ai/en/latest/contributing.html). It's also important to make sure that your contribution is within scope of the project - it's so sad to not merge good code which does things outside of where `garak` is going. Check the [FAQ](FAQ.md) for info on what `garak` is and isn't. If you have any doubt, get in touch!
+
 ### Legal Notice <!-- omit in toc -->
 When contributing to this project, you must agree that you have authored 100% of the content, that you have the necessary rights to the content and that the content you contribute may be provided under the project license. All contributors are asked to sign the garak CA/DCO (contributor agreement/developer certificate of origin) when sending their first pull request. The process is automated by a bot that will comment on the pull request. We use the same DCO as the Linux Foundation requires its contributors to sign.
 

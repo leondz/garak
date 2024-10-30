@@ -11,6 +11,8 @@ Both 'a's like a in English "hat", or à in French, or /æ/ in IPA.
 
 `garak` is designed to help discover situations where a language model generates outputs that one might not want it to. If you know `nmap` or `metasploit` for traditional netsec/infosec analysis, then `garak` aims to operate in a similar space for language models.
 
+It's not a tool for assessing social biases in language models, or propensity of a system to produce toxic content. The focus isn't safety, it's security. `garak` might try to exploit a weakness and demonstrate that weakness by making a model generate unsafe content, but we're focused on the weakness over the content.
+
 ## How does garak work?
 
 `garak` has probes that try to look for different "vulnerabilities". Each probs sends specific prompts to models, and gets multiple generations for each prompt. LLM output is often stochastic, so a single test isn't very informative. These generations are then processed by "detectors", which will look for "hits". If a detector registers a hit, that attempt is registered as failing. Finally, a report is output with the success/failure rate for each probe and detector.
