@@ -352,6 +352,7 @@ def main(arguments=None) -> None:
         for plugin_type in plugin_types:
             opts_arg = f"{plugin_type}_options"
             opts_file = f"{plugin_type}_option_file"
+            opts_cli_config = None
             if opts_arg in args or opts_file in args:
                 if opts_arg in args:
                     opts_argv = getattr(args, opts_arg)
