@@ -155,6 +155,14 @@ def _store_config(settings_files) -> None:
     reporting = _set_settings(reporting, settings["reporting"])
 
 
+def _garak_user_agent(dummy=None):
+    global run
+    if hasattr(run, "user_agent"):
+        return run.user_agent
+    else:
+        return "garak"
+
+
 def set_all_http_lib_agents(agent_string):
     set_http_lib_agents(
         {"requests": agent_string, "httpx": agent_string, "aiohttp": agent_string}
@@ -165,7 +173,7 @@ def set_http_lib_agents(agent_strings: dict):
     if "requests" in agent_strings:
         from requests import utils
 
-        utils.default_user_agent = lambda x=None: agent_strings["requests"]
+        utils.default_user_agent = _garak_user_agent
     if "httpx" in agent_strings:
         import httpx
 
