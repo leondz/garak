@@ -9,7 +9,7 @@ These are broken into the following major categories:
 * system: options that don't affect the security assessment
 * run: options that describe how a garak run will be conducted
 * plugins: config for plugins (generators, probes, detectors, buffs)
-* transient: internal values local to a single garak execution
+* transient: internal values local to a single ``garak`` execution
 
 Config values are loaded in the following priority (lowest-first):
 

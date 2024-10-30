@@ -1,5 +1,5 @@
-How garak runs
-==============
+How ``garak`` runs
+==================
 
 In a typical run, ``garak`` will read a model type (and optionally model name) 
 from the command line, then determine which ``probe`` and ``detector`` plugins to run, 
@@ -14,7 +14,8 @@ plugins.
 * `garak/generators/` - plugins for LLMs to be probed
 * `garak/harnesses/` - classes for structuring testing
 * `garak/buffs` - classes for augmenting / fuzzing attacks
-* `resources/` - ancillary items required by plugins
+* `data/` - ancillary data
+* `resources/` - ancillary code
 
 The default operating mode is to use the :class:`garak.harnesses.probewise` harness. Given a list of 
 probe module names and probe plugin names, the ``probewise`` harness instantiates 
@@ -29,6 +30,6 @@ descends from :class:`garak.generators.base.Generator`.
 
 Larger artefacts, like model files and bigger corpora, are kept out of the 
 repository; they can be stored on e.g. Hugging Face Hub and loaded locally 
-by clients using garak.
+by clients using ``garak``.
 
 

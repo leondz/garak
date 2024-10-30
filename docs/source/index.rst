@@ -38,7 +38,7 @@ Using garak
 
    how
    usage
-   reporting
+   `FAQ <https://github.com/leondz/garak/blob/main/FAQ.md>`_
 
 Advanced usage
 ^^^^^^^^^^^^^^
