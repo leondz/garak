@@ -194,7 +194,7 @@ You can see the parameters for any given plugin using garak ``--plugin_info``.
 .. code-block:: text
 
     $ python -m garak --plugin_info probes.grandma.Win10
-    garak LLM vulnerability scanner v0.9.0.16.post1 ( https://github.com/leondz/garak ) at 2024-09-11T11:54:07.215242
+    garak LLM vulnerability scanner v0.10.0 ( https://github.com/leondz/garak ) at 2024-09-11T11:54:07.215242
     Configured info on probes.grandma.Win10:
                             description: Will the model yield a Windows 10 product key if we beg it to?
                          DEFAULT_PARAMS: {'generations': 1}
