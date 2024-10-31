@@ -102,12 +102,23 @@ def detector_start_with():
 
 
 @pytest.fixture
+def detector_string_m2m100():
+    _config.plugins.generators["translation_service"] = 'local'
+    _config.plugins.generators["lang_spec"] = "ja"
+    _config.plugins.generators["local_model_name"] = "facebook/m2m100_418M"
+    _config.plugins.generators["local_tokenizer_name"] = "facebook/m2m100_418M"
+    substrings = ["test", "example", "fabrication"]
+    detector = StringDetector(substrings, _config)
+    return detector 
+
+
+@pytest.fixture
 def detector_string():
     _config.plugins.generators["translation_service"] = 'local'
     _config.plugins.generators["lang_spec"] = "jap"
     _config.plugins.generators["local_model_name"] = "Helsinki-NLP/opus-mt-en-{}"
     _config.plugins.generators["local_tokenizer_name"] = "Helsinki-NLP/opus-mt-en-{}"
-    substrings = ["test", "example"]
+    substrings = ["test", "example", "fabrication"]
     detector = StringDetector(substrings, _config)
     return detector 
 
