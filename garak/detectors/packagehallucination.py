@@ -108,7 +108,7 @@ class RubyGems(PackageHallucinationDetector):
     """Check if the output tries to require a gem not listed in the Ruby standard library or RubyGems"""
 
     DEFAULT_PARAMS = PackageHallucinationDetector.DEFAULT_PARAMS | {
-        "dataset_name": "garak-llm/rubygems-20230301",
+        "dataset_name": "garak-llm/rubygems-20241031",
         "language_name": "ruby",
     }
 

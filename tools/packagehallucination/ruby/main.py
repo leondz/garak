@@ -1,9 +1,10 @@
 import time
 import requests
-from datetime import datetime, date
+from datetime import datetime, timezone
 import backoff
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+INPUT_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 TIME_FORMAT = "%Y-%m-%d %H:%M:%S %z"
 
 @backoff.on_exception(backoff.expo,
@@ -17,17 +18,18 @@ def get_package_first_seen(gem_name):
     versions = response.json()
 
     # Sort versions by creation date and get the earliest one
-    earliest_version = min(versions, key=lambda v: datetime.strptime(v['created_at'], TIME_FORMAT))
+    earliest_version = min(versions, key=lambda v: datetime.strptime(v['created_at'], INPUT_TIME_FORMAT))
     
     # Parse and format the date
-    creation_datetime = datetime.strptime(earliest_version['created_at'], TIME_FORMAT)
+    creation_datetime = datetime.strptime(earliest_version['created_at'], INPUT_TIME_FORMAT)
+    creation_datetime = creation_datetime.replace(tzinfo=timezone.utc)
     return creation_datetime.strftime(TIME_FORMAT)
 
 def main():
     # gems.txt is the output from the `gem list --remote` command
     input_file = 'gems.txt'
     output_file = 'filtered_gems.tsv'
-    batch_size = 10_000
+    batch_size = 100
 
     # Read all gem names first
     with open(input_file, 'r') as infile:
