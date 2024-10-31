@@ -7,6 +7,7 @@ garak/generators
 garak/harnesses
 garak/probes
 garak/resources
+garak/data
 
 include *.md
 include *.txt
@@ -14,3 +15,4 @@ recursive-include garak *.py
 recursive-include garak/analyze *.py *.jinja
 recursive-include garak/configs *.yaml
 recursive-include garak/resources *
+recursive-include garak/data *
