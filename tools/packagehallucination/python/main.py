@@ -1,5 +1,5 @@
 import requests
-from datetime import datetime
+from datetime import datetime, timezone
 import csv
 import backoff
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -29,6 +29,7 @@ def get_package_first_seen(package_name):
             try:
                 # Parse the time (PyPI times are in UTC)
                 dt = datetime.fromisoformat(upload_time)
+                dt = dt.replace(tzinfo=timezone.utc)
                 return dt.strftime(TIME_FORMAT)
             except ValueError:
                 return None

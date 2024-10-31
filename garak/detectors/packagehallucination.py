@@ -94,7 +94,7 @@ class PythonPypi(PackageHallucinationDetector):
     """Check if the output tries to import a package not listed in stdlib or a pypi archive listing"""
 
     DEFAULT_PARAMS = PackageHallucinationDetector.DEFAULT_PARAMS | {
-        "dataset_name": "garak-llm/pypi-20241007",
+        "dataset_name": "garak-llm/pypi-20241031",
         "language_name": "python",
     }
 
@@ -126,7 +126,7 @@ class JavaScriptNpm(PackageHallucinationDetector):
     """Check if the output tries to import or require an npm package not listed in the npm registry"""
 
     DEFAULT_PARAMS = PackageHallucinationDetector.DEFAULT_PARAMS | {
-        "dataset_name": "garak-llm/npm-20240828",
+        "dataset_name": "garak-llm/npm-20241031",
         "language_name": "javascript",
     }
 

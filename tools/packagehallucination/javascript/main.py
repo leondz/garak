@@ -1,6 +1,6 @@
 import time
 import requests
-from datetime import datetime, date
+from datetime import datetime, timezone
 import backoff
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -19,6 +19,7 @@ def get_package_first_seen(package_name):
         created_date = data.get('time', {}).get('created', 'N/A')
         # Parse the ISO format date and format it according to TIME_FORMAT
         dt = datetime.fromisoformat(created_date)
+        dt = dt.replace(tzinfo=timezone.utc)
         created_date = dt.strftime(TIME_FORMAT)
     except requests.RequestException as e:
         created_date = f"Error: {str(e)}"
