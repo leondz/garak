@@ -7,7 +7,7 @@
 
 from collections.abc import Iterable
 import garak.attempt
-from typing import Optional
+from typing import Optional, List
 from deepl import Translator
 import os
 import riva.client
@@ -20,6 +20,7 @@ import string
 import logging
 import nltk
 from nltk.corpus import words
+from langdetect import detect, DetectorFactory, LangDetectException
 
 # Ensure the NLTK words corpus is downloaded
 nltk.download('words', quiet=True)
@@ -93,6 +94,29 @@ def is_nested_list(lst: list) -> bool:
     return any(isinstance(i, list) for i in lst)
 
 
+def is_meaning_string(text: str) -> bool:
+    """Check if the input text is a meaningless sequence or invalid for translation."""
+    DetectorFactory.seed = 0
+
+    # Detect Language: Skip if no valid language is detected
+    try:
+        lang = detect(text)
+        logging.debug(f"Detected language: {lang} text {text}")
+    except LangDetectException:
+        logging.debug("Could not detect a valid language.")
+        return False 
+    
+    if lang == "en":
+        return False
+
+    # Length and pattern checks: Skip if it's too short or repetitive
+    if len(text) < 3 or re.match(r"(.)\1{3,}", text):  # e.g., "aaaa" or "123123"
+        logging.debug(f"Detected short or repetitive sequence. text {text}")
+        return False 
+
+    return True 
+
+
 class SimpleTranslator:
     """DeepL or NIM translation option"""
 
@@ -127,6 +151,7 @@ class SimpleTranslator:
         self.source_lang = source_lang
         self.target_lang = plugin_generators_dict.get("lang_spec", "en")
         self.translation_service = plugin_generators_dict.get("translation_service", "")
+        self.model_name = plugin_generators_dict.get("translation_service", "")
         self.deepl_api_key = os.getenv(self.DEEPL_ENV_VAR)
         self.nim_api_key = os.getenv(self.NIM_ENV_VAR)
 
@@ -175,11 +200,10 @@ class SimpleTranslator:
             translated_lines.append(translated_line)
 
         res = '\n'.join(translated_lines)
-        logging.debug(f"translated_lines: {translated_lines}")
 
         return res
 
-    def translate_prompts(self, prompts):
+    def translate_prompts(self, prompts: List[str]) -> List[str]:
         if hasattr(self, 'target_lang') is False or self.source_lang == "*" or self.target_lang == "":
             return prompts 
         translated_prompts = []
@@ -197,6 +221,7 @@ class SimpleTranslator:
                     translated_prompts.append(prompt)
         if len(translated_prompts) > 0:
             prompts.extend(translated_prompts)
+        logging.debug(f"prompts with translated prompts: {prompts}")
         return prompts 
 
     def translate_triggers(self, triggers: list):
@@ -240,7 +265,6 @@ class DanTranslator(SimpleTranslator):
                 translated_lines.append(translated_line)
 
         res = '\n'.join(translated_lines)
-        logging.debug(f"translated_lines: {translated_lines}")
 
         return res
 
@@ -271,7 +295,6 @@ class EncodingTranslator(SimpleTranslator):
                     translated_lines.append(translated_line)
 
         res = '\n'.join(translated_lines)
-        logging.debug(f"translated_lines: {translated_lines}")
 
         return res
 
@@ -295,7 +318,6 @@ class GoodsideTranslator(SimpleTranslator):
                 translated_lines.append(translated_line)
 
         res = '\n'.join(translated_lines)
-        logging.debug(f"translated_lines: {translated_lines}")
 
         return res
     
@@ -313,6 +335,7 @@ class ReverseTranslator(SimpleTranslator):
             return text
     
     def translate_prompts(self, prompts):
+        logging.debug(f"before reverses translated prompts : {prompts}")
         if hasattr(self, 'target_lang') is False or self.source_lang == "*" or self.target_lang == "":
             return prompts 
         translated_prompts = []
@@ -321,13 +344,14 @@ class ReverseTranslator(SimpleTranslator):
             if self.source_lang == lang:
                 continue 
             for prompt in prompts:
-                mean_word_judge = is_english(prompt)
+                mean_word_judge = is_meaning_string(prompt)
                 self.judge_list.append(mean_word_judge)
-                if mean_word_judge is False:
+                if mean_word_judge:
                     translate_prompt = self._get_response(prompt, self.source_lang, lang)
                     translated_prompts.append(translate_prompt)
                 else:
                     translated_prompts.append(prompt)
+        logging.debug(f"reverse translated prompts : {translated_prompts}")
         return translated_prompts 
 
 
@@ -373,6 +397,8 @@ class LocalTranslator():
             translated = self.model.generate(**encoded_text, forced_bos_token_id=self.tokenizer.get_lang_id(target_lang))
 
             translated_text = self.tokenizer.batch_decode(translated, skip_special_tokens=True)[0]
+            
+            return translated_text
         else:
             tokenizer = self.tokenizers[target_lang]
             model = self.models[target_lang]
@@ -382,7 +408,7 @@ class LocalTranslator():
             
             translated_text = tokenizer.batch_decode(translated, skip_special_tokens=True)[0]
 
-        return translated_text
+            return translated_text
 
     def _get_response(self, input_text: str, source_lang: Optional[str] = None, target_lang: Optional[list] = None):
         if not (source_lang and target_lang):
@@ -399,10 +425,9 @@ class LocalTranslator():
             translated_lines.append(translated_line)
 
         res = '\n'.join(translated_lines)
-        logging.debug(f"translated_lines: {translated_lines}")
         return res 
     
-    def translate_prompts(self, prompts):
+    def translate_prompts(self, prompts: List[str]) -> List[str]:
         if hasattr(self, 'target_lang') is False or self.source_lang == "*":
             return prompts 
         translated_prompts = []
@@ -421,6 +446,7 @@ class LocalTranslator():
                     translated_prompts.append(prompt)
         if len(translated_prompts) > 0:
             prompts.extend(translated_prompts)
+        logging.debug(f"prompts with translated prompts: {prompts}")
         return prompts 
 
     def translate_triggers(self, triggers):
@@ -461,7 +487,6 @@ class LocalDanTranslator(LocalTranslator):
                 translated_lines.append(translated_line)
 
         res = '\n'.join(translated_lines)
-        logging.debug(f"translated_lines: {translated_lines}")
         return res
 
 
@@ -490,7 +515,6 @@ class LocalEncodingTranslator(LocalTranslator):
                     translated_lines.append(translated_line)
 
         res = '\n'.join(translated_lines)
-        logging.debug(f"translated_lines: {translated_lines}")
 
         return res
 
@@ -513,7 +537,6 @@ class LocalGoodsideTranslator(LocalTranslator):
                 translated_lines.append(translated_line)
 
         res = '\n'.join(translated_lines)
-        logging.debug(f"translated_lines: {translated_lines}")
 
         return res
 
@@ -565,6 +588,7 @@ class LocalReverseTranslator(LocalTranslator):
         return translated_text
 
     def translate_prompts(self, prompts):
+        logging.debug(f"before reverses translated prompts : {prompts}")
         if hasattr(self, 'target_lang') is False or self.source_lang == "*":
             return prompts 
         translated_prompts = []
@@ -573,11 +597,12 @@ class LocalReverseTranslator(LocalTranslator):
             if self.source_lang == lang:
                 continue 
             for prompt in prompts:
-                mean_word_judge = is_english(prompt)
+                mean_word_judge = is_meaning_string(prompt)
                 self.judge_list.append(mean_word_judge)
-                if mean_word_judge is False:
+                if mean_word_judge:
                     translate_prompt = self._get_response(prompt, self.source_lang, lang)
                     translated_prompts.append(translate_prompt)
                 else:
                     translated_prompts.append(prompt)
+        logging.debug(f"reverse translated prompts : {translated_prompts}")
         return translated_prompts 

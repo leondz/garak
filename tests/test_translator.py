@@ -9,7 +9,7 @@ from garak.translator import (
     LocalEncodingTranslator,
     LocalGoodsideTranslator,
     LocalReverseTranslator,
-    split_input_text
+    split_input_text,
 )
 from garak import _config
 import os
@@ -33,11 +33,11 @@ def test_split_input_text():
 
 
 @pytest.mark.parametrize("translator_class, lang_spec, model_name, tokenizer_name", [
-    (LocalTranslator, "ja", "facebook/m2m100_1.2B", "facebook/m2m100_1.2B"),
-    (LocalDanTranslator, "ja", "facebook/m2m100_1.2B", "facebook/m2m100_1.2B"),
-    (LocalEncodingTranslator, "ja", "facebook/m2m100_1.2B", "facebook/m2m100_1.2B"),
-    (LocalGoodsideTranslator, "ja", "facebook/m2m100_1.2B", "facebook/m2m100_1.2B"),
-    (LocalTranslator, "fr", "facebook/m2m100_1.2B", "facebook/m2m100_1.2B"),
+    (LocalTranslator, "ja", "facebook/m2m100_418M", "facebook/m2m100_418M"),
+    (LocalDanTranslator, "ja", "facebook/m2m100_418M", "facebook/m2m100_418M"),
+    (LocalEncodingTranslator, "ja", "facebook/m2m100_418M", "facebook/m2m100_418M"),
+    (LocalGoodsideTranslator, "ja", "facebook/m2m100_418M", "facebook/m2m100_418M"),
+    (LocalTranslator, "fr", "facebook/m2m100_418M", "facebook/m2m100_418M"),
     (LocalTranslator, "jap", "Helsinki-NLP/opus-mt-en-{}", "Helsinki-NLP/opus-mt-en-{}"),
     (LocalDanTranslator, "jap", "Helsinki-NLP/opus-mt-en-{}", "Helsinki-NLP/opus-mt-en-{}"),
     (LocalEncodingTranslator, "jap", "Helsinki-NLP/opus-mt-en-{}", "Helsinki-NLP/opus-mt-en-{}"),
@@ -63,10 +63,10 @@ def test_local_translate_single_language(translator_class, lang_spec, model_name
 
 
 @pytest.mark.parametrize("translator_class, lang_specs, model_name, tokenizer_name", [
-    (LocalTranslator, ["ja", "fr"], "facebook/m2m100_1.2B", "facebook/m2m100_1.2B"),
-    (LocalDanTranslator, ["ja", "fr"], "facebook/m2m100_1.2B", "facebook/m2m100_1.2B" ),
-    (LocalEncodingTranslator, ["ja", "fr"], "facebook/m2m100_1.2B", "facebook/m2m100_1.2B" ),
-    (LocalGoodsideTranslator, ["ja", "fr"], "facebook/m2m100_1.2B", "facebook/m2m100_1.2B"),
+    (LocalTranslator, ["ja", "fr"], "facebook/m2m100_418M", "facebook/m2m100_418M"),
+    (LocalDanTranslator, ["ja", "fr"], "facebook/m2m100_418M", "facebook/m2m100_418M"),
+    (LocalEncodingTranslator, ["ja", "fr"], "facebook/m2m100_418M", "facebook/m2m100_418M"),
+    (LocalGoodsideTranslator, ["ja", "fr"], "facebook/m2m100_418M", "facebook/m2m100_418M"),
     (LocalTranslator, ["jap", "fr"], "Helsinki-NLP/opus-mt-en-{}", "Helsinki-NLP/opus-mt-en-{}"),
     (LocalDanTranslator, ["jap", "fr"], "Helsinki-NLP/opus-mt-en-{}", "Helsinki-NLP/opus-mt-en-{}"),
     (LocalEncodingTranslator, ["jap", "fr"], "Helsinki-NLP/opus-mt-en-{}", "Helsinki-NLP/opus-mt-en-{}"),
@@ -91,11 +91,11 @@ def test_local_translate_multiple_languages(translator_class, lang_specs, model_
     garak._config.load_base_config()
 
 @pytest.mark.parametrize("translator_class, model_name, tokenizer_name", [
-    (LocalTranslator, "facebook/m2m100_1.2B", "facebook/m2m100_1.2B"),
-    (LocalDanTranslator, "facebook/m2m100_1.2B", "facebook/m2m100_1.2B"),
-    (LocalEncodingTranslator, "facebook/m2m100_1.2B", "facebook/m2m100_1.2B"),
-    (LocalGoodsideTranslator, "facebook/m2m100_1.2B", "facebook/m2m100_1.2B"),
-    (LocalTranslator, "facebook/m2m100_1.2B", "facebook/m2m100_1.2B"),
+    (LocalTranslator, "facebook/m2m100_418M", "facebook/m2m100_418M"),
+    (LocalDanTranslator, "facebook/m2m100_418M", "facebook/m2m100_418M"),
+    (LocalEncodingTranslator, "facebook/m2m100_418M", "facebook/m2m100_418M"),
+    (LocalGoodsideTranslator, "facebook/m2m100_418M", "facebook/m2m100_418M"),
+    (LocalTranslator, "facebook/m2m100_418M", "facebook/m2m100_418M"),
     (LocalTranslator, "Helsinki-NLP/opus-mt-en-{}", "Helsinki-NLP/opus-mt-en-{}"),
     (LocalDanTranslator, "Helsinki-NLP/opus-mt-en-{}", "Helsinki-NLP/opus-mt-en-{}"),
     (LocalEncodingTranslator, "Helsinki-NLP/opus-mt-en-{}", "Helsinki-NLP/opus-mt-en-{}"),
@@ -117,7 +117,7 @@ def test_same_source_and_target_language(translator_class, model_name, tokenizer
     garak._config.load_base_config()
 
 @pytest.mark.parametrize("model_name, tokenizer_name, lang", [
-    ("facebook/m2m100_1.2B", "facebook/m2m100_1.2B", "ja"),
+    ("facebook/m2m100_418M", "facebook/m2m100_418M", "ja"),
     ("Helsinki-NLP/opus-mt-{}-en", "Helsinki-NLP/opus-mt-{}-en", "jap"),
 ])
 def test_reverse_translation(model_name, tokenizer_name, lang):
