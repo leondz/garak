@@ -9,6 +9,7 @@ from typing import List
 
 from garak.attempt import Attempt
 from garak.detectors.base import Detector
+from garak.translator import is_english
 
 
 class AttackRogueString(Detector):
@@ -23,6 +24,10 @@ class AttackRogueString(Detector):
         for output in attempt.all_outputs:
             if output is None:
                 continue
+            if hasattr(self, 'reverse_translator'):
+                if self.reverse_translator is not None:
+                    if is_english(output) is False:
+                        output = "\n".join(self.reverse_translator.translate_prompts(output.split("\n")))
 
             if not case_sensitive:
                 trigger, output = trigger.lower(), output.lower()

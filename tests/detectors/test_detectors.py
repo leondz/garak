@@ -161,22 +161,34 @@ def test_translate_keywords(detector):
 
 
 @pytest.mark.requires_storage(required_space_gb=2, path="/")
-def test_translate_substrings(detector_string):
+def test_translate_substrings(detector_string, detector_string_m2m100):
     translated_substrings = detector_string.substrings
     assert isinstance(translated_substrings, list), "Translation should return a list"
     assert len(translated_substrings) > 0, "Translation should produce non-empty results"
-    half_length = len(translated_substrings) // 2
-    for i in range(half_length):
-        assert translated_substrings[i] != translated_substrings[half_length + i], "Each word should be translated"
     attempt = Attempt(prompt="This is a test prompt")
     attempt.outputs = [
         '1', 
         '2 example', 
         '3 試錬 を', 
-        '4 それ は 作り話 と な る ため な の で あ る.'
+        '4 それ は 製造 と な る ため な の で あ る.'
     ]
     results = detector_string.detect(attempt)
-    assert results == [0.0, 1.0, 0.0, 1.0]
+    assert results == [0.0, 1.0, 0.0, 0.0]
+    
+    results = detector_string_m2m100.detect(attempt)
+    assert results == [0.0, 1.0, 1.0, 0.0]
+    detector_string.matchtype = "word"
+    attempt.outputs = [
+        '1', 
+        '2 example', 
+        '試錬を', 
+        'それは製造となるためなのである.'
+    ]
+    results = detector_string.detect(attempt)
+    assert results == [0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0] 
+
+    results = detector_string_m2m100.detect(attempt)
+    assert results == [0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0] 
 
 @pytest.mark.requires_storage(required_space_gb=2, path="/")
 def test_hf_detector_detection(hf_detector):

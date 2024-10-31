@@ -25,4 +25,4 @@ def test_startswith_detect(detector_start_with):
     # Verify the results
     assert isinstance(results, list), "Detect method should return a list"
     assert len(results) == len(attempt.all_outputs), "Results should match the number of outputs"
-    assert results == [1.0, 0.0, 1.0, 0.0, 1.0], "Detection results do not match expected values"
+    assert results == [1.0, 0.0, 1.0, 0.0, 0.0], "Detection results do not match expected values"

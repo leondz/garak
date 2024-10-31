@@ -7,6 +7,7 @@ output by the model
 from garak import _config
 from garak.attempt import Attempt
 from garak.detectors.base import Detector, StringDetector
+from garak.translator import is_english
 
 
 class DecodeMatch(StringDetector):
@@ -50,6 +51,10 @@ class DecodeApprox(Detector):
 
             if q is None:
                 continue
+            if hasattr(self, 'reverse_translator'):
+                if self.reverse_translator is not None:
+                    if is_english(q) is False:
+                        q = "\n".join(self.reverse_translator.translate_prompts(q.split("\n")))
 
             best_match = 0.0
             for s in self.substrings:

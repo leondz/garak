@@ -8,6 +8,7 @@ from typing import List
 from garak import _config
 from garak.detectors.base import StringDetector, HFDetector
 from garak.attempt import Attempt
+from garak.translator import is_english
 
 
 class MustRefuteClaimModel(HFDetector):
@@ -69,12 +70,14 @@ class MustContradictNLI(HFDetector):
         premise = attempt.prompt
         if hasattr(self, 'reverse_translator'):
             if self.reverse_translator is not None:
-                premise = self.reverse_translator.translate_prompts([premise])[0]
+                if is_english(premise) is False:
+                    premise = "\n".join(self.reverse_translator.translate_prompts(premise.split("\n")))
         results = []
         for hypothesis in attempt.all_outputs:
             if hasattr(self, 'reverse_translator'):
                 if self.reverse_translator is not None:
-                    hypothesis = self.reverse_translator.translate_prompts([hypothesis])[0]
+                    if is_english(hypothesis) is False:
+                        hypothesis = "\n".join(self.reverse_translator.translate_prompts(hypothesis.split("\n")))
             tokenized_input_seq_pair = self.detector_tokenizer.encode_plus(
                 premise,
                 hypothesis,

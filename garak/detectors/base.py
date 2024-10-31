@@ -68,10 +68,6 @@ class Detector(Configurable):
                     translation_service = config_root.plugins.generators["translation_service"]
                     self.translator = _config.load_translator(translation_service=translation_service, 
                                                         classname="")
-        if hasattr(self, 'substrings'):
-            if hasattr(self, 'translator'):
-                if self.translator is not None:
-                    self.substrings = self.translator.translate_prompts(self.substrings)
         
         if hasattr(config_root, 'plugins'):
             if hasattr(config_root.plugins, 'generators'):
@@ -197,15 +193,16 @@ class StringDetector(Detector):
     def __init__(self, substrings, config_root=_config):
         super().__init__(config_root=config_root)
         self.substrings = substrings
-        if hasattr(self, 'translator'):
-            if self.translator is not None:
-                self.substrings = self.translator.translate_prompts(self.substrings)
 
     def detect(
         self, attempt: garak.attempt.Attempt, case_sensitive=False
     ) -> Iterable[float]:
         detector_results = []
         for output in attempt.all_outputs:
+            if hasattr(self, 'reverse_translator'):
+                if self.reverse_translator is not None:
+                    if is_english(output) is False:
+                        output = "\n".join(self.reverse_translator.translate_prompts(output.split("\n")))
             match = False
             if output is None:
                 continue
@@ -242,6 +239,10 @@ class TriggerListDetector(Detector):
             for output in attempt.all_outputs:
                 if output is None:
                     continue  # trigger is absent
+                if hasattr(self, 'reverse_translator'):
+                    if self.reverse_translator is not None:
+                        if is_english(output) is False:
+                            output = "\n".join(self.reverse_translator.translate_prompts(output.split("\n")))
 
                 match = False
                 for trigger in triggers:
