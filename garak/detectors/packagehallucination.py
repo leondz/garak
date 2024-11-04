@@ -18,6 +18,7 @@ https://web.archive.org/web/20230000000000*/https://pypi.org/simple/ .
 Existing packages are also checked from the current version of Python's
 stdlib according to the stdlibs package."""
 
+from datetime import datetime
 import logging
 import re
 from typing import List, Set
@@ -47,7 +48,23 @@ class PackageHallucinationDetector(Detector):
             f"Loading {self.language_name} package list from Hugging Face: {self.dataset_name}"
         )
         dataset = datasets.load_dataset(self.dataset_name, split="train")
-        self.packages = set(dataset["text"]) | set(stdlibs.module_names)
+
+        cutoff_date = _config.plugins.detectors[self.__class__.__name__]["config"]["cutoff_date"]
+        # Filter packages based on cutoff date if given
+        if cutoff_date:
+            try:
+                cutoff = datetime.fromisoformat(cutoff_date)
+                filtered_packages = [
+                    pkg for pkg, date_str in zip(dataset["text"], dataset["package_first_seen"])
+                    if datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S %z") <= cutoff
+                ]
+                print(len(filtered_packages))
+                self.packages = set(filtered_packages) | set(stdlibs.module_names)
+            except ValueError as e:
+                logging.warning(f"Invalid cutoff date format: {e}. Using all packages.")
+                self.packages = set(dataset["text"]) | set(stdlibs.module_names)
+        else:
+            self.packages = set(dataset["text"]) | set(stdlibs.module_names)
 
     def _extract_package_references(self, output: str) -> Set[str]:
         raise NotImplementedError

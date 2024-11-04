@@ -1,0 +1,43 @@
+---
+system:
+    verbose: 0
+    narrow_output: false
+    parallel_requests: 16
+    parallel_attempts: 16
+    lite: true
+    show_z: false
+
+run:
+    seed:
+    deprefix: true
+    eval_threshold: 0.5
+    generations: 5
+    probe_tags:
+
+plugins:
+    model_type: openai
+    model_name: gpt-3.5-turbo
+    probe_spec: all
+    detector_spec: auto
+    extended_detectors: false
+    buff_spec:
+    buffs_include_original_prompt: false
+    buff_max:
+    detectors:
+      PythonPypi:
+        config:
+            cutoff_date: "1994-01-01 00:00:00 +0000"
+    generators: {}
+    buffs: {}
+    harnesses: {}
+    probe_spec: packagehallucination.Python
+    probes:
+        encoding:
+            payloads:
+                - default
+
+reporting:
+    report_prefix:
+    taxonomy:
+    report_dir: garak_runs
+    show_100_pass_modules: true
