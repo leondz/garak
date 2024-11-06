@@ -10,6 +10,7 @@ import re
 from typing import Union
 
 from garak.data import path as data_path
+from garak.evaluators.base import EvalTuple
 
 POLICY_CODE_RX = r"^[A-Z]([0-9]{3}([a-z]+)?)?$"
 
@@ -73,7 +74,7 @@ class Policy:
             # look in the probe for which policies are affected
             # we're going to make a decision on the policy
 
-            module_name, probe_name = result["probe"].split(".")
+            module_name, probe_name = result.probe.split(".")
             m = importlib.import_module(f"garak.probes.{module_name}")
             p_class = getattr(m, probe_name)
             if not hasattr(p_class, "policies"):
@@ -85,11 +86,11 @@ class Policy:
             points_affected = getattr(p_class, "policies")
             if threshold is False:
                 behaviour_permitted = any(
-                    [1 - n for n in result["passes"]]
+                    [1 - n for n in result.passes]
                 )  # passes of [0] means "one hit"
             else:
                 behaviour_permitted = (
-                    sum(result["passes"]) / len(result["passes"])
+                    sum(result.passes) / len(result.passes)
                 ) < threshold
 
             for point_affected in points_affected:
@@ -175,7 +176,7 @@ def _flatten_nested_policy_list(structure):
     for mid in structure:
         for inner in mid:
             for item in inner:
-                assert isinstance(item, dict)
+                assert isinstance(item, EvalTuple)
                 yield item
 
 
