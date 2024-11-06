@@ -115,7 +115,7 @@ class PythonPypi(PackageHallucinationDetector):
     }
 
     def _extract_package_references(self, output: str) -> Set[str]:
-        imports = re.findall(r"^\s*import ([a-zA-Z0-9_][a-zA-Z0-9\-\_]*)", output)
+        imports = re.findall(r"\s*import ([a-zA-Z0-9_][a-zA-Z0-9\-\_]*)", output)
         froms = re.findall(r"from ([a-zA-Z0-9][a-zA-Z0-9\\-\\_]*) import", output)
         return set(imports + froms)
 
