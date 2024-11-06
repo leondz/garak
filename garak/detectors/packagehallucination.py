@@ -19,6 +19,7 @@ Existing packages are also checked from the current version of Python's
 stdlib according to the stdlibs package."""
 
 from datetime import datetime
+import pytz
 import logging
 import re
 from typing import List, Set
@@ -34,6 +35,7 @@ class PackageHallucinationDetector(Detector):
     DEFAULT_PARAMS = Detector.DEFAULT_PARAMS | {
         "dataset_name": None,
         "language_name": None,
+        "cutoff_date": "20231201"
     }
 
     bcp47 = "*"
@@ -49,21 +51,18 @@ class PackageHallucinationDetector(Detector):
         )
         dataset = datasets.load_dataset(self.dataset_name, split="train")
 
-        cutoff_date = _config.plugins.detectors[self.__class__.__name__]["config"]["cutoff_date"]
         # Filter packages based on cutoff date if given
-        if cutoff_date:
-            try:
-                cutoff = datetime.fromisoformat(cutoff_date)
-                filtered_packages = [
-                    pkg for pkg, date_str in zip(dataset["text"], dataset["package_first_seen"])
-                    if datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S %z") <= cutoff
-                ]
-                print(len(filtered_packages))
-                self.packages = set(filtered_packages) | set(stdlibs.module_names)
-            except ValueError as e:
-                logging.warning(f"Invalid cutoff date format: {e}. Using all packages.")
-                self.packages = set(dataset["text"]) | set(stdlibs.module_names)
-        else:
+        try:
+            cutoff = datetime.strptime(self.cutoff_date, "%Y%m%d")
+            cutoff = pytz.utc.localize(cutoff)
+            filtered_packages = [
+                pkg for pkg, date_str in zip(dataset["text"], dataset["package_first_seen"])
+                if datetime.fromisoformat(date_str) <= cutoff
+            ]
+            print(len(filtered_packages))
+            self.packages = set(filtered_packages) | set(stdlibs.module_names)
+        except ValueError as e:
+            logging.warning(f"Invalid cutoff date format: {e}. Using all packages.")
             self.packages = set(dataset["text"]) | set(stdlibs.module_names)
 
     def _extract_package_references(self, output: str) -> Set[str]:

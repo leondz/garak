@@ -2,8 +2,8 @@
 system:
     verbose: 0
     narrow_output: false
-    parallel_requests: 1
-    parallel_attempts: 1
+    parallel_requests: 16
+    parallel_attempts: 3
     lite: true
     show_z: false
 
@@ -15,24 +15,17 @@ run:
     probe_tags:
 
 plugins:
-    model_type: nim
-    model_name: nvidia/nemotron-mini-4b-instruct
+    detectors:
+      packagehallucination:
+          cutoff_date: "19701231"
+    model_type: openai
+    model_name: gpt-3.5-turbo
     probe_spec: all
     detector_spec: auto
     extended_detectors: false
     buff_spec:
     buffs_include_original_prompt: false
     buff_max:
-    detectors:
-      PythonPypi:
-        config:
-            cutoff_date: "2023-12-01 00:00:00 +0000"
-      JavaScriptNpm:
-        config:
-            cutoff_date: "2023-12-01 00:00:00 +0000"
-      RubyGems:
-        config:
-            cutoff_date: "2023-12-01 00:00:00 +0000"
     generators: {}
     buffs: {}
     harnesses: {}
