@@ -1,7 +1,88 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-""" Policy point tools """
+""" Policy tools 
+
+Policy metadata
+The total set of points in the behaviour typology can be represented as a dictionary. Definitions of policy names, descriptions, and behaviours are stored in a JSON data file
+
+* Key: behaviour identifier - format is TDDDs*
+	* T: a top-level hierarchy code letter, in CTMS for chat/tasks/meta/safety
+	* D: a three-digit code for this behaviour
+	* s*: (optional) one or more letters identifying a sub-policy
+
+* Value: a dict describing a behaviour
+    * “name”: A short name of what is permitted when this behaviour is allowed
+    * “description”: (optional) a deeper description of this behaviour
+
+The structure of the identifiers describes the hierarchical structure.
+Prompts & probes
+Example prompts or probes to be used to test a behaviour. Not every entry in the policy needs to have prompts or probes defined, and if a policy does have them define, it doesn’t need to have both described. If a prompt is given, it’s assumed that the mitigation.mitigationBypass detector should be used for this. That detector should always point to our best-effort mitigation message detection.
+
+* Key: behaviour identifier
+* Value: a dict describing how to test
+	* “prompts”: a list of strings to try to test the behaviour
+	* “probes”: garak probes compatible with load_plugin() that can test the behaviour
+
+Implementing policy probes
+--------------------------
+
+Probes that are non-adversarial and only test a policy should have a class attr like “policy_probe”
+
+Policy probes, i.e. those where this is set to true, should also list the policies that they test for, in a class var. E.g. if “policies_tested = [“C006”]” then hits in this probe indicate the model’s policy is to permit policy point C006.
+
+Following from this, 
+
+-- list_probes should NOT show policy probes
+-- list_policy_probes should list policy probes, and be added to garak.command 
+probe_spec expansions need to be able to select between policy and non-policy probes
+Propose an optional filter value in plugin enumeration, a dict where values have to be matched for them to be returned
+
+Questions:
+
+* Where do the policy scan results go? Harnesses don't return much -> evaluators return information used to develop results; policy is serialised and written to report jonsl and policy jsonl
+* How do we differentiate policy results in the results log? Distinct type tag
+
+Policy expectations / examples
+------------------------------
+
+We might like to define an example policy for an LLM. This can be done in JSON.
+
+* Key: behaviour identifier
+* Value: True if this is allowed, False if this is not allowed, None if no stance is taken
+
+If leaf behaviours are not included, the parent’s value is assumed to apply, rather than the leaf taking a default like None.
+
+Denoting policy
+---------------
+
+Object: `Policy`
+
+Methods: 
+```
+policy.permitted(behaviour) -> True/False/None
+policy.compare(policy) -> list of policy points where there’s a difference
+policy.set(prefix, value) -> set prefix to value
+policy.settree(prefix, value) -> set this and all sub-points in the policy to value
+```
+
+Run flow
+--------
+
+1. Start-up
+2. If policy scan is enabled..
+3. Run a policy test (garak.command)
+    a. Select policy probes (add filtering to _plugins.enumerate() ?)
+    b. Invoke a policy harness (garak.harnesses.policy)
+    6. Process results using a policy evaluator (garak.evaluators.policy ?)
+    d. Convert eval result into a policy (garak.policy)
+4. Write policy to report jsonl
+5. Assemble the main run
+    a. (optionally) Skip probes that test things we permit anyway
+6. Store policy somewhere transient where can grab it later
+
+
+"""
 
 import importlib
 import json
@@ -11,6 +92,14 @@ from typing import Union
 
 from garak.data import path as data_path
 from garak.evaluators.base import EvalTuple
+
+
+""" Policy points have a key describing where they fit in the policy typology.
+* Key: behaviour identifier - format is TDDDs*
+	* T: a top-level hierarchy code letter, in CTMS for chat/tasks/meta/safety
+	* D: a three-digit code for this behaviour
+	* s*: (optional) one or more letters identifying a sub-policy
+"""
 
 POLICY_CODE_RX = r"^[A-Z]([0-9]{3}([a-z]+)?)?$"
 
