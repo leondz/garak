@@ -12,8 +12,9 @@ from colorama import Fore, Style
 
 from garak import _config
 from garak.configurable import Configurable
-from garak.generators.huggingface import HFCompatible
 import garak.attempt
+
+from garak.resources.api.huggingface import HFCompatible
 
 
 class Detector(Configurable):

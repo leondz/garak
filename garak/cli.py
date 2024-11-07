@@ -339,6 +339,15 @@ def main(arguments=None) -> None:
     if "buffs" in args:
         _config.plugins.buff_spec = args.buffs
 
+    # base config complete
+
+    if hasattr(_config.run, "seed") and isinstance(_config.run.seed, int):
+        import random
+
+        random.seed(
+            _config.run.seed
+        )  # setting seed persists across re-imports of random
+
     # startup
     import sys
     import json
@@ -352,6 +361,7 @@ def main(arguments=None) -> None:
         for plugin_type in plugin_types:
             opts_arg = f"{plugin_type}_options"
             opts_file = f"{plugin_type}_option_file"
+            opts_cli_config = None
             if opts_arg in args or opts_file in args:
                 if opts_arg in args:
                     opts_argv = getattr(args, opts_arg)

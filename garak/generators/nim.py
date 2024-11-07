@@ -67,6 +67,9 @@ class NVOpenAIChat(OpenAICompatible):
         self.generator = None
         self.client = None
 
+    def _prepare_prompt(self, prompt):
+        return prompt
+
     def _call_model(
         self, prompt: str | List[dict], generations_this_call: int = 1
     ) -> List[Union[str, None]]:
@@ -80,8 +83,17 @@ class NVOpenAIChat(OpenAICompatible):
         if self.vary_temp_each_call:
             self.temperature = random.random()
 
+        prompt = self._prepare_prompt(prompt)
+        if prompt is None:
+            # if we didn't get a valid prompt, don't process it, and send the NoneType(s) downstream
+            return [None] * generations_this_call
+
         try:
             result = super()._call_model(prompt, generations_this_call)
+        except openai.UnprocessableEntityError as uee:
+            msg = "Model call didn't match endpoint expectations, see log"
+            logging.critical(msg, exc_info=uee)
+            raise GarakException(f"🛑 {msg}") from uee
         #        except openai.NotFoundError as oe:
         except Exception as oe:
             msg = "NIM endpoint not found. Is the model name spelled correctly?"
@@ -123,6 +135,47 @@ class NVOpenAICompletion(NVOpenAIChat):
     def _load_client(self):
         self.client = openai.OpenAI(base_url=self.uri, api_key=self.api_key)
         self.generator = self.client.completions
+
+
+class Vision(NVOpenAIChat):
+    """Wrapper for text+image to text NIMs. Expects NIM_API_KEY environment variable.
+
+    Following generators.huggingface.LLaVa, expects prompts to be a dict with keys
+    "text" and "image"; text holds the text prompt, image holds a path to the image."""
+
+    DEFAULT_PARAMS = NVOpenAIChat.DEFAULT_PARAMS | {
+        "suppressed_params": {"n", "frequency_penalty", "presence_penalty", "stop"},
+        "max_image_len": 180_000,
+    }
+
+    modality = {"in": {"text", "image"}, "out": {"text"}}
+
+    def _prepare_prompt(self, prompt):
+        import base64
+
+        if isinstance(prompt, str):
+            prompt = {"text": prompt, "image": None}
+
+        text = prompt["text"]
+        image_filename = prompt["image"]
+        if image_filename is not None:
+            with open(image_filename, "rb") as f:
+                image_b64 = base64.b64encode(f.read()).decode()
+
+            if len(image_b64) > self.max_image_len:
+                logging.error(
+                    "Image %s exceeds length limit. To upload larger images, use the assets API (not yet supported)",
+                    image_filename,
+                )
+                return None
+
+            image_extension = prompt["image"].split(".")[-1].lower()
+            if image_extension == "jpg":  # image/jpg is not a valid mimetype
+                image_extension = "jpeg"
+            text = (
+                text + f' <img src="data:image/{image_extension};base64,{image_b64}" />'
+            )
+        return text
 
 
 DEFAULT_CLASS = "NVOpenAIChat"
