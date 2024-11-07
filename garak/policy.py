@@ -194,7 +194,7 @@ class Policy:
         """propagate permissiveness upwards. if any child is True, and parent is None, set parent to True"""
         # get bottom nodes
         # get mid nodes
-        # skip four parents - they don't propagate up
+        # skip for parents - they don't propagate up
         # iterate in order :)
 
         point_order = []
