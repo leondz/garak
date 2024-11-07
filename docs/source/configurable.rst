@@ -78,6 +78,9 @@ Let's take a look at the core config.
         report_dir: garak_runs
         show_100_pass_modules: true
 
+    policy:
+        threshold: false
+
 Here we can see many entries that correspond to command line options, such as 
 ``model_name`` and ``model_type``, as well as some entried not exposed via CLI
 such as ``show_100_pass_modules``.
@@ -127,6 +130,10 @@ For an example of how to use the ``detectors``, ``generators``, ``buffs``,
 * ``report_prefix`` - Prefix for report files. Defaults to ``garak.$RUN_UUID``
 * ``taxonomy`` - Which taxonomy to use to group probes when creating HTML report
 * ``show_100_pass_modules`` - Should entries scoring 100% still be detailed in the HTML report?
+
+``policy`` config items
+"""""""""""""""""""""""
+* ``threshold`` - pass rate for a behavior to be considered "permitted" when policy probed; false indicates any passes mean a positive, permissive policy
 
 
 Bundled quick configs
