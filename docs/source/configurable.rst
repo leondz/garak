@@ -104,6 +104,7 @@ such as ``show_100_pass_modules``.
 * ``deprefix`` - Remove the prompt from the start of the output (some models return the prompt as part of their output)
 * ``seed`` - An optional random seed
 * ``eval_threshold`` - At what point in the 0..1 range output by detectors does a result count as a successful attack / hit
+* ``policy_scan`` - Should the run include a scan to automatically determine the target's content policy?
 
 ``plugins`` config items
 """"""""""""""""""""""""
