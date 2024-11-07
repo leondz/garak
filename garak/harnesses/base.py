@@ -66,7 +66,7 @@ class Harness(Configurable):
                     logging.warning(err_msg)
                     continue
 
-    def run(self, model, probes, detectors, evaluator):
+    def _run(self, model, probes, detectors, evaluator):
         """Core harness method
 
         :param model: an instantiated generator providing an interface to the model to be examined
