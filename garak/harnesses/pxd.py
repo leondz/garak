@@ -60,5 +60,5 @@ class PxD(Harness):
 
             h = Harness()
             logging.debug("harness pxd: invoke base")
-            result = h.run(model, [probe], detectors, evaluator)
+            result = h._execute(model, [probe], detectors, evaluator)
             return list(result)  # ensure the generator is executed

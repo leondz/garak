@@ -66,7 +66,11 @@ class Harness(Configurable):
                     logging.warning(err_msg)
                     continue
 
-    def _run(self, model, probes, detectors, evaluator):
+    def run():
+        """Orchestration call that assembles plugins and calls _execute()"""
+        raise NotImplementedError
+
+    def _execute(self, model, probes, detectors, evaluator):
         """Core harness method
 
         :param model: an instantiated generator providing an interface to the model to be examined
