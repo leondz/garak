@@ -247,11 +247,6 @@ def main(arguments=None) -> None:
         help="Enter interactive probing mode",
     )
     parser.add_argument(
-        "--generate_autodan",
-        action="store_true",
-        help="generate AutoDAN prompts; requires --prompt_options with JSON containing a prompt and target",
-    )
-    parser.add_argument(
         "--interactive.py",
         action="store_true",
         help="Launch garak in interactive.py mode",
@@ -521,20 +516,6 @@ def main(arguments=None) -> None:
 
             # configure generations counts for main run
             _config.distribute_generations_config(parsed_specs["probe"], _config)
-
-            # autodan action
-            if "generate_autodan" in args and args.generate_autodan:
-                from garak.resources.autodan import autodan_generate
-
-                try:
-                    prompt = _config.probe_options["prompt"]
-                    target = _config.probe_options["target"]
-                except Exception as e:
-                    print(
-                        "AutoDAN generation requires --probe_options with a .json containing a `prompt` and `target` "
-                        "string"
-                    )
-                autodan_generate(generator=generator, prompt=prompt, target=target)
 
             # set up plugins for main run
             # instantiate evaluator
