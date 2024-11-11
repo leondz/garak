@@ -436,15 +436,11 @@ class Model(Pipeline, HFCompatible):
         if _config.run.seed is not None:
             transformers.set_seed(_config.run.seed)
 
-        trust_remote_code = self.name.startswith("mosaicml/mpt-")
-
         model_kwargs = self._gather_hf_params(
             hf_constructor=transformers.AutoConfig.from_pretrained
         )  # will defer to device_map if device map was `auto` may not match self.device
 
-        self.config = transformers.AutoConfig.from_pretrained(
-            self.name, trust_remote_code=trust_remote_code, **model_kwargs
-        )
+        self.config = transformers.AutoConfig.from_pretrained(self.name, **model_kwargs)
 
         self._set_hf_context_len(self.config)
         self.config.init_device = self.device  # determined by Pipeline `__init__``
