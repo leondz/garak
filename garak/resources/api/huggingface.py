@@ -9,7 +9,6 @@ from typing import Callable
 
 
 class HFCompatible:
-
     """Mixin class providing private utility methods for using Huggingface
     transformers within garak"""
 
@@ -78,6 +77,13 @@ class HFCompatible:
         ):
             del args["device"]
             args["device_map"] = self.device
+
+        # trust_remote_code reset to default disabled unless unlocked in garak HF item config
+        if (
+            "trust_remote_code" in params_to_process
+            and "trust_remote_code" not in params
+        ):
+            args["trust_remote_code"] = False
 
         return args
 
