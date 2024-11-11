@@ -155,12 +155,17 @@ def _store_config(settings_files) -> None:
     reporting = _set_settings(reporting, settings["reporting"])
 
 
+# not my favourite solution in this module, but if
+# _config.set_http_lib_agents() to be predicated on a param instead of
+# a _config.run value (i.e. user_agent) - which it needs to be if it can be
+# used when the values are popped back to originals - then a separate way
+# of passing the UA string to _garak_user_agent() needs to exist, outside of
+# _config.run.user_agent
+REQUESTS_AGENT = ""
+
+
 def _garak_user_agent(dummy=None):
-    global run
-    if hasattr(run, "user_agent"):
-        return run.user_agent
-    else:
-        return "garak"
+    return str(REQUESTS_AGENT)
 
 
 def set_all_http_lib_agents(agent_string):
@@ -170,9 +175,13 @@ def set_all_http_lib_agents(agent_string):
 
 
 def set_http_lib_agents(agent_strings: dict):
+
+    global REQUESTS_AGENT
+
     if "requests" in agent_strings:
         from requests import utils
 
+        REQUESTS_AGENT = agent_strings["requests"]
         utils.default_user_agent = _garak_user_agent
     if "httpx" in agent_strings:
         import httpx

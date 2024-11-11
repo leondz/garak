@@ -254,6 +254,7 @@ def main(arguments=None) -> None:
 
     # load site config before loading CLI config
     _cli_config_supplied = args.config is not None
+    prior_user_agents = _config.get_http_lib_agents()
     _config.load_config(run_config_filename=args.config)
 
     # extract what was actually passed on CLI; use a masking argparser
@@ -553,3 +554,5 @@ def main(arguments=None) -> None:
     except (ValueError, GarakException) as e:
         logging.exception(e)
         print(e)
+
+    _config.set_http_lib_agents(prior_user_agents)
