@@ -29,7 +29,8 @@ class RestGenerator(Generator):
     DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
         "headers": {},
         "method": "post",
-        "ratelimit_codes": [429],
+        "ratelimit_codes": {429},
+        "skip_codes": set(),
         "response_json": False,
         "response_json_field": None,
         "req_template": "$INPUT",
@@ -194,7 +195,15 @@ class RestGenerator(Generator):
         }
         resp = self.http_function(self.uri, **req_kArgs)
         if resp.status_code in self.ratelimit_codes:
-            raise RateLimitHit(f"Rate limited: {resp.status_code} - {resp.reason}, uri: {self.uri}")
+            raise RateLimitHit(
+                f"Rate limited: {resp.status_code} - {resp.reason}, uri: {self.uri}"
+            )
+
+        elif resp.status_code in self.skip_codes:
+            logging.debug(
+                f"REST skip prompt: {resp.status_code} - {resp.reason}, uri: {self.uri}"
+            )
+            return [None]
 
         elif str(resp.status_code)[0] == "3":
             raise NotImplementedError(
