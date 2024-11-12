@@ -194,16 +194,17 @@ class RestGenerator(Generator):
             "timeout": self.request_timeout,
         }
         resp = self.http_function(self.uri, **req_kArgs)
-        if resp.status_code in self.ratelimit_codes:
-            raise RateLimitHit(
-                f"Rate limited: {resp.status_code} - {resp.reason}, uri: {self.uri}"
-            )
 
-        elif resp.status_code in self.skip_codes:
+        if resp.status_code in self.skip_codes:
             logging.debug(
                 f"REST skip prompt: {resp.status_code} - {resp.reason}, uri: {self.uri}"
             )
             return [None]
+
+        elif resp.status_code in self.ratelimit_codes:
+            raise RateLimitHit(
+                f"Rate limited: {resp.status_code} - {resp.reason}, uri: {self.uri}"
+            )
 
         elif str(resp.status_code)[0] == "3":
             raise NotImplementedError(
