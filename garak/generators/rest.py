@@ -56,6 +56,7 @@ class RestGenerator(Generator):
         "req_template_json_object",
         "request_timeout",
         "ratelimit_codes",
+        "skip_codes",
         "temperature",
         "top_k",
     )
