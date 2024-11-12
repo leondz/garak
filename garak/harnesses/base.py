@@ -66,7 +66,11 @@ class Harness(Configurable):
                     logging.warning(err_msg)
                     continue
 
-    def run(self, model, probes, detectors, evaluator, announce_probe=True) -> None:
+    def run():
+        """Orchestration call that assembles plugins and calls _execute()"""
+        raise NotImplementedError
+
+    def _execute(self, model, probes, detectors, evaluator):
         """Core harness method
 
         :param model: an instantiated generator providing an interface to the model to be examined
@@ -77,19 +81,20 @@ class Harness(Configurable):
         :type detectors: List[garak.detectors.base.Detector]
         :param evaluator: an instantiated evaluator for judging detector results
         :type evaluator: garak.evaluators.base.Evaluator
-        :param announce_probe: Should we print probe loading messages?
-        :type announce_probe: bool, optional
         """
+
+        logging.debug("harness: run")
+
         if not detectors:
             msg = "No detectors, nothing to do"
-            logging.warning(msg)
+            logging.warning(f"harness: {msg}")
             if hasattr(_config.system, "verbose") and _config.system.verbose >= 2:
                 print(msg)
             raise ValueError(msg)
 
         if not probes:
             msg = "No probes, nothing to do"
-            logging.warning(msg)
+            logging.warning(f"harness: {msg}")
             if hasattr(_config.system, "verbose") and _config.system.verbose >= 2:
                 print(msg)
             raise ValueError(msg)
@@ -139,7 +144,7 @@ class Harness(Configurable):
                     detector_probe_name,
                 )
             else:
-                evaluator.evaluate(attempt_results)
+                yield list(evaluator.evaluate(attempt_results))
 
         logging.debug("harness: probe list iteration completed")
 
