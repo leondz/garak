@@ -17,7 +17,8 @@ class PegasusT5(Buff, HFCompatible):
     DEFAULT_PARAMS = Buff.DEFAULT_PARAMS | {
         "para_model_name": "garak-llm/pegasus_paraphrase",
         "hf_args": {
-            "device": "cpu"
+            "device": "cpu",
+            "trust_remote_code": False,
         },  # torch_dtype doesn't have standard support in Pegasus
         "max_length": 60,
         "temperature": 1.5,
@@ -39,13 +40,8 @@ class PegasusT5(Buff, HFCompatible):
         self.para_model = PegasusForConditionalGeneration.from_pretrained(
             self.para_model_name
         ).to(self.device)
-        trust_remote_code = (
-            self.hf_args["trust_remote_code"]
-            if "trust_remote_code" in self.hf_args
-            else False
-        )
         self.tokenizer = PegasusTokenizer.from_pretrained(
-            self.para_model_name, trust_remote_code=trust_remote_code
+            self.para_model_name, trust_remote_code=self.hf_args["trust_remote_code"]
         )
 
     def _get_response(self, input_text):
