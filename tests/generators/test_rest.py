@@ -3,7 +3,7 @@ import pytest
 import requests_mock
 from sympy import is_increasing
 
-from garak import _config
+from garak import _config, _plugins
 
 from garak.generators.rest import RestGenerator
 
@@ -95,3 +95,29 @@ def test_json_rest_deeper(requests_mock):
     generator = RestGenerator()
     output = generator._call_model("Who is Enabran Tain's son?")
     assert output == [DEFAULT_TEXT_RESPONSE]
+
+
+@pytest.mark.usefixtures("set_rest_config")
+def test_rest_skip_code(requests_mock):
+    generator = _plugins.load_plugin(
+        "generators.rest.RestGenerator", config_root=_config
+    )
+    generator.skip_codes = {200}
+    requests_mock.post(
+        DEFAULT_URI,
+        text=json.dumps(
+            {
+                "choices": [
+                    {
+                        "index": 0,
+                        "message": {
+                            "role": "assistant",
+                            "content": DEFAULT_TEXT_RESPONSE,
+                        },
+                    }
+                ]
+            }
+        ),
+    )
+    output = generator._call_model("Who is Enabran Tain's son?")
+    assert output == [None]
