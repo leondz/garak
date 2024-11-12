@@ -230,7 +230,7 @@ Testing
 
 Now that the pieces for our generator are in place - a subclass of ``garak.generators.base.Generator``, with some customisation in the constructor, and an overridden ``_call_model()`` method, plus a ``DEFAULT_CLASS`` given at module level - we can start to test.
 
-A good first step is to fire up the Python interpreter and try to import the module. Garak supports a specific range of tested Python versions (listed in `pyproject.toml <https://github.com/leondz/garak/blob/main/pyproject.toml>`_, under the ``classifiers`` descriptor), so remember to use the right Python version for testing.
+A good first step is to fire up the Python interpreter and try to import the module. Garak supports a specific range of tested Python versions (listed in `pyproject.toml <https://github.com/NVIDIA/garak/blob/main/pyproject.toml>`_, under the ``classifiers`` descriptor), so remember to use the right Python version for testing.
 
 .. code-block:: bash
 
@@ -299,7 +299,7 @@ The next step is to try some integration tests - executing garak from the comman
 
 Add some of your own tests if there are edge-case behaviours, general validation, or other things in ``__init__()``, ``_call_model()``, and other new methods that can be checked. Plugin-specific tests should go into a new file, ``tests/generators/test_[modulename].py``.
 
-If you want to see the full, live code for the Replicate garak generator, it's here: `garak/generators/replicate.py <https://github.com/leondz/garak/blob/main/garak/generators/replicate.py>`_ .
+If you want to see the full, live code for the Replicate garak generator, it's here: `garak/generators/replicate.py <https://github.com/NVIDIA/garak/blob/main/garak/generators/replicate.py>`_ .
 
 Done!
 =====
@@ -318,4 +318,4 @@ This tutorial covered a tool that takes text as input and produces text as outpu
 
     modality: dict = {"in": {"text"}, "out": {"text"}}
 
-For an example of a multimodal model, check out LLaVa in `garak.generators.huggingface <https://github.com/leondz/garak/blob/main/garak/generators/huggingface.py>`_ . 
+For an example of a multimodal model, check out LLaVa in `garak.generators.huggingface <https://github.com/NVIDIA/garak/blob/main/garak/generators/huggingface.py>`_ . 

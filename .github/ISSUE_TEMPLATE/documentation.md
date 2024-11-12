@@ -11,7 +11,7 @@ labels: "documentation"
   - Wiki: https://docs.garak.ai/garak
   - Code reference: https://reference.garak.ai/
 
-  Before opening a new issue, please search existing issues https://github.com/leondz/garak/issues
+  Before opening a new issue, please search existing issues https://github.com/NVIDIA/garak/issues
 -->
 
 ## Summary

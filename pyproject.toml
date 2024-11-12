@@ -102,8 +102,8 @@ calibration = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/leondz/garak"
-"Bug Tracker" = "https://github.com/leondz/garak/issues"
+"Homepage" = "https://github.com/NVIDIA/garak"
+"Bug Tracker" = "https://github.com/NVIDIA/garak/issues"
 
 [project.scripts]
 garak = "garak.__main__:main"

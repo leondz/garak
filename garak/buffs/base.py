@@ -83,7 +83,7 @@ class Buff(Configurable):
             leave=False,
         ):
             # create one or more untransformed new attempts
-            # don't include the original attempt/prompt in the buffs: https://github.com/leondz/garak/issues/373
+            # don't include the original attempt/prompt in the buffs: https://github.com/NVIDIA/garak/issues/373
             new_attempts = []
             new_attempts.append(
                 self._derive_new_attempt(source_attempt, source_attempt.seq)

@@ -38,7 +38,7 @@ Using garak
 
    how
    usage
-   FAQ <https://github.com/leondz/garak/blob/main/FAQ.md>
+   FAQ <https://github.com/NVIDIA/garak/blob/main/FAQ.md>
 
 Advanced usage
 ^^^^^^^^^^^^^^

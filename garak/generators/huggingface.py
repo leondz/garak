@@ -5,7 +5,7 @@ Supports pipelines, inference API, and models.
 Not all models on HF Hub work well with pipelines; try a Model generator
 if there are problems. Otherwise, please let us know if it's still not working!
 
- https://github.com/leondz/garak/issues
+ https://github.com/NVIDIA/garak/issues
 
 If you use the inference API, it's recommended to put your Hugging Face API key
 in an environment variable called HF_INFERENCE_TOKEN , else the rate limiting can
@@ -350,13 +350,13 @@ class InferenceAPI(Generator):
                         )
             else:
                 raise TypeError(
-                    f"Unsure how to parse 🤗 API response dict: {response}, please open an issue at https://github.com/leondz/garak/issues including this message"
+                    f"Unsure how to parse 🤗 API response dict: {response}, please open an issue at https://github.com/NVIDIA/garak/issues including this message"
                 )
         elif isinstance(response, list):
             return [g["generated_text"] for g in response]
         else:
             raise TypeError(
-                f"Unsure how to parse 🤗 API response type: {response}, please open an issue at https://github.com/leondz/garak/issues including this message"
+                f"Unsure how to parse 🤗 API response type: {response}, please open an issue at https://github.com/NVIDIA/garak/issues including this message"
             )
 
     def _pre_generate_hook(self):

@@ -20,7 +20,7 @@ List the steps needed to make sure this thing works
 - [ ] ...
 - [ ] **Verify** the thing does what it should
 - [ ] **Verify** the thing does not do what it should not
-- [ ] **Document** the thing and how it works ([Example](https://github.com/leondz/garak/blob/61ce5c4ae3caac08e0abd1d069d223d8a66104bd/garak/generators/rest.py#L24-L100))
+- [ ] **Document** the thing and how it works ([Example](https://github.com/NVIDIA/garak/blob/61ce5c4ae3caac08e0abd1d069d223d8a66104bd/garak/generators/rest.py#L24-L100))
 
 If you are opening a PR for a new plugin that targets a **specific** piece of hardware or requires a **complex or hard-to-find** testing environment, we recommend that you send us as much detail as possible.
 

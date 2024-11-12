@@ -29,7 +29,7 @@ def main(arguments=None) -> None:
     _config.load_base_config()
 
     print(
-        f"garak {__description__} v{_config.version} ( https://github.com/leondz/garak ) at {_config.transient.starttime_iso}"
+        f"garak {__description__} v{_config.version} ( https://github.com/NVIDIA/garak ) at {_config.transient.starttime_iso}"
     )
 
     import argparse
@@ -37,7 +37,7 @@ def main(arguments=None) -> None:
     parser = argparse.ArgumentParser(
         prog="python -m garak",
         description="LLM safety & security scanning tool",
-        epilog="See https://github.com/leondz/garak",
+        epilog="See https://github.com/NVIDIA/garak",
     )
 
     ## SYSTEM
