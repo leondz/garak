@@ -39,8 +39,13 @@ class PegasusT5(Buff, HFCompatible):
         self.para_model = PegasusForConditionalGeneration.from_pretrained(
             self.para_model_name
         ).to(self.device)
+        trust_remote_code = (
+            self.hf_args["trust_remote_code"]
+            if "trust_remote_code" in self.hf_args
+            else False
+        )
         self.tokenizer = PegasusTokenizer.from_pretrained(
-            self.para_model_name, trust_remote_code=self.hf_args["trust_remote_code"]
+            self.para_model_name, trust_remote_code=trust_remote_code
         )
 
     def _get_response(self, input_text):
