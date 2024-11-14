@@ -6804,6 +6804,7 @@
         "ratelimit_codes": [
           429
         ],
+        "skip_codes": [],
         "response_json": true,
         "response_json_field": "text",
         "req_template": "{\"sender\": \"garak\", \"message\": \"$INPUT\"}",
@@ -6883,6 +6884,7 @@
         "ratelimit_codes": [
           429
         ],
+        "skip_codes": [],
         "response_json": false,
         "response_json_field": null,
         "req_template": "$INPUT",
@@ -6900,7 +6902,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-10-26 21:09:56 +0000"
+      "mod_time": "2024-11-14 09:41:40 +0000"
     },
     "generators.test.Blank": {
       "description": "This generator always returns the empty string.",
