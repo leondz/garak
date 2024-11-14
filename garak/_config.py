@@ -23,9 +23,7 @@ from xdg_base_dirs import (
 
 DICT_CONFIG_AFTER_LOAD = False
 
-from garak import __version__
-
-version = __version__
+from garak import __version__ as version
 
 system_params = (
     "verbose narrow_output parallel_requests parallel_attempts skip_unknown".split()
