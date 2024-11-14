@@ -231,7 +231,7 @@ class RestGenerator(Generator):
 
         response_object = json.loads(resp.content)
 
-        response = [None] * generations_this_call
+        response = [None]
 
         # if response_json_field starts with a $, treat is as a JSONPath
         assert (
