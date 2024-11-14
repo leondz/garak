@@ -4,14 +4,15 @@
 import importlib
 import json
 import os
+from pathlib import Path
+import pytest
 import re
 import shutil
 import sys
 import tempfile
 
-import pytest
+from pytest_httpserver import HTTPServer
 
-from pathlib import Path
 from garak import _config
 import garak.cli
 
@@ -764,3 +765,63 @@ def test_nested():
 
     _config.plugins.generators["a"]["b"]["c"]["d"] = "e"
     assert _config.plugins.generators["a"]["b"]["c"]["d"] == "e"
+
+
+def test_get_user_agents():
+    agents = _config.get_http_lib_agents()
+    assert isinstance(agents, dict)
+
+
+AGENT_TEST = "garak/9 - only simple tailors edition"
+
+
+def test_set_agents():
+    from requests import utils
+    import httpx
+    import aiohttp
+
+    _config.set_all_http_lib_agents(AGENT_TEST)
+
+    assert str(utils.default_user_agent()) == AGENT_TEST
+    assert httpx._client.USER_AGENT == AGENT_TEST
+    assert aiohttp.client_reqrep.SERVER_SOFTWARE == AGENT_TEST
+
+def httpserver():
+   return HTTPServer()
+
+
+def test_agent_is_used_requests(httpserver: HTTPServer):
+    import requests
+
+    _config.set_http_lib_agents({"requests": AGENT_TEST})
+    httpserver.expect_request(
+        "/", headers={"User-Agent": AGENT_TEST}
+    ).respond_with_data("")
+    assert requests.get(httpserver.url_for("/")).status_code == 200
+
+
+def test_agent_is_used_httpx(httpserver: HTTPServer):
+    import httpx
+
+    _config.set_http_lib_agents({"httpx": AGENT_TEST})
+    httpserver.expect_request(
+        "/", headers={"User-Agent": AGENT_TEST}
+    ).respond_with_data("")
+    assert httpx.get(httpserver.url_for("/")).status_code == 200
+
+
+def test_agent_is_used_aiohttp(httpserver: HTTPServer):
+    import aiohttp
+    import asyncio
+
+    _config.set_http_lib_agents({"aiohttp": AGENT_TEST})
+
+    async def main():
+        async with aiohttp.ClientSession() as session:
+            async with session.get(httpserver.url_for("/")) as response:
+                html = await response.text()
+
+    httpserver.expect_request(
+        "/", headers={"User-Agent": AGENT_TEST}
+    ).respond_with_data("")
+    asyncio.run(main())

@@ -66,6 +66,13 @@ class Harness(Configurable):
                     logging.warning(err_msg)
                     continue
 
+    def _start_run_hook(self):
+        self._http_lib_user_agents = _config.get_http_lib_agents()
+        _config.set_all_http_lib_agents(_config.run.user_agent)
+
+    def _end_run_hook(self):
+        _config.set_http_lib_agents(self._http_lib_user_agents)
+
     def run(self, model, probes, detectors, evaluator, announce_probe=True) -> None:
         """Core harness method
 
@@ -93,6 +100,8 @@ class Harness(Configurable):
             if hasattr(_config.system, "verbose") and _config.system.verbose >= 2:
                 print(msg)
             raise ValueError(msg)
+
+        self._start_run_hook()
 
         for probe in probes:
             logging.debug("harness: probe start for %s", probe.probename)
@@ -140,6 +149,8 @@ class Harness(Configurable):
                 )
             else:
                 evaluator.evaluate(attempt_results)
+
+        self._end_run_hook()
 
         logging.debug("harness: probe list iteration completed")
 

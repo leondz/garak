@@ -10,13 +10,12 @@ def main(arguments=None) -> None:
     """Main entry point for garak runs invoked from the CLI"""
     import datetime
 
-    from garak import __version__, __description__
+    from garak import __description__
     from garak import _config
     from garak.exception import GarakException
 
     _config.transient.starttime = datetime.datetime.now()
     _config.transient.starttime_iso = _config.transient.starttime.isoformat()
-    _config.version = __version__
 
     if arguments is None:
         arguments = []
@@ -255,6 +254,7 @@ def main(arguments=None) -> None:
 
     # load site config before loading CLI config
     _cli_config_supplied = args.config is not None
+    prior_user_agents = _config.get_http_lib_agents()
     _config.load_config(run_config_filename=args.config)
 
     # extract what was actually passed on CLI; use a masking argparser
@@ -555,3 +555,5 @@ def main(arguments=None) -> None:
     except (ValueError, GarakException) as e:
         logging.exception(e)
         print(e)
+
+    _config.set_http_lib_agents(prior_user_agents)
