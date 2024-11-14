@@ -102,7 +102,7 @@ def test_rest_skip_code(requests_mock):
     generator = _plugins.load_plugin(
         "generators.rest.RestGenerator", config_root=_config
     )
-    generator.skip_codes = {200}
+    generator.skip_codes = [200]
     requests_mock.post(
         DEFAULT_URI,
         text=json.dumps(
