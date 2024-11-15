@@ -256,7 +256,7 @@ class InferenceAPI(Generator):
         self.name = name
         super().__init__(self.name, config_root=config_root)
 
-        self.uri = self.URI + name
+        self.uri = self.URI + self.name
 
         # special case for api token requirement this also reserves `headers` as not configurable
         if self.api_key:
