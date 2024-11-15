@@ -39,11 +39,11 @@ Not immediately, but if you have the Gradio skills, get in touch!
 
 ## Can you add support for vulnerability X?
 
-Perhaps - please [open an issue](https://github.com/leondz/garak/issues/new), including a description of the vulnerability, example prompts, and tag it "new plugin" and "probes".
+Perhaps - please [open an issue](https://github.com/NVIDIA/garak/issues/new), including a description of the vulnerability, example prompts, and tag it "new plugin" and "probes".
 
 ## Can you add support for model X?
 
-Would love to! Please [open an issue](https://github.com/leondz/garak/issues/new), tagging it "new plugin" and "generators".
+Would love to! Please [open an issue](https://github.com/NVIDIA/garak/issues/new), tagging it "new plugin" and "generators".
 
 ## How much disk space do I need to run garak?
 
@@ -96,7 +96,7 @@ Adding a custom generator is fairly straight forward. One can either add a new c
 ## How can I redirect `garak_runs/` and `garak.log` to another place instead of `~/.local/share/garak/`?
 
 * `garak_runs` is configured via top-level config param `reporting.report_dir` and also CLI argument `--report_prefix` (which currently can include directory separator characters, so an absolute path can be given)
-* An example of the location of the config param can be seen in https://github.com/leondz/garak/blob/main/garak/resources/garak.core.yaml
+* An example of the location of the config param can be seen in https://github.com/NVIDIA/garak/blob/main/garak/resources/garak.core.yaml
 * If `reporting.report_dir` is set to an absolute path, you can move it anywhere
 * If it's a relative path, it will be within the garak directory under the "data" directory following the cross-platform [XDG base directory specification](https://specifications.freedesktop.org/basedir-spec/latest/) for local storage
 * There's no CLI or config option for moving `garak.log`, which is also stored in the XDG data directory

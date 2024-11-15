@@ -68,7 +68,7 @@ report_template.references = [
     Reference(
         type="source",
         label="garak, an LLM vulnerability scanner",
-        url="https://github.com/leondz/garak",
+        url="https://github.com/NVIDIA/garak",
     )
 ]
 report_template.reported_date = date.today()

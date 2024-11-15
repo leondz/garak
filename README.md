@@ -9,9 +9,9 @@
 `garak`'s a free tool. We love developing it and are always interested in adding functionality to support applications. 
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Tests/Linux](https://github.com/leondz/garak/actions/workflows/test_linux.yml/badge.svg)](https://github.com/leondz/garak/actions/workflows/test_linux.yml)
-[![Tests/Windows](https://github.com/leondz/garak/actions/workflows/test_windows.yml/badge.svg)](https://github.com/leondz/garak/actions/workflows/test_windows.yml)
-[![Tests/OSX](https://github.com/leondz/garak/actions/workflows/test_macos.yml/badge.svg)](https://github.com/leondz/garak/actions/workflows/test_macos.yml)
+[![Tests/Linux](https://github.com/NVIDIA/garak/actions/workflows/test_linux.yml/badge.svg)](https://github.com/NVIDIA/garak/actions/workflows/test_linux.yml)
+[![Tests/Windows](https://github.com/NVIDIA/garak/actions/workflows/test_windows.yml/badge.svg)](https://github.com/NVIDIA/garak/actions/workflows/test_windows.yml)
+[![Tests/OSX](https://github.com/NVIDIA/garak/actions/workflows/test_macos.yml/badge.svg)](https://github.com/NVIDIA/garak/actions/workflows/test_macos.yml)
 [![Documentation Status](https://readthedocs.org/projects/garak/badge/?version=latest)](http://garak.readthedocs.io/en/latest/?badge=latest)
 [![discord-img](https://img.shields.io/badge/chat-on%20discord-yellow.svg)](https://discord.gg/uVch4puUCs)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -19,9 +19,6 @@
 [![PyPI](https://badge.fury.io/py/garak.svg)](https://badge.fury.io/py/garak)
 [![Downloads](https://pepy.tech/badge/garak)](https://pepy.tech/project/garak)
 [![Downloads](https://pepy.tech/badge/garak/month)](https://pepy.tech/project/garak)
-
-
-"🚧 garak is moving. This repository is moving to the `NVIDIA` github organization in the near future. This is planned to be a non-disruptive transition with automatic redirection. 🚧" 
 
 
 ## Get started
@@ -61,7 +58,7 @@ python -m pip install -U garak
 The standard pip version of `garak` is updated periodically. To get a fresher version, from GitHub, try:
 
 ```
-python -m pip install -U git+https://github.com/leondz/garak.git@main
+python -m pip install -U git+https://github.com/NVIDIA/garak.git@main
 ```
 
 ### Clone from source
@@ -71,7 +68,7 @@ python -m pip install -U git+https://github.com/leondz/garak.git@main
 ```
 conda create --name garak "python>=3.10,<=3.12"
 conda activate garak
-gh repo clone leondz/garak
+gh repo clone NVIDIA/garak
 cd garak
 python -m pip install -e .
 ```
@@ -298,7 +295,7 @@ Larger artefacts, like model files and bigger corpora, are kept out of the repos
 
 ## FAQ
 
-We have an FAQ [here](https://github.com/leondz/garak/blob/main/FAQ.md). Reach out if you have any more questions! [leon@garak.ai](mailto:leon@garak.ai)
+We have an FAQ [here](https://github.com/NVIDIA/garak/blob/main/FAQ.md). Reach out if you have any more questions! [leon@garak.ai](mailto:leon@garak.ai)
 
 Code reference documentation is at [garak.readthedocs.io](https://garak.readthedocs.io/en/latest/).
 

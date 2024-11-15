@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   build:
-    if: github.repository_owner == 'leondz'
+    if: github.repository_owner == 'NVIDIA'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

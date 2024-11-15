@@ -8,7 +8,7 @@ model you want to run either using --model_name on the command line
 or as the constructor parameter when instantiating LLaMaGgmlGenerator.
 
 Compatibility or other problems? Please let us know!
- https://github.com/leondz/garak/issues
+ https://github.com/NVIDIA/garak/issues
 """
 
 import logging
