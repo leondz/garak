@@ -250,6 +250,9 @@ def main(arguments=None) -> None:
     ## EXPERIMENTAL FEATURES
     if _config.system.enable_experimental:
         # place parser argument defs for experimental features here
+        parser.description = (
+            str(parser.description) + " - EXPERIMENTAL FEATURES ENABLED"
+        )
         pass
 
     logging.debug("args - raw argument string received: %s", arguments)
