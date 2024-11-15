@@ -223,7 +223,7 @@ For testing. This generator repeats back the prompt it received.
 | Probe | Description |
 | --- | --- |
 | blank | A simple probe that always sends an empty prompt. |
-| atkgen | Automated Attack Generation. A red-teaming LLM probes the target and reacts to it in an attempt to get toxic output. Prototype, mostly stateless, for now uses a simple GPT-2 [fine-tuned](https://huggingface.co/leondz/artgpt2tox) on the subset of hhrlhf attempts that yielded detectable toxicity (the only target currently supported for now). |
+| atkgen | Automated Attack Generation. A red-teaming LLM probes the target and reacts to it in an attempt to get toxic output. Prototype, mostly stateless, for now uses a simple GPT-2 [fine-tuned](https://huggingface.co/garak-llm/artgpt2tox) on the subset of hhrlhf attempts that yielded detectable toxicity (the only target currently supported for now). |
 | av_spam_scanning | Probes that attempt to make the model output malicious content signatures |
 | continuation | Probes that test if the model will continue a probably undesirable word |
 | dan | Various [DAN](https://adguard.com/en/blog/chatgpt-dan-prompt-abuse.html) and DAN-like attacks |
