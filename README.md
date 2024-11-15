@@ -21,9 +21,6 @@
 [![Downloads](https://pepy.tech/badge/garak/month)](https://pepy.tech/project/garak)
 
 
-"🚧 garak is moving. This repository is moving to the `NVIDIA` github organization in the near future. This is planned to be a non-disruptive transition with automatic redirection. 🚧" 
-
-
 ## Get started
 ### > See our user guide! [docs.garak.ai](https://docs.garak.ai/)
 ### > Join our [Discord](https://discord.gg/uVch4puUCs)!
