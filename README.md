@@ -4,7 +4,7 @@
 
 `garak` checks if an LLM can be made to fail in a way we don't want. `garak` probes for hallucination, data leakage, prompt injection, misinformation, toxicity generation, jailbreaks, and many other weaknesses. If you know `nmap`, it's `nmap` for LLMs. 
 
-`garak` focuses on ways of making an LLM or dialog system fail. It combines static, dyanmic, and adaptive probes to explore this.
+`garak` focuses on ways of making an LLM or dialog system fail. It combines static, dynamic, and adaptive probes to explore this.
 
 `garak`'s a free tool. We love developing it and are always interested in adding functionality to support applications. 
 
@@ -55,7 +55,7 @@ python -m pip install -U garak
 
 ### Install development version with `pip`
 
-The standard pip version of `garak` is updated periodically. To get a fresher version, from GitHub, try:
+The standard pip version of `garak` is updated periodically. To get a fresher version from GitHub, try:
 
 ```
 python -m pip install -U git+https://github.com/NVIDIA/garak.git@main
@@ -96,7 +96,7 @@ To specify a generator, use the `--model_type` and, optionally, the `--model_nam
 
 `garak` runs all the probes by default, but you can be specific about that too. `--probes promptinject` will use only the [PromptInject](https://github.com/agencyenterprise/promptinject) framework's methods, for example. You can also specify one specific plugin instead of a plugin family by adding the plugin name after a `.`; for example, `--probes lmrc.SlurUsage` will use an implementation of checking for models generating slurs based on the [Language Model Risk Cards](https://arxiv.org/abs/2303.18190) framework.
 
-For help & inspiration, find us on [twitter](https://twitter.com/garak_llm) or [discord](https://discord.gg/uVch4puUCs)!
+For help and inspiration, find us on [Twitter](https://twitter.com/garak_llm) or [discord](https://discord.gg/uVch4puUCs)!
 
 ## Examples
 
@@ -254,7 +254,7 @@ For testing. This generator repeats back the prompt it received.
 
 `garak` generates multiple kinds of log:
 * A log file, `garak.log`. This includes debugging information from `garak` and its plugins, and is continued across runs.
-* A report of the current run, structured as JSONL. A new report file is created every time `garak` runs. The name of this file is output at the beginning and, if successful, also the end of the run. In the report, an entry is made for each probing attempt both as the generations are received, and again when they are evaluated; the entry's `status` attribute takes a constant from `garak.attempts` to describe what stage it was made at.
+* A report of the current run, structured as JSONL. A new report file is created every time `garak` runs. The name of this file is output at the beginning and, if successful, also at the end of the run. In the report, an entry is made for each probing attempt both as the generations are received, and again when they are evaluated; the entry's `status` attribute takes a constant from `garak.attempts` to describe what stage it was made at.
 * A hit log, detailing attempts that yielded a vulnerability (a 'hit')
 
 ## How is the code structured?
