@@ -4,7 +4,7 @@
 
 `garak` checks if an LLM can be made to fail in a way we don't want. `garak` probes for hallucination, data leakage, prompt injection, misinformation, toxicity generation, jailbreaks, and many other weaknesses. If you know `nmap`, it's `nmap` for LLMs. 
 
-`garak` focuses on ways of making an LLM or dialog system fail. It combines static, dyanmic, and adaptive probes to explore this.
+`garak` focuses on ways of making an LLM or dialog system fail. It combines static, dynamic, and adaptive probes to explore this.
 
 `garak`'s a free tool. We love developing it and are always interested in adding functionality to support applications. 
 
