@@ -80,6 +80,13 @@ class Pipeline(Generator, HFCompatible):
 
         pipeline_kwargs = self._gather_hf_params(hf_constructor=pipeline)
         self.generator = pipeline("text-generation", **pipeline_kwargs)
+        if self.generator.tokenizer is None:
+            # account for possible model without a stored tokenizer
+            from transformers import AutoTokenizer
+
+            self.generator.tokenizer = AutoTokenizer.from_pretrained(
+                pipeline_kwargs["model"]
+            )
         if not hasattr(self, "deprefix_prompt"):
             self.deprefix_prompt = self.name in models_to_deprefix
         if _config.loaded:
