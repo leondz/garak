@@ -29,7 +29,7 @@ jobs:
           path-to-signatures: 'signatures/cla.json'
           path-to-document: 'https://github.com/NVIDIA/garak/blob/main/CA_DCO.md' # e.g. a CLA or a DCO document
           # branch should not be protected
-          branch: 'main'
+          branch: 'signatures'
           use-dco-flag: true
           allowlist: 
 
