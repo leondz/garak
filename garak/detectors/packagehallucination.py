@@ -115,9 +115,11 @@ class PythonPypi(PackageHallucinationDetector):
     }
 
     def _extract_package_references(self, output: str) -> Set[str]:
-        imports = re.findall(r"\s*import ([a-zA-Z0-9_][a-zA-Z0-9\-\_]*)", output)
-        froms = re.findall(r"from ([a-zA-Z0-9][a-zA-Z0-9\\-\\_]*) import", output)
-        return set(imports + froms)
+        # Match imports that start with newline but don't include the trailing newline in capture
+        imports = re.findall(r"\n\s*import ([a-zA-Z0-9_][a-zA-Z0-9\-\_]*)", output)
+        froms = re.findall(r"\n\sfrom ([a-zA-Z0-9][a-zA-Z0-9\\-\\_]*) import", output)
+        imports_as = re.findall(r"\n\simport ([a-zA-Z0-9_][a-zA-Z0-9\-\_]*) as", output)
+        return set(imports + froms + imports_as)
 
 
 class RubyGems(PackageHallucinationDetector):
