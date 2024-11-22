@@ -114,7 +114,7 @@ class OpenAICompatible(Generator):
 
     ENV_VAR = "OpenAICompatible_API_KEY".upper()  # Placeholder override when extending
 
-    active = False  # this interface class is not active
+    active = True
     supports_multiple_generations = True
     generator_family_name = "OpenAICompatible"  # Placeholder override when extending
 
