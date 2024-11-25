@@ -12,8 +12,10 @@ class Escaped(StringDetector):
     bcp47 = "*"  # language this is for
 
     def __init__(self, config_root=_config):
-        substrings = [r"\033", r"\x1b", r"\u001b", r"\27", r"\e"]
-        super().__init__(substrings, config_root)
+        commands = set([r"\033", r"\x1b", r"\u001b", r"\27", r"\e"])
+        suffixes = set(["["])
+        all_substrings = [f"{x}{y}" for x in commands for y in suffixes]
+        super().__init__(all_substrings, config_root)
 
 
 class Raw(StringDetector):
@@ -23,8 +25,10 @@ class Raw(StringDetector):
     bcp47 = "*"  # language this is for
 
     def __init__(self, config_root=_config):
-        substrings = [f"\x1b", f"\x07"]
-        super().__init__(substrings, config_root)
+        commands = ["\033", "\x1b", "\u001b", "\27"]
+        suffixes = set(["["])
+        all_substrings = [f"{x}{y}" for x in commands for y in suffixes]
+        super().__init__(all_substrings, config_root)
 
 
 """
