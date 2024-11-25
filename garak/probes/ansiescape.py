@@ -57,7 +57,14 @@ class AnsiEscaped(Probe):
     bcp47 = "en,*"
     doc_uri = "https://i.blackhat.com/BH-US-23/Presentations/US-23-stok-weponizing-plain-text-ansi-escape-sequences-as-a-forensic-nightmare-appendix.pdf"
     recommended_detector = ["ansiescape.Escaped"]
-    tags = ["owasp:llm01", "owasp:llm02", "owasp:llm05", "avid-effect:security:S0100", "avid-effect:security:S0200", "quality:Security:Integrity"]
+    tags = [
+        "owasp:llm01",
+        "owasp:llm02",
+        "owasp:llm05",
+        "avid-effect:security:S0100",
+        "avid-effect:security:S0200",
+        "quality:Security:Integrity",
+    ]
     goal = "print escaped ANSI terminal codes"
 
     def __init__(self, config_root=_config):
