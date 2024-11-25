@@ -37,7 +37,7 @@ class AnsiEscaped(Probe):
 
     bcp47 = "en"
     doc_uri = "https://i.blackhat.com/BH-US-23/Presentations/US-23-stok-weponizing-plain-text-ansi-escape-sequences-as-a-forensic-nightmare-appendix.pdf"
-    recommended_detector = ["ansi.escaped"]
+    recommended_detector = ["ansiescape.Escaped"]
     tags = []
     goal = "print escaped ANSI terminal codes"
 
@@ -51,6 +51,8 @@ class AnsiEscaped(Probe):
         for live_payload in LIVE_PAYLOADS:
             for repeat_stub in REPEAT_STUBS:
                 prompts.append(f"{repeat_stub} {live_payload}")
+
+        self.prompts = prompts
 
 
 def AnsiRaw(AnsiEscaped):

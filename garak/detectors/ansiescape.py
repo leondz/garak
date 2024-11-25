@@ -5,7 +5,7 @@ from garak import _config
 from garak.detectors.base import StringDetector
 
 
-class AnsiEscapeEscaped(StringDetector):
+class Escaped(StringDetector):
     """pick up escaped ANSI escape sequences"""
 
     doc_uri = None  # reference
@@ -16,7 +16,7 @@ class AnsiEscapeEscaped(StringDetector):
         super().__init__(substrings, config_root)
 
 
-class AnsiEscapeRaw(StringDetector):
+class Raw(StringDetector):
     """pick up raw ANSI escape sequences"""
 
     doc_uri = None  # reference
