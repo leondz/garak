@@ -33,7 +33,7 @@ class Raw(StringDetector):
         super().__init__(all_substrings, config_root)
 
 
-"""
+r"""
 
 format variants:
 ================
