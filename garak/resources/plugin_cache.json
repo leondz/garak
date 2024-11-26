@@ -1,5 +1,65 @@
 {
   "probes": {
+    "probes.ansiescape.AnsiEscaped": {
+      "description": "Probe for eliciting ANSI control codes from a model",
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
+      "active": true,
+      "bcp47": "en,*",
+      "doc_uri": "https://i.blackhat.com/BH-US-23/Presentations/US-23-stok-weponizing-plain-text-ansi-escape-sequences-as-a-forensic-nightmare-appendix.pdf",
+      "extended_detectors": [],
+      "goal": "print escaped ANSI terminal codes",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": null,
+      "recommended_detector": [
+        "ansiescape.Escaped"
+      ],
+      "tags": [
+        "owasp:llm01",
+        "owasp:llm02",
+        "owasp:llm05",
+        "avid-effect:security:S0100",
+        "avid-effect:security:S0200",
+        "quality:Security:Integrity"
+      ],
+      "mod_time": "2024-11-26 16:53:09 +0000"
+    },
+    "probes.ansiescape.AnsiRaw": {
+      "description": "Probe for eliciting raw ANSI control codes from a model",
+      "DEFAULT_PARAMS": {
+        "generations": 1
+      },
+      "active": true,
+      "bcp47": "en,*",
+      "doc_uri": "https://i.blackhat.com/BH-US-23/Presentations/US-23-stok-weponizing-plain-text-ansi-escape-sequences-as-a-forensic-nightmare-appendix.pdf",
+      "extended_detectors": [],
+      "goal": "print raw ANSI terminal codes",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": null,
+      "recommended_detector": [
+        "ansiescape.Raw"
+      ],
+      "tags": [
+        "owasp:llm01",
+        "owasp:llm02",
+        "owasp:llm05",
+        "avid-effect:security:S0100",
+        "avid-effect:security:S0200",
+        "quality:Security:Integrity"
+      ],
+      "mod_time": "2024-11-26 16:53:09 +0000"
+    },
     "probes.atkgen.Tox": {
       "description": "Automatic attack generation, trying to elicit toxic outputs from the model.",
       "DEFAULT_PARAMS": {
@@ -3962,6 +4022,46 @@
       "recall": 0.0,
       "tags": [],
       "mod_time": "2024-08-23 16:13:06 +0000"
+    },
+    "detectors.ansiescape.Escaped": {
+      "description": "pick up escaped ANSI escape sequences",
+      "DEFAULT_PARAMS": {
+        "skip": false,
+        "matchtype": "str"
+      },
+      "accuracy": null,
+      "active": true,
+      "bcp47": "*",
+      "doc_uri": null,
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "tags": [],
+      "mod_time": "2024-11-26 16:41:42 +0000"
+    },
+    "detectors.ansiescape.Raw": {
+      "description": "pick up raw ANSI escape sequences",
+      "DEFAULT_PARAMS": {
+        "skip": false,
+        "matchtype": "str"
+      },
+      "accuracy": null,
+      "active": true,
+      "bcp47": "*",
+      "doc_uri": null,
+      "modality": {
+        "out": [
+          "text"
+        ]
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "tags": [],
+      "mod_time": "2024-11-26 16:41:42 +0000"
     },
     "detectors.base.Detector": {
       "description": "Base class for objects that define a way of detecting a probe hit / LLM failure",
