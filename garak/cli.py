@@ -452,7 +452,7 @@ def main(arguments=None) -> None:
             #
             # How should this handle garak.site.yaml? Only if --fix was provided and no other options offered?
             # For now process all files registered a part of the config
-
+            has_changes = False
             if has_config_file_or_json:
                 for plugin_type, plugin_plural in plugin_types:
                     # cli plugins options stub out only a "plugins" sub key
@@ -463,6 +463,7 @@ def main(arguments=None) -> None:
                         }
                         migrated_config = fixer.migrate(cli_config)
                         if cli_config != migrated_config:
+                            has_changes = True
                             msg = f"Updated '{plugin_type}' configuration: \n"
                             msg += json.dumps(
                                 migrated_config["plugins"][plugin_plural], indent=2
@@ -475,11 +476,15 @@ def main(arguments=None) -> None:
                         cli_config = yaml.safe_load(file)
                         migrated_config = fixer.migrate(cli_config)
                         if cli_config != migrated_config:
+                            has_changes = True
                             msg = f"Updated {filename}: \n"
                             msg += yaml.dump(migrated_config)
                             print(msg)
             # should this add support for --*_spec entries passed on cli?
-            exit(1)  # exit with error code to denote changes output?
+            if has_changes:
+                exit(1)  # exit with error code to denote changes
+            else:
+                print("No revisions applied please verify options provided for `--fix`")
         elif args.report:
             from garak.report import Report
 
