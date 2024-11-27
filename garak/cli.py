@@ -41,7 +41,7 @@ def main(arguments=None) -> None:
     import datetime
 
     from garak import __description__
-    from garak import _config
+    from garak import _config, _plugins
     from garak.exception import GarakException
 
     _config.transient.starttime = datetime.datetime.now()
@@ -68,6 +68,7 @@ def main(arguments=None) -> None:
         prog="python -m garak",
         description="LLM safety & security scanning tool",
         epilog="See https://github.com/NVIDIA/garak",
+        allow_abbrev=False,
     )
 
     ## SYSTEM
@@ -138,7 +139,7 @@ def main(arguments=None) -> None:
     )
 
     ## PLUGINS
-    # generator
+    # generators
     parser.add_argument(
         "--model_type",
         "-m",
@@ -151,18 +152,6 @@ def main(arguments=None) -> None:
         type=str,
         default=None,
         help="name of the model, e.g. 'timdettmers/guanaco-33b-merged'",
-    )
-    generator_args = parser.add_mutually_exclusive_group()
-    generator_args.add_argument(
-        "--generator_option_file",
-        "-G",
-        type=str,
-        help="path to JSON file containing options to pass to generator",
-    )
-    generator_args.add_argument(
-        "--generator_options",
-        type=str,
-        help="options to pass to the generator",
     )
     # probes
     parser.add_argument(
@@ -177,18 +166,6 @@ def main(arguments=None) -> None:
         default=_config.run.probe_tags,
         type=str,
         help="only include probes with a tag that starts with this value (e.g. owasp:llm01)",
-    )
-    probe_args = parser.add_mutually_exclusive_group()
-    probe_args.add_argument(
-        "--probe_option_file",
-        "-P",
-        type=str,
-        help="path to JSON file containing options to pass to probes",
-    )
-    probe_args.add_argument(
-        "--probe_options",
-        type=str,
-        help="options to pass to probes, formatted as a JSON dict",
     )
     # detectors
     parser.add_argument(
@@ -211,7 +188,21 @@ def main(arguments=None) -> None:
         default=_config.plugins.buff_spec,
         help="list of buffs to use. Default is none",
     )
-
+    # file or json based config options
+    plugin_types = sorted([type.lower() for type in _plugins.PLUGIN_CLASSES])
+    for plugin_type in plugin_types:
+        probe_args = parser.add_mutually_exclusive_group()
+        probe_args.add_argument(
+            f"--{plugin_type}_option_file",
+            f"-{plugin_type[0].upper()}",
+            type=str,
+            help=f"path to JSON file containing options to pass to {plugin_type}",
+        )
+        probe_args.add_argument(
+            f"--{plugin_type}_options",
+            type=str,
+            help=f"options to pass to {plugin_type}, formatted as a JSON dict",
+        )
     ## REPORTING
     parser.add_argument(
         "--taxonomy",
@@ -391,7 +382,6 @@ def main(arguments=None) -> None:
 
     try:
         has_config_file_or_json = False
-        plugin_types = ["probe", "generator"]
         # do a special thing for CLI probe options, generator options
         for plugin_type in plugin_types:
             opts_cli_config = parse_cli_plugin_config(plugin_type, args)
@@ -441,7 +431,6 @@ def main(arguments=None) -> None:
 
         elif args.fix:
             from garak.resources import fixer
-            from garak import _plugins
             import json
             import yaml
 
@@ -463,7 +452,6 @@ def main(arguments=None) -> None:
             # For now process all files registered a part of the config
 
             if has_config_file_or_json:
-                plugin_types = [type.lower() for type in _plugins.PLUGIN_CLASSES]
                 for plugin_type in plugin_types:
                     # cli plugins options stub out only a "plugins" sub key
                     plugin_cli_config = parse_cli_plugin_config(plugin_type, args)
