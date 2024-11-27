@@ -189,8 +189,10 @@ def main(arguments=None) -> None:
         help="list of buffs to use. Default is none",
     )
     # file or json based config options
-    plugin_types = sorted([type.lower() for type in _plugins.PLUGIN_CLASSES])
-    for plugin_type in plugin_types:
+    plugin_types = sorted(
+        zip([type.lower() for type in _plugins.PLUGIN_CLASSES], _plugins.PLUGIN_TYPES)
+    )
+    for plugin_type, _ in plugin_types:
         probe_args = parser.add_mutually_exclusive_group()
         probe_args.add_argument(
             f"--{plugin_type}_option_file",
@@ -383,11 +385,11 @@ def main(arguments=None) -> None:
     try:
         has_config_file_or_json = False
         # do a special thing for CLI probe options, generator options
-        for plugin_type in plugin_types:
+        for plugin_type, plugin_plural in plugin_types:
             opts_cli_config = parse_cli_plugin_config(plugin_type, args)
             if opts_cli_config is not None:
                 has_config_file_or_json = True
-                config_plugin_type = getattr(_config.plugins, f"{plugin_type}s")
+                config_plugin_type = getattr(_config.plugins, plugin_plural)
 
                 config_plugin_type = _config._combine_into(
                     opts_cli_config, config_plugin_type
@@ -452,16 +454,18 @@ def main(arguments=None) -> None:
             # For now process all files registered a part of the config
 
             if has_config_file_or_json:
-                for plugin_type in plugin_types:
+                for plugin_type, plugin_plural in plugin_types:
                     # cli plugins options stub out only a "plugins" sub key
                     plugin_cli_config = parse_cli_plugin_config(plugin_type, args)
                     if plugin_cli_config is not None:
-                        cli_config = {"plugins": plugin_cli_config}
+                        cli_config = {
+                            "plugins": {f"{plugin_plural}": plugin_cli_config}
+                        }
                         migrated_config = fixer.migrate(cli_config)
                         if cli_config != migrated_config:
                             msg = f"Updated '{plugin_type}' configuration: \n"
                             msg += json.dumps(
-                                migrated_config["plugins"], indent=2
+                                migrated_config["plugins"][plugin_plural], indent=2
                             )  # pretty print the config in json
                             print(msg)
             else:
