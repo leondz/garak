@@ -8,10 +8,8 @@ Utility for processing loaded configuration files to apply updates for compatibi
 
 import importlib
 import inspect
-import json
 import logging
 import os
-import yaml
 from pathlib import Path
 
 
@@ -32,7 +30,7 @@ for module_filename in sorted(os.listdir(root_path)):
         continue
     module_name = module_filename.replace(".py", "")
     mod = importlib.import_module(f"{__package__}.{module_name}")
-    migrations = [  # Extract only classes with same source package name
+    migrations = [  # Extract only classes that are a `Migration`
         klass
         for _, klass in inspect.getmembers(mod, inspect.isclass)
         if klass.__module__.startswith(mod.__name__) and Migration in klass.__bases__
@@ -40,23 +38,8 @@ for module_filename in sorted(os.listdir(root_path)):
     ordered_migrations += migrations
 
 
-def migrate(source_filename: Path):
+def migrate(original_config: dict) -> dict:
     import copy
-
-    # should this just accept a dictionary?
-    original_config = None
-    # check file for JSON or YAML compatibility
-    for loader in (yaml.safe_load, json.load):
-        try:
-            with open(source_filename) as source_file:
-                original_config = loader(source_file)
-                break
-        except Exception as er:
-            msg = f"Configuration file {source_filename} failed to parse as {loader}!"
-            logging.debug(msg, exc_info=er)
-    if original_config is None:
-        logging.error("Could not parse configuration nothing to migrate!")
-        return None
 
     updated_config = copy.deepcopy(original_config)
     for migration in ordered_migrations:

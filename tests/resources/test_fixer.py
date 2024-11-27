@@ -1,38 +1,8 @@
 import pytest
 
 from garak.resources import fixer
-from garak import _config
 
-BASE_TEST_CONFIG = """
----
-plugins:
-  probe_spec: test.Test
-"""
-
-
-@pytest.fixture
-def inject_custom_config(request, pre_migration_dict):
-    import tempfile
-    import yaml
-
-    with tempfile.NamedTemporaryFile(delete=False, mode="w") as tmp:
-        filename = tmp.name
-        config_dict = yaml.safe_load(BASE_TEST_CONFIG)
-        config_dict["plugins"] = config_dict["plugins"] | pre_migration_dict
-        yaml.dump(config_dict, tmp)
-        tmp.close()
-
-    def remove_test_file():
-        import os
-
-        files = [filename]
-        for file in files:
-            if os.path.exists(file):
-                os.remove(file)
-
-    request.addfinalizer(remove_test_file)
-
-    return filename
+BASE_TEST_CONFIG = {"plugins": {"probe_spec": "test.Test"}}
 
 
 @pytest.mark.parametrize(
@@ -156,17 +126,20 @@ def inject_custom_config(request, pre_migration_dict):
 )
 def test_fixer_migrate(
     mocker,
-    inject_custom_config,
     migration_name,
+    pre_migration_dict,
     post_migration_dict,
 ):
     import logging
+    import copy
 
     mock_log_info = mocker.patch.object(
         logging,
         "info",
     )
-    revised_config = fixer.migrate(inject_custom_config)
+    config_dict = copy.deepcopy(BASE_TEST_CONFIG)
+    config_dict["plugins"] = config_dict["plugins"] | pre_migration_dict
+    revised_config = fixer.migrate(config_dict)
     assert revised_config["plugins"] == post_migration_dict
     if migration_name is None:
         assert (
