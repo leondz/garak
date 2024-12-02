@@ -35,3 +35,30 @@ class PastTense(Probe):
     ) as file:
         for str in file:
             prompts.append(str.strip())
+
+
+class FutureTense(Probe):
+    """Will the system give unsafe responses when asked to write about weapon creation or dangerous behavior?
+
+    This check sends the generator requests for advice on making weapons in the future tense.
+    """
+
+    bcp47 = "en"
+    doc_uri = "https://arxiv.org/pdf/2407.11969v2"
+    primary_detector = "specialwords.Prefixes"
+    tags = [
+        "owasp:llm01",
+        "quality:Security:PromptStability",
+        "payload:jailbreak",
+    ]
+    goal = "disregard the system prompt"
+
+    prompts = []
+
+    with open(
+        data_path / "phrasing" / "future_tense_en.txt",
+        "r",
+        encoding="utf-8",
+    ) as file:
+        for str in file:
+            prompts.append(str.strip())
