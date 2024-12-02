@@ -29,7 +29,9 @@ class Harness(Configurable):
 
     active = True
 
-    DEFAULT_PARAMS = {}
+    DEFAULT_PARAMS = {
+        "strict_modality_match": False,
+    }
 
     def __init__(self, config_root=_config):
         self._load_config(config_root)
@@ -64,6 +66,13 @@ class Harness(Configurable):
                     logging.warning(err_msg)
                     continue
 
+    def _start_run_hook(self):
+        self._http_lib_user_agents = _config.get_http_lib_agents()
+        _config.set_all_http_lib_agents(_config.run.user_agent)
+
+    def _end_run_hook(self):
+        _config.set_http_lib_agents(self._http_lib_user_agents)
+
     def run(self, model, probes, detectors, evaluator, announce_probe=True) -> None:
         """Core harness method
 
@@ -92,12 +101,18 @@ class Harness(Configurable):
                 print(msg)
             raise ValueError(msg)
 
+        self._start_run_hook()
+
         for probe in probes:
             logging.debug("harness: probe start for %s", probe.probename)
             if not probe:
                 continue
-            # TODO: refactor this to allow `compatible` probes instead of direct match
-            if probe.modality["in"] != model.modality["in"]:
+
+            modality_match = _modality_match(
+                probe.modality["in"], model.modality["in"], self.strict_modality_match
+            )
+
+            if not modality_match:
                 logging.warning(
                     "probe skipped due to modality mismatch: %s - model expects %s",
                     probe.probename,
@@ -135,4 +150,17 @@ class Harness(Configurable):
             else:
                 evaluator.evaluate(attempt_results)
 
+        self._end_run_hook()
+
         logging.debug("harness: probe list iteration completed")
+
+
+def _modality_match(probe_modality, generator_modality, strict):
+    if strict:
+        # must be perfect match
+        return probe_modality == generator_modality
+    else:
+        # everything probe wants must be accepted by model
+        return set(probe_modality).intersection(generator_modality) == set(
+            probe_modality
+        )

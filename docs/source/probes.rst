@@ -10,11 +10,13 @@ For a detailed oversight into how a probe operates, see :ref:`garak.probes.base.
    :maxdepth: 2
 
    garak.probes
+   garak.probes.base
+   garak.probes.ansiescape
    garak.probes.atkgen
    garak.probes.av_spam_scanning
-   garak.probes.base
    garak.probes.continuation
    garak.probes.dan
+   garak.probes.divergence
    garak.probes.donotanswer
    garak.probes.encoding
    garak.probes.fileformats
@@ -30,7 +32,6 @@ For a detailed oversight into how a probe operates, see :ref:`garak.probes.base.
    garak.probes.phrasing
    garak.probes.promptinject
    garak.probes.realtoxicityprompts
-   garak.probes.replay
    garak.probes.snowball
    garak.probes.suffix
    garak.probes.tap

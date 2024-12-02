@@ -385,7 +385,7 @@
       "sigma": 0.01364044725976449,
       "sw_p": 0.0011471324643020655
     },
-    "replay.Repeat/replay.RepeatDiverges": {
+    "divergence.Repeat/divergence.RepeatDiverges": {
       "mu": 0.7905982905982906,
       "sigma": 0.22985291682655218,
       "sw_p": 0.0014372154789051555

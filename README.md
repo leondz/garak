@@ -4,12 +4,14 @@
 
 `garak` checks if an LLM can be made to fail in a way we don't want. `garak` probes for hallucination, data leakage, prompt injection, misinformation, toxicity generation, jailbreaks, and many other weaknesses. If you know `nmap`, it's `nmap` for LLMs. 
 
+`garak` focuses on ways of making an LLM or dialog system fail. It combines static, dynamic, and adaptive probes to explore this.
+
 `garak`'s a free tool. We love developing it and are always interested in adding functionality to support applications. 
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Tests/Linux](https://github.com/leondz/garak/actions/workflows/test_linux.yml/badge.svg)](https://github.com/leondz/garak/actions/workflows/test_linux.yml)
-[![Tests/Windows](https://github.com/leondz/garak/actions/workflows/test_windows.yml/badge.svg)](https://github.com/leondz/garak/actions/workflows/test_windows.yml)
-[![Tests/OSX](https://github.com/leondz/garak/actions/workflows/test_macos.yml/badge.svg)](https://github.com/leondz/garak/actions/workflows/test_macos.yml)
+[![Tests/Linux](https://github.com/NVIDIA/garak/actions/workflows/test_linux.yml/badge.svg)](https://github.com/NVIDIA/garak/actions/workflows/test_linux.yml)
+[![Tests/Windows](https://github.com/NVIDIA/garak/actions/workflows/test_windows.yml/badge.svg)](https://github.com/NVIDIA/garak/actions/workflows/test_windows.yml)
+[![Tests/OSX](https://github.com/NVIDIA/garak/actions/workflows/test_macos.yml/badge.svg)](https://github.com/NVIDIA/garak/actions/workflows/test_macos.yml)
 [![Documentation Status](https://readthedocs.org/projects/garak/badge/?version=latest)](http://garak.readthedocs.io/en/latest/?badge=latest)
 [![discord-img](https://img.shields.io/badge/chat-on%20discord-yellow.svg)](https://discord.gg/uVch4puUCs)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -53,10 +55,10 @@ python -m pip install -U garak
 
 ### Install development version with `pip`
 
-The standard pip version of `garak` is updated periodically. To get a fresher version, from GitHub, try:
+The standard pip version of `garak` is updated periodically. To get a fresher version from GitHub, try:
 
 ```
-python -m pip install -U git+https://github.com/leondz/garak.git@main
+python -m pip install -U git+https://github.com/NVIDIA/garak.git@main
 ```
 
 ### Clone from source
@@ -66,12 +68,19 @@ python -m pip install -U git+https://github.com/leondz/garak.git@main
 ```
 conda create --name garak "python>=3.10,<=3.12"
 conda activate garak
-gh repo clone leondz/garak
+gh repo clone NVIDIA/garak
 cd garak
 python -m pip install -e .
 ```
 
 OK, if that went fine, you're probably good to go!
+
+**Note**: if you cloned before the move to the `NVIDIA` GitHub organisation, but you're reading this at the `github.com/NVIDIA` URI, please update your remotes as follows:
+
+```
+git remote set-url origin https://github.com/NVIDIA/garak.git
+```
+
 
 ## Getting started
 
@@ -87,7 +96,7 @@ To specify a generator, use the `--model_type` and, optionally, the `--model_nam
 
 `garak` runs all the probes by default, but you can be specific about that too. `--probes promptinject` will use only the [PromptInject](https://github.com/agencyenterprise/promptinject) framework's methods, for example. You can also specify one specific plugin instead of a plugin family by adding the plugin name after a `.`; for example, `--probes lmrc.SlurUsage` will use an implementation of checking for models generating slurs based on the [Language Model Risk Cards](https://arxiv.org/abs/2303.18190) framework.
 
-For help & inspiration, find us on [twitter](https://twitter.com/garak_llm) or [discord](https://discord.gg/uVch4puUCs)!
+For help and inspiration, find us on [Twitter](https://twitter.com/garak_llm) or [discord](https://discord.gg/uVch4puUCs)!
 
 ## Examples
 
@@ -221,7 +230,7 @@ For testing. This generator repeats back the prompt it received.
 | Probe | Description |
 | --- | --- |
 | blank | A simple probe that always sends an empty prompt. |
-| atkgen | Automated Attack Generation. A red-teaming LLM probes the target and reacts to it in an attempt to get toxic output. Prototype, mostly stateless, for now uses a simple GPT-2 [fine-tuned](https://huggingface.co/leondz/artgpt2tox) on the subset of hhrlhf attempts that yielded detectable toxicity (the only target currently supported for now). |
+| atkgen | Automated Attack Generation. A red-teaming LLM probes the target and reacts to it in an attempt to get toxic output. Prototype, mostly stateless, for now uses a simple GPT-2 [fine-tuned](https://huggingface.co/garak-llm/artgpt2tox) on the subset of hhrlhf attempts that yielded detectable toxicity (the only target currently supported for now). |
 | av_spam_scanning | Probes that attempt to make the model output malicious content signatures |
 | continuation | Probes that test if the model will continue a probably undesirable word |
 | dan | Various [DAN](https://adguard.com/en/blog/chatgpt-dan-prompt-abuse.html) and DAN-like attacks |
@@ -245,10 +254,12 @@ For testing. This generator repeats back the prompt it received.
 
 `garak` generates multiple kinds of log:
 * A log file, `garak.log`. This includes debugging information from `garak` and its plugins, and is continued across runs.
-* A report of the current run, structured as JSONL. A new report file is created every time `garak` runs. The name of this file is output at the beginning and, if successful, also the end of the run. In the report, an entry is made for each probing attempt both as the generations are received, and again when they are evaluated; the entry's `status` attribute takes a constant from `garak.attempts` to describe what stage it was made at.
+* A report of the current run, structured as JSONL. A new report file is created every time `garak` runs. The name of this file is output at the beginning and, if successful, also at the end of the run. In the report, an entry is made for each probing attempt both as the generations are received, and again when they are evaluated; the entry's `status` attribute takes a constant from `garak.attempts` to describe what stage it was made at.
 * A hit log, detailing attempts that yielded a vulnerability (a 'hit')
 
 ## How is the code structured?
+
+Check out the [reference docs](https://reference.garak.ai/) for an authoritative guide to `garak` code structure.
 
 In a typical run, `garak` will read a model type (and optionally model name) from the command line, then determine which `probe`s and `detector`s to run, start up a `generator`, and then pass these to a `harness` to do the probing; an `evaluator` deals with the results. There are many modules in each of these categories, and each module provides a number of classes that act as individual plugins.
 
@@ -284,7 +295,7 @@ Larger artefacts, like model files and bigger corpora, are kept out of the repos
 
 ## FAQ
 
-We have an FAQ [here](https://github.com/leondz/garak/blob/main/FAQ.md). Reach out if you have any more questions! [leon@garak.ai](mailto:leon@garak.ai)
+We have an FAQ [here](https://github.com/NVIDIA/garak/blob/main/FAQ.md). Reach out if you have any more questions! [leon@garak.ai](mailto:leon@garak.ai)
 
 Code reference documentation is at [garak.readthedocs.io](https://garak.readthedocs.io/en/latest/).
 

@@ -11,6 +11,8 @@ Both 'a's like a in English "hat", or à in French, or /æ/ in IPA.
 
 `garak` is designed to help discover situations where a language model generates outputs that one might not want it to. If you know `nmap` or `metasploit` for traditional netsec/infosec analysis, then `garak` aims to operate in a similar space for language models.
 
+It's not a tool for assessing social biases in language models, or propensity of a system to produce toxic content. The focus isn't safety, it's security. `garak` might try to exploit a weakness and demonstrate that weakness by making a model generate unsafe content, but we're focused on the weakness over the content.
+
 ## How does garak work?
 
 `garak` has probes that try to look for different "vulnerabilities". Each probs sends specific prompts to models, and gets multiple generations for each prompt. LLM output is often stochastic, so a single test isn't very informative. These generations are then processed by "detectors", which will look for "hits". If a detector registers a hit, that attempt is registered as failing. Finally, a report is output with the success/failure rate for each probe and detector.
@@ -37,11 +39,11 @@ Not immediately, but if you have the Gradio skills, get in touch!
 
 ## Can you add support for vulnerability X?
 
-Perhaps - please [open an issue](https://github.com/leondz/garak/issues/new), including a description of the vulnerability, example prompts, and tag it "new plugin" and "probes".
+Perhaps - please [open an issue](https://github.com/NVIDIA/garak/issues/new), including a description of the vulnerability, example prompts, and tag it "new plugin" and "probes".
 
 ## Can you add support for model X?
 
-Would love to! Please [open an issue](https://github.com/leondz/garak/issues/new), tagging it "new plugin" and "generators".
+Would love to! Please [open an issue](https://github.com/NVIDIA/garak/issues/new), tagging it "new plugin" and "generators".
 
 ## How much disk space do I need to run garak?
 
@@ -94,7 +96,7 @@ Adding a custom generator is fairly straight forward. One can either add a new c
 ## How can I redirect `garak_runs/` and `garak.log` to another place instead of `~/.local/share/garak/`?
 
 * `garak_runs` is configured via top-level config param `reporting.report_dir` and also CLI argument `--report_prefix` (which currently can include directory separator characters, so an absolute path can be given)
-* An example of the location of the config param can be seen in https://github.com/leondz/garak/blob/main/garak/resources/garak.core.yaml
+* An example of the location of the config param can be seen in https://github.com/NVIDIA/garak/blob/main/garak/resources/garak.core.yaml
 * If `reporting.report_dir` is set to an absolute path, you can move it anywhere
 * If it's a relative path, it will be within the garak directory under the "data" directory following the cross-platform [XDG base directory specification](https://specifications.freedesktop.org/basedir-spec/latest/) for local storage
 * There's no CLI or config option for moving `garak.log`, which is also stored in the XDG data directory
@@ -102,10 +104,54 @@ Adding a custom generator is fairly straight forward. One can either add a new c
 * The Python implementation of XDG that garak uses allows overriding the data directory using the `XDG_DATA_HOME` environment variable
 * An alternative is to symlink the paths to where you want them to be
 
+## How do I configure my run in more detail?
+
+There is a lot you can do here. In order of increasing complexity:
+
+1. Be specific about the list of probes you request, using the `-p` command line option
+1. Have a look at `garak`'s config options: run `garak --help` to see what there is
+1. Garak offers rich and detailed configuration for runs and its plugins, via YAML. You can find an intro guide here, [Configuring garak](https://reference.garak.ai/en/latest/configurable.html).
+
+## There are many static prompts in garak. How can I make these more dynamic?
+
+This is exactly what [`buffs`](https://reference.garak.ai/en/latest/buffs.html) are for - buffs automatically
+modify prompts in flight before they're sent to the generator/LLM. For example, `garak.buffs.paraphrase`
+dynamically converts each query prompt into a set of alternative phrasings - given a fixed inference budget, it's often great alternative to increasing generations (docs [here](https://reference.garak.ai/en/latest/garak.buffs.paraphrase.html)).
+
+## Is garak just static probes?
+
+No, very much not. Garak has:
+
+* static probes, which are a set of fixed prompts; this can be from e.g. scientific papers that specify a fixed set of prompts, so that we get replicability
+* assembled probes, where prompts are assembled from a configurable set of pieces
+* dynamic probes, which look different each run; an example is `latentinjection.LatentWhoisSnippet`, where the list of snippet permutations is so large that it's best to shuffe and sample
+* reactive probes, that respond to LLM behavior and adapt as we go along; examples include `atkgen`, `topic`, as well as the compute-intense `tap` and `suffix` modules (excluding their cached versions)
+
+## How do I get a report according to OWASP LLM Top 10 categories?
+
+You can invoke report analysis directly on the report.jsonl file in question,
+and give a taxonomy as a second parameter. For example:
+
+```
+python -m garak.analyze.report_digest garak.1234.report.jsonl owasp > report.html
+```
+
+This groups the top-leve figures and findings according to the OWASP Top 10 for LLM v1.
+
+
+## How do I interpret my scores?
+
+It's difficult to know if a 0.55 pass rate is good or terrible. That's why we calibrate
+garak scores against a bag of state-of-the-art models regularly, and report how well the
+target model is performing relative to that. It's included in the HTML report as a Z-score,
+and can be given on the CLI by setting `system.show_z=True` in the config.
+
+For more details on exactly how we do this calibration, see [data/calibration/bag.md].
+
 
 
 <!-- ## Why the name?
 
 Congrats, if you're reading this, you found a flag!
 
-It's named after a smooth-talking, manipulative, persuasive, well-written character from a nineties TV series. Because we need tools like that to dissect LLM behavior. -->
+It's also a smooth-talking, manipulative, persuasive, well-written character from a nineties TV series. Because we need tools like that in order to dissect LLM behavior. -->

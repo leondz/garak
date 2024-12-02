@@ -29,4 +29,9 @@ def config_report_cleanup(request):
             if os.path.exists(file):
                 os.remove(file)
 
+    def clear_plugin_instances():
+        with _plugins.PluginProvider._mutex:
+            _plugins.PluginProvider._instance_cache = {}
+
     request.addfinalizer(remove_log_files)
+    request.addfinalizer(clear_plugin_instances)

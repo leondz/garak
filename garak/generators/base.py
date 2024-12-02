@@ -74,12 +74,10 @@ class Generator(Configurable):
 
     @staticmethod
     def _verify_model_result(result: List[Union[str, None]]):
-        assert isinstance(
-            result, list
-        ), "_call_model must return a list"
+        assert isinstance(result, list), "_call_model must return a list"
         assert (
-                len(result) == 1
-        ), "_call_model must return a list of one item when invoked as _call_model(prompt, 1)"
+            len(result) == 1
+        ), f"_call_model must return a list of one item when invoked as _call_model(prompt, 1), got {result}"
         assert (
             isinstance(result[0], str) or result[0] is None
         ), "_call_model's item must be a string or None"

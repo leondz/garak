@@ -1,7 +1,7 @@
-garak.detectors.replay
+garak.detectors.always
 ======================
 
-.. automodule:: garak.detectors.replay
+.. automodule:: garak.detectors.always
    :members:
    :undoc-members:
    :show-inheritance:   

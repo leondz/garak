@@ -31,18 +31,20 @@ And if you like the project, but just don't have time to contribute, that's fine
 
 If you want to ask a question, good places to check first are the [garak quick start docs](https://docs.garak.ai) and, if its a coding question, the [garak reference](https://reference.garak.ai/).
 
-Before you ask a question, it is best to search for existing [Issues](https://github.com/leondz/garak/issues) that might help you. In case you have found a suitable issue and still need clarification, you can write your question in this issue. It is also advisable to search the internet for answers first. You can also often find helpful people on the garak [Discord](https://discord.gg/uVch4puUCs).
+Before you ask a question, it is best to search for existing [Issues](https://github.com/NVIDIA/garak/issues) that might help you. In case you have found a suitable issue and still need clarification, you can write your question in this issue. It is also advisable to search the internet for answers first. You can also often find helpful people on the garak [Discord](https://discord.gg/uVch4puUCs).
 
 
 If you then still feel the need to ask a question and need clarification, we recommend the following:
 
-- Open an [Issue](https://github.com/leondz/garak/issues/new).
+- Open an [Issue](https://github.com/NVIDIA/garak/issues/new).
 - Provide as much context as you can about what you're running into.
 - Provide project and platform versions (nodejs, npm, etc), depending on what seems relevant.
 
 We will then take care of the issue as soon as possible.
 
 ## I Want To Contribute
+
+Check out our [guide to contributing garak code](https://reference.garak.ai/en/latest/contributing.html). It's also important to make sure that your contribution is within scope of the project - it's so sad to not merge good code which does things outside of where `garak` is going. Check the [FAQ](FAQ.md) for info on what `garak` is and isn't. If you have any doubt, get in touch!
 
 ### Legal Notice <!-- omit in toc -->
 When contributing to this project, you must agree that you have authored 100% of the content, that you have the necessary rights to the content and that the content you contribute may be provided under the project license. All contributors are asked to sign the garak CA/DCO (contributor agreement/developer certificate of origin) when sending their first pull request. The process is automated by a bot that will comment on the pull request. We use the same DCO as the Linux Foundation requires its contributors to sign.
@@ -56,7 +58,7 @@ A good bug report shouldn't leave others needing to chase you up for more inform
 
 - Make sure that you are using the latest version.
 - Determine if your bug is really a bug and not an error on your side e.g. using incompatible environment components/versions (Make sure that you have read the [documentation](https://reference.garak.ai/). If you are looking for support, you might want to check [this section](#i-have-a-question)).
-- To see if other users have experienced (and potentially already solved) the same issue you are having, check if there is not already a bug report existing for your bug or error in the [bug tracker](https://github.com/leondz/garak/issues?q=label%3Abug).
+- To see if other users have experienced (and potentially already solved) the same issue you are having, check if there is not already a bug report existing for your bug or error in the [bug tracker](https://github.com/NVIDIA/garak/issues?q=label%3Abug).
 - Also make sure to search the internet (including Stack Overflow) to see if users outside of the GitHub community have discussed the issue.
 - Collect information about the bug:
   - Stack trace (Traceback)
@@ -73,7 +75,7 @@ You should never report security related issues, vulnerabilities or bugs includi
 
 We use GitHub issues to track bugs and errors. If you run into an issue with the project:
 
-- Open an [Issue](https://github.com/leondz/garak/issues/new). (Since we can't be sure at this point whether it is a bug or not, we ask you not to talk about a bug yet and not to label the issue.)
+- Open an [Issue](https://github.com/NVIDIA/garak/issues/new). (Since we can't be sure at this point whether it is a bug or not, we ask you not to talk about a bug yet and not to label the issue.)
 - Explain the behavior you would expect and the actual behavior.
 - Please provide as much context as possible and describe the *reproduction steps* that someone else can follow to recreate the issue on their own. This usually includes your code. For good bug reports you should isolate the problem and create a reduced test case.
 - Provide the information you collected in the previous section.
@@ -96,14 +98,14 @@ This section guides you through submitting an enhancement suggestion for garak, 
 
 - Make sure that you are using the latest version.
 - Read the [documentation](https://reference.garak.ai/) carefully and find out if the functionality is already covered, maybe by an individual configuration.
-- Perform a [search](https://github.com/leondz/garak/issues) to see if the enhancement has already been suggested. If it has, add a comment to the existing issue instead of opening a new one.
+- Perform a [search](https://github.com/NVIDIA/garak/issues) to see if the enhancement has already been suggested. If it has, add a comment to the existing issue instead of opening a new one.
 - Find out whether your idea fits with the scope and aims of the project. It's up to you to make a strong case to convince the project's developers of the merits of this feature. Keep in mind that we want features that will be useful to the majority of our users and not just a small subset. If you're just targeting a minority of users, consider writing an add-on/plugin library.
 - Check out our [guide for contributors](https://reference.garak.ai/en/latest/contributing.html), which includes our coding workflow and a [guide to constructing a plugin](https://reference.garak.ai/en/latest/contributing.generator.html).
 
 <!-- omit in toc -->
 #### How Do I Submit a Good Enhancement Suggestion?
 
-Enhancement suggestions are tracked as [GitHub issues](https://github.com/leondz/garak//issues).
+Enhancement suggestions are tracked as [GitHub issues](https://github.com/NVIDIA/garak/issues).
 
 - Use a **clear and descriptive title** for the issue to identify the suggestion.
 - Provide a **step-by-step description of the suggested enhancement** in as many details as possible.

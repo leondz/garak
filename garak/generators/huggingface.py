@@ -5,7 +5,7 @@ Supports pipelines, inference API, and models.
 Not all models on HF Hub work well with pipelines; try a Model generator
 if there are problems. Otherwise, please let us know if it's still not working!
 
- https://github.com/leondz/garak/issues
+ https://github.com/NVIDIA/garak/issues
 
 If you use the inference API, it's recommended to put your Hugging Face API key
 in an environment variable called HF_INFERENCE_TOKEN , else the rate limiting can
@@ -14,11 +14,9 @@ be quite strong. Find your Hugging Face Inference API Key here:
  https://huggingface.co/docs/api-inference/quicktour
 """
 
-import inspect
 import logging
-import os
 import re
-from typing import Callable, List, Union
+from typing import List, Union
 import warnings
 
 import backoff
@@ -28,7 +26,7 @@ from PIL import Image
 from garak import _config
 from garak.exception import ModelNameMissingError, GarakException
 from garak.generators.base import Generator
-
+from garak.resources.api.huggingface import HFCompatible
 
 models_to_deprefix = ["gpt2"]
 
@@ -43,107 +41,6 @@ class HFLoadingException(GarakException):
 
 class HFInternalServerError(GarakException):
     pass
-
-
-class HFCompatible:
-    def _set_hf_context_len(self, config):
-        if hasattr(config, "n_ctx"):
-            if isinstance(config.n_ctx, int):
-                self.context_len = config.n_ctx
-
-    def _gather_hf_params(self, hf_constructor: Callable):
-        """ "Identify arguments that impact huggingface transformers resources and behavior"""
-
-        # this may be a bit too naive as it will pass any parameter valid for the hf_constructor signature
-        # this falls over when passed some `from_pretrained` methods as the callable model params are not always explicit
-        params = (
-            self.hf_args
-            if hasattr(self, "hf_args") and isinstance(self.hf_args, dict)
-            else {}
-        )
-        if params is not None and not "device" in params and hasattr(self, "device"):
-            # consider setting self.device in all cases or if self.device is not found raise error `_select_hf_device` must be called
-            params["device"] = self.device
-
-        args = {}
-
-        params_to_process = inspect.signature(hf_constructor).parameters
-
-        if "model" in params_to_process:
-            args["model"] = self.name
-            # expand for
-            params_to_process = {"do_sample": True} | params_to_process
-        else:
-            # callable is for a Pretrained class also map standard `pipeline` params
-            from transformers import pipeline
-
-            params_to_process = (
-                {"low_cpu_mem_usage": True}
-                | params_to_process
-                | inspect.signature(pipeline).parameters
-            )
-
-        for k in params_to_process:
-            if k == "model":
-                continue  # special case `model` comes from `name` in the generator
-            if k in params:
-                val = params[k]
-                if k == "torch_dtype" and hasattr(torch, val):
-                    args[k] = getattr(
-                        torch, val
-                    )  # some model type specific classes do not yet support direct string representation
-                    continue
-                if (
-                    k == "device"
-                    and "device_map" in params_to_process
-                    and "device_map" in params
-                ):
-                    # per transformers convention hold `device_map` before `device`
-                    continue
-                args[k] = params[k]
-
-        if (
-            not "device_map" in args
-            and "device_map" in params_to_process
-            and "device" in params_to_process
-            and "device" in args
-        ):
-            del args["device"]
-            args["device_map"] = self.device
-
-        return args
-
-    def _select_hf_device(self):
-        """Determine the most efficient device for tensor load, hold any existing `device` already selected"""
-        import torch.cuda
-
-        selected_device = None
-        if self.hf_args.get("device", None) is not None:
-            if isinstance(self.hf_args["device"], int):
-                # this assumes that indexed only devices selections means `cuda`
-                if self.hf_args["device"] < 0:
-                    msg = f"device {self.hf_args['device']} requested but CUDA device numbering starts at zero. Use 'device: cpu' to request CPU."
-                    logging.critical(msg)
-                    raise ValueError(msg)
-                selected_device = torch.device("cuda:" + str(self.hf_args["device"]))
-            else:
-                selected_device = torch.device(self.hf_args["device"])
-
-        if selected_device is None:
-            selected_device = torch.device(
-                "cuda"
-                if torch.cuda.is_available()
-                else "mps" if torch.backends.mps.is_available() else "cpu"
-            )
-
-        if isinstance(selected_device, torch.device) and selected_device.type == "mps":
-            os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
-            logging.debug("Enabled MPS fallback environment variable")
-
-        logging.debug(
-            "Using %s, based on torch environment evaluation", selected_device
-        )
-        return selected_device
 
 
 class Pipeline(Generator, HFCompatible):
@@ -183,6 +80,13 @@ class Pipeline(Generator, HFCompatible):
 
         pipeline_kwargs = self._gather_hf_params(hf_constructor=pipeline)
         self.generator = pipeline("text-generation", **pipeline_kwargs)
+        if self.generator.tokenizer is None:
+            # account for possible model without a stored tokenizer
+            from transformers import AutoTokenizer
+
+            self.generator.tokenizer = AutoTokenizer.from_pretrained(
+                pipeline_kwargs["model"]
+            )
         if not hasattr(self, "deprefix_prompt"):
             self.deprefix_prompt = self.name in models_to_deprefix
         if _config.loaded:
@@ -359,7 +263,7 @@ class InferenceAPI(Generator):
         self.name = name
         super().__init__(self.name, config_root=config_root)
 
-        self.uri = self.URI + name
+        self.uri = self.URI + self.name
 
         # special case for api token requirement this also reserves `headers` as not configurable
         if self.api_key:
@@ -453,13 +357,13 @@ class InferenceAPI(Generator):
                         )
             else:
                 raise TypeError(
-                    f"Unsure how to parse 🤗 API response dict: {response}, please open an issue at https://github.com/leondz/garak/issues including this message"
+                    f"Unsure how to parse 🤗 API response dict: {response}, please open an issue at https://github.com/NVIDIA/garak/issues including this message"
                 )
         elif isinstance(response, list):
             return [g["generated_text"] for g in response]
         else:
             raise TypeError(
-                f"Unsure how to parse 🤗 API response type: {response}, please open an issue at https://github.com/leondz/garak/issues including this message"
+                f"Unsure how to parse 🤗 API response type: {response}, please open an issue at https://github.com/NVIDIA/garak/issues including this message"
             )
 
     def _pre_generate_hook(self):
@@ -479,7 +383,7 @@ class InferenceEndpoint(InferenceAPI):
 
     def __init__(self, name="", config_root=_config):
         super().__init__(name, config_root=config_root)
-        self.uri = name
+        self.uri = self.name
 
     @backoff.on_exception(
         backoff.fibo,
@@ -539,15 +443,11 @@ class Model(Pipeline, HFCompatible):
         if _config.run.seed is not None:
             transformers.set_seed(_config.run.seed)
 
-        trust_remote_code = self.name.startswith("mosaicml/mpt-")
-
         model_kwargs = self._gather_hf_params(
             hf_constructor=transformers.AutoConfig.from_pretrained
         )  # will defer to device_map if device map was `auto` may not match self.device
 
-        self.config = transformers.AutoConfig.from_pretrained(
-            self.name, trust_remote_code=trust_remote_code, **model_kwargs
-        )
+        self.config = transformers.AutoConfig.from_pretrained(self.name, **model_kwargs)
 
         self._set_hf_context_len(self.config)
         self.config.init_device = self.device  # determined by Pipeline `__init__``
@@ -623,7 +523,10 @@ class Model(Pipeline, HFCompatible):
 
 
 class LLaVA(Generator, HFCompatible):
-    """Get LLaVA ([ text + image ] -> text) generations"""
+    """Get LLaVA ([ text + image ] -> text) generations
+
+    NB. This should be use with strict modality matching - generate() doesn't
+    support text-only prompts."""
 
     DEFAULT_PARAMS = Generator.DEFAULT_PARAMS | {
         "max_tokens": 4000,
@@ -673,6 +576,7 @@ class LLaVA(Generator, HFCompatible):
     def generate(
         self, prompt: str, generations_this_call: int = 1
     ) -> List[Union[str, None]]:
+
         text_prompt = prompt["text"]
         try:
             image_prompt = Image.open(prompt["image"])

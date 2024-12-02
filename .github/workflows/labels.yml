@@ -26,7 +26,7 @@ on:
 
 jobs:
   handle-labels:
-    if: github.repository_owner == 'leondz'
+    if: github.repository_owner == 'NVIDIA'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v7
@@ -81,7 +81,7 @@ jobs:
                     git push origin <BRANCH_NAME>
 
                     # Now browse to the following URL and create your pull request!
-                    # - https://github.com/leondz/garak/pulls
+                    # - https://github.com/NVIDIA/garak/pulls
                     \`\`\`
 
                     This helps protect the process, ensure users are aware of commits on the branch being considered for merge, allows for a location for more commits to be offered without mingling with other contributor changes and allows contributors to make progress while a PR is still being reviewed.
@@ -119,7 +119,7 @@ jobs:
 
                     This includes:
 
-                    - All of the item points within this [template](https://github.com/leondz/garak/blob/master/.github/ISSUE_TEMPLATE/bug_report.md)
+                    - All of the item points within this [template](https://github.com/NVIDIA/garak/blob/master/.github/ISSUE_TEMPLATE/bug_report.md)
                     - Screenshots showing the issues you're having
                     - Exact replication steps
 
@@ -131,7 +131,7 @@ jobs:
                   close: true,
                   comment: `
                     When creating an issue, please ensure that the default issue template has been updated with the required details:
-                    https://github.com/leondz/garak/issues/new/choose
+                    https://github.com/NVIDIA/garak/issues/new/choose
 
                     Closing this issue. If you believe this issue has been closed in error, please provide any relevant output and logs which may be useful in diagnosing the issue.
                   `

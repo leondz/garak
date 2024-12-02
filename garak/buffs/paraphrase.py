@@ -7,36 +7,42 @@ from collections.abc import Iterable
 
 import garak.attempt
 from garak import _config
-from garak.generators.huggingface import HFCompatible
 from garak.buffs.base import Buff
+from garak.resources.api.huggingface import HFCompatible
 
 
-class PegasusT5(Buff):
+class PegasusT5(Buff, HFCompatible):
     """Paraphrasing buff using Pegasus model"""
 
+    DEFAULT_PARAMS = Buff.DEFAULT_PARAMS | {
+        "para_model_name": "garak-llm/pegasus_paraphrase",
+        "hf_args": {
+            "device": "cpu",
+            "trust_remote_code": False,
+        },  # torch_dtype doesn't have standard support in Pegasus
+        "max_length": 60,
+        "temperature": 1.5,
+    }
     bcp47 = "en"
     doc_uri = "https://huggingface.co/tuner007/pegasus_paraphrase"
 
     def __init__(self, config_root=_config) -> None:
-        self.para_model_name = "garak-llm/pegasus_paraphrase"  # https://huggingface.co/tuner007/pegasus_paraphrase
-        self.max_length = 60
-        self.temperature = 1.5
         self.num_return_sequences = 6
         self.num_beams = self.num_return_sequences
-        self.torch_device = None
         self.tokenizer = None
         self.para_model = None
         super().__init__(config_root=config_root)
 
     def _load_model(self):
-        import torch
         from transformers import PegasusForConditionalGeneration, PegasusTokenizer
 
-        self.torch_device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.tokenizer = PegasusTokenizer.from_pretrained(self.para_model_name)
+        self.device = self._select_hf_device()
         self.para_model = PegasusForConditionalGeneration.from_pretrained(
             self.para_model_name
-        ).to(self.torch_device)
+        ).to(self.device)
+        self.tokenizer = PegasusTokenizer.from_pretrained(
+            self.para_model_name, trust_remote_code=self.hf_args["trust_remote_code"]
+        )
 
     def _get_response(self, input_text):
         if self.para_model is None:
@@ -48,7 +54,7 @@ class PegasusT5(Buff):
             padding="longest",
             max_length=self.max_length,
             return_tensors="pt",
-        ).to(self.torch_device)
+        ).to(self.device)
         translated = self.para_model.generate(
             **batch,
             max_length=self.max_length,
@@ -89,7 +95,6 @@ class Fast(Buff, HFCompatible):
         self.no_repeat_ngram_size = 2
         # self.temperature = 0.7
         self.max_length = 128
-        self.device = None
         self.tokenizer = None
         self.para_model = None
         super().__init__(config_root=config_root)

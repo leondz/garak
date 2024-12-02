@@ -10,13 +10,12 @@ def main(arguments=None) -> None:
     """Main entry point for garak runs invoked from the CLI"""
     import datetime
 
-    from garak import __version__, __description__
+    from garak import __description__
     from garak import _config
     from garak.exception import GarakException
 
     _config.transient.starttime = datetime.datetime.now()
     _config.transient.starttime_iso = _config.transient.starttime.isoformat()
-    _config.version = __version__
 
     if arguments is None:
         arguments = []
@@ -30,7 +29,7 @@ def main(arguments=None) -> None:
     _config.load_base_config()
 
     print(
-        f"garak {__description__} v{_config.version} ( https://github.com/leondz/garak ) at {_config.transient.starttime_iso}"
+        f"garak {__description__} v{_config.version} ( https://github.com/NVIDIA/garak ) at {_config.transient.starttime_iso}"
     )
 
     import argparse
@@ -38,7 +37,7 @@ def main(arguments=None) -> None:
     parser = argparse.ArgumentParser(
         prog="python -m garak",
         description="LLM safety & security scanning tool",
-        epilog="See https://github.com/leondz/garak",
+        epilog="See https://github.com/NVIDIA/garak",
     )
 
     ## SYSTEM
@@ -248,6 +247,14 @@ def main(arguments=None) -> None:
         help="Launch garak in interactive.py mode",
     )
 
+    ## EXPERIMENTAL FEATURES
+    if _config.system.enable_experimental:
+        # place parser argument defs for experimental features here
+        parser.description = (
+            str(parser.description) + " - EXPERIMENTAL FEATURES ENABLED"
+        )
+        pass
+
     logging.debug("args - raw argument string received: %s", arguments)
 
     args = parser.parse_args(arguments)
@@ -255,6 +262,7 @@ def main(arguments=None) -> None:
 
     # load site config before loading CLI config
     _cli_config_supplied = args.config is not None
+    prior_user_agents = _config.get_http_lib_agents()
     _config.load_config(run_config_filename=args.config)
 
     # extract what was actually passed on CLI; use a masking argparser
@@ -330,6 +338,15 @@ def main(arguments=None) -> None:
     if "buffs" in args:
         _config.plugins.buff_spec = args.buffs
 
+    # base config complete
+
+    if hasattr(_config.run, "seed") and isinstance(_config.run.seed, int):
+        import random
+
+        random.seed(
+            _config.run.seed
+        )  # setting seed persists across re-imports of random
+
     # startup
     import sys
     import json
@@ -343,6 +360,7 @@ def main(arguments=None) -> None:
         for plugin_type in plugin_types:
             opts_arg = f"{plugin_type}_options"
             opts_file = f"{plugin_type}_option_file"
+            opts_cli_config = None
             if opts_arg in args or opts_file in args:
                 if opts_arg in args:
                     opts_argv = getattr(args, opts_arg)
@@ -496,7 +514,7 @@ def main(arguments=None) -> None:
                 and _config.system.parallel_attempts is False
             ):
                 command.hint(
-                    f"This run can be sped up 🥳 Generator '{generator.fullname}' supports parallelism! Consider using `--parallel_requests 16` (or more) to greatly accelerate your run. 🐌",
+                    f"This run can be sped up 🥳 Generator '{generator.fullname}' supports parallelism! Consider using `--parallel_attempts 16` (or more) to greatly accelerate your run. 🐌",
                     logging=logging,
                 )
 
@@ -545,3 +563,5 @@ def main(arguments=None) -> None:
     except (ValueError, GarakException) as e:
         logging.exception(e)
         print(e)
+
+    _config.set_http_lib_agents(prior_user_agents)

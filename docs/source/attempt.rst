@@ -1,3 +1,5 @@
+garak.attempt
+=============
 
 In garak, ``attempt`` objects track a single prompt and the results of running it on through the generator.
 Probes work by creating a set of garak.attempt objects and setting their class properties.

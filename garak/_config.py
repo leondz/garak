@@ -23,7 +23,7 @@ from xdg_base_dirs import (
 
 DICT_CONFIG_AFTER_LOAD = False
 
-version = -1  # eh why this is here? hm. who references it
+from garak import __version__ as version
 
 system_params = (
     "verbose narrow_output parallel_requests parallel_attempts skip_unknown".split()
@@ -123,6 +123,8 @@ def _set_settings(config_obj, settings_obj: dict):
 
 
 def _combine_into(d: dict, combined: dict) -> None:
+    if d is None:
+        return combined
     for k, v in d.items():
         if isinstance(v, dict):
             _combine_into(v, combined.setdefault(k, nested_dict()))
@@ -144,12 +146,64 @@ def _load_yaml_config(settings_filenames) -> dict:
 
 
 def _store_config(settings_files) -> None:
-    global system, run, plugins, reporting
+    global system, run, plugins, reporting, version
     settings = _load_yaml_config(settings_files)
     system = _set_settings(system, settings["system"])
     run = _set_settings(run, settings["run"])
+    run.user_agent = run.user_agent.replace("{version}", version)
     plugins = _set_settings(plugins, settings["plugins"])
     reporting = _set_settings(reporting, settings["reporting"])
+
+
+# not my favourite solution in this module, but if
+# _config.set_http_lib_agents() to be predicated on a param instead of
+# a _config.run value (i.e. user_agent) - which it needs to be if it can be
+# used when the values are popped back to originals - then a separate way
+# of passing the UA string to _garak_user_agent() needs to exist, outside of
+# _config.run.user_agent
+REQUESTS_AGENT = ""
+
+
+def _garak_user_agent(dummy=None):
+    return str(REQUESTS_AGENT)
+
+
+def set_all_http_lib_agents(agent_string):
+    set_http_lib_agents(
+        {"requests": agent_string, "httpx": agent_string, "aiohttp": agent_string}
+    )
+
+
+def set_http_lib_agents(agent_strings: dict):
+
+    global REQUESTS_AGENT
+
+    if "requests" in agent_strings:
+        from requests import utils
+
+        REQUESTS_AGENT = agent_strings["requests"]
+        utils.default_user_agent = _garak_user_agent
+    if "httpx" in agent_strings:
+        import httpx
+
+        httpx._client.USER_AGENT = agent_strings["httpx"]
+    if "aiohttp" in agent_strings:
+        import aiohttp
+
+        aiohttp.client_reqrep.SERVER_SOFTWARE = agent_strings["aiohttp"]
+
+
+def get_http_lib_agents():
+    from requests import utils
+    import httpx
+    import aiohttp
+
+    agent_strings = {}
+    agent_strings["requests"] = utils.default_user_agent
+    agent_strings["httpx"] = httpx._client.USER_AGENT
+    agent_strings["aiohttp"] = aiohttp.client_reqrep.SERVER_SOFTWARE
+
+    return agent_strings
 
 
 def load_base_config() -> None:
@@ -193,6 +247,7 @@ def load_config(
 
     logging.debug("Loading configs from: %s", ",".join(settings_files))
     _store_config(settings_files=settings_files)
+
     if DICT_CONFIG_AFTER_LOAD:
         _lock_config_as_dict()
     loaded = True

@@ -47,38 +47,30 @@ def _validate_payload(payload_json):
     return True
 
 
-def load_payload(
-    name: str, path: Union[str, pathlib.Path, None] = None
-) -> PayloadGroup:
-    if path is None:
-        path = PAYLOAD_DIR / f"{name}.json"
-    return PayloadGroup(name, path)
-
-
 class PayloadGroup:
     """Represents a configured group of payloads for use with garak
     probes. Each group should have a name, one or more payload types, and
     a number of payload entries"""
 
     def _load(self):
-        logging.debug("Loading payload %s from %s", self.name, self.path)
+        logging.debug("payload: Loading payload %s from %s", self.name, self.path)
         try:
             with open(self.path, "r", encoding="utf-8") as payloadfile:
                 loaded_payload = json.load(payloadfile)
 
         except FileNotFoundError as fnfe:
-            msg = "Payload file not found:" + str(self.path)
+            msg = "payload: file not found:" + str(self.path)
             logging.error(msg, exc_info=fnfe)
             raise garak.exception.PayloadFailure(msg) from fnfe
 
         except json.JSONDecodeError as jde:
-            msg = "Payload JSON error:" + str(jde)
+            msg = "payload: JSON error:" + str(jde)
             logging.error(msg, exc_info=jde)
             raise garak.exception.PayloadFailure("Payload JSON error") from jde
 
         validation_result = _validate_payload(loaded_payload)
         if validation_result is not True:
-            msg = "Payload JSON schema mismatch:" + str(validation_result)
+            msg = "payload: JSON schema mismatch:" + str(validation_result)
             logging.error(msg, exc_info=validation_result)
             raise garak.exception.PayloadFailure(
                 "Payload didn't match schema"
@@ -97,7 +89,7 @@ class PayloadGroup:
                 self.detector_config = dict(loaded_payload["detector_config"])
 
             except TypeError as te:
-                msg = "Payload detector_config must be a dict, got: " + repr(
+                msg = "payload: detector_config must be a dict, got: " + repr(
                     loaded_payload["detector_config"]
                 )
                 logging.warning(msg, exc_info=te)
@@ -140,6 +132,8 @@ class Director:
     manage enumeration of payloads (optionally given a payload type specification),
     and load them up."""
 
+    payload_list = None
+
     def _scan_payload_dir(self, dir) -> dict:
         """Look for .json entries in a dir, load them, check which are
         payloads, return name:path dict. optionally filter by type prefixes"""
@@ -147,7 +141,10 @@ class Director:
         payloads_found = {}
         dir = dir
         if not dir.is_dir():
+            logging.debug("payload scan: skipping %s, not dir" % dir)
             return {}
+
+        logging.debug("payload scan: %s" % dir)
 
         entries = dir.glob("**/*.[jJ][sS][oO][nN]")
         for payload_path in entries:
@@ -156,7 +153,7 @@ class Director:
                     payload_decoded = json.load(payload_path_file)
                     payload_types = payload_decoded["payload_types"]
                 except (json.JSONDecodeError, KeyError) as exc:
-                    msg = f"Invalid payload, skipping: {payload_path}"
+                    msg = f"payload scan: Invalid payload, skipping: {payload_path}"
                     logging.debug(msg, exc_info=exc)
                     # raise garak.exception.PayloadFailure(msg) from exc
 
@@ -172,49 +169,74 @@ class Director:
     def _refresh_payloads(self) -> None:
         """Scan resources/payloads and the XDG_DATA_DIR/payloads for
         payload objects, and refresh self.payload_list"""
-        self.payload_list = self._scan_payload_dir(PAYLOAD_DIR)
+        self.__class__.payload_list = self._scan_payload_dir(PAYLOAD_DIR)
 
     def search(
         self, types: Union[List[str], None] = None, include_children=True
     ) -> Generator[str, None, None]:
         """Return list of payload names, optionally filtered by types"""
-        for payload in self.payload_list:
+        for payload in self.__class__.payload_list:
             if types is None:
                 yield payload
             else:
                 if include_children is False:
                     matches = [
                         payload_type == type_prefix
-                        for payload_type in self.payload_list[payload]["types"]
+                        for payload_type in self.__class__.payload_list[payload][
+                            "types"
+                        ]
                         for type_prefix in types
                     ]
                 else:
                     matches = [
                         payload_type.startswith(type_prefix)
-                        for payload_type in self.payload_list[payload]["types"]
+                        for payload_type in self.__class__.payload_list[payload][
+                            "types"
+                        ]
                         for type_prefix in types
                     ]
                 if any(matches):
                     yield payload
 
+    @staticmethod
+    def _load_payload(
+        name: str, path: Union[str, pathlib.Path, None] = None
+    ) -> PayloadGroup:
+        if path is None:
+            path = PAYLOAD_DIR / f"{name}.json"
+        return PayloadGroup(name, path)
+
     def load(self, name) -> PayloadGroup:
         """Return a PayloadGroup"""
         try:
-            path = self.payload_list[name]["path"]
-            p = load_payload(name, path)  # or raise KeyError
+            path = self.__class__.payload_list[name]["path"]
+            p = self._load_payload(name, path)  # or raise KeyError
 
         except KeyError as ke:
-            msg = f"Requested payload {name} is not registered in this Director"
+            msg = (
+                f"payload: Requested payload {name} is not registered in this Director"
+            )
             logging.error(msg, exc_info=ke)
             raise garak.exception.PayloadFailure(msg) from ke
 
         except garak.exception.GarakException as ge:
-            msg = f"Requested payload {name} not found at expected path {path}"
+            msg = f"payload: Requested payload {name} not found at expected path {path}"
             logging.error(msg, exc_info=ge)
             raise garak.exception.PayloadFailure(msg) from ge
 
         return p
 
     def __init__(self) -> None:
-        self.payload_list = {}  # name: {path:path, types:types}
-        self._refresh_payloads()
+        if self.__class__.payload_list is None:
+            self._refresh_payloads()
+
+
+@staticmethod
+def search(
+    types: Union[List[str], None] = None, include_children=True
+) -> Generator[str, None, None]:
+    return Director().search(types, include_children)
+
+
+def load(name: str) -> PayloadGroup:
+    return Director().load(name)

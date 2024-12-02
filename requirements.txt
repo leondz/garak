@@ -35,11 +35,14 @@ lorem==0.1.1
 xdg-base-dirs>=6.0.1
 wn==0.9.5
 ollama>=0.1.7
+tiktoken>=0.7.0
 # tests
 pytest>=8.0
+pytest-mock>=3.14.0
 requests-mock==1.12.1
 respx>=0.21.1
 pytest-cov>=5.0.0
+pytest_httpserver>=1.1.0
 # lint
 black==24.4.2
 pylint>=3.1.0

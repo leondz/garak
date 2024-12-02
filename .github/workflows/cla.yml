@@ -14,12 +14,12 @@ permissions:
 
 jobs:
   CLAAssistant:
-    if: github.repository_owner == 'leondz'
+    if: github.repository_owner == 'NVIDIA'
     runs-on: ubuntu-latest
     steps:
       - name: "CA & DCO Assistant"
         if: (github.event.comment.body == 'recheck' || github.event.comment.body == 'I have read the Contributor Agreement including DCO and I hereby sign the Contributor Agreement and DCO') || github.event_name == 'pull_request_target'
-        uses: contributor-assistant/github-action@v2.3.2
+        uses: cla-assistant/github-action@v2.3.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # the below token should have repo scope and must be manually added by you in the repository's secret
@@ -27,9 +27,9 @@ jobs:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         with:
           path-to-signatures: 'signatures/cla.json'
-          path-to-document: 'https://github.com/leondz/garak/blob/main/CA_DCO.md' # e.g. a CLA or a DCO document
+          path-to-document: 'https://github.com/NVIDIA/garak/blob/main/CA_DCO.md' # e.g. a CLA or a DCO document
           # branch should not be protected
-          branch: 'main'
+          branch: 'signatures'
           use-dco-flag: true
           allowlist: 
 
