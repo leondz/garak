@@ -147,7 +147,7 @@ def test_fixer_migrate(
         ), "Logging should not be called when no migrations are applied"
     else:
         # expect `migration_name` in a log call via mock of logging.info()
-        assert "Migration preformed" in mock_log_info.call_args.args[0]
+        assert "Migration performed" in mock_log_info.call_args.args[0]
         found_class = False
         for calls in mock_log_info.call_args_list:
             found_class = migration_name in calls.args[0]

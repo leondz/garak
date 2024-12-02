@@ -28,7 +28,7 @@ for module_filename in sorted(os.listdir(root_path)):
         continue
     if module_filename.startswith("__"):
         continue
-    module_name = module_filename.replace(".py", "")
+    module_name = module_filename[:-3]  # strip ".py" known from check above
     mod = importlib.import_module(f"{__package__}.{module_name}")
     migrations = [  # Extract only classes that are a `Migration`
         klass
@@ -50,6 +50,6 @@ def migrate(original_config: dict) -> dict:
             logging.info(msg)
 
     if original_config != updated_config:
-        logging.info("Migration preformed")
+        logging.info("Migration performed")
 
     return updated_config

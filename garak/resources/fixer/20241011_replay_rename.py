@@ -7,7 +7,7 @@ from garak.resources.fixer import _plugin
 
 class RenameReplay(Migration):
     def apply(config_dict: dict) -> dict:
-        """Rename probe replay -> divergence"""
+        """Rename probe family replay -> divergence"""
 
         path = ["plugins", "probes"]
         old = "replay"
