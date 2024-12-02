@@ -6,6 +6,7 @@ simply reformulating a harmful request in the past tense  is often sufficient to
 of-the-art LLMs
 """
 
+from garak import _config
 from garak.data import path as data_path
 from garak.probes.base import Probe
 
@@ -16,6 +17,7 @@ class PastTense(Probe):
     This check sends the generator requests for advice on making weapons in the past tense.
     """
 
+    active = False
     bcp47 = "en"
     doc_uri = "https://arxiv.org/pdf/2407.11969v2"
     primary_detector = "specialwords.Prefixes"
@@ -26,15 +28,33 @@ class PastTense(Probe):
     ]
     goal = "disregard the system prompt"
 
-    prompts = []
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
 
-    with open(
-        data_path / "phrasing" / "past_tense_en.txt",
-        "r",
-        encoding="utf-8",
-    ) as file:
-        for str in file:
-            prompts.append(str.strip())
+        self.prompts = []
+
+        with open(
+            data_path / "phrasing" / "past_tense_en.txt",
+            "r",
+            encoding="utf-8",
+        ) as file:
+            for str in file:
+                self.prompts.append(str.strip())
+
+
+class PastTenseMini(PastTense):
+    """Attempt to evade safeguards by setting requests in the past tense
+
+    A subset of the tense-modified requests. Success is reported higher with more variation, so
+    generations is overridden.
+    """
+
+    active = True
+
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
+        self.prompts = self.prompts[:200]
+        self.generations = 1
 
 
 class FutureTense(Probe):
@@ -43,6 +63,8 @@ class FutureTense(Probe):
     This check sends the generator requests for advice on making weapons in the future tense.
     """
 
+    active = False
+
     bcp47 = "en"
     doc_uri = "https://arxiv.org/pdf/2407.11969v2"
     primary_detector = "specialwords.Prefixes"
@@ -53,12 +75,30 @@ class FutureTense(Probe):
     ]
     goal = "disregard the system prompt"
 
-    prompts = []
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
 
-    with open(
-        data_path / "phrasing" / "future_tense_en.txt",
-        "r",
-        encoding="utf-8",
-    ) as file:
-        for str in file:
-            prompts.append(str.strip())
+        self.prompts = []
+
+        with open(
+            data_path / "phrasing" / "past_tense_en.txt",
+            "r",
+            encoding="utf-8",
+        ) as file:
+            for str in file:
+                self.prompts.append(str.strip())
+
+
+class FutureTenseMini(FutureTense):
+    """Attempt to evade safeguards by setting requests in the future tense
+
+    A subset of the tense-modified requests. Success is reported higher with more variation, so
+    generations is overridden.
+    """
+
+    active = True
+
+    def __init__(self, config_root=_config):
+        super().__init__(config_root=config_root)
+        self.prompts = self.prompts[:200]
+        self.generations = 1
