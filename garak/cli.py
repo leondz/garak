@@ -3,7 +3,37 @@
 
 """Flow for invoking garak from the command line"""
 
-command_options = "list_detectors list_probes list_generators list_buffs list_config plugin_info interactive report version".split()
+command_options = "list_detectors list_probes list_generators list_buffs list_config plugin_info interactive report version fix".split()
+
+
+def parse_cli_plugin_config(plugin_type, args):
+    import os
+    import json
+    import logging
+
+    opts_arg = f"{plugin_type}_options"
+    opts_file = f"{plugin_type}_option_file"
+    opts_cli_config = None
+    if opts_arg in args or opts_file in args:
+        if opts_arg in args:
+            opts_argv = getattr(args, opts_arg)
+            try:
+                opts_cli_config = json.loads(opts_argv)
+            except json.JSONDecodeError as e:
+                logging.warning("Failed to parse JSON %s: %s", opts_arg, e.args[0])
+
+        elif opts_file in args:
+            file_arg = getattr(args, opts_file)
+            if not os.path.isfile(file_arg):
+                raise FileNotFoundError(f"Path provided is not a file: {opts_file}")
+            with open(file_arg, encoding="utf-8") as f:
+                options_json = f.read().strip()
+            try:
+                opts_cli_config = json.loads(options_json)
+            except json.decoder.JSONDecodeError as e:
+                logging.warning("Failed to parse JSON %s: %s", opts_file, {e.args[0]})
+                raise e
+    return opts_cli_config
 
 
 def main(arguments=None) -> None:
@@ -11,7 +41,7 @@ def main(arguments=None) -> None:
     import datetime
 
     from garak import __description__
-    from garak import _config
+    from garak import _config, _plugins
     from garak.exception import GarakException
 
     _config.transient.starttime = datetime.datetime.now()
@@ -38,6 +68,7 @@ def main(arguments=None) -> None:
         prog="python -m garak",
         description="LLM safety & security scanning tool",
         epilog="See https://github.com/NVIDIA/garak",
+        allow_abbrev=False,
     )
 
     ## SYSTEM
@@ -108,7 +139,7 @@ def main(arguments=None) -> None:
     )
 
     ## PLUGINS
-    # generator
+    # generators
     parser.add_argument(
         "--model_type",
         "-m",
@@ -121,18 +152,6 @@ def main(arguments=None) -> None:
         type=str,
         default=None,
         help="name of the model, e.g. 'timdettmers/guanaco-33b-merged'",
-    )
-    generator_args = parser.add_mutually_exclusive_group()
-    generator_args.add_argument(
-        "--generator_option_file",
-        "-G",
-        type=str,
-        help="path to JSON file containing options to pass to generator",
-    )
-    generator_args.add_argument(
-        "--generator_options",
-        type=str,
-        help="options to pass to the generator",
     )
     # probes
     parser.add_argument(
@@ -147,18 +166,6 @@ def main(arguments=None) -> None:
         default=_config.run.probe_tags,
         type=str,
         help="only include probes with a tag that starts with this value (e.g. owasp:llm01)",
-    )
-    probe_args = parser.add_mutually_exclusive_group()
-    probe_args.add_argument(
-        "--probe_option_file",
-        "-P",
-        type=str,
-        help="path to JSON file containing options to pass to probes",
-    )
-    probe_args.add_argument(
-        "--probe_options",
-        type=str,
-        help="options to pass to probes, formatted as a JSON dict",
     )
     # detectors
     parser.add_argument(
@@ -181,7 +188,23 @@ def main(arguments=None) -> None:
         default=_config.plugins.buff_spec,
         help="list of buffs to use. Default is none",
     )
-
+    # file or json based config options
+    plugin_types = sorted(
+        zip([type.lower() for type in _plugins.PLUGIN_CLASSES], _plugins.PLUGIN_TYPES)
+    )
+    for plugin_type, _ in plugin_types:
+        probe_args = parser.add_mutually_exclusive_group()
+        probe_args.add_argument(
+            f"--{plugin_type}_option_file",
+            f"-{plugin_type[0].upper()}",
+            type=str,
+            help=f"path to JSON file containing options to pass to {plugin_type}",
+        )
+        probe_args.add_argument(
+            f"--{plugin_type}_options",
+            type=str,
+            help=f"options to pass to {plugin_type}, formatted as a JSON dict",
+        )
     ## REPORTING
     parser.add_argument(
         "--taxonomy",
@@ -245,6 +268,12 @@ def main(arguments=None) -> None:
         "--interactive.py",
         action="store_true",
         help="Launch garak in interactive.py mode",
+    )
+
+    parser.add_argument(
+        "--fix",
+        action="store_true",
+        help="Update provided configuration with fixer migrations; requires one of --config / --*_option_file, / --*_options",
     )
 
     ## EXPERIMENTAL FEATURES
@@ -350,44 +379,17 @@ def main(arguments=None) -> None:
     # startup
     import sys
     import json
-    import os
 
     import garak.evaluators
 
     try:
-        plugin_types = ["probe", "generator"]
+        has_config_file_or_json = False
         # do a special thing for CLI probe options, generator options
-        for plugin_type in plugin_types:
-            opts_arg = f"{plugin_type}_options"
-            opts_file = f"{plugin_type}_option_file"
-            opts_cli_config = None
-            if opts_arg in args or opts_file in args:
-                if opts_arg in args:
-                    opts_argv = getattr(args, opts_arg)
-                    try:
-                        opts_cli_config = json.loads(opts_argv)
-                    except json.JSONDecodeError as e:
-                        logging.warning(
-                            "Failed to parse JSON %s: %s", opts_arg, e.args[0]
-                        )
-
-                elif opts_file in args:
-                    file_arg = getattr(args, opts_file)
-                    if not os.path.isfile(file_arg):
-                        raise FileNotFoundError(
-                            f"Path provided is not a file: {opts_file}"
-                        )
-                    with open(file_arg, encoding="utf-8") as f:
-                        options_json = f.read().strip()
-                    try:
-                        opts_cli_config = json.loads(options_json)
-                    except json.decoder.JSONDecodeError as e:
-                        logging.warning(
-                            "Failed to parse JSON %s: %s", opts_file, {e.args[0]}
-                        )
-                        raise e
-
-                config_plugin_type = getattr(_config.plugins, f"{plugin_type}s")
+        for plugin_type, plugin_plural in plugin_types:
+            opts_cli_config = parse_cli_plugin_config(plugin_type, args)
+            if opts_cli_config is not None:
+                has_config_file_or_json = True
+                config_plugin_type = getattr(_config.plugins, plugin_plural)
 
                 config_plugin_type = _config._combine_into(
                     opts_cli_config, config_plugin_type
@@ -429,6 +431,60 @@ def main(arguments=None) -> None:
             print("cli args:\n ", args)
             command.list_config()
 
+        elif args.fix:
+            from garak.resources import fixer
+            import json
+            import yaml
+
+            # process all possible configuration entries
+            # should this restrict the config updates to a single fixable value?
+            # for example allowed commands:
+            # --fix --config filename.yaml
+            # --fix --generator_option_file filename.json
+            # --fix --generator_options json
+            #
+            # disallowed commands:
+            # --fix --config filename.yaml --generator_option_file filename.json
+            # --fix --generator_option_file filename.json --probe_option_file filename.json
+            #
+            # already unsupported as only one is held:
+            # --fix --generator_option_file filename.json --generator_options json_data
+            #
+            # How should this handle garak.site.yaml? Only if --fix was provided and no other options offered?
+            # For now process all files registered a part of the config
+            has_changes = False
+            if has_config_file_or_json:
+                for plugin_type, plugin_plural in plugin_types:
+                    # cli plugins options stub out only a "plugins" sub key
+                    plugin_cli_config = parse_cli_plugin_config(plugin_type, args)
+                    if plugin_cli_config is not None:
+                        cli_config = {
+                            "plugins": {f"{plugin_plural}": plugin_cli_config}
+                        }
+                        migrated_config = fixer.migrate(cli_config)
+                        if cli_config != migrated_config:
+                            has_changes = True
+                            msg = f"Updated '{plugin_type}' configuration: \n"
+                            msg += json.dumps(
+                                migrated_config["plugins"][plugin_plural], indent=2
+                            )  # pretty print the config in json
+                            print(msg)
+            else:
+                # check if garak.site.yaml needs to be fixed up?
+                for filename in _config.config_files:
+                    with open(filename, encoding="UTF-8") as file:
+                        cli_config = yaml.safe_load(file)
+                        migrated_config = fixer.migrate(cli_config)
+                        if cli_config != migrated_config:
+                            has_changes = True
+                            msg = f"Updated {filename}: \n"
+                            msg += yaml.dump(migrated_config)
+                            print(msg)
+            # should this add support for --*_spec entries passed on cli?
+            if has_changes:
+                exit(1)  # exit with error code to denote changes
+            else:
+                print("No revisions applied. Please verify options provided for `--fix`")
         elif args.report:
             from garak.report import Report
 

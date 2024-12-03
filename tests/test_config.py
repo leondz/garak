@@ -81,7 +81,7 @@ OPTIONS_PARAM = [
 OPTIONS_SPEC = [
     ("probes", "3,elim,gul.dukat", "probe_spec"),
     ("detectors", "all", "detector_spec"),
-    ("buff", "polymorph", "buff_spec"),
+    ("buffs", "polymorph", "buff_spec"),
 ]
 
 param_locs = {}
@@ -786,8 +786,9 @@ def test_set_agents():
     assert httpx._client.USER_AGENT == AGENT_TEST
     assert aiohttp.client_reqrep.SERVER_SOFTWARE == AGENT_TEST
 
+
 def httpserver():
-   return HTTPServer()
+    return HTTPServer()
 
 
 def test_agent_is_used_requests(httpserver: HTTPServer):
