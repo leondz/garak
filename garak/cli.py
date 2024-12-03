@@ -484,7 +484,7 @@ def main(arguments=None) -> None:
             if has_changes:
                 exit(1)  # exit with error code to denote changes
             else:
-                print("No revisions applied please verify options provided for `--fix`")
+                print("No revisions applied. Please verify options provided for `--fix`")
         elif args.report:
             from garak.report import Report
 
