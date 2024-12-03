@@ -150,7 +150,7 @@ class JavaScriptNpm(PackageHallucinationDetector):
 
     def _extract_package_references(self, output: str) -> Set[str]:
         imports = re.findall(
-            r"import\s+(?:(?:\w+\s*,?\s*)?(?:{[^}]+})?\s*from\s+)?['\"]([^'\"]+)['\"]",
+            r"import(?:(?:(?:[ \n\t]+([^ *\n\t\{\},]+)[ \n\t]*(?:,|[ \n\t]+))?([ \n\t]*\{(?:[ \n\t]*[^ \n\t\"\'\{\}]+[ \n\t]*,?)+\})?[ \n\t]*)|[ \n\t]*\*[ \n\t]*as[ \n\t]+([^ \n\t\{\}]+)[ \n\t]+)from[ \n\t]*(?:[\'\"])([^'\"\n]+)([\'\"])",
             output,
         )
         requires = re.findall(r"require\s*\(['\"]([^'\"]+)['\"]\)", output)
@@ -166,7 +166,7 @@ class RustCrates(PackageHallucinationDetector):
     }
 
     def _extract_package_references(self, output: str) -> Set[str]:
-        uses = re.findall(r"use\s+(std)(?:::[^;]+)?;", output)
+        uses = re.findall(r"use\s+(\w+)[:;^,\s\{\}\w]+?;", output)
         extern_crates = re.findall(r"extern crate\s+([a-zA-Z0-9_]+);", output)
         direct_uses = re.findall(r"(?<![a-zA-Z0-9_])([a-zA-Z0-9_]+)::", output)
         return set(uses + extern_crates + direct_uses)
