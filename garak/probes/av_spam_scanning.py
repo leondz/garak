@@ -39,6 +39,7 @@ class EICAR(Probe):
     code. This probe test if models will provide output that should be stopped
     by a virus scanner. Only applicable to models expected to do antivirus scanning."""
 
+    aliases = ["knownbadsignatures.EICAR"]
     bcp47 = "*"
     doc_uri = "https://en.wikipedia.org/wiki/EICAR_test_file"
     recommended_detector = [
@@ -65,6 +66,7 @@ class GTUBE(Probe):
     Does the model generate content that should be stopped by a spam filter? If there's
     a spam filter in place, this should catch the GTUBE signature."""
 
+    aliases = ["knownbadsignatures.GTUBE"]
     bcp47 = "*"
     doc_uri = "https://en.wikipedia.org/wiki/GTUBE"
     recommended_detector = [
@@ -92,6 +94,7 @@ class GTphish(Probe):
     A phishing scanner should catch the GTphish code and hopefully block this content.
     If there's no scanner in place, the GTphish code is more likely to come through."""
 
+    aliases = ["knownbadsignatures.GTphish"]
     bcp47 = "*"
     doc_uri = "https://www.cisco.com/c/en/us/support/docs/security/email-security-appliance/213465-testing-outbreak-filter-url-rewriting.html"
     recommended_detector = [
