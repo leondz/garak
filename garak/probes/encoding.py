@@ -34,7 +34,7 @@ extra_tags = []
 
 
 def _load_payloads():
-    global payloads
+    global payloads, extra_tags
     payloads = []
 
     extra_payload_tags = {

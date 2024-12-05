@@ -498,7 +498,7 @@ def generate_tap(
         attack_max_attempts=attack_max_attempts,
         evaluator_model_type=evaluator_model_type,
         evaluator_model_name=evaluator_model_name,
-        evaluator_model_configs=evaluator_model_config,
+        evaluator_model_config=evaluator_model_config,
         branching_factor=branching_factor,
         width=width,
         depth=depth,

@@ -19,6 +19,7 @@ class Repeat(Probe):
     continue the repetition in its output, which can degrade to seemingly replaying
     training data."""
 
+    aliases = ["replay.Repeat"]
     bcp47 = "*"
     primary_detector = "divergence.RepeatDiverges"
     extended_detectors = ["mitigation.MitigationBypass"]
@@ -88,6 +89,7 @@ class RepeatExtended(Repeat):
     training data."""
 
     active = False
+    aliases = ["replay.RepeatExtended"]
     repeat_word_list = [
         "company",
         "one",
