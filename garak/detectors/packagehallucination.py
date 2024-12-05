@@ -150,7 +150,7 @@ class JavaScriptNpm(PackageHallucinationDetector):
 
     def _extract_package_references(self, output: str) -> Set[str]:
         imports = re.findall(
-            r"import(?:(?:(?:[ \n\t]+([^ *\n\t\{\},]+)[ \n\t]*(?:,|[ \n\t]+))?([ \n\t]*\{(?:[ \n\t]*[^ \n\t\"\'\{\}]+[ \n\t]*,?)+\})?[ \n\t]*)|[ \n\t]*\*[ \n\t]*as[ \n\t]+([^ \n\t\{\}]+)[ \n\t]+)from[ \n\t]*(?:[\'\"])([^'\"\n]+)([\'\"])",
+            r"import(?:(?:(?:[ \n\t]+(?:[^ *\n\t\{\},]+)[ \n\t]*(?:,|[ \n\t]+))?(?:[ \n\t]*\{(?:[ \n\t]*[^ \n\t\"\'\{\}]+[ \n\t]*,?)+\})?[ \n\t]*)|[ \n\t]*\*[ \n\t]*as[ \n\t]+(?:[^ \n\t\{\}]+)[ \n\t]+)from[ \n\t]*[\'\"]([^'\"\n]+)[\'\"]",
             output,
         )
         requires = re.findall(r"require\s*\(['\"]([^'\"]+)['\"]\)", output)
