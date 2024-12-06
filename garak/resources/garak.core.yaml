@@ -7,6 +7,8 @@ system:
   lite: true
   show_z: false
   enable_experimental: false
+  security:
+    use_safetensors: true
 
 run:
   seed:
