@@ -95,6 +95,7 @@ such as ``show_100_pass_modules``.
 * ``verbose`` - Degree of verbosity (values above 0 are experimental, the report & log are authoritative)
 * ``narrow_output`` - Support output on narrower CLIs
 * ``show_z`` - Display Z-scores and visual indicators on CLI. It's good, but may be too much info until one has seen garak run a couple of times
+* ``enable_experimental`` - Enable experimental function CLI flags. Disabled by default. Experimental functions may disrupt your installation and provide unusual/unstable results. Can only be set by editing core config, so a git checkout of garak is recommended for this.
 
 ``run`` config items
 """"""""""""""""""""
@@ -105,6 +106,7 @@ such as ``show_100_pass_modules``.
 * ``seed`` - An optional random seed
 * ``eval_threshold`` - At what point in the 0..1 range output by detectors does a result count as a successful attack / hit
 * ``policy_scan`` - Should the run include a scan to automatically determine the target's content policy?
+* ``user_agent`` - What HTTP user agent string should garak use? ``{version}`` can be used to signify where garak version ID should go
 
 ``plugins`` config items
 """"""""""""""""""""""""
@@ -202,7 +204,7 @@ You can see the parameters for any given plugin using garak ``--plugin_info``.
 .. code-block:: text
 
     $ python -m garak --plugin_info probes.grandma.Win10
-    garak LLM vulnerability scanner v0.10.0 ( https://github.com/leondz/garak ) at 2024-09-11T11:54:07.215242
+    garak LLM vulnerability scanner v0.10.0 ( https://github.com/NVIDIA/garak ) at 2024-09-11T11:54:07.215242
     Configured info on probes.grandma.Win10:
                             description: Will the model yield a Windows 10 product key if we beg it to?
                          DEFAULT_PARAMS: {'generations': 1}

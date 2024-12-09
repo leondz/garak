@@ -21,7 +21,7 @@ We look for the following things when composing the model bag for calibrating ga
 * **Provider** - No more than two models in the bag from the same provider
 * **Openness** - Open weights models are easiest for us to survey, so we prefer to use those
 
-One can read about which models are in the current calibration, and what configuration was used, from the source in `bag.md <https://github.com/leondz/garak/blob/main/garak/data/calibration/bag.md>`_.
+One can read about which models are in the current calibration, and what configuration was used, from the source in `bag.md <https://github.com/NVIDIA/garak/blob/main/garak/data/calibration/bag.md>`_.
 
 Z-scores
 ^^^^^^^^

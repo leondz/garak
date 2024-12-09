@@ -90,7 +90,8 @@ tests = [
   "pytest-mock>=3.14.0",
   "requests-mock==1.12.1",
   "respx>=0.21.1",
-  "pytest-cov>=5.0.0"
+  "pytest-cov>=5.0.0",
+  "pytest_httpserver>=1.1.0"
 ]
 lint = [
   "black==24.4.2",
@@ -101,8 +102,8 @@ calibration = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/leondz/garak"
-"Bug Tracker" = "https://github.com/leondz/garak/issues"
+"Homepage" = "https://github.com/NVIDIA/garak"
+"Bug Tracker" = "https://github.com/NVIDIA/garak/issues"
 
 [project.scripts]
 garak = "garak.__main__:main"

@@ -56,7 +56,7 @@ class Single(Generator):
     DEFAULT_PARAMS = {
         "kwargs": {},
     }
-    doc_uri = "https://github.com/leondz/garak/issues/137"
+    doc_uri = "https://github.com/NVIDIA/garak/issues/137"
     generator_family_name = "function"
     supports_multiple_generations = False
 

@@ -6,6 +6,7 @@ system:
   parallel_attempts: false
   lite: true
   show_z: false
+  enable_experimental: false
 
 run:
   seed:
@@ -14,6 +15,7 @@ run:
   generations: 5
   probe_tags:
   policy_scan: false
+  user_agent: "garak/{version} (LLM vulnerability scanner https://garak.ai)"
 
 plugins:
   model_type:

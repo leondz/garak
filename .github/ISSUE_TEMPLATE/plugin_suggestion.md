@@ -10,7 +10,7 @@ labels: "new-plugin"
   Useful Links:
   - Wiki: https://docs.garak.ai/garak
 
-  Before opening a new issue, please search existing issues https://github.com/leondz/garak/issues
+  Before opening a new issue, please search existing issues https://github.com/NVIDIA/garak/issues
 -->
 
 ## Summary

@@ -5,7 +5,7 @@ Supports pipelines, inference API, and models.
 Not all models on HF Hub work well with pipelines; try a Model generator
 if there are problems. Otherwise, please let us know if it's still not working!
 
- https://github.com/leondz/garak/issues
+ https://github.com/NVIDIA/garak/issues
 
 If you use the inference API, it's recommended to put your Hugging Face API key
 in an environment variable called HF_INFERENCE_TOKEN , else the rate limiting can
@@ -80,6 +80,13 @@ class Pipeline(Generator, HFCompatible):
 
         pipeline_kwargs = self._gather_hf_params(hf_constructor=pipeline)
         self.generator = pipeline("text-generation", **pipeline_kwargs)
+        if self.generator.tokenizer is None:
+            # account for possible model without a stored tokenizer
+            from transformers import AutoTokenizer
+
+            self.generator.tokenizer = AutoTokenizer.from_pretrained(
+                pipeline_kwargs["model"]
+            )
         if not hasattr(self, "deprefix_prompt"):
             self.deprefix_prompt = self.name in models_to_deprefix
         if _config.loaded:
@@ -256,7 +263,7 @@ class InferenceAPI(Generator):
         self.name = name
         super().__init__(self.name, config_root=config_root)
 
-        self.uri = self.URI + name
+        self.uri = self.URI + self.name
 
         # special case for api token requirement this also reserves `headers` as not configurable
         if self.api_key:
@@ -350,13 +357,13 @@ class InferenceAPI(Generator):
                         )
             else:
                 raise TypeError(
-                    f"Unsure how to parse 🤗 API response dict: {response}, please open an issue at https://github.com/leondz/garak/issues including this message"
+                    f"Unsure how to parse 🤗 API response dict: {response}, please open an issue at https://github.com/NVIDIA/garak/issues including this message"
                 )
         elif isinstance(response, list):
             return [g["generated_text"] for g in response]
         else:
             raise TypeError(
-                f"Unsure how to parse 🤗 API response type: {response}, please open an issue at https://github.com/leondz/garak/issues including this message"
+                f"Unsure how to parse 🤗 API response type: {response}, please open an issue at https://github.com/NVIDIA/garak/issues including this message"
             )
 
     def _pre_generate_hook(self):
@@ -376,7 +383,7 @@ class InferenceEndpoint(InferenceAPI):
 
     def __init__(self, name="", config_root=_config):
         super().__init__(name, config_root=config_root)
-        self.uri = name
+        self.uri = self.name
 
     @backoff.on_exception(
         backoff.fibo,
@@ -436,15 +443,11 @@ class Model(Pipeline, HFCompatible):
         if _config.run.seed is not None:
             transformers.set_seed(_config.run.seed)
 
-        trust_remote_code = self.name.startswith("mosaicml/mpt-")
-
         model_kwargs = self._gather_hf_params(
             hf_constructor=transformers.AutoConfig.from_pretrained
         )  # will defer to device_map if device map was `auto` may not match self.device
 
-        self.config = transformers.AutoConfig.from_pretrained(
-            self.name, trust_remote_code=trust_remote_code, **model_kwargs
-        )
+        self.config = transformers.AutoConfig.from_pretrained(self.name, **model_kwargs)
 
         self._set_hf_context_len(self.config)
         self.config.init_device = self.device  # determined by Pipeline `__init__``

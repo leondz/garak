@@ -16,6 +16,7 @@ Uses the following options from ``_config.plugins.generators["rest.RestGenerator
 * ``response_json_field`` - (optional) Which field of the response JSON should be used as the output string? Default ``text``. Can also be a JSONPath value, and ``response_json_field`` is used as such if it starts with ``$``.
 * ``request_timeout`` - How many seconds should we wait before timing out? Default 20
 * ``ratelimit_codes`` - Which endpoint HTTP response codes should be caught as indicative of rate limiting and retried? ``List[int]``, default ``[429]``
+* ``skip_codes`` - Which endpoint HTTP response code should lead to the generation being treated as not possible and skipped for this query. Takes precedence over ``ratelimit_codes``.
 
 Templates can be either a string or a JSON-serialisable Python object.
 Instance of ``$INPUT`` here are replaced with the prompt; instances of ``$KEY``

@@ -15,7 +15,7 @@ Checking your contribution is within scope
 
 ``garak`` is a security toolkit rather than a content safety or bias toolkit.
 The project scope relates primarily to LLM & dialog system security.
-This is a huge area, and you can get an idea of the kind of contributions that are in scope from our `FAQ <https://github.com/leondz/garak/blob/main/FAQ.md>_` and our `Github issues <https://github.com/leondz/garak/issues>`_ page.
+This is a huge area, and you can get an idea of the kind of contributions that are in scope from our `FAQ <https://github.com/NVIDIA/garak/blob/main/FAQ.md>_` and our `Github issues <https://github.com/NVIDIA/garak/issues>`_ page.
 
 
 Connecting with the ``garak`` team & community
@@ -24,7 +24,7 @@ Connecting with the ``garak`` team & community
 If you're going to contribute, it's a really good idea to reach out, so you have a source of help nearby, and so that we can make sure your valuable coding time is spent efficiently as a contributor.
 There are a number of ways you can reach out to us:
 
-* GitHub discussions: `<https://github.com/leondz/garak/discussions>`_
+* GitHub discussions: `<https://github.com/NVIDIA/garak/discussions>`_
 * Twitter: `<https://twitter.com/garak_llm>`_
 * Discord: `<https://discord.gg/uVch4puUCs>`_
 
@@ -35,8 +35,8 @@ Checklist for contributing
 --------------------------
 
 1. Set up a `Github <https://github.com/>`_ account, if you don't have one already. We develop in the open and the public repository is the authoritative one.
-1. Fork the ``garak`` repository - `<https://github.com/leondz/garak/fork>`_
-1. Work out what you're doing. If it's from a good first issue (`see the list <https://github.com/leondz/garak/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22>`_), drop a note on that issue so that we know you're working on it, and so that nobody else also starts working on it.
+1. Fork the ``garak`` repository - `<https://github.com/NVIDIA/garak/fork>`_
+1. Work out what you're doing. If it's from a good first issue (`see the list <https://github.com/NVIDIA/garak/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22>`_), drop a note on that issue so that we know you're working on it, and so that nobody else also starts working on it.
 1. Before you code anything: create a new branch for your work, e.g. ``git checkout -b feature/spicy_probe``
 1. Check out the rest of this page which includes links to detailed step-by-step guides to developing garak plugins
 1. Code!

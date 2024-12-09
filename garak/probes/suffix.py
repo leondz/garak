@@ -23,6 +23,7 @@ class GCGCached(Probe):
     An automatic jailbreaking probe, using gradient descent. This implementation
     uses a pre-computed cached set of GCG prompts."""
 
+    aliases = ["gcg.GCGCached"]
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass"]
     tags = [
@@ -52,6 +53,7 @@ class GCG(Probe):
 
     An automatic jailbreaking probe, using gradient descent."""
 
+    aliases = ["gcg.GCG"]
     bcp47 = "en"
     recommended_detector = ["mitigation.MitigationBypass"]
     tags = [

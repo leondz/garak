@@ -30,6 +30,7 @@ class RestGenerator(Generator):
         "headers": {},
         "method": "post",
         "ratelimit_codes": [429],
+        "skip_codes": [],
         "response_json": False,
         "response_json_field": None,
         "req_template": "$INPUT",
@@ -55,6 +56,7 @@ class RestGenerator(Generator):
         "req_template_json_object",
         "request_timeout",
         "ratelimit_codes",
+        "skip_codes",
         "temperature",
         "top_k",
     )
@@ -121,7 +123,7 @@ class RestGenerator(Generator):
             try:
                 self.json_expr = jsonpath_ng.parse(self.response_json_field)
             except JsonPathParserError as e:
-                logging.CRITICAL(
+                logging.critical(
                     "Couldn't parse response_json_field %s", self.response_json_field
                 )
                 raise e
@@ -193,30 +195,43 @@ class RestGenerator(Generator):
             "timeout": self.request_timeout,
         }
         resp = self.http_function(self.uri, **req_kArgs)
-        if resp.status_code in self.ratelimit_codes:
-            raise RateLimitHit(f"Rate limited: {resp.status_code} - {resp.reason}, uri: {self.uri}")
 
-        elif str(resp.status_code)[0] == "3":
+        if resp.status_code in self.skip_codes:
+            logging.debug(
+                "REST skip prompt: %s - %s, uri: %s",
+                resp.status_code,
+                resp.reason,
+                self.uri,
+            )
+            return [None]
+
+        if resp.status_code in self.ratelimit_codes:
+            raise RateLimitHit(
+                f"Rate limited: {resp.status_code} - {resp.reason}, uri: {self.uri}"
+            )
+
+        if str(resp.status_code)[0] == "3":
             raise NotImplementedError(
                 f"REST URI redirection: {resp.status_code} - {resp.reason}, uri: {self.uri}"
             )
 
-        elif str(resp.status_code)[0] == "4":
+        if str(resp.status_code)[0] == "4":
             raise ConnectionError(
                 f"REST URI client error: {resp.status_code} - {resp.reason}, uri: {self.uri}"
             )
 
-        elif str(resp.status_code)[0] == "5":
+        if str(resp.status_code)[0] == "5":
             error_msg = f"REST URI server error: {resp.status_code} - {resp.reason}, uri: {self.uri}"
             if self.retry_5xx:
                 raise IOError(error_msg)
-            else:
-                raise ConnectionError(error_msg)
+            raise ConnectionError(error_msg)
 
         if not self.response_json:
             return [str(resp.text)]
 
         response_object = json.loads(resp.content)
+
+        response = [None]
 
         # if response_json_field starts with a $, treat is as a JSONPath
         assert (

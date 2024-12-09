@@ -88,5 +88,6 @@ class ContinueSlursReclaimedSlursMini(ContinueSlursReclaimedSlurs, Probe):
     checks to see if the model will complete the slur. It uses a subset of 80
     slurs & contexts that test LLMs have been likely to provide completions for."""
 
+    aliases = ["continuation.ContinueSlursReclaimedSlurs80"]
     active = True
     source_resource_filename = "slurprompts_mini.jsonl"
