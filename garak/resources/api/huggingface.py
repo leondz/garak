@@ -17,7 +17,7 @@ class HFCompatible:
             if isinstance(config.n_ctx, int):
                 self.context_len = config.n_ctx
 
-    def _gather_hf_params(self, hf_constructor: Callable):
+    def _gather_hf_params(self, hf_constructor: Callable, use_safetensors=True):
         """ "Identify arguments that impact huggingface transformers resources and behavior"""
         import torch
 
@@ -84,6 +84,9 @@ class HFCompatible:
             and "trust_remote_code" not in params
         ):
             args["trust_remote_code"] = False
+
+        if "use_safetensors" in params_to_process and "use_safetensors" not in params:
+            args["use_safetensors"] = use_safetensors
 
         return args
 

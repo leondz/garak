@@ -78,7 +78,7 @@ class Pipeline(Generator, HFCompatible):
         if _config.run.seed is not None:
             set_seed(_config.run.seed)
 
-        pipeline_kwargs = self._gather_hf_params(hf_constructor=pipeline)
+        pipeline_kwargs = self._gather_hf_params(hf_constructor=pipeline, use_safetensors=_config.system.security["use_safetensors"])
         self.generator = pipeline("text-generation", **pipeline_kwargs)
         if self.generator.tokenizer is None:
             # account for possible model without a stored tokenizer
