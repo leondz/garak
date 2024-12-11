@@ -1,5 +1,5 @@
 base2048>=0.1.3
-transformers>=4.43.0,<4.47.0
+transformers>=4.43.0
 datasets>=2.14.6,<2.17
 colorama>=0.4.3
 tqdm>=4.64.0
