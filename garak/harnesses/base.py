@@ -121,6 +121,8 @@ class Harness(Configurable):
                     attempt.detector_results[detector_probe_name] = list(
                         d.detect(attempt)
                     )
+                    if attempt.lang_type != "en":
+                        attempt.reverse_translator_outputs[detector_probe_name] = d.reverse_translator_outputs
 
             for attempt in attempt_results:
                 attempt.status = garak.attempt.ATTEMPT_COMPLETE
