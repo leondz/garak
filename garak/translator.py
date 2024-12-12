@@ -1,8 +1,8 @@
-# SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 
-""" Buff that paraphrases a prompt. """
+""" Translator that translates a prompt. """
 
 
 from collections.abc import Iterable
@@ -21,13 +21,16 @@ import logging
 import nltk
 from nltk.corpus import words
 from langdetect import detect, DetectorFactory, LangDetectException
+from garak import _config
+import json
 
 # Ensure the NLTK words corpus is downloaded
 nltk.download('words', quiet=True)
 
-def remove_punctuation(text: str) -> str:
+
+def remove_english_punctuation(text: str) -> str:
     punctuation_without_apostrophe = string.punctuation.replace("'", "")
-    return ' '.join(char.replace(",", "") for char in text if char not in punctuation_without_apostrophe)
+    return ' '.join(re.sub(":|,", "", char) for char in text if char not in punctuation_without_apostrophe)
 
 
 def is_english(text):
@@ -41,7 +44,8 @@ def is_english(text):
         bool: True if more than 50% of the words are English, False otherwise.
     """
     # Load English words from NLTK
-    english_words = set(words.words())
+    special_terms = {"ascii85", "encoded", "decoded", "acsii", "plaintext"}
+    english_words = set(words.words()).union(special_terms)
     
     text = text.lower()
     word_list = text.split()
@@ -49,7 +53,7 @@ def is_english(text):
         return False
 
     if len(word_list) >= 1:
-        word_list = remove_punctuation(word_list)
+        word_list = remove_english_punctuation(word_list)
     else:
         word_list = word_list[0]
 
@@ -70,7 +74,7 @@ def is_english(text):
 
 def split_input_text(input_text: str) -> list:
     """Split input text based on the presence of ': '."""
-    if ": " in input_text:
+    if ": " in input_text and "http://" not in input_text and "https://" not in input_text: 
         split_text = input_text.splitlines()
         split_text = [line.split(":") for line in split_text]
         split_text = [item for sublist in split_text for item in sublist]
@@ -117,6 +121,19 @@ def is_meaning_string(text: str) -> bool:
     return True 
 
 
+def convert_json_string(json_string):
+    # Replace single quotes with double quotes
+    json_string = re.sub(r"'", '"', json_string)
+    
+    # Replace True with true
+    json_string = re.sub('True', 'true', json_string)
+    
+    # Replace False with false
+    json_string = re.sub('False', 'false', json_string)
+    
+    return json_string
+
+
 class SimpleTranslator:
     """DeepL or NIM translation option"""
 
@@ -144,23 +161,24 @@ class SimpleTranslator:
     DEEPL_ENV_VAR = "DEEPL_API_KEY"
     NIM_ENV_VAR = "NIM_API_KEY"
 
-    def __init__(self, plugin_generators_dict: dict={}, source_lang: str="en") -> None:
+    def __init__(self, config_root: _config=_config, source_lang: str="en") -> None:
         self.translator = None
         self.nmt_client = None
         self.translation_service = ""
         self.source_lang = source_lang
-        self.target_lang = plugin_generators_dict.get("lang_spec", "en")
-        self.translation_service = plugin_generators_dict.get("translation_service", "")
-        self.model_name = plugin_generators_dict.get("translation_service", "")
-        self.deepl_api_key = os.getenv(self.DEEPL_ENV_VAR)
-        self.nim_api_key = os.getenv(self.NIM_ENV_VAR)
+        self.translation_service = config_root.run.translation['translation_service']
+        self.target_lang = config_root.run.translation['lang_spec']
+        self.model_name = config_root.run.translation['model_spec']['model_name']
+        if self.translation_service == "deepl":
+            self.deepl_api_key = config_root.run.translation['api_key']
+        if self.translation_service == "nim":
+            self.nim_api_key = config_root.run.translation['api_key']
 
         if self.translation_service == "deepl" and not self.deepl_api_key:
-            raise ValueError(f"{self.DEEPL_ENV_VAR} environment variable is not set")
+            raise ValueError(f"{self.deepl_api_key} environment variable is not set")
         elif self.translation_service == "nim" and not self.nim_api_key:
-            raise ValueError(f"{self.NIM_ENV_VAR} environment variable is not set")
+            raise ValueError(f"{self.nim_api_key} environment variable is not set")
 
-        self.judge_list = []
         self._load_translator()
 
     def _load_translator(self):
@@ -185,44 +203,105 @@ class SimpleTranslator:
 
     def _get_response(self, input_text: str, source_lang: Optional[str] = None, target_lang: Optional[str] = None):
 
-        if not (source_lang and target_lang):
+        if source_lang is None or target_lang is None:
             return input_text
 
         translated_lines = []
+        
+        split_text = split_input_text(input_text)
 
-        for line in input_text.splitlines():
-            cleaned_line = remove_punctuation(line.strip().lower().split())
-            if cleaned_line.isspace() or cleaned_line.replace("-", "") == "":
-                translated_lines.append(cleaned_line)
+        for line in split_text:
+            if self._should_skip_line(line):
+                if contains_invisible_unicode(line):
+                    continue
+                translated_lines.append(line.strip())
                 continue
-            
-            translated_line = self._translate(cleaned_line, source_lang=source_lang, target_lang=target_lang)
+            if contains_invisible_unicode(line):
+                continue
+            if len(line) <= 200:
+                translated_lines = self._short_sentence_translate(line, 
+                    source_lang=source_lang, 
+                    target_lang=target_lang, 
+                    translated_lines=translated_lines
+                    )
+            else:
+                translated_lines = self._long_sentence_translate(line, 
+                    source_lang=source_lang, 
+                    target_lang=target_lang, 
+                    translated_lines=translated_lines
+                    )
+
+        return '\n'.join(translated_lines)
+    
+    def _short_sentence_translate(self, line: str, 
+        source_lang: str, target_lang: str, translated_lines: list) -> str:
+        if "Reverse" in self.__class__.__name__:
+            cleaned_line = self._clean_line(line)
+            if cleaned_line:
+                translated_line = self._translate(cleaned_line, source_lang=source_lang, target_lang=target_lang)
+                translated_lines.append(translated_line)
+        else:
+            mean_word_judge = is_english(line) 
+            if not mean_word_judge or line == "$": 
+                translated_lines.append(line.strip())
+            else:
+                cleaned_line = self._clean_line(line)
+                if cleaned_line:
+                    translated_line = self._translate(cleaned_line, source_lang=source_lang, target_lang=target_lang)
+                    translated_lines.append(translated_line)
+        
+        return translated_lines
+    
+    def _long_sentence_translate(self, line: str, 
+        source_lang: str, target_lang: str, translated_lines: list) -> str:
+        sentences = re.split(r'(\. |\?)', line.strip())
+        for sentence in sentences:
+            cleaned_sentence = self._clean_line(sentence)
+            if self._should_skip_line(cleaned_sentence):
+                translated_lines.append(cleaned_sentence)
+                continue
+            translated_line = self._translate(cleaned_sentence, source_lang=source_lang, target_lang=target_lang)
             translated_lines.append(translated_line)
+        
+        return translated_lines
 
-        res = '\n'.join(translated_lines)
+    def _should_skip_line(self, line: str) -> bool:
+        return line.isspace() or line.strip().replace("-", "") == "" or \
+            len(line) == 0 or line.replace(".", "") == "" or line in {".", "?", ". "}
 
-        return res
+    def _clean_line(self, line: str) -> str:
+        return remove_english_punctuation(line.strip().lower().split())
 
-    def translate_prompts(self, prompts: List[str]) -> List[str]:
+    def translate_prompts(self, prompts: List[str], only_translate_word: bool=False, reverse_translate_judge: bool=False) -> List[str]:
         if hasattr(self, 'target_lang') is False or self.source_lang == "*" or self.target_lang == "":
             return prompts 
         translated_prompts = []
         prompts = list(prompts)
+        self.lang_list = []
+        for i in range(len(prompts)):
+            self.lang_list.append(self.source_lang)
         for lang in self.target_lang.split(","):
             if self.source_lang == lang:
                 continue 
             for prompt in prompts:
-                mean_word_judge = is_english(prompt)
-                self.judge_list.append(mean_word_judge)
-                if mean_word_judge:
+                if reverse_translate_judge:
+                    mean_word_judge = is_meaning_string(prompt)
+                    if mean_word_judge:
+                        translate_prompt = self._get_response(prompt, self.source_lang, lang)
+                        translated_prompts.append(translate_prompt)
+                    else:
+                        translated_prompts.append(prompt)
+                else:
                     translate_prompt = self._get_response(prompt, self.source_lang, lang)
                     translated_prompts.append(translate_prompt)
-                else:
-                    translated_prompts.append(prompt)
+                self.lang_list.append(lang)
         if len(translated_prompts) > 0:
             prompts.extend(translated_prompts)
+        if only_translate_word:
+            logging.debug(f"prompts with translated translated_prompts: {translated_prompts}")
+            return translated_prompts
         logging.debug(f"prompts with translated prompts: {prompts}")
-        return prompts 
+        return prompts
 
     def translate_triggers(self, triggers: list):
         if is_nested_list(triggers):
@@ -236,96 +315,39 @@ class SimpleTranslator:
         else:
             triggers = self.translate_prompts(triggers)
             return triggers
-
-
-class DanTranslator(SimpleTranslator):
-
-    def _get_response(self, input_text: str, source_lang: Optional[str] = None, target_lang: Optional[str] = None):
-        if not (source_lang and target_lang):
-            return input_text
-
-        self._load_translator()
-        translated_lines = []
-
-        for line in input_text.splitlines():
-            if line.isspace() or line.strip().replace("-", "") == "":
-                translated_lines.append(line)
-                continue
-            
-            sentences = re.split(r'(\. |\?)', line.strip())
-            for sentence in sentences:
-                cleaned_sentence = remove_punctuation(sentence.strip().lower().split())
-                if cleaned_sentence.isspace() or len(cleaned_sentence) == 0:
-                    continue
-                if cleaned_sentence in {".", "?", ". "}:
-                    continue
-                if cleaned_sentence.replace(".", "") == "":
-                    continue
-                translated_line = self._translate(cleaned_sentence, source_lang=source_lang, target_lang=target_lang)
-                translated_lines.append(translated_line)
-
-        res = '\n'.join(translated_lines)
-
-        return res
-
-
-class EncodingTranslator(SimpleTranslator):
-
-    def _get_response(self, input_text: str, source_lang: Optional[str] = None, target_lang: Optional[str] = None):
-
-        if not (source_lang and target_lang):
-            return input_text
-
-        self._load_translator()
-        translated_lines = []
-
-        split_text = split_input_text(input_text)
-
-        for line in split_text:
-            mean_word_judge = is_english(line) 
-
-            if not mean_word_judge:
-                translated_lines.append(line.strip())
-            else:
-                if "$" == line:
-                    translated_lines.append(line)
-                else:
-                    line = remove_punctuation(line.lower().split())
-                    translated_line = self._translate(line, source_lang=source_lang, target_lang=target_lang)
-                    translated_lines.append(translated_line)
-
-        res = '\n'.join(translated_lines)
-
-        return res
-
     
-class GoodsideTranslator(SimpleTranslator):
-
-    def _get_response(self, input_text: str, source_lang: Optional[str] = None, target_lang: Optional[str] = None):
-        if not (source_lang and target_lang):
-            return input_text
-
-        self._load_translator()
-        translated_lines = []
-
-        for line in input_text.splitlines():
-
-            if contains_invisible_unicode(line):
-                translated_lines.append(line.strip())
+    def translate_descr(self, attempt_descrs: List[str]) -> List[str]:
+        translated_attempt_descrs = []
+        for descr in attempt_descrs:
+            descr = json.loads(convert_json_string(descr))
+            if type(descr["prompt_stub"]) is list:
+                translate_prompt_stub = self.translate_prompts(descr["prompt_stub"], only_translate_word=True)
             else:
-                line = remove_punctuation(line.lower().split())
-                translated_line = self._translate(line, source_lang=source_lang, target_lang=target_lang)
-                translated_lines.append(translated_line)
+                translate_prompt_stub = self.translate_prompts([descr["prompt_stub"]], only_translate_word=True)
+            if type(descr["payload"]) is list:
+                translate_payload = self.translate_prompts(descr["payload"], only_translate_word=True)
+            else:
+                translate_payload = self.translate_prompts([descr["payload"]], only_translate_word=True)
+            translated_attempt_descrs.append(
+                str(
+                    {
+                        "prompt_stub": translate_prompt_stub,
+                        "distractor": descr["distractor"],
+                        "payload": translate_payload,
+                        "az_only": descr["az_only"],
+                        "use refocusing statement": descr["use refocusing statement"], 
+                    }
+                )
+            )
+        return translated_attempt_descrs
 
-        res = '\n'.join(translated_lines)
 
-        return res
-    
 class ReverseTranslator(SimpleTranslator):
     
     def _translate(self, text: str, source_lang: str, target_lang: str) -> str:
         try:
             if self.translation_service == "deepl":
+                source_lang = "en-us"
                 return self.translator.translate_text(text, source_lang=target_lang, target_lang=source_lang).text
             elif self.translation_service == "nim":
                 response = self.nmt_client.translate([text], "", target_lang, source_lang)
@@ -334,28 +356,8 @@ class ReverseTranslator(SimpleTranslator):
             logging.error(f"Translation error: {str(e)}")
             return text
     
-    def translate_prompts(self, prompts):
-        logging.debug(f"before reverses translated prompts : {prompts}")
-        if hasattr(self, 'target_lang') is False or self.source_lang == "*" or self.target_lang == "":
-            return prompts 
-        translated_prompts = []
-        prompts = list(prompts)
-        for lang in self.target_lang.split(","):
-            if self.source_lang == lang:
-                continue 
-            for prompt in prompts:
-                mean_word_judge = is_meaning_string(prompt)
-                self.judge_list.append(mean_word_judge)
-                if mean_word_judge:
-                    translate_prompt = self._get_response(prompt, self.source_lang, lang)
-                    translated_prompts.append(translate_prompt)
-                else:
-                    translated_prompts.append(prompt)
-        logging.debug(f"reverse translated prompts : {translated_prompts}")
-        return translated_prompts 
 
-
-class LocalTranslator():
+class LocalHFTranslator(SimpleTranslator):
     """Local translation using Huggingface m2m100 models
     Reference: 
       - https://huggingface.co/facebook/m2m100_1.2B 
@@ -363,14 +365,13 @@ class LocalTranslator():
       - https://huggingface.co/docs/transformers/model_doc/marian
     """
 
-    def __init__(self, plugin_generators_dict: dict={}, source_lang: str="en") -> None:
+    def __init__(self, config_root: _config=_config, source_lang: str="en") -> None:
         self.device = torch.device("cpu" if not torch.cuda.is_available() else "cuda")
         self.source_lang = source_lang
-        self.lang_specs = plugin_generators_dict.get("lang_spec", "en")
-        self.target_lang = plugin_generators_dict.get("lang_spec", "en")
-        self.model_name = plugin_generators_dict.get("local_model_name", "")
-        self.tokenizer_name = plugin_generators_dict.get("local_tokenizer_name", "") 
-        self.judge_list = []
+        self.lang_specs = config_root.run.translation['lang_spec']
+        self.target_lang = config_root.run.translation['lang_spec']
+        self.model_name = config_root.run.translation['model_spec']['model_name']
+        self.tokenizer_name = config_root.run.translation['model_spec']['model_name'] 
         self._load_model()
     
     def _load_model(self):
@@ -410,148 +411,12 @@ class LocalTranslator():
 
             return translated_text
 
-    def _get_response(self, input_text: str, source_lang: Optional[str] = None, target_lang: Optional[list] = None):
-        if not (source_lang and target_lang):
-            return input_text
 
-        translated_lines = []
-        for line in input_text.splitlines():
-            cleaned_line = remove_punctuation(line.strip().lower().split())
-            if cleaned_line.isspace() or cleaned_line.replace("-", "") == "":
-                translated_lines.append(cleaned_line)
-                continue
-
-            translated_line = self._translate(cleaned_line, source_lang=source_lang, target_lang=target_lang)
-            translated_lines.append(translated_line)
-
-        res = '\n'.join(translated_lines)
-        return res 
+class LocalHFReverseTranslator(LocalHFTranslator):
     
-    def translate_prompts(self, prompts: List[str]) -> List[str]:
-        if hasattr(self, 'target_lang') is False or self.source_lang == "*":
-            return prompts 
-        translated_prompts = []
-        prompts = list(prompts)
-        self.judge_list = []
-        for lang in self.target_lang.split(","):
-            if self.source_lang == lang:
-                continue 
-            for prompt in prompts:
-                mean_word_judge = is_english(prompt)
-                self.judge_list.append(mean_word_judge)
-                if mean_word_judge:
-                    translate_prompt = self._get_response(prompt, self.source_lang, lang)
-                    translated_prompts.append(translate_prompt)
-                else:
-                    translated_prompts.append(prompt)
-        if len(translated_prompts) > 0:
-            prompts.extend(translated_prompts)
-        logging.debug(f"prompts with translated prompts: {prompts}")
-        return prompts 
-
-    def translate_triggers(self, triggers):
-        if is_nested_list(triggers):
-            trigger_list = []
-            for trigger in triggers:
-                trigger_words = self.translate_prompts(trigger)
-                for word in trigger_words:
-                    trigger_list.append([word])
-            return trigger_list
-        else:
-            return self.translate_prompts(triggers)
-
-
-class LocalDanTranslator(LocalTranslator):
-
-    def _get_response(self, input_text: str, source_lang: Optional[str] = None, target_lang: Optional[str] = None):
-        if not (source_lang and target_lang):
-            return input_text
-
-        translated_lines = []
-
-        for line in input_text.splitlines():
-            if line.isspace() or line.strip().replace("-", "") == "":
-                translated_lines.append(line)
-                continue
-            
-            sentences = re.split(r'(\. |\?)', line.strip())
-            for sentence in sentences:
-                cleaned_sentence = remove_punctuation(sentence.strip().lower().split())
-                if cleaned_sentence.isspace() or len(cleaned_sentence) == 0:
-                    continue
-                if cleaned_sentence in {".", "?", ". "}:
-                    continue
-                if cleaned_sentence.replace(".", "") == "":
-                    continue
-                translated_line = self._translate(cleaned_sentence, source_lang=source_lang, target_lang=target_lang)
-                translated_lines.append(translated_line)
-
-        res = '\n'.join(translated_lines)
-        return res
-
-
-class LocalEncodingTranslator(LocalTranslator):
-
-    def _get_response(self, input_text: str, source_lang: Optional[str] = None, target_lang: Optional[str] = None):
-
-        if not (source_lang and target_lang):
-            return input_text
-
-        translated_lines = []
-
-        split_text = split_input_text(input_text)
-
-        for line in split_text:
-            mean_word_judge = is_english(line)
-
-            if not mean_word_judge:
-                translated_lines.append(line.strip())
-            else:
-                if "$" == line:
-                    translated_lines.append(line)
-                else:
-                    line = remove_punctuation(line.lower().split())
-                    translated_line = self._translate(line, source_lang=source_lang, target_lang=target_lang)
-                    translated_lines.append(translated_line)
-
-        res = '\n'.join(translated_lines)
-
-        return res
-
-
-class LocalGoodsideTranslator(LocalTranslator):
-
-    def _get_response(self, input_text: str, source_lang: Optional[str] = None, target_lang: Optional[str] = None):
-        if not (source_lang and target_lang):
-            return input_text
-
-        translated_lines = []
-
-        for line in input_text.splitlines():
-
-            if contains_invisible_unicode(line):
-                translated_lines.append(line.strip())
-            else:
-                line = remove_punctuation(line.lower().split())
-                translated_line = self._translate(line, source_lang=source_lang, target_lang=target_lang)
-                translated_lines.append(translated_line)
-
-        res = '\n'.join(translated_lines)
-
-        return res
-
-
-class LocalReverseTranslator(LocalTranslator):
-    
-    def __init__(self, plugin_generators_dict: dict={}, source_lang: str="en") -> None:
-        self.device = torch.device("cpu" if not torch.cuda.is_available() else "cuda")
-        self.source_lang = source_lang
-        self.lang_specs = plugin_generators_dict.get("lang_spec", "en")
-        self.target_lang = plugin_generators_dict.get("lang_spec", "en")
-        self.model_name = plugin_generators_dict.get("local_model_name", "")
-        self.tokenizer_name = plugin_generators_dict.get("local_tokenizer_name", "") 
+    def __init__(self, config_root: _config=_config, source_lang: str="en") -> None:
+        super().__init__(config_root, source_lang)
         self._load_model()
-        self.judge_list = []
     
     def _load_model(self):
         if "m2m100" in self.model_name:
@@ -586,23 +451,19 @@ class LocalReverseTranslator(LocalTranslator):
             translated_text = tokenizer.batch_decode(translated, skip_special_tokens=True)[0]
 
         return translated_text
+    
 
-    def translate_prompts(self, prompts):
-        logging.debug(f"before reverses translated prompts : {prompts}")
-        if hasattr(self, 'target_lang') is False or self.source_lang == "*":
-            return prompts 
-        translated_prompts = []
-        prompts = list(prompts)
-        for lang in self.target_lang.split(","):
-            if self.source_lang == lang:
-                continue 
-            for prompt in prompts:
-                mean_word_judge = is_meaning_string(prompt)
-                self.judge_list.append(mean_word_judge)
-                if mean_word_judge:
-                    translate_prompt = self._get_response(prompt, self.source_lang, lang)
-                    translated_prompts.append(translate_prompt)
-                else:
-                    translated_prompts.append(prompt)
-        logging.debug(f"reverse translated prompts : {translated_prompts}")
-        return translated_prompts 
+def load_translator(translation_service: str="", classname: str="") -> object:
+    translator_instance = None
+    logging.debug(f"translation_service: {translation_service} classname: {classname}")
+    if translation_service == "local":
+        if classname == "reverse":
+            translator_instance = LocalHFReverseTranslator()
+        else:
+            translator_instance = LocalHFTranslator()
+    elif translation_service == "deepl" or translation_service == "nim":
+        if classname == "reverse":
+            translator_instance = ReverseTranslator()
+        else:
+            translator_instance = SimpleTranslator()
+    return translator_instance
