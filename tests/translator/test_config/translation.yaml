@@ -1,0 +1,7 @@
+run:
+  translation:
+    translation_service: local 
+    lang_spec: ja
+    model_spec:
+      model_name: facebook/m2m100_418M
+      tokenizer_name: facebook/m2m100_418M

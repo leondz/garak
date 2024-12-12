@@ -1,0 +1,5 @@
+run:
+  translation:
+    translation_service: nim
+    api_key: "" 
+    lang_spec: ja

@@ -1,0 +1,7 @@
+run:
+  translation:
+    translation_service: local 
+    lang_spec: jap
+    model_spec:
+      model_name: Helsinki-NLP/opus-mt-en-{} 
+      tokenizer_name: Helsinki-NLP/opus-mt-en-{}
