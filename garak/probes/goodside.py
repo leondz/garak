@@ -191,36 +191,15 @@ class Tag(Probe):
                                         }
                                     )
                                 )
-        translated_attempt_descrs = []
+        if hasattr(_config, 'run'):
+            if hasattr(_config.run, 'translation'):
+                self.translator = self.get_translator()
+        
         if hasattr(self, 'translator'):
             if self.translator is not None:
-                for descr in self.attempt_descrs:
-                    descr = ast.literal_eval(descr)
-                    if type(descr["prompt_stub"]) is list:
-                        translate_prompt_stub = self.translator.translate_prompts(descr["prompt_stub"])
-                    else:
-                        translate_prompt_stub = self.translator.translate_prompts([descr["prompt_stub"]])
-                    if len(translate_prompt_stub) > 1:
-                        translate_prompt_stub = translate_prompt_stub[len(translate_prompt_stub)//2:]
-                    if type(descr["payload"]) is list:
-                        translate_payload = self.translator.translate_prompts(descr["payload"])
-                    else:
-                        translate_payload = self.translator.translate_prompts([descr["payload"]])
-                    if len(translate_payload) > 1:
-                        translate_payload = translate_payload[len(translate_payload)//2:]
-                    translated_attempt_descrs.append(
-                        str(
-                            {
-                                "prompt_stub": translate_prompt_stub,
-                                "distractor": descr["distractor"],
-                                "payload": translate_payload,
-                                "az_only": descr["az_only"],
-                                "use refocusing statement": descr["use refocusing statement"],
-                            }
-                        )
-                    )
-            self.attempt_descrs.extend(translated_attempt_descrs)
-            self.triggers = self.translator.translate_prompts(self.triggers)
+                self.triggers = self.translator.translate_prompts(self.triggers)
+                translated_attempt_descrs = self.translator.translate_descr(self.attempt_descrs)
+                self.attempt_descrs.extend(translated_attempt_descrs)
 
     def _attempt_prestore_hook(self, attempt: Attempt, seq: int) -> Attempt:
         attempt.notes["triggers"] = [self.triggers[seq]]
