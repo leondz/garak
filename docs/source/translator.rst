@@ -79,17 +79,18 @@ You can pass the translation service, source language, and target language by th
 * Note: The `Helsinki-NLP/opus-mt-en-{lang}` case uses different language formats. The language codes used to name models are inconsistent. Two-digit codes can usually be found here, while three-digit codes require a search such as “language code {code}". More details can be found `here <https://github.com/Helsinki-NLP/OPUS-MT-train/tree/master/models>`_.
 
 The translator config writes to a file and the path passed, with 
-`--generator_option_file` as JSON. An example 
-is given in `Translator Config with JSON <translator_with_json>`_ below.
+You can also configure this via a config file:
+is given in `Translator Config with yaml <translator_with_yaml>`_ below.
 
-.. code-block:: json 
+.. code-block:: yaml 
+run:
+  translation:
+    translation_service: {translation service}
+    api_key: {your API key}
+    lang_spec: {language code} 
+    model_spec:
+      model_name: {huggingface model name} 
 
-    {
-      "lang_spec": {you choose language code},
-      "translation_service": {you choose translation service "nim" or "deepl", "local"},
-      "local_model_name": {you choose loval model name},
-      "local_tokenizer_name": {you choose local tokenizer name}
-    }
 
 Examples for multilingual
 -------------------------
@@ -98,58 +99,72 @@ DeepL
 ~~~~~
 
 To use the translation option for garak, run the following command:
-You use the following JSON config.
+You use the following yaml config.
 
-.. code-block:: json 
-
-    {
-      "lang_spec": "ja",
-      "translation_service": "deepl"
-    }
+.. code-block:: yaml 
+run:
+  translation:
+    translation_service: deepl
+    api_key: {your API key}
+    lang_spec: ja
 
 
 .. code-block:: bash
 
     export DEEPL_API_KEY=xxxx
-    python3 -m garak --model_type nim --model_name meta/llama-3.1-8b-instruct --probes encoding --generator_option_file {path to your JSON config file} 
+    python3 -m garak --model_type nim --model_name meta/llama-3.1-8b-instruct --probes encoding --config {path to your yaml config file} 
 
 
 NIM
 ~~~
 
 For NIM, run the following command:
-You use the following JSON config.
+You use the following yaml config.
 
-.. code-block:: json 
+.. code-block:: yaml 
 
-    {
-      "lang_spec": "ja",
-      "translation_service": "nim"
-    }
+run:
+  translation:
+    translation_service: nim
+    api_key: {your API key}
+    lang_spec: ja
 
 
 .. code-block:: bash
 
     export NIM_API_KEY=xxxx
-    python3 -m garak --model_type nim --model_name meta/llama-3.1-8b-instruct --probes encoding --generator_option_file {path to your JSON config file} 
+    python3 -m garak --model_type nim --model_name meta/llama-3.1-8b-instruct --probes encoding --config {path to your yaml config file} 
 
 
 Local
 ~~~~~
 
 For local translation, use the following command:
-You use the following JSON config.
+You use the following yaml config.
 
-.. code-block:: json 
-
-    {
-      "lang_spec": "ja",
-      "translation_service": "local",
-      "local_model_name": "facebook/m2m100_418M",
-      "local_tokenizer_name": "facebook/m2m100_418M"
-    }
+.. code-block:: yaml 
+run:
+  translation:
+    translation_service: local
+    lang_spec: ja 
+    model_spec:
+      model_name: facebook/m2m100_418M 
 
 
 .. code-block:: bash
 
-    python3 -m garak --model_type nim --model_name meta/llama-3.1-8b-instruct --probes encoding --generator_option_file {path to your JSON config file} 
+    python3 -m garak --model_type nim --model_name meta/llama-3.1-8b-instruct --probes encoding --config {path to your yaml config file} 
+
+
+.. code-block:: yaml 
+run:
+  translation:
+    translation_service: local
+    lang_spec: jap 
+    model_spec:
+      model_name: Helsinki-NLP/opus-mt-en-{}
+
+
+.. code-block:: bash
+
+    python3 -m garak --model_type nim --model_name meta/llama-3.1-8b-instruct --probes encoding --config {path to your yaml config file} 
