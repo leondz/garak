@@ -129,7 +129,7 @@
         "payload:malicious:badcode:virus",
         "quality:Security:Adversarial"
       ],
-      "mod_time": "2024-08-22 16:42:10 +0000"
+      "mod_time": "2024-10-30 21:06:57 +0000"
     },
     "probes.av_spam_scanning.GTUBE": {
       "description": "Does the model check its output for spam? Try to send the GTUBE code through",
@@ -158,7 +158,7 @@
         "payload:malicious:badcode:spam",
         "quality:Security:Adversarial"
       ],
-      "mod_time": "2024-08-22 16:42:10 +0000"
+      "mod_time": "2024-10-30 21:06:57 +0000"
     },
     "probes.av_spam_scanning.GTphish": {
       "description": "Does the model check its output for phishing? Try to send the GTphish code through",
@@ -187,7 +187,7 @@
         "payload:malicious:badcode:phishing",
         "quality:Security:Adversarial"
       ],
-      "mod_time": "2024-08-22 16:42:10 +0000"
+      "mod_time": "2024-10-30 21:06:57 +0000"
     },
     "probes.base.Probe": {
       "description": "Base class for objects that define and execute LLM evaluations",
@@ -268,7 +268,7 @@
         "quality:Behavioral:ContentSafety:HateHarassment",
         "payload:unwanted:hatespeech"
       ],
-      "mod_time": "2024-09-17 17:14:48 +0000"
+      "mod_time": "2024-10-30 21:06:57 +0000"
     },
     "probes.continuation.ContinueSlursReclaimedSlursMini": {
       "description": "Continue partial word with slur or reclaimed slur.",
@@ -299,7 +299,7 @@
         "quality:Behavioral:ContentSafety:HateHarassment",
         "payload:unwanted:hatespeech"
       ],
-      "mod_time": "2024-09-17 17:14:48 +0000"
+      "mod_time": "2024-10-30 21:06:57 +0000"
     },
     "probes.dan.Ablation_Dan_11_0": {
       "description": "Ablation experiements over the DAN 11.0 prompt",
@@ -881,7 +881,7 @@
         "quality:Security:ExtractionInversion",
         "payload:leak:training"
       ],
-      "mod_time": "2024-10-11 12:23:02 +0000"
+      "mod_time": "2024-10-30 21:06:57 +0000"
     },
     "probes.divergence.RepeatExtended": {
       "description": "See if a model starts giving other data when asked to repeat a string indefinitely",
@@ -913,7 +913,7 @@
         "quality:Security:ExtractionInversion",
         "payload:leak:training"
       ],
-      "mod_time": "2024-10-11 12:23:02 +0000"
+      "mod_time": "2024-10-30 21:06:57 +0000"
     },
     "probes.donotanswer.DiscriminationExclusionToxicityHatefulOffensive": {
       "description": "Implementation of discrimination_exclusion_toxicity_hateful_offensive probes in DoNotAnswer_Prompts",
@@ -3525,7 +3525,7 @@
         "quality:Security:PromptStability",
         "payload:jailbreak"
       ],
-      "mod_time": "2024-09-17 17:14:48 +0000"
+      "mod_time": "2024-10-30 21:06:57 +0000"
     },
     "probes.suffix.GCG": {
       "description": "Greedy Coordinate Gradient probe",
@@ -3553,7 +3553,7 @@
         "quality:Security:PromptStability",
         "payload:jailbreak"
       ],
-      "mod_time": "2024-09-17 17:14:48 +0000"
+      "mod_time": "2024-10-30 21:06:57 +0000"
     },
     "probes.suffix.GCGCached": {
       "description": "Greedy Coordinate Gradient Cached probe",
@@ -3581,7 +3581,7 @@
         "quality:Security:PromptStability",
         "payload:jailbreak"
       ],
-      "mod_time": "2024-09-17 17:14:48 +0000"
+      "mod_time": "2024-10-30 21:06:57 +0000"
     },
     "probes.tap.PAIR": {
       "description": "Prompt Automatic Iterative Refinement automatic jailbreak",
@@ -4080,7 +4080,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-10-21 15:50:27 +0000"
+      "mod_time": "2024-12-11 22:26:37 +0000"
     },
     "detectors.base.FileDetector": {
       "description": "Detector subclass for processing attempts whose outputs are filenames for checking",
@@ -4100,7 +4100,7 @@
       "recall": 0.0,
       "tags": [],
       "valid_format": "local filename",
-      "mod_time": "2024-10-21 15:50:27 +0000"
+      "mod_time": "2024-12-11 22:26:37 +0000"
     },
     "detectors.base.HFDetector": {
       "description": "Detector using a Hugging Face model",
@@ -4126,7 +4126,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-10-21 15:50:27 +0000"
+      "mod_time": "2024-12-11 22:26:37 +0000"
     },
     "detectors.base.StringDetector": {
       "description": "Subclass of Detector using list of substrings as detection triggers",
@@ -4146,7 +4146,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-10-21 15:50:27 +0000"
+      "mod_time": "2024-12-11 22:26:37 +0000"
     },
     "detectors.base.TriggerListDetector": {
       "description": "Subclass of Detector using attempt's notes[triggers] as list of strings to match",
@@ -4165,7 +4165,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "tags": [],
-      "mod_time": "2024-10-21 15:50:27 +0000"
+      "mod_time": "2024-12-11 22:26:37 +0000"
     },
     "detectors.continuation.Continuation": {
       "description": "Detect if model intiates / continues a trigger word",
@@ -6007,6 +6007,7 @@
         "top_k": null,
         "context_len": null,
         "top_p": 1.0,
+        "uri": null,
         "frequency_penalty": 0.0,
         "presence_penalty": 0.0,
         "seed": null,
@@ -6016,8 +6017,7 @@
         ],
         "suppressed_params": [],
         "retry_json": true,
-        "model_name": null,
-        "uri": null
+        "model_name": null
       },
       "active": true,
       "generator_family_name": "Azure",
@@ -6031,7 +6031,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2024-08-30 14:12:10 +0000"
+      "mod_time": "2024-11-22 20:20:29 +0000"
     },
     "generators.base.Generator": {
       "description": "Base class for objects that wrap an LLM or other text-to-text service",
@@ -6158,6 +6158,7 @@
         "top_k": null,
         "context_len": null,
         "top_p": 1.0,
+        "uri": "https://api.groq.com/openai/v1",
         "frequency_penalty": 0.0,
         "presence_penalty": 0.0,
         "seed": null,
@@ -6174,7 +6175,6 @@
           "top_logprobs"
         ],
         "retry_json": true,
-        "uri": "https://api.groq.com/openai/v1",
         "vary_seed_each_call": true,
         "vary_temp_each_call": true
       },
@@ -6190,7 +6190,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-09-06 13:19:56 +0000"
+      "mod_time": "2024-11-22 20:20:29 +0000"
     },
     "generators.guardrails.NeMoGuardrails": {
       "description": "Generator wrapper for NeMo Guardrails.",
@@ -6517,6 +6517,7 @@
         "top_k": 0,
         "context_len": null,
         "top_p": 0.7,
+        "uri": "https://integrate.api.nvidia.com/v1/",
         "frequency_penalty": 0.0,
         "presence_penalty": 0.0,
         "seed": null,
@@ -6530,7 +6531,6 @@
           "presence_penalty"
         ],
         "retry_json": true,
-        "uri": "https://integrate.api.nvidia.com/v1/",
         "vary_seed_each_call": true,
         "vary_temp_each_call": true
       },
@@ -6546,7 +6546,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-10-29 16:56:00 +0000"
+      "mod_time": "2024-11-22 20:20:29 +0000"
     },
     "generators.nim.NVOpenAICompletion": {
       "description": "Wrapper for NVIDIA-hosted NIMs. Expects NIM_API_KEY environment variable.",
@@ -6556,6 +6556,7 @@
         "top_k": 0,
         "context_len": null,
         "top_p": 0.7,
+        "uri": "https://integrate.api.nvidia.com/v1/",
         "frequency_penalty": 0.0,
         "presence_penalty": 0.0,
         "seed": null,
@@ -6569,7 +6570,6 @@
           "presence_penalty"
         ],
         "retry_json": true,
-        "uri": "https://integrate.api.nvidia.com/v1/",
         "vary_seed_each_call": true,
         "vary_temp_each_call": true
       },
@@ -6585,7 +6585,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-10-29 16:56:00 +0000"
+      "mod_time": "2024-11-22 20:20:29 +0000"
     },
     "generators.nim.Vision": {
       "description": "Wrapper for text+image to text NIMs. Expects NIM_API_KEY environment variable.",
@@ -6595,6 +6595,7 @@
         "top_k": 0,
         "context_len": null,
         "top_p": 0.7,
+        "uri": "https://integrate.api.nvidia.com/v1/",
         "frequency_penalty": 0.0,
         "presence_penalty": 0.0,
         "seed": null,
@@ -6609,7 +6610,6 @@
           "stop"
         ],
         "retry_json": true,
-        "uri": "https://integrate.api.nvidia.com/v1/",
         "vary_seed_each_call": true,
         "vary_temp_each_call": true,
         "max_image_len": 180000
@@ -6627,7 +6627,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-10-29 16:56:00 +0000"
+      "mod_time": "2024-11-22 20:20:29 +0000"
     },
     "generators.nvcf.NvcfChat": {
       "description": "Wrapper for NVIDIA Cloud Functions Chat models via NGC. Expects NVCF_API_KEY environment variable.",
@@ -6795,6 +6795,7 @@
         "top_k": null,
         "context_len": null,
         "top_p": 1.0,
+        "uri": "http://localhost:8000/v1/",
         "frequency_penalty": 0.0,
         "presence_penalty": 0.0,
         "seed": null,
@@ -6805,7 +6806,7 @@
         "suppressed_params": [],
         "retry_json": true
       },
-      "active": false,
+      "active": true,
       "generator_family_name": "OpenAICompatible",
       "modality": {
         "in": [
@@ -6817,7 +6818,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2024-09-23 18:02:30 +0000"
+      "mod_time": "2024-11-26 17:02:20 +0000"
     },
     "generators.openai.OpenAIGenerator": {
       "description": "Generator wrapper for OpenAI text2text models. Expects API key in the OPENAI_API_KEY environment variable",
@@ -6849,7 +6850,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2024-09-23 18:02:30 +0000"
+      "mod_time": "2024-11-26 17:02:20 +0000"
     },
     "generators.openai.OpenAIReasoningGenerator": {
       "description": "Generator wrapper for OpenAI reasoning models, e.g. `o1` family.",
@@ -6887,7 +6888,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2024-09-23 18:02:30 +0000"
+      "mod_time": "2024-11-26 17:02:20 +0000"
     },
     "generators.rasa.RasaRestGenerator": {
       "description": "API interface for RASA models",
