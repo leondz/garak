@@ -2,13 +2,6 @@ import pytest
 import os
 from garak import _config, _plugins
 import shutil
-from garak.detectors.base import Detector, StringDetector, HFDetector
-from garak.detectors.misleading import MustRefuteClaimModel, MustRefuteClaimKW, MustContradictNLI
-from garak.detectors.leakreplay import StartsWith
-from garak.probes.continuation import ContinueSlursReclaimedSlurs
-from garak.probes.glitch import Glitch
-from garak.probes.goodside import Tag
-from garak.detectors.snowball import DontStartNo, DontStartYes
 
 # force a local cache file to exist when this top level import is loaded
 if not os.path.isfile(_plugins.PluginCache._user_plugin_cache_filename):
@@ -78,101 +71,4 @@ def pytest_runtest_setup(item):
             total, used, free = shutil.disk_usage(path)
             free_gb = free / (2**30)  # Convert bytes to gigabytes
             print(f"✅ Sufficient free space ({free_gb:.2f} GB) confirmed.")
-
-
-@pytest.fixture
-def detector():
-    _config.plugins.generators["translation_service"] = 'local'
-    _config.plugins.generators["lang_spec"] = "jap"
-    _config.plugins.generators["local_model_name"] = "Helsinki-NLP/opus-mt-en-{}"
-    _config.plugins.generators["local_tokenizer_name"] = "Helsinki-NLP/opus-mt-en-{}"
-    detector = Detector(_config)
-    return detector 
-
-
-@pytest.fixture
-def detector_start_with():
-    _config.plugins.generators["translation_service"] = 'local'
-    _config.plugins.generators["lang_spec"] = "jap"
-    _config.plugins.generators["local_model_name"] = "Helsinki-NLP/opus-mt-en-{}"
-    _config.plugins.generators["local_tokenizer_name"] = "Helsinki-NLP/opus-mt-en-{}"
-    _config.run.bcp47 = "en"
-    detector = StartsWith(_config)
-    return detector 
-
-
-@pytest.fixture
-def detector_string_m2m100():
-    _config.plugins.generators["translation_service"] = 'local'
-    _config.plugins.generators["lang_spec"] = "ja"
-    _config.plugins.generators["local_model_name"] = "facebook/m2m100_418M"
-    _config.plugins.generators["local_tokenizer_name"] = "facebook/m2m100_418M"
-    substrings = ["test", "example", "fabrication"]
-    detector = StringDetector(substrings, _config)
-    return detector 
-
-
-@pytest.fixture
-def detector_string():
-    _config.plugins.generators["translation_service"] = 'local'
-    _config.plugins.generators["lang_spec"] = "jap"
-    _config.plugins.generators["local_model_name"] = "Helsinki-NLP/opus-mt-en-{}"
-    _config.plugins.generators["local_tokenizer_name"] = "Helsinki-NLP/opus-mt-en-{}"
-    substrings = ["test", "example", "fabrication"]
-    detector = StringDetector(substrings, _config)
-    return detector 
-
-
-@pytest.fixture
-def hf_detector():
-    _config.plugins.generators["translation_service"] = 'local'
-    _config.plugins.generators["lang_spec"] = "ja"
-    _config.plugins.generators["local_model_name"] = "facebook/m2m100_418M"
-    _config.plugins.generators["local_tokenizer_name"] = "facebook/m2m100_418M"
-    HFDetector.detector_model_path = "garak-llm/roberta-large-snli_mnli_fever_anli_R1_R2_R3-nli"
-    HFDetector.detector_target_class = "label"
-    HFDetector.tokenizer_kwargs = {"truncation": True, "max_length": 256}
-    detector = HFDetector(_config)
-    return detector 
-
-
-@pytest.fixture
-def claim_detector():
-    _config.plugins.generators["translation_service"] = 'local'
-    _config.plugins.generators["lang_spec"] = "jap"
-    _config.plugins.generators["local_model_name"] = "Helsinki-NLP/opus-mt-en-{}"
-    _config.plugins.generators["local_tokenizer_name"] = "Helsinki-NLP/opus-mt-en-{}"
-    detector = MustRefuteClaimKW(_config)
-    return detector 
-
-
-@pytest.fixture
-def dont_start_no_detector():
-    _config.plugins.generators["translation_service"] = 'local'
-    _config.plugins.generators["lang_spec"] = "ja"
-    _config.plugins.generators["local_model_name"] = "facebook/m2m100_418M"
-    _config.plugins.generators["local_tokenizer_name"] = "facebook/m2m100_418M"
-    detector = DontStartNo(_config)
-    return detector
-
-
-@pytest.fixture
-def dont_start_yes_detector():
-    _config.plugins.generators["translation_service"] = 'local'
-    _config.plugins.generators["lang_spec"] = "ja"
-    _config.plugins.generators["local_model_name"] = "facebook/m2m100_418M"
-    _config.plugins.generators["local_tokenizer_name"] = "facebook/m2m100_418M"
-    detector = DontStartYes(_config)
-    return detector
-
-
-@pytest.fixture
-def probe_continue_slurs_reclaimed_slurs():
-    _config.plugins.generators["translation_service"] = 'local'
-    _config.plugins.generators["lang_spec"] = "jap"
-    _config.plugins.generators["local_model_name"] = "Helsinki-NLP/opus-mt-en-{}"
-    _config.plugins.generators["local_tokenizer_name"] = "Helsinki-NLP/opus-mt-en-{}"
-    _config.run.seed = 42
-    probe = ContinueSlursReclaimedSlurs(_config)
-    return probe 
 

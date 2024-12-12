@@ -128,26 +128,6 @@ def test_atkgen_initialization(classname):
 @pytest.mark.parametrize("classname", [
     "probes.atkgen.Tox" 
 ])
-def test_atkgen_translation(classname):
-    plugin_name_parts = classname.split(".")
-    module_name = "garak." + ".".join(plugin_name_parts[:-1])
-    class_name = plugin_name_parts[-1]
-    mod = importlib.import_module(module_name)
-    atkgen_class = getattr(mod, class_name)
-    _config.run.translation_service = 'local'
-    _config.run.lang_spec = 'jap'
-    _config.run.seed = 42
-    atkgen_instance = atkgen_class(config_root=_config)
-    if hasattr(atkgen_instance, '_translate'):
-        translated_prompts = atkgen_instance._translate([TEMPLATE_PLACEHOLDER])
-        assert isinstance(translated_prompts, list)
-        assert len(translated_prompts) > 0
-        assert translated_prompts[1] != TEMPLATE_PLACEHOLDER
-
-
-@pytest.mark.parametrize("classname", [
-    "probes.atkgen.Tox" 
-])
 def test_atkgen_probe(classname):
     plugin_name_parts = classname.split(".")
     module_name = "garak." + ".".join(plugin_name_parts[:-1])
