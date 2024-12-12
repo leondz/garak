@@ -69,15 +69,16 @@ class MustContradictNLI(HFDetector):
 
         premise = attempt.prompt
         if hasattr(self, 'reverse_translator'):
-            if self.reverse_translator is not None:
-                if is_english(premise) is False:
-                    premise = "\n".join(self.reverse_translator.translate_prompts(premise.split("\n")))
+            if self.reverse_translator is not None and attempt.lang_type != "en":
+                premise = "\n".join(self.reverse_translator.translate_prompts(premise.split("\n"),                     only_translate_word=True, reverse_translate_judge=True))
         results = []
+        self.reverse_translator_outputs = []
         for hypothesis in attempt.all_outputs:
             if hasattr(self, 'reverse_translator'):
-                if self.reverse_translator is not None:
-                    if is_english(hypothesis) is False:
-                        hypothesis = "\n".join(self.reverse_translator.translate_prompts(hypothesis.split("\n")))
+                if self.reverse_translator is not None and attempt.lang_type != "en":
+                    hypothesis = "\n".join(self.reverse_translator.translate_prompts(hypothesis.split("\n"), 
+                        only_translate_word=True, reverse_translate_judge=True))
+                    self.reverse_translator_outputs.append((premise, hypothesis))
             tokenized_input_seq_pair = self.detector_tokenizer.encode_plus(
                 premise,
                 hypothesis,
