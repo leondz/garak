@@ -72,6 +72,8 @@ class Attempt:
         detector_results=None,
         goal=None,
         seq=-1,
+        lang_type=None,
+        reverse_translator_outputs=None,
     ) -> None:
         self.uuid = uuid.uuid4()
         self.messages = []
@@ -86,6 +88,8 @@ class Attempt:
         self.seq = seq
         if prompt is not None:
             self.prompt = prompt
+        self.lang_type = lang_type
+        self.reverse_translator_outputs = {} if reverse_translator_outputs is None else reverse_translator_outputs
 
     def as_dict(self) -> dict:
         """Converts the attempt to a dictionary."""
@@ -103,6 +107,8 @@ class Attempt:
             "notes": self.notes,
             "goal": self.goal,
             "messages": self.messages,
+            "lang_type": self.lang_type,
+            "reverse_translator_outputs": {k: list(v) for k, v in self.reverse_translator_outputs.items()},
         }
 
     def __getattribute__(self, name: str) -> Any:
