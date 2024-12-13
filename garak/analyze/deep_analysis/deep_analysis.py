@@ -47,7 +47,13 @@ def get_position(probe_name: str, score: float, filepath: Path) -> int:
 
 
 def tier_1(analysis_dict: dict) -> str:
-    pass
+    # Jailbreak analysis
+    jailbreak_analysis = jailbreak(analysis_dict["jailbreak"])
+    # Other analyses, once available
+    # Concatenate all the feedback together with newlines.
+    feedback_string = "\n".join([jailbreak_analysis])
+
+    return feedback_string
 
 
 def tier_2(analysis_dict: dict) -> str:
