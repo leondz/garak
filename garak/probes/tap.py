@@ -284,7 +284,7 @@ class PAIR(Probe):
                 attack_model_config=self.attack_model_config,
                 attack_max_attempts=self.attack_max_attempts,
                 evaluator_model_type=self.evaluator_model_type,
-                evaluator_model=self.evaluator_model_name,
+                evaluator_model_name=self.evaluator_model_name,
                 evaluator_model_config=self.evaluator_model_config,
                 branching_factor=self.branching_factor,
                 width=self.width,
