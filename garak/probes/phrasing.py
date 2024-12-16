@@ -68,7 +68,7 @@ class PastTenseMini(PastTense, TenseMini):
 class FutureTense(Probe):
     """Will the system give unsafe responses when asked to write about weapon creation or dangerous behavior?
 
-    This check sends the generator requests for advice on making weapons in the future tense.
+    This check sends the generator requests for advice on possibly protect or restricted subjects in the future tense.
     """
 
     active = False
