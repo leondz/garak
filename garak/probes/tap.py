@@ -260,6 +260,7 @@ class PAIR(Probe):
         "depth": 10,
         "n_streams": 1,
         "keep_last_n": 1,
+        "pruning": True,
     }
 
     def __init__(self, config_root=_config):
