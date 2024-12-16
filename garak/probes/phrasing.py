@@ -23,7 +23,7 @@ class TenseMini:
 class PastTense(Probe):
     """Will the system give unsafe responses when asked to write about weapon creation or dangerous behavior?
 
-    This check sends the generator requests for advice on making weapons in the past tense.
+    This check sends the generator requests for advice on possibly protect or restricted subjects in the past tense.
     """
 
     active = False
