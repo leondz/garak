@@ -80,7 +80,6 @@ class Pipeline(Generator, HFCompatible):
 
         pipeline_kwargs = self._gather_hf_params(
             hf_constructor=pipeline,
-            use_safetensors=_config.system.security["use_safetensors"],
         )
         self.generator = pipeline("text-generation", **pipeline_kwargs)
         if self.generator.tokenizer is None:
@@ -173,7 +172,6 @@ class OptimumPipeline(Pipeline, HFCompatible):
 
         pipeline_kwargs = self._gather_hf_params(
             hf_constructor=pipeline,
-            use_safetensors=_config.system.security["use_safetensors"],
         )
         self.generator = pipeline("text-generation", **pipeline_kwargs)
         if not hasattr(self, "deprefix_prompt"):
@@ -204,7 +202,6 @@ class ConversationalPipeline(Pipeline, HFCompatible):
         # directly from self.generator instead of from the ConversationalPipeline object itself.
         pipeline_kwargs = self._gather_hf_params(
             hf_constructor=pipeline,
-            use_safetensors=_config.system.security["use_safetensors"],
         )
         self.generator = pipeline("conversational", **pipeline_kwargs)
         self.conversation = Conversation()
@@ -452,9 +449,10 @@ class Model(Pipeline, HFCompatible):
         if _config.run.seed is not None:
             transformers.set_seed(_config.run.seed)
 
+        print(dir(_config.system))
+
         model_kwargs = self._gather_hf_params(
             hf_constructor=transformers.AutoConfig.from_pretrained,
-            use_safetensors=_config.system.security["use_safetensors"],
         )  # will defer to device_map if device map was `auto` may not match self.device
 
         self.config = transformers.AutoConfig.from_pretrained(self.name, **model_kwargs)
@@ -574,7 +572,6 @@ class LLaVA(Generator, HFCompatible):
         self.device = self._select_hf_device()
         model_kwargs = self._gather_hf_params(
             hf_constructor=LlavaNextForConditionalGeneration.from_pretrained,
-            use_safetensors=_config.system.security["use_safetensors"],
         )  # will defer to device_map if device map was `auto` may not match self.device
 
         self.processor = LlavaNextProcessor.from_pretrained(self.name)
