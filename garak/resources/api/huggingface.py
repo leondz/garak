@@ -17,7 +17,7 @@ class HFCompatible:
             if isinstance(config.n_ctx, int):
                 self.context_len = config.n_ctx
 
-    def _gather_hf_params(self, hf_constructor: Callable, use_safetensors=True):
+    def _gather_hf_params(self, hf_constructor: Callable):
         """ "Identify arguments that impact huggingface transformers resources and behavior"""
         import torch
 
