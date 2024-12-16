@@ -85,7 +85,7 @@ class HFCompatible:
         ):
             args["trust_remote_code"] = False
 
-        if "use_safetensors" in params_to_process and "use_safetensors" not in params:
+        if "use_safetensors" not in params:
             args["use_safetensors"] = True
 
         return args
