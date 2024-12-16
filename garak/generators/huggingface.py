@@ -78,9 +78,7 @@ class Pipeline(Generator, HFCompatible):
         if _config.run.seed is not None:
             set_seed(_config.run.seed)
 
-        pipeline_kwargs = self._gather_hf_params(
-            hf_constructor=pipeline,
-        )
+        pipeline_kwargs = self._gather_hf_params(hf_constructor=pipeline)
         self.generator = pipeline("text-generation", **pipeline_kwargs)
         if self.generator.tokenizer is None:
             # account for possible model without a stored tokenizer
@@ -170,9 +168,7 @@ class OptimumPipeline(Pipeline, HFCompatible):
             if "use_fp8" in _config.plugins.generators.OptimumPipeline:
                 self.use_fp8 = True
 
-        pipeline_kwargs = self._gather_hf_params(
-            hf_constructor=pipeline,
-        )
+        pipeline_kwargs = self._gather_hf_params(hf_constructor=pipeline)
         self.generator = pipeline("text-generation", **pipeline_kwargs)
         if not hasattr(self, "deprefix_prompt"):
             self.deprefix_prompt = self.name in models_to_deprefix
@@ -200,9 +196,7 @@ class ConversationalPipeline(Pipeline, HFCompatible):
 
         # Note that with pipeline, in order to access the tokenizer, model, or device, you must get the attribute
         # directly from self.generator instead of from the ConversationalPipeline object itself.
-        pipeline_kwargs = self._gather_hf_params(
-            hf_constructor=pipeline,
-        )
+        pipeline_kwargs = self._gather_hf_params(hf_constructor=pipeline)
         self.generator = pipeline("conversational", **pipeline_kwargs)
         self.conversation = Conversation()
         if not hasattr(self, "deprefix_prompt"):
@@ -452,7 +446,7 @@ class Model(Pipeline, HFCompatible):
         print(dir(_config.system))
 
         model_kwargs = self._gather_hf_params(
-            hf_constructor=transformers.AutoConfig.from_pretrained,
+            hf_constructor=transformers.AutoConfig.from_pretrained
         )  # will defer to device_map if device map was `auto` may not match self.device
 
         self.config = transformers.AutoConfig.from_pretrained(self.name, **model_kwargs)
@@ -571,7 +565,7 @@ class LLaVA(Generator, HFCompatible):
 
         self.device = self._select_hf_device()
         model_kwargs = self._gather_hf_params(
-            hf_constructor=LlavaNextForConditionalGeneration.from_pretrained,
+            hf_constructor=LlavaNextForConditionalGeneration.from_pretrained
         )  # will defer to device_map if device map was `auto` may not match self.device
 
         self.processor = LlavaNextProcessor.from_pretrained(self.name)
