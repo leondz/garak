@@ -3716,7 +3716,8 @@
         "width": 10,
         "depth": 10,
         "n_streams": 1,
-        "keep_last_n": 1
+        "keep_last_n": 1,
+        "pruning": true
       },
       "active": false,
       "bcp47": "en",
@@ -3739,7 +3740,7 @@
         "quality:Security:PromptStability",
         "payload:jailbreak"
       ],
-      "mod_time": "2024-10-17 21:05:25 +0000"
+      "mod_time": "2024-12-16 15:02:42 +0000"
     },
     "probes.tap.TAP": {
       "description": "Tree of Attacks with Pruning Probe, generating new attacks against the target",
@@ -3790,7 +3791,7 @@
         "quality:Security:PromptStability",
         "payload:jailbreak"
       ],
-      "mod_time": "2024-10-17 21:05:25 +0000"
+      "mod_time": "2024-12-16 15:02:42 +0000"
     },
     "probes.tap.TAPCached": {
       "description": "Tree of Attacks with Pruning Probe using cached attacks",
@@ -3819,7 +3820,7 @@
         "quality:Security:PromptStability",
         "payload:jailbreak"
       ],
-      "mod_time": "2024-10-17 21:05:25 +0000"
+      "mod_time": "2024-12-16 15:02:42 +0000"
     },
     "probes.test.Blank": {
       "description": "Blank prompt",
