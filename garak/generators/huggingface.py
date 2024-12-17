@@ -148,10 +148,11 @@ class Pipeline(Generator, HFCompatible):
                 i["generated_text"] for i in raw_output
             ]  # generator returns 10 outputs by default in __init__
 
-        if not self.deprefix_prompt:
+        if not self.deprefix_prompt and not self.use_chat:
             return outputs
         else:
-            return [re.sub("^" + re.escape(prompt), "", _o) for _o in outputs]
+            # consider using formatted_prompt in removal as a `list` or `str`
+            return [re.sub("^" + re.escape(formatted_prompt), "", _o) for _o in outputs]
 
 
 class OptimumPipeline(Pipeline, HFCompatible):
@@ -552,10 +553,13 @@ class Model(Pipeline, HFCompatible):
                     outputs, skip_special_tokens=True, device=self.device
                 )
 
-        if not self.deprefix_prompt:
+        if not self.deprefix_prompt and not self.use_chat:
             return text_output
         else:
-            return [re.sub("^" + re.escape(prompt), "", i) for i in text_output]
+            # consider using formatted_prompt in removal as a `list` or `str`
+            return [
+                re.sub("^" + re.escape(formatted_prompt), "", i) for i in text_output
+            ]
 
 
 class LLaVA(Generator, HFCompatible):
