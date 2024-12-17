@@ -168,8 +168,8 @@ class OptimumPipeline(Pipeline, HFCompatible):
             if "use_fp8" in _config.plugins.generators.OptimumPipeline:
                 self.use_fp8 = True
 
-        pipline_kwargs = self._gather_hf_params(hf_constructor=pipeline)
-        self.generator = pipeline("text-generation", **pipline_kwargs)
+        pipeline_kwargs = self._gather_hf_params(hf_constructor=pipeline)
+        self.generator = pipeline("text-generation", **pipeline_kwargs)
         if not hasattr(self, "deprefix_prompt"):
             self.deprefix_prompt = self.name in models_to_deprefix
         if _config.loaded:
@@ -196,8 +196,8 @@ class ConversationalPipeline(Pipeline, HFCompatible):
 
         # Note that with pipeline, in order to access the tokenizer, model, or device, you must get the attribute
         # directly from self.generator instead of from the ConversationalPipeline object itself.
-        pipline_kwargs = self._gather_hf_params(hf_constructor=pipeline)
-        self.generator = pipeline("conversational", **pipline_kwargs)
+        pipeline_kwargs = self._gather_hf_params(hf_constructor=pipeline)
+        self.generator = pipeline("conversational", **pipeline_kwargs)
         self.conversation = Conversation()
         if not hasattr(self, "deprefix_prompt"):
             self.deprefix_prompt = self.name in models_to_deprefix
@@ -442,6 +442,8 @@ class Model(Pipeline, HFCompatible):
 
         if _config.run.seed is not None:
             transformers.set_seed(_config.run.seed)
+
+        print(dir(_config.system))
 
         model_kwargs = self._gather_hf_params(
             hf_constructor=transformers.AutoConfig.from_pretrained
