@@ -58,8 +58,11 @@ def test_pipeline_chat(mocker, hf_generator_config):
     mock_format = mocker.patch.object(
         g, "_format_chat_prompt", wraps=g._format_chat_prompt
     )
-    g.generate("Hello world!")
+    output = g.generate("Hello world!")
     mock_format.assert_called_once()
+    assert len(output) == 1
+    for item in output:
+        assert isinstance(item, str)
 
 
 def test_inference(mocker, hf_mock_response, hf_generator_config):
@@ -141,8 +144,11 @@ def test_model_chat(mocker, hf_generator_config):
     mock_format = mocker.patch.object(
         g, "_format_chat_prompt", wraps=g._format_chat_prompt
     )
-    g.generate("Hello world!")
+    output = g.generate("Hello world!")
     mock_format.assert_called_once()
+    assert len(output) == 1
+    for item in output:
+        assert isinstance(item, str)
 
 
 def test_select_hf_device():
