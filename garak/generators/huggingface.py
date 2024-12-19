@@ -90,10 +90,11 @@ class Pipeline(Generator, HFCompatible):
             self.generator.tokenizer = AutoTokenizer.from_pretrained(
                 pipeline_kwargs["model"]
             )
-        self.use_chat = (
-            hasattr(self.generator.tokenizer, "chat_template")
-            and self.generator.tokenizer.chat_template is not None
-        )
+        if not hasattr(self, "use_chat"):
+            self.use_chat = (
+                hasattr(self.generator.tokenizer, "chat_template")
+                and self.generator.tokenizer.chat_template is not None
+            )
         if not hasattr(self, "deprefix_prompt"):
             self.deprefix_prompt = self.name in models_to_deprefix
         if _config.loaded:
@@ -486,11 +487,12 @@ class Model(Pipeline, HFCompatible):
                 self.name, padding_side="left"
             )
 
-        # test tokenizer for `apply_chat_template` support
-        self.use_chat = (
-            hasattr(self.tokenizer, "chat_template")
-            and self.tokenizer.chat_template is not None
-        )
+        if not hasattr(self, "use_chat"):
+            # test tokenizer for `apply_chat_template` support
+            self.use_chat = (
+                hasattr(self.tokenizer, "chat_template")
+                and self.tokenizer.chat_template is not None
+            )
 
         self.generation_config = transformers.GenerationConfig.from_pretrained(
             self.name
