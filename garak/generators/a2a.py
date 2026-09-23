@@ -69,6 +69,7 @@ class A2AGenerator(Generator):
 
     def __init__(self, name="", config_root=_config):
         self.uri = ""
+        self.name = name
         self.api_key = None
         self.api_key_header = "X-API-Key"
         self.auth_token = None
@@ -78,8 +79,8 @@ class A2AGenerator(Generator):
         self.task_id = None
 
         super().__init__(name, config_root=config_root)
-        if not self.uri and name and name.startswith(("http://", "https://")):
-            self.uri = name
+        if not self.uri and self.name and self.name.startswith(("http://", "https://")):
+            self.uri = self.name
 
     def _validate_env_var(self):
         """API key is optional for A2A endpoints (may use Bearer tokens or no auth)."""
@@ -264,3 +265,7 @@ class A2AGenerator(Generator):
             except requests.RequestException as exc:
                 logger.debug("Failed to fetch agent card from %s: %s", target_url, exc)
         return {}
+
+
+DEFAULT_CLASS = "A2AGenerator"
+

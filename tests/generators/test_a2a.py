@@ -144,3 +144,12 @@ def test_a2a_agent_card(mock_get):
 
     assert card["name"] == "SecurityAgent"
     assert mock_get.call_args[0][0] == "https://agent.example/.well-known/agent-card.json"
+
+
+def test_a2a_plugin_loading():
+    from garak import _plugins
+
+    gen = _plugins.load_plugin("generators.a2a")
+    assert isinstance(gen, A2AGenerator)
+    assert gen.name == ""
+
