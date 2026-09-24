@@ -15,7 +15,13 @@ with JSON-RPC error ``-32601`` (method not found), the generator falls back to
 spec 0.2 (``tasks/send``) and keeps using it for the rest of the run. Set
 ``dialect`` to ``v03`` or ``v02`` to skip negotiation.
 
-JSON-RPC error responses are logged and treated as no output from the target.
+Requests ask the agent to block until the task completes. If the agent
+still returns a task in the ``submitted`` or ``working`` state, the generator
+polls ``tasks/get`` until the task finishes or ``request_timeout`` expires.
+
+Rate limits are retried with backoff. This covers HTTP ``429`` responses, and
+JSON-RPC errors whose message reports a ``429`` from the model behind the agent.
+Other JSON-RPC error responses are logged and treated as no output from the target.
 
 Conversations
 -------------
@@ -63,6 +69,35 @@ and pass it with ``--generator_option_file`` / ``-G``:
 
 The URI can also be given directly as ``--target_name``. See
 :doc:`/configurable` for other ways to set these options.
+
+Microsoft Foundry agents
+------------------------
+
+This generator has been tested against a Microsoft Foundry Agent Service
+prompt agent with incoming A2A enabled, using A2A 0.3 over JSON-RPC. See
+`Enable incoming A2A on a Foundry agent <https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/enable-agent-to-agent-endpoint>`_
+for setup. Foundry requires a Microsoft Entra bearer token, which can be passed
+through the ``Authorization`` header:
+
+.. code-block:: JSON
+
+   {
+      "a2a": {
+         "A2AGenerator": {
+            "uri": "https://<account>.services.ai.azure.com/api/projects/<project>/agents/<agent>/endpoint/protocols/a2a",
+            "api_key_header": "Authorization"
+         }
+      }
+   }
+
+.. code-block::
+
+   export A2A_API_KEY="Bearer $(az account get-access-token --resource https://ai.azure.com --query accessToken -o tsv)"
+   garak --target_type a2a -G foundry_agent.json --spec probes.promptinject
+
+When Azure content filtering blocks a prompt, Foundry returns a generic JSON-RPC
+``-32603`` error rather than a content-filter reason, so those attempts are
+recorded as no output.
 
 .. automodule:: garak.generators.a2a
    :members:

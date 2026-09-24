@@ -8,19 +8,24 @@ Generator module for probing agents exposing the Agent-to-Agent protocol over JS
 
 import logging
 import os
+import time
 import uuid
 from typing import List, Union
 
+import backoff
 import requests
 
 from garak import _config
 from garak.attempt import Conversation, Message
+from garak.exception import RateLimitHit
 from garak.generators.base import Generator
 
 logger = logging.getLogger(__name__)
 
 RPC_METHOD_NOT_FOUND = -32601
 DIALECTS = ("auto", "v03", "v02")
+PENDING_TASK_STATES = {"submitted", "working"}
+TASK_POLL_INTERVAL = 1
 
 
 class A2AGenerator(Generator):
@@ -133,7 +138,7 @@ class A2AGenerator(Generator):
         if dialect == "v03":
             message |= {"kind": "message", "messageId": str(uuid.uuid4())}
             method = "message/send"
-            params = {"message": message}
+            params = {"message": message, "configuration": {"blocking": True}}
         else:
             method = "tasks/send"
             params = {"id": str(uuid.uuid4()), "message": message}
@@ -191,9 +196,36 @@ class A2AGenerator(Generator):
             timeout=self.request_timeout,
             verify=self.verify_ssl,
         )
+        if resp.status_code == 429:
+            raise RateLimitHit(f"A2A rate limited: {resp.reason}, uri: {self.uri}")
         resp.raise_for_status()
         return resp.json()
 
+    def _await_task(self, data: dict) -> dict:
+        """Poll ``tasks/get`` until a task returned by the agent leaves a pending state."""
+        deadline = time.monotonic() + self.request_timeout
+        while True:
+            result = data.get("result")
+            if not (
+                isinstance(result, dict)
+                and result.get("status", {}).get("state") in PENDING_TASK_STATES
+            ):
+                return data
+            if time.monotonic() >= deadline:
+                raise TimeoutError(
+                    f"A2A task {result.get('id')} still {result['status']['state']} after {self.request_timeout}s"
+                )
+            time.sleep(TASK_POLL_INTERVAL)
+            data = self._post(
+                {
+                    "jsonrpc": "2.0",
+                    "id": str(uuid.uuid4()),
+                    "method": "tasks/get",
+                    "params": {"id": result["id"]},
+                }
+            )
+
+    @backoff.on_exception(backoff.fibo, RateLimitHit, max_value=70)
     def _call_model(
         self, prompt: Conversation, generations_this_call: int = 1
     ) -> List[Union[Message, None]]:
@@ -215,13 +247,19 @@ class A2AGenerator(Generator):
                 data = self._post(self._build_payload(current_dialect, prompt))
             if self.dialect == "auto" and data.get("error") is None:
                 self.dialect = current_dialect
+            data = self._await_task(data)
 
         except requests.RequestException as exc:
             logger.error("Failed to query A2A agent at %s: %s", self.uri, exc)
             raise ConnectionError(f"A2A communication failure: {exc}") from exc
 
+        # agents may relay an upstream model rate limit as an internal error
+        error = data.get("error")
+        if isinstance(error, dict) and "429" in str(error.get("message", "")):
+            raise RateLimitHit(f"A2A upstream rate limited: {error}, uri: {self.uri}")
+
         # JSON-RPC errors are protocol failures, not model output
-        if data.get("error") is not None:
+        if error is not None:
             logger.warning(
                 "A2A agent at %s returned error: %s", self.uri, data["error"]
             )
