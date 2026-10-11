@@ -24,7 +24,11 @@ import torch
 
 from garak import _config
 from garak.attempt import Message, Conversation
-from garak.exception import TargetNameMissingError, GarakException
+from garak.exception import (
+    TargetNameMissingError,
+    GarakException,
+    BadGeneratorException,
+)
 from garak.generators.base import Generator
 from garak.resources.api.huggingface import HFCompatible
 
@@ -109,7 +113,7 @@ class Pipeline(Generator, HFCompatible):
             )
         if not hasattr(self, "deprefix_prompt"):
             self.deprefix_prompt = self.name in models_to_deprefix
-        if _config.loaded:
+        if _config.is_loaded:
             if _config.run.deprefix is True:
                 self.deprefix_prompt = True
 
@@ -255,6 +259,13 @@ class InferenceAPI(Generator):
         if req_response.status_code == 503:
             self.wait_for_model = True
             raise HFLoadingException
+
+        if req_response.status_code == 404:
+            raise BadGeneratorException(
+                f"🤗 Inference API returned 404 for model '{self.name}'. The model may not "
+                "be available via the legacy Inference API and may require selecting an "
+                "Inference Provider instead; see https://huggingface.co/docs/inference-providers"
+            )
 
         # if we get this far, reset the model load wait. let's hope 503 is only for model loading :|
         if self.wait_for_model:

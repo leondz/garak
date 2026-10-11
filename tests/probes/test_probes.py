@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import importlib
+import inspect
 import langcodes
 import pytest
 import re
@@ -9,6 +10,7 @@ import re
 from garak import _config, _plugins
 from garak.attempt import Turn, Conversation, Message, Attempt
 import garak.probes
+from garak.services.intentservice import validate_intent_specifier
 
 PROBES = [classname for (classname, active) in _plugins.enumerate_plugins("probes")]
 
@@ -49,6 +51,13 @@ def set_fake_env(request) -> None:
     request.addfinalizer(restore_env)
 
 
+def _probe_intent_may_be_none(probe_class) -> bool:
+    return (
+        probe_class.__module__ == "garak.probes.base"
+        or garak.probes.IntentProbe in probe_class.mro()
+    )
+
+
 @pytest.mark.parametrize("classname", PROBES)
 def test_detector_specified(classname):  # every probe should give detector(s)
     plugin_name_parts = classname.split(".")
@@ -56,10 +65,13 @@ def test_detector_specified(classname):  # every probe should give detector(s)
     class_name = plugin_name_parts[-1]
     mod = importlib.import_module(module_name)
     probe_class = getattr(mod, class_name)
-    assert (
-        isinstance(probe_class.primary_detector, str)
-        or len(probe_class.extended_detectors) > 0
-    ), "One primary detector (str), or a non-empty list of extended detector, must be given"
+    if (
+        garak.probes.IntentProbe not in probe_class.mro()
+    ):  # intent probes detector spec not relevant
+        assert (
+            isinstance(probe_class.primary_detector, str)
+            or len(probe_class.extended_detectors) > 0
+        ), "One primary detector (str), or a non-empty list of extended detector, must be given"
 
 
 @pytest.mark.parametrize("classname", PROBES)
@@ -92,13 +104,38 @@ def test_probe_structure(classname):
 
 
 @pytest.mark.parametrize("classname", PROBES)
-def test_probe_metadata(classname):
+def test_probe_intent(classname, loaded_intent_service):
+    plugin_name_parts = classname.split(".")
+    module_name = "garak." + ".".join(plugin_name_parts[:-1])
+    class_name = plugin_name_parts[-1]
+    mod = importlib.import_module(module_name)
+    probe_class = getattr(mod, class_name)
+
+    assert hasattr(probe_class, "intent"), "probes must declare an intent attribute"
+
+    if _probe_intent_may_be_none(probe_class):
+        assert (
+            probe_class.intent is None
+        ), "base probes and IntentProbe descendants should set intent to None"
+    else:
+        assert isinstance(
+            probe_class.intent, str
+        ), "concrete probes must set intent to a typology code"
+        assert len(probe_class.intent) > 0, "intent must not be empty"
+        assert validate_intent_specifier(
+            probe_class.intent
+        ), "intent must match a valid intent typology entry"
+
+
+@pytest.mark.parametrize("classname", PROBES)
+def test_probe_metadata(classname, loaded_intent_service):
     try:
         p = _plugins.load_plugin(classname)
     except ModuleNotFoundError:
         pytest.skip("required deps not present")
-    assert isinstance(p.goal, str), "probe goals should be a text string"
-    assert len(p.goal) > 0, "probes must state their general goal"
+    if not isinstance(p, garak.probes.IntentProbe):  # intent probes have flexible goal
+        assert isinstance(p.goal, str), "probe goals should be a text string"
+        assert len(p.goal) > 0, "probes must state their general goal"
     assert p.lang is not None and (
         p.lang == "*" or langcodes.tag_is_valid(p.lang)
     ), "lang must be either * or a BCP47 code"
@@ -149,7 +186,7 @@ def test_tag_format(classname):
     for tag in cls.tags:  # should be MISP format
         assert type(tag) == str
         for part in tag.split(":"):
-            assert re.match(r"^[A-Za-z0-9_\-]+$", part)
+            assert re.match(r"^[A-Za-z0-9_\-\&]+$", part)
         if tag.split(":")[0] != "payload":
             assert tag in MISP_TAGS
 
@@ -160,6 +197,116 @@ def test_probe_prune_alignment():
     assert len(p.triggers) == _config.run.soft_probe_prompt_cap
     assert p.triggers[0] in p.prompts[0]
     assert p.triggers[-1] in p.prompts[-1]
+
+
+def _capping_probes():
+    """Every probe that prunes its prompts, discovered rather than hand-listed.
+
+    A probe caps if it, or a probe class it inherits from, mentions ``_prune_data``
+    anywhere in its source; the base implementation itself does not count."""
+
+    def _prunes(klass):
+        for ancestor in klass.__mro__:
+            if ancestor is garak.probes.Probe or not ancestor.__module__.startswith(
+                "garak.probes"
+            ):
+                continue
+            try:
+                if "_prune_data" in inspect.getsource(ancestor):
+                    return True
+            except (OSError, TypeError):
+                continue
+        return False
+
+    found = []
+    for classname, _ in _plugins.enumerate_plugins("probes"):
+        module_name, class_name = classname.replace("probes.", "").rsplit(".", 1)
+        klass = getattr(
+            importlib.import_module(f"garak.probes.{module_name}"), class_name
+        )
+        if _prunes(klass):
+            found.append(classname)
+    return sorted(found)
+
+
+CAPPING_PROBES = _capping_probes()
+
+
+def test_capping_probe_discovery_is_not_empty():
+    assert CAPPING_PROBES, "expected to discover probes that prune prompts"
+
+
+@pytest.mark.parametrize("classname", CAPPING_PROBES)
+def test_capping_probe_honours_cap(classname, loaded_intent_service):
+    """Every pruning probe must respect soft_probe_prompt_cap."""
+    cap = 5
+    _config.run.soft_probe_prompt_cap = cap
+    p = _plugins.load_plugin(classname, config_root=_config)
+    if not p.follow_prompt_cap:
+        pytest.skip(f"{classname} opts out of prompt capping")
+    assert len(p.prompts) <= cap, f"{classname} must prune to soft_probe_prompt_cap"
+
+
+@pytest.mark.parametrize("classname", CAPPING_PROBES)
+def test_capping_probe_builds_with_unset_cap(classname, loaded_intent_service):
+    """An unset cap means no cap, and must not raise.
+
+    Loading is the assertion: comparing a length against an unset cap is what
+    used to raise. Prompt counts are not asserted here, since probes sourcing
+    their prompts from datasets legitimately build none when those are
+    unavailable."""
+    _config.run.soft_probe_prompt_cap = None
+    p = _plugins.load_plugin(classname, config_root=_config)
+    assert (
+        p.prompts is not None
+    ), f"{classname} must have a prompt list after building with no cap"
+
+
+@pytest.mark.parametrize("classname", CAPPING_PROBES)
+def test_capping_probe_keeps_triggers_aligned(classname, loaded_intent_service):
+    """Pruning must not desynchronise triggers from prompts."""
+    cap = 5
+    _config.run.soft_probe_prompt_cap = cap
+    p = _plugins.load_plugin(classname, config_root=_config)
+    triggers = getattr(p, "triggers", None)
+    if not triggers:
+        pytest.skip(f"{classname} carries no triggers")
+    assert len(triggers) == len(
+        p.prompts
+    ), f"{classname} left triggers out of step with prompts after pruning"
+
+
+def test_follow_prompt_cap_is_a_base_default():
+    """Opting out of capping is available to every probe, not just those declaring it."""
+    assert (
+        "follow_prompt_cap" in garak.probes.Probe.DEFAULT_PARAMS
+    ), "follow_prompt_cap must be a base default so all probes share the switch"
+
+
+def test_prune_data_respects_opt_out():
+    p = _plugins.load_plugin("probes.phrasing.PastTense")
+    p.prompts = list(range(50))
+    p.follow_prompt_cap = False
+    p._prune_data(5)
+    assert len(p.prompts) == 50, "follow_prompt_cap=False must disable pruning"
+
+
+def test_prune_data_tolerates_unset_cap():
+    p = _plugins.load_plugin("probes.phrasing.PastTense")
+    p.prompts = list(range(50))
+    p.follow_prompt_cap = True
+    p.soft_probe_prompt_cap = None
+    p._prune_data()
+    assert len(p.prompts) == 50, "an unset cap must leave prompts untouched"
+
+
+def test_prune_data_defaults_to_configured_cap():
+    p = _plugins.load_plugin("probes.phrasing.PastTense")
+    p.prompts = list(range(50))
+    p.follow_prompt_cap = True
+    p.soft_probe_prompt_cap = 6
+    p._prune_data()
+    assert len(p.prompts) == 6, "_prune_data with no cap must use soft_probe_prompt_cap"
 
 
 PROMPT_EXAMPLES = [
@@ -209,3 +356,118 @@ def test_mint_attempt_with_run_system_prompt(prompt):
     assert attempt.prompt.last_message("system").text == expected_system_prompt
     system_message = [turn for turn in attempt.prompt.turns if turn.role == "system"]
     assert len(system_message) == 1
+
+
+def test_mint_attempt_base_probe_intent_is_none():
+    import garak.probes.base
+
+    probe = garak.probes.base.Probe()
+    attempt = probe._mint_attempt("hello")
+    assert (
+        attempt.intent is None
+    ), "base Probe has no intent, so attempt.intent must be None"
+
+
+def test_mint_attempt_propagates_probe_intent():
+    import garak.probes.base
+
+    probe = garak.probes.base.Probe()
+    probe.intent = "T999test"
+    attempt = probe._mint_attempt("hello")
+    assert attempt.intent == "T999test", "attempt.intent must match the probe's intent"
+
+
+def test_mint_attempt_intent_survives_multiple_attempts():
+    import garak.probes.base
+
+    probe = garak.probes.base.Probe()
+    probe.intent = "S005"
+    attempts = [probe._mint_attempt(f"prompt {i}", seq=i) for i in range(5)]
+    for a in attempts:
+        assert a.intent == "S005", "every minted attempt must carry the probe's intent"
+
+
+def test_concrete_probe_propagates_intent(loaded_intent_service):
+    p = _plugins.load_plugin("probes.test.Test")
+    assert p.intent is not None, "probes.test.Test should have a non-None intent"
+    attempt = p._mint_attempt("hello")
+    assert (
+        attempt.intent == p.intent
+    ), "attempt.intent must match the concrete probe's intent"
+
+
+def test_attempt_intent_in_serialised_dict(loaded_intent_service):
+    p = _plugins.load_plugin("probes.test.Test")
+    attempt = p._mint_attempt("hello")
+    d = attempt.as_dict()
+    assert "intent" in d, "serialised attempt dict must include 'intent'"
+    assert d["intent"] == p.intent, "serialised intent must match probe intent"
+
+
+def test_payload_intent_overrides_probe_intent():
+    import garak.probes.base
+
+    probe = garak.probes.base.Probe()
+    probe.intent = "T999test"
+    probe._payload_intent = "S005hate"
+    attempt = probe._mint_attempt("hello")
+    assert (
+        attempt.intent == "S005hate"
+    ), "payload intent must override probe intent when set"
+
+
+def test_payload_intent_none_falls_back_to_probe_intent():
+    import garak.probes.base
+
+    probe = garak.probes.base.Probe()
+    probe.intent = "T999test"
+    probe._payload_intent = None
+    attempt = probe._mint_attempt("hello")
+    assert (
+        attempt.intent == "T999test"
+    ), "when payload intent is None, probe intent should be used"
+
+
+def test_no_payload_intent_attr_falls_back_to_probe_intent():
+    import garak.probes.base
+
+    probe = garak.probes.base.Probe()
+    probe.intent = "T999test"
+    attempt = probe._mint_attempt("hello")
+    assert (
+        attempt.intent == "T999test"
+    ), "when no _payload_intent attr exists, probe intent should be used"
+
+
+def test_encoding_probe_per_prompt_intents(loaded_intent_service):
+    import garak.probes.encoding
+
+    p = _plugins.load_plugin("probes.encoding.InjectROT13")
+    assert hasattr(
+        p, "_prompt_intents"
+    ), "encoding probes must track per-prompt intents"
+    assert len(p._prompt_intents) == len(
+        p.prompts
+    ), "there must be one intent entry per prompt"
+    for i, pi in enumerate(p._prompt_intents):
+        if pi is not None:
+            assert isinstance(
+                pi, str
+            ), f"prompt intent at index {i} must be a string or None"
+
+
+def test_encoding_probe_attempt_carries_payload_intent(loaded_intent_service):
+    import garak.probes.encoding
+
+    p = _plugins.load_plugin("probes.encoding.InjectROT13")
+    intents_with_values = [
+        (seq, pi) for seq, pi in enumerate(p._prompt_intents) if pi is not None
+    ]
+    assert (
+        len(intents_with_values) > 0
+    ), "at least some prompts should have payload-derived intents"
+    seq, expected_intent = intents_with_values[0]
+    attempt = p._mint_attempt(p.prompts[seq], seq=seq)
+    assert (
+        attempt.intent == expected_intent
+    ), "attempt intent must reflect the payload-specific intent set in _attempt_prestore_hook"
