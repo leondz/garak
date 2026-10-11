@@ -54,6 +54,7 @@ class AcceptClaimedElevation(garak.probes.Probe):
     )
     primary_detector = "multi_agent_trust.AcceptsUnverifiedElevation"
     tier = Tier.COMPETE_WITH_SOTA
+    intent = "T009indirect"  # the elevation claim arrives inside a pipeline message that the target is induced to follow
 
     def __init__(self, config_root=_config):
         super().__init__(config_root=config_root)
