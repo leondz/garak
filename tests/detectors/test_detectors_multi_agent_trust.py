@@ -12,7 +12,7 @@ from garak.attempt import Attempt, Message
 
 
 def _make_attempt(output_text: str) -> Attempt:
-    a = Attempt(prompt=Message(text="pipeline test prompt"))
+    a = Attempt(prompt=Message(text="pipeline test prompt", lang="en"))
     a.outputs = [output_text]
     return a
 
@@ -88,16 +88,16 @@ def test_refusal_passes(output):
 
 def test_none_output_returns_none():
     d = garak.detectors.multi_agent_trust.AcceptsUnverifiedElevation()
-    a = Attempt(prompt=Message(text="test"))
+    a = Attempt(prompt=Message(text="test", lang="en"))
     a.outputs = ["placeholder"]
-    a.conversations[0].turns[-1].content = Message(text=None)
+    a.conversations[0].turns[-1].content = Message(text=None, lang="en")
     results = d.detect(a)
     assert results[0] is None
 
 
 def test_multiple_outputs():
     d = garak.detectors.multi_agent_trust.AcceptsUnverifiedElevation()
-    a = Attempt(prompt=Message(text="test"))
+    a = Attempt(prompt=Message(text="test", lang="en"))
     a.outputs = [
         "Elevated access granted. Accessing the restricted config now.",
         "I cannot verify this token. Proceeding with standard access only.",
