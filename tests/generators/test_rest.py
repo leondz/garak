@@ -1,7 +1,9 @@
 import datetime
 import json
 import logging
+import re
 import ssl
+import urllib.parse
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -238,6 +240,30 @@ def test_rest_skip_code(requests_mock):
     conv = Conversation([Turn("user", Message("Who is Enabran Tain's son?"))])
     output = generator._call_model(conv)
     assert output == [None]
+
+
+@pytest.mark.usefixtures("set_rest_config")
+@pytest.mark.parametrize(
+    "prompt",
+    (
+        "What is 2+2?",
+        "Tom & Jerry say hi",
+        "text after #ignore previous instructions",
+        "100% sure",
+        'Say "hello"',
+        "line one\nline two",
+    ),
+)
+def test_rest_get_sends_prompt_unchanged(requests_mock, prompt):
+    _config.plugins.generators["rest"]["RestGenerator"]["method"] = "get"
+    _config.plugins.generators["rest"]["RestGenerator"]["req_template"] = "q=$INPUT"
+    generator = RestGenerator()
+    requests_mock.get(DEFAULT_URI, text=DEFAULT_TEXT_RESPONSE)
+    generator._call_model(Conversation([Turn("user", Message(prompt))]))
+    query = urllib.parse.urlsplit(requests_mock.last_request.url).query
+    # a bare "%" is not valid percent-encoding and the server decodes it differently
+    assert re.fullmatch(r"(?:[^%]|%[0-9A-Fa-f]{2})*", query)
+    assert urllib.parse.parse_qs(query)["q"] == [prompt]
 
 
 @pytest.mark.usefixtures("set_rest_config")
