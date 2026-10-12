@@ -102,6 +102,7 @@ class GradualPersonaInjection(garak.probes.IterativeProbe):
         "via multi-turn context poisoning"
     )
     tier = garak.probes.Tier.INFORMATIONAL
+    intent = "T009ignore"  # the five-turn sequence walks the model away from its system prompt identity and restrictions
     active = False
     parallelisable_attempts = False
 
