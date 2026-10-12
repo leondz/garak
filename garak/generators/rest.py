@@ -261,6 +261,10 @@ class RestGenerator(Generator):
         """Percent-encode a string for use as a URL query value"""
         return urllib.parse.quote(text, safe="")
 
+    def _json_url_escape(self, text: str) -> str:
+        """Escape a string for a JSON string that sits in a URL query value"""
+        return self._url_escape(self._json_escape(text))
+
     def _populate_template(
         self,
         template: str,
@@ -318,13 +322,19 @@ class RestGenerator(Generator):
         """
 
         # should this support a serialized Conversation?
-        # a GET request carries the prompt in the query string, so it must be URL encoded
+        # a GET request carries the prompt in the query string, so it must be URL encoded;
+        # a quoted "$INPUT" is a JSON string value, so it is JSON escaped first
+        escape_function = None
+        if self.http_function == requests.get:
+            escape_function = (
+                self._json_url_escape
+                if '"$INPUT"' in self.req_template
+                else self._url_escape
+            )
         request_data = self._populate_template(
             self.req_template,
             prompt.last_message().text,
-            escape_function=(
-                self._url_escape if self.http_function == requests.get else None
-            ),
+            escape_function=escape_function,
         )
 
         request_headers = dict(self.headers)
