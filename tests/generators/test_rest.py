@@ -267,6 +267,30 @@ def test_rest_get_sends_prompt_unchanged(requests_mock, prompt):
 
 
 @pytest.mark.usefixtures("set_rest_config")
+@pytest.mark.parametrize(
+    "prompt",
+    (
+        "What is 2+2?",
+        "Tom & Jerry say hi",
+        "100% sure",
+        'Say "hello"',
+        "line one\nline two",
+    ),
+)
+def test_rest_get_json_value_sends_prompt_unchanged(requests_mock, prompt):
+    _config.plugins.generators["rest"]["RestGenerator"]["method"] = "get"
+    _config.plugins.generators["rest"]["RestGenerator"][
+        "req_template"
+    ] = 'variables={"p": "$INPUT"}'
+    generator = RestGenerator()
+    requests_mock.get(DEFAULT_URI, text=DEFAULT_TEXT_RESPONSE)
+    generator._call_model(Conversation([Turn("user", Message(prompt))]))
+    query = urllib.parse.urlsplit(requests_mock.last_request.url).query
+    variables = urllib.parse.parse_qs(query)["variables"][0]
+    assert json.loads(variables) == {"p": prompt}
+
+
+@pytest.mark.usefixtures("set_rest_config")
 def test_rest_valid_proxy(mocker, requests_mock):
     test_proxies = {
         "http": "http://localhost:8080",
