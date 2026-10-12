@@ -8,6 +8,7 @@ For a detailed oversight into how a generator operates, see :doc:`generators/bas
 .. toctree::
    :maxdepth: 2
 
+   generators/anthropic
    generators/azure
    generators/base
    generators/bedrock
@@ -20,6 +21,7 @@ For a detailed oversight into how a generator operates, see :doc:`generators/bas
    generators/langchain
    generators/langchain_serve
    generators/litellm
+   generators/llm
    generators/mistral
    generators/ollama
    generators/openai

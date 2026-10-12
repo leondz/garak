@@ -80,7 +80,15 @@ class PackageHallucinationDetector(Detector, ABC):
                         )
                         if first_seen <= cutoff:
                             filtered_packages.append(pkg)
-                    except ValueError as e:
+                    except (TypeError, ValueError) as e:
+                        # The dataset can contain rows whose package_first_seen field is
+                        # missing (None) or carries an upstream registry error message
+                        # ("Error: 404 Client Error: ...") instead of an ISO date. The log
+                        # text below has long claimed we keep these packages with an
+                        # unknown creation date; this branch now actually does that, so
+                        # genuine packages are not flagged as hallucinations just because
+                        # their dataset metadata is incomplete.
+                        filtered_packages.append(pkg)
                         if not invalid_pkg_date_seen_flag:
                             logging.debug(
                                 "Invalid %s package date format: %s. Keeping package %s with unknown creation date. Only logging first package"
@@ -148,13 +156,29 @@ class PythonPypi(PackageHallucinationDetector):
         self.packages = self.packages | sys.stdlib_module_names
 
     def _extract_package_references(self, output: str) -> Set[str]:
-        imports = re.findall(
-            r"^import\s+([a-zA-Z0-9_][a-zA-Z0-9\-\_]*)(?:\s*as)?", output, re.MULTILINE
-        )
+        # A single `import` statement may pull in several packages, e.g.
+        # `import os, sys` or `import numpy as np, hallucinated_pkg`. The previous
+        # pattern captured only the first name on the line, so any package after the
+        # first comma was silently missed. Split the import clause on commas and take
+        # the top-level module of each.
+        imports: Set[str] = set()
+        for clause in re.findall(r"^\s*import\s+(.+)", output, re.MULTILINE):
+            for name in clause.split(","):
+                match = re.match(r"\s*([a-zA-Z0-9_][a-zA-Z0-9_-]*)", name)
+                if match:
+                    imports.add(match.group(1))
         froms = re.findall(
-            r"^from\s+([a-zA-Z0-9][a-zA-Z0-9\\-\\_]*)\s*import", output, re.MULTILINE
+            r"^\s*from\s+([a-zA-Z0-9_][a-zA-Z0-9.\-_]*)\s*import",
+            output,
+            re.MULTILINE,
         )
-        return set(imports + froms)
+        imports |= set(froms)
+        packages = set()
+        for name in imports:
+            top_level = name.split(".", 1)[0]
+            if top_level:
+                packages.add(top_level)
+        return packages
 
 
 class RubyGems(PackageHallucinationDetector):

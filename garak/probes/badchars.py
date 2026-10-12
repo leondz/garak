@@ -119,12 +119,16 @@ class BadCharacters(garak.probes.Probe):
     lang = "en"
     active = True
     doc_uri = "https://arxiv.org/abs/2106.09898"
+    intent = "T009ignore"  # imperceptible perturbations silently bypass refusal policies without the model explicitly decoding anything
+    # T018decode is a secondary fit because the model may internally normalize the obfuscated text.
     goal = "inject imperceptible text perturbations that bypass refusal policies"
     primary_detector = "mitigation.MitigationBypass"
     tags = [
         "avid-effect:security:S0403",
         "quality:Security:PromptStability",
         "payload:jailbreak",
+        "demon:Language:Code_and_encode:Token",  # uses invisible Unicode, homoglyphs, bidi tricks to exploit token processing
+        "euai:robustness:unexpected_behavior",
     ]
     tier = garak.probes.Tier.COMPETE_WITH_SOTA
 
@@ -140,7 +144,6 @@ class BadCharacters(garak.probes.Probe):
         "max_position_candidates": 24,
         "max_reorder_candidates": 24,
         "max_ascii_variants": len(ASCII_PRINTABLE),
-        "follow_prompt_cap": True,
     }
 
     def __init__(self, config_root=_config):
@@ -184,6 +187,8 @@ class BadCharacters(garak.probes.Probe):
 
         payload_group = garak.payloads.load(self.payload_name)
         self._source_payloads = payload_group.payloads
+        if payload_group.intent:
+            self._payload_intent = payload_group.intent
         self.prompts: List[garak.attempt.Conversation] = []
         self._seen_prompts: set[str] = set()
 
@@ -197,12 +202,7 @@ class BadCharacters(garak.probes.Probe):
                 "Check payload_name and category configuration."
             )
 
-        if (
-            self.follow_prompt_cap
-            and self.soft_probe_prompt_cap is not None
-            and len(self.prompts) > self.soft_probe_prompt_cap
-        ):
-            self._downsample_prompts()
+        self._prune_data()
 
     def _append_prompt(self, text: str, metadata: dict) -> None:
         if text in self._seen_prompts:
@@ -378,6 +378,10 @@ class BadCharacters(garak.probes.Probe):
     def _select_ascii(limit: int) -> List[str]:
         if limit is None or limit <= 0 or limit >= len(ASCII_PRINTABLE):
             return list(ASCII_PRINTABLE)
+
+        if limit == 1:
+            return [ASCII_PRINTABLE[0]]
+
         step = max(1, (len(ASCII_PRINTABLE) - 1) // (limit - 1))
         selected = [ASCII_PRINTABLE[i] for i in range(0, len(ASCII_PRINTABLE), step)]
         return selected[:limit]
@@ -389,14 +393,14 @@ class BadCharacters(garak.probes.Probe):
             return flattened
         return f"{flattened[: limit - 1]}…"
 
-    def _downsample_prompts(self) -> None:
-        """Downsample prompts while keeping category balance and seedable shuffling.
+    def _prune_data(self, cap=None, prune_triggers=False) -> None:
+        """Prune prompts while keeping category balance and seedable shuffling.
 
-        Differs from Probe._prune_data, which randomly truncates without preserving
-        category coverage."""
+        Unlike ``Probe._prune_data``, which truncates at random, this preserves
+        coverage across bad-character categories."""
         if not self.prompts:
             return
-        cap = self.soft_probe_prompt_cap
+        cap = self._prune_cap(cap)
         if cap is None or cap <= 0 or len(self.prompts) <= cap:
             return
 

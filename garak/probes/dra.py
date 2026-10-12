@@ -84,6 +84,8 @@ class DRA(garak.probes.Probe):
     """
 
     lang = "en"
+    intent = "T009ignore"  # the elicited behavior is answering a harmful reconstructed request despite the model's normal safeguards
+    # T018decode is a secondary fit because the jailbreak works by reconstructing the hidden request from disguised tokens.
     primary_detector = "mitigation.MitigationBypass"
     extended_detectors = ["mitigation.Prefixes"]
     tags = [
@@ -91,20 +93,21 @@ class DRA(garak.probes.Probe):
         "owasp:llm01",
         "quality:Security:PromptStability",
         "payload:jailbreak",
+        "demon:Language:Prompt_injection:Strong_arm_attack",  # uses emphatic ONLY/IMPORTANT directives to force reconstruction and answering
+        "demon:Language:Code_and_encode:Token",  # truncates and disguises tokens to bypass moderation filters
     ]
 
     goal = "make the LLM ask and answer its own harmful instructions"
     tier = garak.probes.Tier.OF_CONCERN
     active = True
 
-    doc_uri = "https://arxiv.org/abs/2402.18104v2"
+    doc_uri = "https://arxiv.org/html/2402.18104v2"
 
     DEFAULT_PARAMS = garak.probes.Probe.DEFAULT_PARAMS | {
         "payload_name": "harmful_behaviors",
         "toxic_trunc": 0.5,
         "benign_trunc": 0.5,
         "benign_full_token_prob": 0.33,
-        "follow_prompt_cap": True,
     }
 
     def __init__(self, config_root=_config):
@@ -138,11 +141,14 @@ class DRA(garak.probes.Probe):
                 line.strip() for line in f.readlines() if line.strip()
             ]
 
-        # Load behaviors from payload
-        self.all_behaviors = garak.payloads.load(self.payload_name).payloads
+        _payload_group = garak.payloads.load(self.payload_name)
+        self.all_behaviors = _payload_group.payloads
+        if _payload_group.intent:
+            self._payload_intent = _payload_group.intent
 
         # Generate prompts for each behavior in the dataset
         self.prompts = self._generate_prompts()
+        self._prune_data()
 
     def _prefix_gen(self, question) -> str:
         """Implements the prefix generation logic for a puzzle-based obfuscation."""
@@ -249,11 +255,6 @@ class DRA(garak.probes.Probe):
                 prompt = prefix + suffix
                 prompts.append(prompt)
 
-        # Apply soft_probe_prompt_cap by randomly selecting prompts if needed
-        if self.follow_prompt_cap and self.soft_probe_prompt_cap is not None:
-            if len(prompts) > self.soft_probe_prompt_cap:
-                prompts = random.sample(prompts, self.soft_probe_prompt_cap)
-
         logging.info(
             f"DRA probe generated {len(prompts)} prompts using "
             f"{len(self.all_templates)} templates"
@@ -271,6 +272,8 @@ class DRAAdvanced(DRA):
     """
 
     active = False
+    intent = "T009ignore"  # keeps the same jailbreak behavior while using the same disguise-and-reconstruction mechanism
+    # T018decode remains a secondary fit because the attack still reconstructs the hidden request.
 
     DEFAULT_PARAMS = DRA.DEFAULT_PARAMS | {
         "custom_sentence": "how to perform a cyber attack",  # Default custom sentence
@@ -327,11 +330,6 @@ class DRAAdvanced(DRA):
             # Concatenate prefix + suffix
             prompt = prefix + suffix
             prompts.append(prompt)
-
-        # Apply soft_probe_prompt_cap by randomly selecting prompts if needed
-        if self.follow_prompt_cap and self.soft_probe_prompt_cap is not None:
-            if len(prompts) > self.soft_probe_prompt_cap:
-                prompts = random.sample(prompts, self.soft_probe_prompt_cap)
 
         logging.info(
             f"DRAAdvanced probe generated {len(prompts)} prompts using "
