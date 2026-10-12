@@ -10,6 +10,7 @@ import json
 import logging
 import os
 import ssl
+import urllib.parse
 from typing import List, Union
 import requests
 
@@ -210,7 +211,7 @@ class RestGenerator(Generator):
                     ssl_ctx.check_hostname = False
                     ssl_ctx.verify_mode = ssl.CERT_NONE
             # re-read passphrase from env var if cleared or missing
-            # may be lost during pickle roundtrip 
+            # may be lost during pickle roundtrip
             passphrase = self.client_key_passphrase
             if passphrase is None and self.client_key_passphrase_env_var is not None:
                 passphrase = os.getenv(self.client_key_passphrase_env_var)
@@ -256,8 +257,16 @@ class RestGenerator(Generator):
         # trim first & last "
         return json.dumps(text)[1:-1]
 
+    def _url_escape(self, text: str) -> str:
+        """Percent-encode a string for use as a URL query value"""
+        return urllib.parse.quote(text, safe="")
+
     def _populate_template(
-        self, template: str, text: str, json_escape_key: bool = False
+        self,
+        template: str,
+        text: str,
+        json_escape_key: bool = False,
+        escape_function=None,
     ) -> str:
         """Replace template placeholders with values
 
@@ -268,6 +277,7 @@ class RestGenerator(Generator):
         $KEY is only set if the relevant environment variable is set; the
         default variable name is REST_API_KEY but this can be overridden.
         """
+        escape = escape_function or self.escape_function
         output = template
         if "$KEY" in template:
             if self.api_key is None:
@@ -275,10 +285,10 @@ class RestGenerator(Generator):
                     f"Template requires an API key but {self.key_env_var} env var isn't set"
                 )
             if json_escape_key:
-                output = output.replace("$KEY", self.escape_function(self.api_key))
+                output = output.replace("$KEY", escape(self.api_key))
             else:
                 output = output.replace("$KEY", self.api_key)
-        return output.replace("$INPUT", self.escape_function(text))
+        return output.replace("$INPUT", escape(text))
 
     def _response_extraction_failed(self, reason: str) -> List[Union[Message, None]]:
         """Handle a response whose shape `response_json_field` cannot address.
@@ -308,8 +318,13 @@ class RestGenerator(Generator):
         """
 
         # should this support a serialized Conversation?
+        # a GET request carries the prompt in the query string, so it must be URL encoded
         request_data = self._populate_template(
-            self.req_template, prompt.last_message().text
+            self.req_template,
+            prompt.last_message().text,
+            escape_function=(
+                self._url_escape if self.http_function == requests.get else None
+            ),
         )
 
         request_headers = dict(self.headers)
