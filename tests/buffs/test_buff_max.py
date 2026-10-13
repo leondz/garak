@@ -1,13 +1,22 @@
+from collections import Counter
+
 from garak import _config
 import garak._plugins
 import garak.attempt
 
 
-def test_buff_max_caps_items_returned_by_a_buff():
+def test_buff_max_caps_buffed_attempts_per_prompt():
     _config.load_base_config()
     probe = garak._plugins.load_plugin("probes.test.Test")
-    buff = garak._plugins.load_plugin("buffs.lowercase.Lowercase")
-    _config.buffmanager.buffs = [buff]
+    buffs = [
+        garak._plugins.load_plugin(name)
+        for name in (
+            "buffs.lowercase.Lowercase",
+            "buffs.encoding.Base64",
+            "buffs.encoding.CharCode",
+        )
+    ]
+    _config.buffmanager.buffs = buffs
     _config.plugins.buffs_include_original_prompt = False
     _config.plugins.buff_max = 2
     try:
@@ -18,4 +27,6 @@ def test_buff_max_caps_items_returned_by_a_buff():
     finally:
         _config.buffmanager.buffs = []
         _config.plugins.buff_max = None
-    assert len(buffed) == 2
+    # every prompt gets buff_max buffed variants, from the first buffs in order
+    assert Counter(a.seq for a in buffed) == {i: 2 for i in range(5)}
+    assert len(buffed) == 10

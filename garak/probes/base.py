@@ -12,6 +12,7 @@ Abstract and common-level probe classes belong here. Contact the garak maintaine
 import copy
 import json
 import logging
+from collections import Counter
 from collections.abc import Iterable
 import random
 from typing import Iterable, List, Set, Union
@@ -181,20 +182,26 @@ class Probe(Configurable):
         if _config.plugins.buffs_include_original_prompt:
             for attempt in attempts:
                 buffed_attempts.append(attempt)
+        buff_max = _config.plugins.buff_max
+        # buff_max caps the buffed attempts added for each of the probe's prompts
+        added_per_prompt = Counter()
         for buff in _config.buffmanager.buffs:
+            if buff_max is not None and all(
+                added_per_prompt[attempt.seq] >= buff_max for attempt in attempts
+            ):
+                break
             if buff.post_buff_hook:
                 self.post_buff_hook = True
-            buffed_attempts_added = 0  # buff_max caps the items each buff returns
             for buffed_attempt in buff.buff(
                 attempts, probename=".".join(self.probename.split(".")[-2:])
             ):
                 if (
-                    _config.plugins.buff_max is not None
-                    and buffed_attempts_added >= _config.plugins.buff_max
+                    buff_max is not None
+                    and added_per_prompt[buffed_attempt.seq] >= buff_max
                 ):
-                    break
+                    continue
                 buffed_attempts.append(buffed_attempt)
-                buffed_attempts_added += 1
+                added_per_prompt[buffed_attempt.seq] += 1
         return buffed_attempts
 
     @staticmethod
