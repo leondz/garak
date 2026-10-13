@@ -183,11 +183,12 @@ class Probe(Configurable):
             for attempt in attempts:
                 buffed_attempts.append(attempt)
         buff_max = _config.plugins.buff_max
-        # buff_max caps the buffed attempts added for each of the probe's prompts
-        added_per_prompt = Counter()
+        # buff_max caps the buffed attempts added for each input attempt, across all buffs.
+        # Count by source attempt uuid: attempts from tree-search probes have no seq.
+        added_per_source = Counter()
         for buff in _config.buffmanager.buffs:
             if buff_max is not None and all(
-                added_per_prompt[attempt.seq] >= buff_max for attempt in attempts
+                added_per_source[str(attempt.uuid)] >= buff_max for attempt in attempts
             ):
                 break
             if buff.post_buff_hook:
@@ -195,13 +196,11 @@ class Probe(Configurable):
             for buffed_attempt in buff.buff(
                 attempts, probename=".".join(self.probename.split(".")[-2:])
             ):
-                if (
-                    buff_max is not None
-                    and added_per_prompt[buffed_attempt.seq] >= buff_max
-                ):
+                source = buffed_attempt.notes.get("buff_source_attempt_uuid")
+                if buff_max is not None and added_per_source[source] >= buff_max:
                     continue
                 buffed_attempts.append(buffed_attempt)
-                added_per_prompt[buffed_attempt.seq] += 1
+                added_per_source[source] += 1
         return buffed_attempts
 
     @staticmethod
