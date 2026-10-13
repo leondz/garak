@@ -178,21 +178,21 @@ class Probe(Configurable):
         if len(_config.buffmanager.buffs) == 0:
             return attempts
         buffed_attempts = []
-        buffed_attempts_added = 0
         if _config.plugins.buffs_include_original_prompt:
             for attempt in attempts:
                 buffed_attempts.append(attempt)
         for buff in _config.buffmanager.buffs:
-            if (
-                _config.plugins.buff_max is not None
-                and buffed_attempts_added >= _config.plugins.buff_max
-            ):
-                break
             if buff.post_buff_hook:
                 self.post_buff_hook = True
+            buffed_attempts_added = 0  # buff_max caps the items each buff returns
             for buffed_attempt in buff.buff(
                 attempts, probename=".".join(self.probename.split(".")[-2:])
             ):
+                if (
+                    _config.plugins.buff_max is not None
+                    and buffed_attempts_added >= _config.plugins.buff_max
+                ):
+                    break
                 buffed_attempts.append(buffed_attempt)
                 buffed_attempts_added += 1
         return buffed_attempts
