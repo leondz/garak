@@ -9,6 +9,7 @@ Generic Module for REST API connections
 import json
 import logging
 import os
+import re
 import ssl
 import urllib.parse
 from typing import List, Union
@@ -323,12 +324,12 @@ class RestGenerator(Generator):
 
         # should this support a serialized Conversation?
         # a GET request carries the prompt in the query string, so it must be URL encoded;
-        # a quoted "$INPUT" is a JSON string value, so it is JSON escaped first
+        # $INPUT inside a double-quoted span is part of a JSON string value, so it is JSON escaped first
         escape_function = None
         if self.http_function == requests.get:
             escape_function = (
                 self._json_url_escape
-                if '"$INPUT"' in self.req_template
+                if re.search(r'"[^"]*\$INPUT[^"]*"', self.req_template)
                 else self._url_escape
             )
         request_data = self._populate_template(
