@@ -6719,7 +6719,7 @@
       },
       "pass_desc": "Detector found no issue",
       "tags": [],
-      "mod_time": "2026-09-09 15:20:54 +0000"
+      "mod_time": "2026-10-15 19:51:48 +0000"
     },
     "detectors.base.FileDetector": {
       "description": "Detector subclass for processing attempts whose outputs are filenames for checking",
@@ -6739,7 +6739,7 @@
       "pass_desc": "Detector found no issue",
       "tags": [],
       "valid_format": "local filename",
-      "mod_time": "2026-09-09 15:20:54 +0000"
+      "mod_time": "2026-10-15 19:51:48 +0000"
     },
     "detectors.base.HFDetector": {
       "description": "Detector using a Hugging Face model",
@@ -6766,7 +6766,7 @@
       },
       "pass_desc": "Detector found no issue",
       "tags": [],
-      "mod_time": "2026-09-09 15:20:54 +0000"
+      "mod_time": "2026-10-15 19:51:48 +0000"
     },
     "detectors.base.StringDetector": {
       "description": "Subclass of Detector using list of substrings as detection triggers",
@@ -6788,7 +6788,7 @@
       },
       "pass_desc": "Detector found no issue",
       "tags": [],
-      "mod_time": "2026-09-09 15:20:54 +0000"
+      "mod_time": "2026-10-15 19:51:48 +0000"
     },
     "detectors.base.TriggerListDetector": {
       "description": "Subclass of Detector using attempt's notes[triggers] as list of strings to match",
@@ -6808,7 +6808,7 @@
       },
       "pass_desc": "Detector found no issue",
       "tags": [],
-      "mod_time": "2026-09-09 15:20:54 +0000"
+      "mod_time": "2026-10-15 19:51:48 +0000"
     },
     "detectors.continuation.Continuation": {
       "description": "Detect if model initiates / continues a trigger word",
@@ -7362,7 +7362,7 @@
       },
       "pass_desc": "Detector found no issue",
       "tags": [],
-      "mod_time": "2026-04-28 16:58:26 +0000"
+      "mod_time": "2026-08-23 18:29:41 +0000"
     },
     "detectors.judge.JailbreakOnlyAdversarial": {
       "description": "Uses the configured model to detect if responses contain harmful content achieving the adversarial goal (JailbreakBench methodology)",
@@ -7385,7 +7385,7 @@
       },
       "pass_desc": "Detector found no issue",
       "tags": [],
-      "mod_time": "2026-04-28 16:58:26 +0000"
+      "mod_time": "2026-08-23 18:29:41 +0000"
     },
     "detectors.judge.ModelAsJudge": {
       "description": "Uses the configured model to detect responses that attained the probe goal",
@@ -7409,7 +7409,7 @@
       },
       "pass_desc": "Detector found no issue",
       "tags": [],
-      "mod_time": "2026-04-28 16:58:26 +0000"
+      "mod_time": "2026-08-23 18:29:41 +0000"
     },
     "detectors.judge.Refusal": {
       "description": "Uses the configured model to detect if the responses is a refusal to answer",
@@ -7431,7 +7431,7 @@
       },
       "pass_desc": "Response refuses to answer",
       "tags": [],
-      "mod_time": "2026-04-28 16:58:26 +0000"
+      "mod_time": "2026-08-23 18:29:41 +0000"
     },
     "detectors.judge.RefusalOnlyAdversarial": {
       "description": "Uses the configured model to detect if the responses is a refusal to answer",
@@ -7453,7 +7453,7 @@
       },
       "pass_desc": "Response refuses adversarial prompt - safety boundaries maintained",
       "tags": [],
-      "mod_time": "2026-04-28 16:58:26 +0000"
+      "mod_time": "2026-08-23 18:29:41 +0000"
     },
     "detectors.knownbadsignatures.EICAR": {
       "description": "Is the EICAR test string present?",
@@ -7721,7 +7721,7 @@
         "avid-effect:security:S0403",
         "avid-effect:performance:P0204"
       ],
-      "mod_time": "2026-04-10 15:29:13 +0000",
+      "mod_time": "2026-08-15 02:21:36 +0000",
       "hit_precision": 0.5998546247501363,
       "hit_recall": 0.921295004186436,
       "hit_f1": 0.7266123706801674
@@ -7756,29 +7756,29 @@
         "avid-effect:security:S0403",
         "avid-effect:performance:P0204"
       ],
-      "mod_time": "2026-04-10 15:29:13 +0000"
+      "mod_time": "2026-08-15 02:21:36 +0000"
     },
     "detectors.mitigation.Prefixes": {
       "description": "Detect failure prefixes",
       "DEFAULT_PARAMS": {
         "skip": false,
-        "matchtype": "str",
+        "matchtype": "startswith",
         "case_sensitive": false,
         "normalize": null
       },
       "active": true,
       "doc_uri": null,
       "extra_dependency_names": [],
-      "hit_desc": "Response starts with common refusal/failure prefix",
+      "hit_desc": "Response does not start with a well-known refusal prefix",
       "lang_spec": "en",
       "modality": {
         "out": [
           "text"
         ]
       },
-      "pass_desc": "Response does not start with a well-known refusal prefix",
+      "pass_desc": "Response starts with common refusal/failure prefix",
       "tags": [],
-      "mod_time": "2026-04-10 15:29:13 +0000"
+      "mod_time": "2026-08-15 02:21:36 +0000"
     },
     "detectors.packagehallucination.Dart": {
       "description": "Check if the output tries to use a Dart package not listed on pub.dev (2025-08-11 snapshot)",
