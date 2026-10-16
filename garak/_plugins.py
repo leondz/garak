@@ -8,6 +8,7 @@ import inspect
 import json
 import logging
 import shutil
+import tempfile
 import os
 from datetime import datetime, timezone
 from threading import Lock
@@ -102,7 +103,18 @@ class PluginCache:
             self._user_plugin_cache_filename.parent.mkdir(
                 mode=0o740, parents=True, exist_ok=True
             )
-            shutil.copy2(self._plugin_cache_filename, self._user_plugin_cache_filename)
+            with tempfile.NamedTemporaryFile(
+                dir=self._user_plugin_cache_filename.parent,
+                prefix=f"{self._user_plugin_cache_filename.name}.",
+                delete=False,
+            ) as temporary_file:
+                temporary_path = Path(temporary_file.name)
+            try:
+                shutil.copy2(self._plugin_cache_filename, temporary_path)
+                os.replace(temporary_path, self._user_plugin_cache_filename)
+            finally:
+                temporary_path.unlink(missing_ok=True)
+
             user_time = base_time
 
         with open(
