@@ -8,9 +8,11 @@ import inspect
 import json
 import logging
 import shutil
+import random
 import tempfile
 import os
 from datetime import datetime, timezone
+import time
 from threading import Lock
 from typing import List, Callable, Union
 from pathlib import Path
@@ -90,8 +92,20 @@ class PluginCache:
         base_time = datetime.fromtimestamp(
             os.path.getmtime(self._plugin_cache_filename), tz=timezone.utc
         )
+
+        def jitter_wait(ms_range: int) -> bool:
+            # Random jitter to avoid contention if multiple
+            # instances start at once
+            jitter_ms = random.randint(0, ms_range)
+            time.sleep(jitter_ms / 1000.0)
+            return True
+
         update_user_file = False
-        if not os.path.exists(self._user_plugin_cache_filename):
+        if (
+            not os.path.exists(self._user_plugin_cache_filename)
+            and jitter_wait(300)
+            and not os.path.exists(self._user_plugin_cache_filename)
+        ):
             update_user_file = True
         else:
             user_time = datetime.fromtimestamp(
