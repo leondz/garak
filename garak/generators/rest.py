@@ -143,6 +143,17 @@ class RestGenerator(Generator):
             self.method = "post"
         self.http_function = getattr(requests, self.method)
 
+        # escape for $INPUT in the request body; headers keep self.escape_function.
+        # a GET request carries the prompt in the query string, so it must be URL encoded;
+        # $INPUT inside a double-quoted span is part of a JSON string value, so it is JSON escaped first
+        self._escape_function = self.escape_function
+        if self.http_function == requests.get:
+            self._escape_function = (
+                self._json_url_escape
+                if re.search(r'"[^"]*\$INPUT[^"]*"', self.req_template)
+                else self._url_escape
+            )
+
         # validate proxies formatting
         # sanity check only leave actual parsing of values to the `requests` library on call.
         if hasattr(self, "proxies") and self.proxies is not None:
@@ -270,8 +281,8 @@ class RestGenerator(Generator):
         self,
         template: str,
         text: str,
+        escape_function,
         json_escape_key: bool = False,
-        escape_function=None,
     ) -> str:
         """Replace template placeholders with values
 
@@ -282,7 +293,6 @@ class RestGenerator(Generator):
         $KEY is only set if the relevant environment variable is set; the
         default variable name is REST_API_KEY but this can be overridden.
         """
-        escape = escape_function or self.escape_function
         output = template
         if "$KEY" in template:
             if self.api_key is None:
@@ -290,10 +300,10 @@ class RestGenerator(Generator):
                     f"Template requires an API key but {self.key_env_var} env var isn't set"
                 )
             if json_escape_key:
-                output = output.replace("$KEY", escape(self.api_key))
+                output = output.replace("$KEY", escape_function(self.api_key))
             else:
                 output = output.replace("$KEY", self.api_key)
-        return output.replace("$INPUT", escape(text))
+        return output.replace("$INPUT", escape_function(text))
 
     def _response_extraction_failed(self, reason: str) -> List[Union[Message, None]]:
         """Handle a response whose shape `response_json_field` cannot address.
@@ -323,25 +333,16 @@ class RestGenerator(Generator):
         """
 
         # should this support a serialized Conversation?
-        # a GET request carries the prompt in the query string, so it must be URL encoded;
-        # $INPUT inside a double-quoted span is part of a JSON string value, so it is JSON escaped first
-        escape_function = None
-        if self.http_function == requests.get:
-            escape_function = (
-                self._json_url_escape
-                if re.search(r'"[^"]*\$INPUT[^"]*"', self.req_template)
-                else self._url_escape
-            )
         request_data = self._populate_template(
-            self.req_template,
-            prompt.last_message().text,
-            escape_function=escape_function,
+            self.req_template, prompt.last_message().text, self._escape_function
         )
 
         request_headers = dict(self.headers)
         for k, v in self.headers.items():
             # why does this provide the prompt to fill out headers?
-            request_headers[k] = self._populate_template(v, prompt.last_message().text)
+            request_headers[k] = self._populate_template(
+                v, prompt.last_message().text, self.escape_function
+            )
 
         # the prompt should not be sent via data when using a GET request. Prompt should be
         # serialized as parameters, in general a method could be created to add
