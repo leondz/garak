@@ -83,6 +83,16 @@ class WebSocketGenerator(Generator):
         # Let Configurable class handle all the DEFAULT_PARAMS magic
         super().__init__("", config_root)
 
+        # --target_name arrives as the "name" option; when it is a WebSocket URL
+        # and no uri was set, use it as the uri instead of the echo default
+        if (
+            not uri
+            and self.uri == self.DEFAULT_PARAMS["uri"]
+            and isinstance(self.name, str)
+            and urlparse(self.name).scheme in ("ws", "wss")
+        ):
+            self.uri = self.name
+
         # Now validate that required values are formatted correctly
         if not self.uri:
             raise ValueError("WebSocket uri is required")
