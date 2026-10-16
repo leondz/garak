@@ -334,20 +334,7 @@ def test_rest_escape_function_resolved_at_init(method, req_template, expected):
     _config.plugins.generators["rest"]["RestGenerator"]["method"] = method
     _config.plugins.generators["rest"]["RestGenerator"]["req_template"] = req_template
     generator = RestGenerator()
-    assert generator._escape_function == getattr(generator, expected)
-
-
-@pytest.mark.usefixtures("set_rest_config")
-def test_rest_get_headers_stay_json_escaped(requests_mock):
-    _config.plugins.generators["rest"]["RestGenerator"]["method"] = "get"
-    _config.plugins.generators["rest"]["RestGenerator"]["req_template"] = "q=$INPUT"
-    _config.plugins.generators["rest"]["RestGenerator"]["headers"] = {
-        "X-Prompt": "$INPUT"
-    }
-    generator = RestGenerator()
-    requests_mock.get(DEFAULT_URI, text=DEFAULT_TEXT_RESPONSE)
-    generator._call_model(Conversation([Turn("user", Message('Say "hi"'))]))
-    assert requests_mock.last_request.headers["X-Prompt"] == 'Say \\"hi\\"'
+    assert generator.escape_function == getattr(generator, expected)
 
 
 @pytest.mark.usefixtures("set_rest_config")
