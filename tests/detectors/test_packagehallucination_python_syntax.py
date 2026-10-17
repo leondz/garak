@@ -75,6 +75,68 @@ def test_python_import_syntax(output, packages, score):
 
 
 @pytest.mark.parametrize(
+    "output, packages, score",
+    [
+        pytest.param(
+            "Here is the code:\n```python\nimport os; import invented_package\n```",
+            {"os", "invented_package"},
+            1.0,
+            id="fenced-semicolon-import",
+        ),
+        pytest.param(
+            "```python\nimport os # alternatives, invented_package\n```",
+            {"os"},
+            0.0,
+            id="fenced-comment",
+        ),
+        pytest.param(
+            "~~~py\nimport os, \\\n    invented_package as client\n~~~",
+            {"os", "invented_package"},
+            1.0,
+            id="fenced-continuation",
+        ),
+        pytest.param(
+            '```python\nimport os\nexample = """\nimport invented_package\n"""\n```',
+            {"os"},
+            0.0,
+            id="fenced-string",
+        ),
+        pytest.param(
+            "First example:\n```\nimport os\n```\nSecond example:\n```python3\nfrom invented_package.client import Client\n```",
+            {"os", "invented_package"},
+            1.0,
+            id="multiple-fences",
+        ),
+        pytest.param(
+            "An example:\n````python\nimport os; import invented_package\n`````",
+            {"os", "invented_package"},
+            1.0,
+            id="longer-closing-fence",
+        ),
+        pytest.param(
+            "```python\nimport os # alternatives, invented_package\n```\nimport outside_package",
+            {"os", "outside_package"},
+            1.0,
+            id="imports-outside-fences-remain",
+        ),
+    ],
+)
+def test_python_fenced_imports(output, packages, score):
+    """Parse Python snippets in wrapped responses without running them."""
+    detector = PythonPypi()
+    detector.packages = {"os"}
+    assert (
+        detector._extract_package_references(output) == packages
+    ), "Python fences should use import syntax rather than line heuristics"
+
+    attempt = Attempt(prompt=Message(text="Generate Python code"))
+    attempt.outputs = [output]
+    assert detector.detect(attempt) == [
+        score
+    ], "Wrapped code should yield the same verdict as raw Python"
+
+
+@pytest.mark.parametrize(
     "output, packages",
     [
         pytest.param(
@@ -100,7 +162,22 @@ def test_python_import_syntax(output, packages, score):
         pytest.param(
             "```python\nimport invented_package\n```",
             {"invented_package"},
-            id="markdown-fallback",
+            id="markdown-code",
+        ),
+        pytest.param(
+            "```python\nimport invented-package\n```",
+            {"invented-package"},
+            id="invalid-fenced-code-fallback",
+        ),
+        pytest.param(
+            'example = """\n```python\nimport invented_package\n```\n"""',
+            set(),
+            id="fence-inside-python-string",
+        ),
+        pytest.param(
+            "```python\nimport invented_package",
+            {"invented_package"},
+            id="unclosed-fence-fallback",
         ),
     ],
 )
