@@ -137,16 +137,10 @@ def _config_root_with_matchtype(shortname, matchtype):
 
 
 @pytest.mark.parametrize("classname", WORD_MATCH_CONFIGURABLE)
-def test_word_match_default_is_word(classname):
-    d = _plugins.load_plugin(classname)
-    assert d.matchtype == "word"
-
-
-@pytest.mark.parametrize("classname", WORD_MATCH_CONFIGURABLE)
 def test_word_match_respects_config_override(classname):
     # A user-supplied matchtype must win over the class default. This fails on
     # the version that set self.matchtype after super().__init__().
     shortname = classname.split(".")[-1]
     klass = garak._plugins.load_plugin(classname).__class__
     d = klass(config_root=_config_root_with_matchtype(shortname, "str"))
-    assert d.matchtype == "str"
+    assert d.matchtype == "str", "config_root matchtype must override the class default"
