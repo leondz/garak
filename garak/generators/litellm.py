@@ -180,9 +180,8 @@ class LiteLLMGenerator(Generator):
                 "Unrecoverable error during litellm completion; see log for details"
             ) from e
         except Exception as e:
-            # these don't subclass litellm's APIError, so they need listing to be retried
+            # litellm's APIError is unrecoverable (above); these transient errors don't subclass it
             backoff_exception_types = [
-                self.litellm.exceptions.APIError,
                 self.litellm.exceptions.RateLimitError,
                 self.litellm.exceptions.Timeout,
                 self.litellm.exceptions.APIConnectionError,
