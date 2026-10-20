@@ -32,14 +32,19 @@ class BeastGeneratorView:
     def __init__(self, generator: Generator):
         from garak.generators.huggingface import Model, Pipeline
 
-        if isinstance(generator, Pipeline):
-            self.model = generator.generator.model
-            self.tokenizer = generator.generator.tokenizer
-            self.generation_config = generator.generator.generation_config
-        elif isinstance(generator, Model):
+        if isinstance(generator, Model):
             self.model = generator.model
             self.tokenizer = generator.tokenizer
             self.generation_config = generator.generation_config
+        elif isinstance(generator, Pipeline):
+            self.model = generator.generator.model
+            self.tokenizer = generator.generator.tokenizer
+            if hasattr(generator.generator, "generation_config"):
+                self.generation_config = generator.generator.generation_config
+            else:
+                raise TypeError(
+                    f"The Pipeline for this model did not expose generation_config try the Model generator"
+                )
         else:
             raise TypeError(
                 f"Expected huggingface Pipeline or Model generator but got {type(generator)}"
