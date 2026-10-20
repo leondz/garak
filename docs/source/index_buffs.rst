@@ -18,4 +18,3 @@ implemented buffs.
    buffs/low_resource_languages
    buffs/lowercase
    buffs/paraphrase
-   buffs/steganography
