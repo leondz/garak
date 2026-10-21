@@ -457,7 +457,7 @@
       "skip_root_intents": true,
       "tags": [],
       "tier": 9,
-      "mod_time": "2026-08-23 05:07:01 +0000"
+      "mod_time": "2026-10-21 19:11:35 +0000"
     },
     "probes.base.IterativeProbe": {
       "description": "",
@@ -481,7 +481,7 @@
       "primary_detector": null,
       "tags": [],
       "tier": 9,
-      "mod_time": "2026-08-23 05:07:01 +0000"
+      "mod_time": "2026-10-21 19:11:35 +0000"
     },
     "probes.base.Probe": {
       "description": "Base class for objects that define and execute LLM evaluations",
@@ -504,7 +504,7 @@
       "primary_detector": null,
       "tags": [],
       "tier": 9,
-      "mod_time": "2026-08-23 05:07:01 +0000"
+      "mod_time": "2026-10-21 19:11:35 +0000"
     },
     "probes.base.TreeSearchProbe": {
       "DEFAULT_PARAMS": {
@@ -531,7 +531,7 @@
       "primary_detector": null,
       "tags": [],
       "tier": 9,
-      "mod_time": "2026-08-23 05:07:01 +0000"
+      "mod_time": "2026-10-21 19:11:35 +0000"
     },
     "probes.continuation.ContinueSlursReclaimedSlurs": {
       "description": "Continue partial word with slur or reclaimed slur.",
@@ -8554,46 +8554,46 @@
       "mod_time": "2026-02-04 19:19:46 +0000"
     },
     "detectors.snowball.DontStartNo": {
-      "description": "Response should start no, or contain a negation, to pass",
+      "description": "Detect a response prefix that denies a true statement.",
       "DEFAULT_PARAMS": {
         "skip": false
       },
       "active": true,
       "doc_uri": null,
       "extra_dependency_names": [],
-      "hit_desc": "Response incorrectly affirms false premise",
+      "hit_desc": "Response prefix incorrectly denies a true statement",
       "lang_spec": "en",
       "modality": {
         "out": [
           "text"
         ]
       },
-      "pass_desc": "Response correctly negates the false premise",
+      "pass_desc": "Response prefix does not deny the true statement",
       "tags": [
         "avid-effect:performance:P0204"
       ],
-      "mod_time": "2026-05-24 19:05:32 +0000"
+      "mod_time": "2026-10-06 21:08:08 +0000"
     },
     "detectors.snowball.DontStartYes": {
-      "description": "Response should start yes, or contain an affirmation, to pass",
+      "description": "Detect a response prefix that affirms a false statement.",
       "DEFAULT_PARAMS": {
         "skip": false
       },
       "active": true,
       "doc_uri": null,
       "extra_dependency_names": [],
-      "hit_desc": "Response incorrectly denies true statement",
+      "hit_desc": "Response prefix incorrectly affirms a false statement",
       "lang_spec": "en",
       "modality": {
         "out": [
           "text"
         ]
       },
-      "pass_desc": "Response correctly affirms the true statement",
+      "pass_desc": "Response prefix does not affirm the false statement",
       "tags": [
         "avid-effect:performance:P0204"
       ],
-      "mod_time": "2026-05-24 19:05:32 +0000"
+      "mod_time": "2026-10-06 21:08:08 +0000"
     },
     "detectors.sysprompt_extraction.PromptExtraction": {
       "description": "Detect system prompt extraction via character n-gram overlap",
@@ -10903,7 +10903,7 @@
       },
       "active": true,
       "extra_dependency_names": [],
-      "mod_time": "2026-07-28 01:49:26 +0000"
+      "mod_time": "2026-10-21 19:33:22 +0000"
     },
     "harnesses.probewise.ProbewiseHarness": {
       "DEFAULT_PARAMS": {
