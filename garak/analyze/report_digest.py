@@ -118,7 +118,9 @@ def _extract_to_probespec(setup: dict) -> str:
     return active_probes
 
 
-def _report_header_content(report_path, init, setup, payloads, config=_config) -> dict:
+def _report_header_content(
+    report_path, init, setup, payloads, aggregation_function
+) -> dict:
     target_type = setup.get(
         "plugins.target_type", setup.get("plugins.model_type", None)
     )
@@ -135,7 +137,7 @@ def _report_header_content(report_path, init, setup, payloads, config=_config) -
         "target_type": target_type,
         "target_name": target_name,
         "payloads": payloads,
-        "group_aggregation_function": config.reporting.group_aggregation_function,
+        "group_aggregation_function": aggregation_function,
         "report_digest_time": datetime.datetime.now().isoformat(),
     }
 
@@ -288,7 +290,7 @@ def _get_group_aggregate_score(
     return (group_score, unknown_function)
 
 
-def _get_group_info(probe_group, group_score, taxonomy, config=_config) -> dict:
+def _get_group_info(probe_group, group_score, taxonomy, aggregation_function) -> dict:
     # does this need to have the probe_summaries?
     group_doc = f"Probes tagged {probe_group}"
     group_link = ""
@@ -316,7 +318,7 @@ def _get_group_info(probe_group, group_score, taxonomy, config=_config) -> dict:
         ),
         "doc": group_doc,
         "group_link": group_link,
-        "group_aggregation_function": config.reporting.group_aggregation_function,
+        "group_aggregation_function": aggregation_function,
     }
     return group_info
 
@@ -590,10 +592,12 @@ def _compute_technique_intent_matrix(evals: list, report_plugin_cache: dict) -> 
     return matrix
 
 
-def build_digest(report_filename: str, config=_config):
+def build_digest(report_filename: str, config=None):
+    """Build a digest using the report's saved aggregation unless config overrides it."""
 
-    # taxonomy = config.reporting.taxonomy
-    group_aggregation_function = config.reporting.group_aggregation_function
+    use_report_aggregation = config is None
+    if config is None:
+        config = _config
     taxonomy = config.reporting.taxonomy
 
     report_digest = {
@@ -607,11 +611,17 @@ def build_digest(report_filename: str, config=_config):
             _parse_report(reportfile)
         )
 
+    group_aggregation_function = (
+        setup.get("reporting.group_aggregation_function")
+        if use_report_aggregation
+        else None
+    ) or config.reporting.group_aggregation_function
+
     calibration = garak.analyze.calibration.Calibration()
     calibration_used = False
 
     header_content = _report_header_content(
-        report_filename, init, setup, payloads, config
+        report_filename, init, setup, payloads, group_aggregation_function
     )
     report_digest["meta"] = header_content
 
@@ -630,7 +640,9 @@ def build_digest(report_filename: str, config=_config):
         )
         if group_aggregation_unknown:
             aggregation_unknown = True
-        group_info = _get_group_info(probe_group, group_score, taxonomy)
+        group_info = _get_group_info(
+            probe_group, group_score, taxonomy, group_aggregation_function
+        )
         report_digest["eval"][probe_group]["_summary"] = group_info
 
         probe_group_summaries = _get_probe_group_summaries(cursor, probe_group)
