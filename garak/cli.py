@@ -25,13 +25,13 @@ def parse_cli_plugin_config(plugin_type, args):
         elif opts_file in args:
             file_arg = getattr(args, opts_file)
             if not os.path.isfile(file_arg):
-                raise FileNotFoundError(f"Path provided is not a file: {opts_file}")
+                raise FileNotFoundError(f"Path provided is not a file: {file_arg}")
             with open(file_arg, encoding="utf-8") as f:
                 options_json = f.read().strip()
             try:
                 opts_cli_config = json.loads(options_json)
             except json.decoder.JSONDecodeError as e:
-                logging.warning("Failed to parse JSON %s: %s", opts_file, {e.args[0]})
+                logging.warning("Failed to parse JSON %s: %s", file_arg, e.args[0])
                 raise e
     return opts_cli_config
 
@@ -493,6 +493,16 @@ def main(arguments=None) -> None:
                 f"bootstrap_min_sample_size must be > 0, got {_config.reporting.bootstrap_min_sample_size}"
             )
 
+        if _config.reporting.hit_at_k is not None and (
+            not isinstance(_config.reporting.hit_at_k, list)
+            or not all(
+                isinstance(k, int) and k >= 1 for k in _config.reporting.hit_at_k
+            )
+        ):
+            raise ValueError(
+                f"hit_at_k must be a list of integers >= 1 or null, got {_config.reporting.hit_at_k}"
+            )
+
     except ValueError as e:
         logging.exception(e)
         print(e)
@@ -713,6 +723,7 @@ def main(arguments=None) -> None:
             _config.transient.intent_spec = ",".join(resolved.intents)
             _config.transient.blocked_intent_spec = ",".join(resolved.blocked_intents)
             _config.transient.intents_explicit = resolved.intents_explicit
+            _config.transient.active_probes = resolved.probes
             # --skip_unknown tolerates an empty selection (e.g. every include was an
             # unknown selector that was skipped); only guard when not skipping.
             if (

@@ -65,6 +65,31 @@ def test_build_digest_raises_on_unknown_detector(tmp_path) -> None:
     assert "does_not_exist.NoSuchDetector" in str(exc_info.value)
 
 
+def test_build_digest_carries_hit_at_k_to_detector(tmp_path) -> None:
+    _config.load_base_config()
+    _config.reporting.taxonomy = None
+    hit_at_k = {"1": {"score": 0.2, "prompts": 5}, "5": {"score": 1.0, "prompts": 5}}
+    eval_entry = {
+        "entry_type": "eval",
+        "probe": "probes.test.Blank",
+        "detector": "always.Fail",
+        "passed": 20,
+        "total_evaluated": 25,
+        "fails": 5,
+        "nones": 0,
+        "total_processed": 25,
+        "hit_at_k": hit_at_k,
+    }
+    report_path = _write_report_with_eval(tmp_path, eval_entry)
+
+    digest = garak.analyze.report_digest.build_digest(report_path)
+
+    detector_entry = digest["eval"]["test"]["test.Blank"]["always.Fail"]
+    assert (
+        detector_entry["hit_at_k"] == hit_at_k
+    ), "hit@k scores should reach the detector entry as reported"
+
+
 def _pc(probe_tags, detectors=("d.D",)):
     """Minimal report_plugin_cache: probes carry tags; detectors carry a description."""
     return {
@@ -350,3 +375,13 @@ def test_tim_enrichment_none_fallback_for_unknown_codes():
         tech["_summary"]["description"] is None
     ), "unknown technique tag -> description None"
     assert tech[intent]["name"] is None, "unknown intent code -> name None"
+
+
+def test_runspec_falls_back_when_absent():
+    assert garak.analyze.report_digest._extract_to_probespec({}) == "probes.*"
+    assert (
+        garak.analyze.report_digest._extract_to_probespec(
+            {"plugins.probe_spec": "probes.dan"}
+        )
+        == "probes.dan"
+    ), "reports predating run.spec fall back to the legacy probe_spec"

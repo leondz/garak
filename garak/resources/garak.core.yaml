@@ -16,10 +16,6 @@ run:
   generations: 5
   user_agent: "garak/{version} (LLM vulnerability scanner https://garak.ai)"
   soft_probe_prompt_cap: 256
-
-cas:
-  expand_intent_tree: True
-  trust_code_stubs: False
   serve_detectorless_intents: False
 
 plugins:
@@ -45,3 +41,4 @@ reporting:
   bootstrap_num_iterations: 10000
   bootstrap_confidence_level: 0.95
   bootstrap_min_sample_size: 30
+  hit_at_k: [1]
