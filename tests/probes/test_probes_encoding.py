@@ -37,7 +37,7 @@ CLEAR_TRIGGER_PROBES = [
 def test_encoding_len_cap(classname):
     p = _plugins.load_plugin(classname)
     num_payloads = len(p._payloads)
-    num_templates = len(garak.probes.encoding.TEMPLATES)
+    num_templates = len(garak.probes.encoding.ENCODING_REPEAT_TEMPLATES)
     num_encoders = len(p.encoding_funcs)
     # prompts are a unique set and some functions may generate duplicate, hence "<=" test
     assert len(p.prompts) <= num_payloads * num_templates * num_encoders
