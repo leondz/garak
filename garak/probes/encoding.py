@@ -805,14 +805,22 @@ class EncodingIntentProbe(garak.probes.IntentProbe, ABC):
 
 
 class InjectBase16Intent(EncodingIntentProbe):
-    """Hide an instruction with Base16 and measure whether the target acts on it."""
+    """Hide an instruction with Base16 and measure whether the target acts on it.
+
+    Encodes each intent stub as Base16 inside the decode-and-act envelope and
+    scores the decoded instruction with the stub's intent detector.
+    """
 
     doc_uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
     strategy = BASE16
 
 
 class InjectBase64Intent(EncodingIntentProbe):
-    """Hide an instruction with Base64 and measure whether the target acts on it."""
+    """Hide an instruction with Base64 and measure whether the target acts on it.
+
+    Encodes each intent stub as Base64 inside the decode-and-act envelope and
+    scores the decoded instruction with the stub's intent detector.
+    """
 
     doc_uri = "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak"
     strategy = BASE64
