@@ -9,11 +9,15 @@ import datetime
 import html
 import importlib
 import json
+import logging
 import markdown
 import os
 import pprint
 import re
+import shutil
 import sys
+import tempfile
+from pathlib import Path
 from typing import IO, List
 
 import sqlite3
@@ -592,12 +596,8 @@ def _compute_technique_intent_matrix(evals: list, report_plugin_cache: dict) -> 
     return matrix
 
 
-def build_digest(report_filename: str, config=None):
-    """Build a digest using the report's saved aggregation unless config overrides it."""
-
-    use_report_aggregation = config is None
-    if config is None:
-        config = _config
+def build_digest(report_filename: str, config=_config):
+    """Build a digest using the active reporting configuration."""
     taxonomy = config.reporting.taxonomy
 
     report_digest = {
@@ -611,11 +611,18 @@ def build_digest(report_filename: str, config=None):
             _parse_report(reportfile)
         )
 
-    group_aggregation_function = (
-        setup.get("reporting.group_aggregation_function")
-        if use_report_aggregation
-        else None
-    ) or config.reporting.group_aggregation_function
+    group_aggregation_function = config.reporting.group_aggregation_function
+    original_aggregation_function = setup.get("reporting.group_aggregation_function")
+    if (
+        original_aggregation_function is not None
+        and original_aggregation_function != group_aggregation_function
+    ):
+        logging.warning(
+            "Report used %s aggregation; rebuilding with %s",
+            original_aggregation_function,
+            group_aggregation_function,
+        )
+    setup["reporting.group_aggregation_function"] = group_aggregation_function
 
     calibration = garak.analyze.calibration.Calibration()
     calibration_used = False
@@ -758,6 +765,48 @@ def _get_report_digest(report_path):
     return False
 
 
+def _replace_report_digest(report_path: str, digest: dict) -> None:
+    """Write the rebuilt digest and its reporting setup to a report."""
+    report_path = Path(report_path)
+    temporary_path = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            newline="",
+            dir=report_path.parent,
+            prefix=f".{report_path.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as output_file:
+            temporary_path = Path(output_file.name)
+            with report_path.open("r", encoding="utf-8", newline="") as input_file:
+                for line in input_file:
+                    if not line.strip():
+                        output_file.write(line)
+                        continue
+                    entry = json.loads(line)
+                    if entry.get("entry_type") == "digest":
+                        continue
+                    if entry.get("entry_type") == "start_run setup":
+                        entry["reporting.group_aggregation_function"] = digest["meta"][
+                            "group_aggregation_function"
+                        ]
+                        entry["reporting.taxonomy"] = digest["meta"]["setup"][
+                            "reporting.taxonomy"
+                        ]
+                        line = json.dumps(entry, ensure_ascii=False) + "\n"
+                    output_file.write(line)
+                    if not line.endswith(("\n", "\r")):
+                        output_file.write("\n")
+            output_file.write(json.dumps(digest, ensure_ascii=False) + "\n")
+        shutil.copymode(report_path, temporary_path)
+        os.replace(temporary_path, report_path)
+    finally:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
+
+
 if __name__ == "__main__":
     import argparse
 
@@ -790,6 +839,11 @@ if __name__ == "__main__":
         "-t",
         help="Optional taxonomy to use for grouping probes (use 'None' to explicitly clear)",
     )
+    parser.add_argument(
+        "--group_aggregation_function",
+        choices=garak.resources.scoring.AGGREGATION_FUNCTIONS,
+        help="Method for combining probe scores when rebuilding the digest",
+    )
 
     args = parser.parse_args()
 
@@ -797,6 +851,9 @@ if __name__ == "__main__":
     output_path = args.output_path
     write_digest_suffix = args.write_digest_suffix
     taxonomy = args.taxonomy
+    aggregation_specified = args.group_aggregation_function is not None
+    if aggregation_specified:
+        _config.reporting.group_aggregation_function = args.group_aggregation_function
     # Allow "-t None" to explicitly clear taxonomy back to probe family grouping
     taxonomy_specified = taxonomy is not None
     if taxonomy is not None and taxonomy.lower() == "none":
@@ -816,8 +873,8 @@ if __name__ == "__main__":
     _config.reporting.taxonomy = taxonomy
 
     digest = _get_report_digest(report_path)
-    if not digest or taxonomy_specified:
-        # Rebuild digest when taxonomy is specified, even if one already exists
+    if not digest or taxonomy_specified or aggregation_specified:
+        # Explicit reporting options rebuild even when a digest already exists.
         try:
             digest = build_digest(report_path)
         except ReportIncompatibleError as e:
@@ -832,9 +889,8 @@ if __name__ == "__main__":
             )
             sys.exit(1)
         if write_digest_suffix:
-            with open(report_path, "a+", encoding="utf-8") as reportfile:
-                append_report_object(reportfile, digest)
-                print(f"Report digest appended to {report_path}", file=sys.stderr)
+            _replace_report_digest(report_path, digest)
+            print(f"Report digest written to {report_path}", file=sys.stderr)
 
     digest_content = build_html(digest)
     if output_path:
