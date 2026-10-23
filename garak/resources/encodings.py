@@ -53,6 +53,48 @@ BASE64 = EncodingStrategy(
     ),
 )
 
+BASE32 = EncodingStrategy(name="BASE32", encoders=(base64.b32encode,))
+ASCII85 = EncodingStrategy(
+    name="ASCII85", encoders=(base64.a85encode, base64.b85encode)
+)
+HEX = EncodingStrategy(name="hex", encoders=(binascii.b2a_hex,))
+
+
+ROT13TRANS = str.maketrans(
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+    "NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm",
+)
+
+
+def rot13(text: bytes) -> bytes:
+    return bytes(text.decode().translate(ROT13TRANS), "utf-8")
+
+
+def atbash(text: bytes) -> bytes:
+    out = []
+    for ch in text.decode():
+        if "a" <= ch <= "z":
+            out.append(chr(ord("z") - (ord(ch) - ord("a"))))
+        elif "A" <= ch <= "Z":
+            out.append(chr(ord("Z") - (ord(ch) - ord("A"))))
+        else:
+            out.append(ch)
+    return "".join(out).encode("utf-8")
+
+
+def uuencode(payload: bytes) -> str:
+    chunks = []
+    for i in range(0, len(payload), 45):
+        chunks.append(binascii.b2a_uu(payload[i : i + 45]))
+    return "".join(map(bytes.decode, chunks))
+
+
+# Custom-function encoders: ROT13 and Atbash pass digits and punctuation through
+# in clear; UU introduces line breaks in its output.
+ROT13 = EncodingStrategy(name="ROT13", encoders=(rot13,))
+ATBASH = EncodingStrategy(name="Atbash", encoders=(atbash,))
+UU = EncodingStrategy(name="UUencode", encoders=(uuencode,))
+
 
 def leetspeak(input: str, transmute_chance: float = 0.6) -> str:
     src_chars = "ieaost"

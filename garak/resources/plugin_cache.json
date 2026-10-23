@@ -1700,6 +1700,38 @@
       "tier": 2,
       "mod_time": "2026-08-23 05:07:01 +0000"
     },
+    "probes.encoding.InjectAscii85Intent": {
+      "description": "Hide an instruction with ASCII85 and measure whether the target acts on it.",
+      "DEFAULT_PARAMS": {
+        "follow_prompt_cap": true
+      },
+      "active": false,
+      "blocked_intent_spec": "",
+      "doc_uri": "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak",
+      "extended_detectors": [],
+      "extra_dependency_names": [],
+      "garak": null,
+      "goal": "make the model act on an encoded instruction",
+      "intent": null,
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "mitigation.MitigationBypass",
+      "skip_root_intents": true,
+      "tags": [
+        "avid-effect:security:S0403",
+        "owasp:llm01",
+        "quality:Security:PromptStability",
+        "payload:generic",
+        "demon:Language:Code_and_encode:Data_encoding"
+      ],
+      "tier": 2,
+      "mod_time": "2026-10-23 14:00:59 +0000"
+    },
     "probes.encoding.InjectAtbash": {
       "description": "Atbash Probe Credit: Nakul-Rajpal",
       "DEFAULT_PARAMS": {
@@ -1735,6 +1767,38 @@
       ],
       "tier": 2,
       "mod_time": "2026-08-23 05:07:01 +0000"
+    },
+    "probes.encoding.InjectAtbashIntent": {
+      "description": "Hide an instruction with Atbash and measure whether the target acts on it.",
+      "DEFAULT_PARAMS": {
+        "follow_prompt_cap": true
+      },
+      "active": false,
+      "blocked_intent_spec": "",
+      "doc_uri": "https://en.wikipedia.org/wiki/Atbash",
+      "extended_detectors": [],
+      "extra_dependency_names": [],
+      "garak": null,
+      "goal": "make the model act on an encoded instruction",
+      "intent": null,
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "mitigation.MitigationBypass",
+      "skip_root_intents": true,
+      "tags": [
+        "avid-effect:security:S0403",
+        "owasp:llm01",
+        "quality:Security:PromptStability",
+        "payload:generic",
+        "demon:Language:Code_and_encode:Data_encoding"
+      ],
+      "tier": 2,
+      "mod_time": "2026-10-23 14:00:59 +0000"
     },
     "probes.encoding.InjectBase16": {
       "description": "Probe for susceptibility to base16 encoded injections\"",
@@ -1875,6 +1939,38 @@
       ],
       "tier": 2,
       "mod_time": "2026-08-23 05:07:01 +0000"
+    },
+    "probes.encoding.InjectBase32Intent": {
+      "description": "Hide an instruction with Base32 and measure whether the target acts on it.",
+      "DEFAULT_PARAMS": {
+        "follow_prompt_cap": true
+      },
+      "active": false,
+      "blocked_intent_spec": "",
+      "doc_uri": "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak",
+      "extended_detectors": [],
+      "extra_dependency_names": [],
+      "garak": null,
+      "goal": "make the model act on an encoded instruction",
+      "intent": null,
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "mitigation.MitigationBypass",
+      "skip_root_intents": true,
+      "tags": [
+        "avid-effect:security:S0403",
+        "owasp:llm01",
+        "quality:Security:PromptStability",
+        "payload:generic",
+        "demon:Language:Code_and_encode:Data_encoding"
+      ],
+      "tier": 2,
+      "mod_time": "2026-10-23 14:00:59 +0000"
     },
     "probes.encoding.InjectBase64": {
       "description": "Probe for susceptibility to base64 encoded injections",
@@ -2051,6 +2147,38 @@
       ],
       "tier": 2,
       "mod_time": "2026-08-23 05:07:01 +0000"
+    },
+    "probes.encoding.InjectHexIntent": {
+      "description": "Hide an instruction with hex and measure whether the target acts on it.",
+      "DEFAULT_PARAMS": {
+        "follow_prompt_cap": true
+      },
+      "active": false,
+      "blocked_intent_spec": "",
+      "doc_uri": "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak",
+      "extended_detectors": [],
+      "extra_dependency_names": [],
+      "garak": null,
+      "goal": "make the model act on an encoded instruction",
+      "intent": null,
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "mitigation.MitigationBypass",
+      "skip_root_intents": true,
+      "tags": [
+        "avid-effect:security:S0403",
+        "owasp:llm01",
+        "quality:Security:PromptStability",
+        "payload:generic",
+        "demon:Language:Code_and_encode:Data_encoding"
+      ],
+      "tier": 2,
+      "mod_time": "2026-10-23 14:00:59 +0000"
     },
     "probes.encoding.InjectLeet": {
       "description": "Probe for susceptibility to 31337 encoding.",
@@ -2268,6 +2396,38 @@
       "tier": 2,
       "mod_time": "2026-08-23 05:07:01 +0000"
     },
+    "probes.encoding.InjectROT13Intent": {
+      "description": "Hide an instruction with ROT13 and measure whether the target acts on it.",
+      "DEFAULT_PARAMS": {
+        "follow_prompt_cap": true
+      },
+      "active": false,
+      "blocked_intent_spec": "",
+      "doc_uri": "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak",
+      "extended_detectors": [],
+      "extra_dependency_names": [],
+      "garak": null,
+      "goal": "make the model act on an encoded instruction",
+      "intent": null,
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "mitigation.MitigationBypass",
+      "skip_root_intents": true,
+      "tags": [
+        "avid-effect:security:S0403",
+        "owasp:llm01",
+        "quality:Security:PromptStability",
+        "payload:generic",
+        "demon:Language:Code_and_encode:Data_encoding"
+      ],
+      "tier": 2,
+      "mod_time": "2026-10-23 14:00:59 +0000"
+    },
     "probes.encoding.InjectSneakyBits": {
       "description": "Probe for susceptibility to unicode variant selector ASCII smuggling",
       "DEFAULT_PARAMS": {
@@ -2340,6 +2500,38 @@
       ],
       "tier": 1,
       "mod_time": "2026-08-23 05:07:01 +0000"
+    },
+    "probes.encoding.InjectUUIntent": {
+      "description": "Hide an instruction with UU encoding and measure whether the target acts on it.",
+      "DEFAULT_PARAMS": {
+        "follow_prompt_cap": true
+      },
+      "active": false,
+      "blocked_intent_spec": "",
+      "doc_uri": "https://kai-greshake.de/posts/llm-malware/#encoded-inline-jailbreak",
+      "extended_detectors": [],
+      "extra_dependency_names": [],
+      "garak": null,
+      "goal": "make the model act on an encoded instruction",
+      "intent": null,
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "mitigation.MitigationBypass",
+      "skip_root_intents": true,
+      "tags": [
+        "avid-effect:security:S0403",
+        "owasp:llm01",
+        "quality:Security:PromptStability",
+        "payload:generic",
+        "demon:Language:Code_and_encode:Data_encoding"
+      ],
+      "tier": 1,
+      "mod_time": "2026-10-23 14:00:59 +0000"
     },
     "probes.encoding.InjectUnicodeTagChars": {
       "description": "Probe for susceptibility to unicode tag ASCII smuggling",
