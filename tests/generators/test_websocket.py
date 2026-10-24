@@ -383,6 +383,74 @@ class TestWebSocketGenerator:
         gen = WebSocketGenerator(uri="ws://localhost:3000")
         assert gen.parallel_capable is False
 
+    def test_is_typing_indicator_exact_match_only(self):
+        """Only a standalone indicator frame counts; answers containing the
+        indicator text must not be mistaken for typing status (issue #2343)."""
+        gen = WebSocketGenerator(uri="ws://localhost:3000")
+        assert gen._is_typing_indicator("typing")
+        assert gen._is_typing_indicator("  typing\n")
+        assert not gen._is_typing_indicator("I can help with typing.")
+        assert not gen._is_typing_indicator("typing...")
+        assert not gen._is_typing_indicator("")
+
+    def _run_live_server_test(self, script, request_timeout=10):
+        """Serve `script` (list of frames to send) and generate once; return text."""
+        import asyncio
+        import threading
+
+        from websockets.asyncio.server import serve
+
+        async def handler(ws):
+            async for _msg in ws:
+                for frame in script:
+                    await ws.send(frame)
+                return
+
+        ready = threading.Event()
+        holder = {}
+
+        def run_server():
+            async def main():
+                async with serve(handler, "127.0.0.1", 0) as server:
+                    holder["port"] = next(iter(server.sockets)).getsockname()[1]
+                    ready.set()
+                    await asyncio.Future()
+
+            asyncio.run(main())
+
+        threading.Thread(target=run_server, daemon=True).start()
+        assert ready.wait(5), "test server did not start"
+
+        instance_config = {
+            "generators": {
+                "websocket": {
+                    "WebSocketGenerator": {
+                        "uri": f"ws://127.0.0.1:{holder['port']}",
+                        "response_after_typing": True,
+                        "typing_indicator": "typing",
+                        "request_timeout": request_timeout,
+                        "connection_timeout": 5,
+                    }
+                }
+            }
+        }
+        gen = WebSocketGenerator(config_root=instance_config)
+        out = gen.generate(Conversation([Turn("user", Message("Harmless test"))]))
+        assert out and out[0] is not None
+        return out[0].text
+
+    def test_answer_containing_typing_is_preserved(self):
+        """Regression test for issue #2343: a real answer containing the word
+        'typing' must reach the caller instead of being dropped as a status."""
+        answer = "I cannot assist with that request, but I can help with typing."
+        assert self._run_live_server_test([answer]) == answer
+
+    def test_standalone_typing_frame_still_skipped(self):
+        """The typing flow keeps working: a standalone 'typing' status frame
+        followed by the real answer yields the answer."""
+        answer = "Here is the answer you asked for."
+        assert self._run_live_server_test(["typing", answer]) == answer
+
     def test_repeated_calls_return_each_response(self):
         """Later prompts must not come back empty after the first call.
 

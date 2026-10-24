@@ -42,7 +42,9 @@ class WebSocketGenerator(Generator):
     - response_json: Whether responses are JSON formatted
     - response_json_field: Field to extract from JSON responses (supports JSONPath)
     - response_after_typing: Wait for typing indicator completion
-    - typing_indicator: String that indicates typing status
+    - typing_indicator: Standalone status frame that indicates typing status
+      (matched exactly, after stripping surrounding whitespace; a real answer
+      that merely contains this string is not treated as an indicator)
     - request_timeout: Seconds to wait for response
     - connection_timeout: Seconds to wait for connection
     - max_response_length: Maximum response length
@@ -286,6 +288,16 @@ class WebSocketGenerator(Generator):
             logger.error(msg)
             raise ConnectionError(msg) from e
 
+    def _is_typing_indicator(self, response: str) -> bool:
+        """Check whether a received frame is a standalone typing-status frame.
+
+        A frame is only treated as a typing indicator when its whole payload
+        is the configured indicator string (ignoring surrounding whitespace).
+        Matching substrings would also drop real answers that merely contain
+        the indicator text, so those are never treated as indicators.
+        """
+        return bool(self.typing_indicator) and response.strip() == self.typing_indicator
+
     async def _send_and_receive(self, message: str) -> str:
         """Send message and receive response with timeout and typing indicator handling"""
         if not self.websocket:
@@ -314,13 +326,15 @@ class WebSocketGenerator(Generator):
 
                     logger.debug("WebSocket message received")
 
-                    # Handle typing indicators
-                    if self.response_after_typing and self.typing_indicator in response:
+                    # Handle typing indicators: only standalone indicator frames
+                    # are skipped; real answers containing the indicator text
+                    # are kept (see _is_typing_indicator)
+                    if self.response_after_typing and self._is_typing_indicator(response):
                         typing_detected = True
                         continue
 
                     # If we were waiting for typing to finish and got a non-typing message
-                    if typing_detected and self.typing_indicator not in response:
+                    if typing_detected and not self._is_typing_indicator(response):
                         response_parts.append(response)
                         break
 
