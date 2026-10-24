@@ -34,6 +34,26 @@ class TestWebSocketGenerator:
         assert gen.uri == "wss://echo.websocket.org"
         assert gen.secure
 
+    @pytest.mark.parametrize("module_level", [False, True])
+    def test_init_target_name_sets_uri(self, module_level):
+        """--target_name reaches the generator as the "name" option and should set the uri"""
+        opts = {"name": "ws://localhost:3000/chat"}
+        ws_conf = opts if module_level else {"WebSocketGenerator": opts}
+        gen = WebSocketGenerator(config_root={"generators": {"websocket": ws_conf}})
+        assert gen.uri == "ws://localhost:3000/chat"
+        assert not gen.secure
+
+    def test_init_configured_uri_wins_over_name(self):
+        """An explicitly configured uri is kept"""
+        conf = {
+            "WebSocketGenerator": {
+                "uri": "wss://api.example.com/llm",
+                "name": "ws://localhost:3000/chat",
+            }
+        }
+        gen = WebSocketGenerator(config_root={"generators": {"websocket": conf}})
+        assert gen.uri == "wss://api.example.com/llm"
+
     def test_auth_basic(self):
         """Test basic authentication setup"""
         instance_config = {

@@ -390,6 +390,14 @@ class Probe(Configurable):
 
         self.generator = generator
 
+        # Nothing to send: e.g. an IntentProbe whose intents are all outside the
+        # active set, or any probe left with no prompts. Log and return empty
+        # rather than indexing prompts[0] below; the harness treats an empty
+        # result as a skip (see #1889).
+        if not self.prompts:
+            logging.info("probe %s has no prompts to send; skipping", self.probename)
+            return []
+
         # build list of attempts
         attempts_todo: Iterable[garak.attempt.Attempt] = []
         prompts = copy.deepcopy(
@@ -811,7 +819,7 @@ class IterativeProbe(Probe):
         try:
             self.attempt_queue = self._create_init_attempts()
             self.max_attempts_before_termination = float("inf")
-            if self.follow_prompt_cap:
+            if self.follow_prompt_cap and self.soft_probe_prompt_cap is not None:
                 self.max_attempts_before_termination = (
                     len(self.attempt_queue) * self.soft_probe_prompt_cap
                 )
@@ -956,13 +964,3 @@ class IntentProbe(Probe):
             prompts = self._prompts_from_stub(stub)
             self.prompts.extend(prompts)
             self.prompt_intents.extend([self.stub_intents[i]] * len(prompts))
-
-    def probe(self, generator) -> Iterable[garak.attempt.Attempt]:
-        if not self.prompts:
-            # an empty active-intent set (run.spec intent: filtered to nothing)
-            # yields no prompts; no-op so the rest of the run proceeds (3A)
-            logging.debug(
-                "%s has no active intents; no prompts to send", self.probename
-            )
-            return []
-        return super().probe(generator)
